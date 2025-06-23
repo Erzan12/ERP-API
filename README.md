@@ -32,6 +32,25 @@
 ```bash
 $ npm install
 ```
+## How to connect pgAdmin to your Postgres container:
+Open your browser and go to http://localhost:8080 or go to your docker and run the container look for pgadmin and click the port number 8080:80
+
+Login with:
+
+Email: admin@admin.com
+
+Password: admin
+
+Add a new server with these connection details:
+
+Host name/address: postgres (the service name from Compose) | use postgres as default in docker-compose.yml file
+
+Port: 5432
+
+Username: postgres
+
+Password: postgres
+
 
 ## Compile and run the project
 
