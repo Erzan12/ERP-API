@@ -51,6 +51,43 @@ Username: postgres
 
 Password: postgres
 
+## How to connect Swagger API Documentation: 
+Open your browser and go to http://localhost:3000/api/documentation
+
+## How to initialize first migration: 
+MIGRATION SET UP FOR DOCKERIZED PGADMIN AND POSTGRESQL
+
+open docker
+
+Run Prisma Commands Inside Docker
+
+docker exec -it nestjs-app npx prisma migrate dev --name init-build
+
+## How to seed your migration:
+open docker
+
+Run Prisma Commands Inside Docker
+
+docker exec -it nestjs-app npx prisma db seed
+
+## How to reset your migration along with the seed file
+docker exec -it nestjs-app npx prisma migrate reset
+
+## How to set up you .env file with email:
+# Database
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=abas_v2
+DB_HOST=postgres
+DB_PORT=5432
+
+# Prisma
+DATABASE_URL=postgresql://postgres:postgres@postgres:5432/abas_v2
+JWT_SECRET=supersecuredevsecret
+
+# User registration email
+SMTP_USER=dummybusiness29@gmail.com
+SMTP_PASS=awfzdjimmzipukeg
 
 ## Compile and run the project
 

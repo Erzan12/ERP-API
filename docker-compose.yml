@@ -10,7 +10,7 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
-      - /app/node_modules
+      - node_modules:/app/node_modules
     env_file:
       - .env
     command: npm run start:dev
@@ -57,3 +57,4 @@ services:
 volumes:
   pgdata:
   pgadmin_data:
+  node_modules:

@@ -1,0 +1,1805 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/person": {
+      "delete": {
+        "operationId": "PersonController_deletePerson",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeletePersonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Delete a person record including its employee and user record will be used for testing only"
+          }
+        },
+        "summary": "Delete a person",
+        "tags": [
+          "Person"
+        ]
+      }
+    },
+    "/hr/employees": {
+      "post": {
+        "operationId": "EmployeeController_createEmployee",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeWithDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Employee"
+        ]
+      },
+      "get": {
+        "operationId": "HrController_getEmployees",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hr"
+        ]
+      }
+    },
+    "/administrator": {
+      "get": {
+        "operationId": "AdministratorController_getAdminDashboard",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/audit_trail": {
+      "get": {
+        "operationId": "AdministratorController_getAuditTrail",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/db_encoding": {
+      "get": {
+        "operationId": "AdministratorController_getDBEncoding",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/db_manual_query": {
+      "get": {
+        "operationId": "AdministratorController_getDBManualQuery",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/module": {
+      "get": {
+        "operationId": "AdministratorController_getModule",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      },
+      "post": {
+        "operationId": "ModuleController_createModule",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateModuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Module"
+        ]
+      }
+    },
+    "/administrator/sub_module": {
+      "get": {
+        "operationId": "AdministratorController_getSubModule",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/role": {
+      "get": {
+        "operationId": "AdministratorController_getRole",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/maintenance_schedule": {
+      "get": {
+        "operationId": "AdministratorController_getMaintenanceSched",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/master_table": {
+      "get": {
+        "operationId": "AdministratorController_getMasterTable",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/users": {
+      "get": {
+        "operationId": "AdministratorController_getUserAccount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/user_token_key": {
+      "get": {
+        "operationId": "AdministratorController_getUserTokenKey",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/sms_subscription": {
+      "get": {
+        "operationId": "AdministratorController_getSMSSubscription",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/user_summary": {
+      "get": {
+        "operationId": "AdministratorController_getUserSummary",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/administrator/user_login_history": {
+      "get": {
+        "operationId": "AdministratorController_getUserLoginHistory",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
+    "/mastertables/position": {
+      "get": {
+        "operationId": "MasterController_getPosition",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "List of positions retrieve"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all positions",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "post": {
+        "operationId": "MasterController_createPosition",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Position",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePositionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Position created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new position",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "patch": {
+        "operationId": "MasterController_updatePositionInfo",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Position Info",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePositionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Position updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current position information",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/position/deactivate": {
+      "patch": {
+        "operationId": "MasterController_deactivatePos",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to Deactivate Position",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeactivatePositionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Position has been deactivated"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "409": {
+            "description": "Conflict - Resource deactivated already"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Deactivate a current position",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/position/reactivate": {
+      "patch": {
+        "operationId": "MasterController_reactivatePos",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to Reactivate Position",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReactivatePositionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Position has been activated"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "409": {
+            "description": "Conflict - Resource deactivated already"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Reactivate a current Position",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/position/status": {
+      "get": {
+        "operationId": "MasterController_positionStat",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Position status successfully fetched"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Status of Positions",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/department": {
+      "get": {
+        "operationId": "MasterController_getDepartment",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "List of departments retrieved"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all departments",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "post": {
+        "operationId": "MasterController_createDepartment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Department",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Department created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new department",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "patch": {
+        "operationId": "MasterController_updateDept",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update department",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDeptDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Department updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current department information",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/department/deactivate": {
+      "patch": {
+        "operationId": "MasterController_deactivateDept",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to deactivate department",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeactivateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Department deactivated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "409": {
+            "description": "Conflict - Resource deactivated already"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Deactivate a department",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/department/reactivate": {
+      "patch": {
+        "operationId": "MasterController_reactivateDept",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to activate department",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReactivateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Department activated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "409": {
+            "description": "Conflict - Resource deactivated already"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Activate a department",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/departments": {
+      "get": {
+        "operationId": "MasterController_departmentStat",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Department status fetched succussfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get department status",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/hr": {
+      "get": {
+        "operationId": "HrController_getHRreport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hr"
+        ]
+      }
+    },
+    "/hr/recruitment": {
+      "get": {
+        "operationId": "HrController_getRecruitment",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hr"
+        ]
+      }
+    },
+    "/hr/action_memos": {
+      "get": {
+        "operationId": "HrController_getActionMem",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hr"
+        ]
+      }
+    },
+    "/hr/crew_movements": {
+      "get": {
+        "operationId": "HrController_getCrewMove",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hr"
+        ]
+      }
+    },
+    "/hr/awol_cases": {
+      "get": {
+        "operationId": "HrController_getAwolCase",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hr"
+        ]
+      }
+    },
+    "/hr/employee_relation": {
+      "get": {
+        "operationId": "HrController_getEmpRelCase",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hr"
+        ]
+      }
+    },
+    "/hr/leave_application": {
+      "get": {
+        "operationId": "HrController_getLeaveApp",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hr"
+        ]
+      }
+    },
+    "/user-home": {
+      "get": {
+        "operationId": "HomeController_getUserData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Home"
+        ]
+      }
+    },
+    "/user-profile": {
+      "get": {
+        "operationId": "ProfileController_getUserData",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Profile"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User login successful"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - User not found"
+          }
+        },
+        "summary": "User authorized login",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_passwordResetWithToken",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordWithTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User reset password successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "summary": "User reset password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "UserController_viewUsers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      },
+      "post": {
+        "operationId": "UserController_createUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserWithTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users/new_reset_token": {
+      "post": {
+        "operationId": "UserController_newResetToken",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserEmailResetTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users/token_keys": {
+      "get": {
+        "operationId": "UserController_viewUserKeys",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserWithTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users/deactivate": {
+      "patch": {
+        "operationId": "UserController_deactivateUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeactivateUserAccountDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users/reactivate": {
+      "patch": {
+        "operationId": "UserController_reactivateUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReactivateUserAccountDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users/new_employees": {
+      "get": {
+        "operationId": "UserController_viewNewEmployees",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users/with_roles_permissions": {
+      "get": {
+        "operationId": "UserController_getAllWithRolesPermissions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/administrator/submodule": {
+      "post": {
+        "operationId": "SubModuleController_createSubModule",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubModuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "SubModule"
+        ]
+      }
+    },
+    "/administrator/submodule/permissions": {
+      "post": {
+        "operationId": "SubModuleController_createSubModulePermission",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubModulePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "SubModule"
+        ]
+      }
+    },
+    "/role": {
+      "post": {
+        "operationId": "RoleController_createRole",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Role"
+        ]
+      }
+    },
+    "/role/role_permission": {
+      "post": {
+        "operationId": "RoleController_createRolePermission",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRolePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Role"
+        ]
+      }
+    },
+    "/role/update_role_permission": {
+      "patch": {
+        "operationId": "RoleController_updateRolePermissions",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRolePermissionsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Role"
+        ]
+      }
+    },
+    "/role/unassign_role_permission": {
+      "patch": {
+        "operationId": "RoleController_unassingRolePermission",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnassignRolePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Role"
+        ]
+      }
+    },
+    "/role/{subModuleId}/permissions": {
+      "get": {
+        "operationId": "RoleController_getPermissions",
+        "parameters": [
+          {
+            "name": "subModuleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Role"
+        ]
+      }
+    },
+    "/role/permission_templates": {
+      "post": {
+        "operationId": "RoleController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePermissionTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Role"
+        ]
+      }
+    },
+    "/role/assign_permission_template/roles": {
+      "patch": {
+        "operationId": "RoleController_assignPermissionTemplateByRole",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPermissionToExistingRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Role"
+        ]
+      }
+    },
+    "/role/assign_permission_template/user": {
+      "patch": {
+        "operationId": "RoleController_assignPermissionTemplateByUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPermissionToExistingUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Role"
+        ]
+      }
+    },
+    "/employment_status": {
+      "get": {
+        "operationId": "EmploymentStatusController_getEmpStat",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "EmploymentStatus"
+        ]
+      },
+      "post": {
+        "operationId": "EmploymentStatusController_createEmpStat",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmpStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "EmploymentStatus"
+        ]
+      },
+      "patch": {
+        "operationId": "EmploymentStatusController_async",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmpStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "EmploymentStatus"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "ABAS v3 API",
+    "description": "API documentation for ABAS v3 project",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Endpoint for user authorization."
+    },
+    {
+      "name": "User",
+      "description": "Enpoint for managing users."
+    },
+    {
+      "name": "Hr",
+      "description": "Endpoint for managing employees."
+    },
+    {
+      "name": "Mastertables",
+      "description": "Endpoint for managing positions, departments and etc."
+    },
+    {
+      "name": "Administrator",
+      "description": "Endppoint for managing the system"
+    },
+    {
+      "name": "Module",
+      "description": "Endpoint for core modules"
+    },
+    {
+      "name": "SubModule",
+      "description": "Endpoint for core modules"
+    },
+    {
+      "name": "Role",
+      "description": "Endpoint for core modules"
+    },
+    {
+      "name": "EmploymentStatus",
+      "description": "Endpoint for employement status crud"
+    },
+    {
+      "name": "Employee",
+      "description": "Endpoint for employee crud"
+    },
+    {
+      "name": "Person",
+      "description": "Endpoint for person crud"
+    },
+    {
+      "name": "Home",
+      "description": ""
+    },
+    {
+      "name": "Profile",
+      "description": ""
+    },
+    {
+      "name": "Protected",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "Authorization",
+        "description": "Enter JWT token",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "DeletePersonDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateEmployeeWithDetailsDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreatePositionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Software Engineer",
+            "description": "The name of the position"
+          },
+          "department_id": {
+            "type": "number",
+            "example": 2,
+            "description": "ID of the department this position belongs to"
+          },
+          "status": {
+            "type": "number",
+            "example": "active",
+            "description": "active = 1"
+          }
+        },
+        "required": [
+          "name",
+          "department_id",
+          "status"
+        ]
+      },
+      "UpdatePositionDto": {
+        "type": "object",
+        "properties": {
+          "position_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the position you want to update"
+          },
+          "position_name": {
+            "type": "string",
+            "example": "New Position name",
+            "description": "If you want to update the Position Name"
+          },
+          "department_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the department you want to update"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "Must be lowercase, if you want to update your Position status"
+          }
+        },
+        "required": [
+          "position_id",
+          "position_name",
+          "department_id",
+          "status"
+        ]
+      },
+      "DeactivatePositionDto": {
+        "type": "object",
+        "properties": {
+          "position_id": {
+            "type": "number",
+            "example": 0,
+            "description": "ID of the position you want to deactivate"
+          },
+          "status": {
+            "type": "number",
+            "example": "inactive",
+            "description": "Must be lowercase, if you want to update your Position status"
+          }
+        },
+        "required": [
+          "position_id",
+          "status"
+        ]
+      },
+      "ReactivatePositionDto": {
+        "type": "object",
+        "properties": {
+          "position_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the position you want to activate"
+          },
+          "status": {
+            "type": "number",
+            "example": "active",
+            "description": "Must be lowercase, if you want to update your Position status"
+          }
+        },
+        "required": [
+          "position_id",
+          "status"
+        ]
+      },
+      "CreateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Human Resources",
+            "description": "The name of the department"
+          },
+          "division_id": {
+            "type": "number",
+            "example": 2,
+            "description": "ID of the division where the department belongs to"
+          },
+          "status": {
+            "type": "number",
+            "example": "active",
+            "description": "active = 1"
+          }
+        },
+        "required": [
+          "name",
+          "division_id",
+          "status"
+        ]
+      },
+      "UpdateDeptDto": {
+        "type": "object",
+        "properties": {
+          "department_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the department you want to update"
+          },
+          "department_name": {
+            "type": "string",
+            "example": "New Department name",
+            "description": "If you want to update the Department Name"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "Must be lowercase, if you want to update your Department status"
+          }
+        },
+        "required": [
+          "department_id",
+          "department_name",
+          "status"
+        ]
+      },
+      "DeactivateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "department_id": {
+            "type": "number",
+            "example": 0,
+            "description": "ID of the department you want to deactivate"
+          },
+          "status": {
+            "type": "number",
+            "example": "inactive",
+            "description": "Must be lowercase, if you want to update your Position status"
+          }
+        },
+        "required": [
+          "department_id",
+          "status"
+        ]
+      },
+      "ReactivateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "department_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the department you want to activate"
+          },
+          "status": {
+            "type": "number",
+            "example": "active",
+            "description": "Must be lowercase, if you want to update your Position status"
+          }
+        },
+        "required": [
+          "department_id",
+          "status"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "admin",
+            "description": "User username"
+          },
+          "password": {
+            "type": "string",
+            "example": "1234567890",
+            "description": "User password"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "ResetPasswordWithTokenDto": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "example": "newpassword",
+            "description": "user new password"
+          }
+        },
+        "required": [
+          "newPassword"
+        ]
+      },
+      "CreateUserWithTemplateDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UserEmailResetTokenDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DeactivateUserAccountDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ReactivateUserAccountDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateSubModuleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateSubModulePermissionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateModuleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateRoleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateRolePermissionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateRolePermissionsDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UnassignRolePermissionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreatePermissionTemplateDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AddPermissionToExistingRoleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AddPermissionToExistingUserDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "EmpStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateEmpStatusDto": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

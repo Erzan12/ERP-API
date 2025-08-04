@@ -16,6 +16,8 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+  },
+    //TypeScript will know that request.user exists and conforms to your RequestUser type — no more ts(2339) errors.
+  "include": ["src/**/*", "src/types/express.ts"] 
 }
