@@ -21,77 +21,92 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## THIS IS FOR ABAS V3 - API BACKEND USING NESTJS
+### ABAS V3 Project Set up
+
+Follow the steps below to set up the project:
 
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+## Prep:
 
+1. Clone this repository to your host computer
+2. Make sure that Docker is installed and your host has enough system memory to run and support containers, images and volumes
+
+## Step 1
+
+1. Navigate to the root directory of the clone project repo.
+2. Copy the `.env` template example, open bash terminal, run:
 ```bash
-$ npm install
+$ cp .env.example .env
 ```
-## How to connect pgAdmin to your Postgres container:
-Open your browser and go to http://localhost:8080 or go to your docker and run the container look for pgadmin and click the port number 8080:80
+3. Next, build and start the containers of docker in bash terminal:
+```bash
+$ docker-compose up --build -d
+```
+4. This step builds your NestJs aap's Docker image, pulls necessary images in docker-compose.yml (e.g., postgres,pgadmin). This will also start all the services ( nest.js, postgres, etc) in the background.
 
-Login with:
+> **Note:** `npm install` is already added in docker file so when running `docker-compose up --build -d` it is be included already.
 
-Email: admin@admin.com
+## Step 2: Migrate and Seed the Database
 
-Password: admin
+1. Run Prisma migration (inside the running container or docker terminal): 
+```bash
+$ docker exec -it nestjs-app npx prisma migrate dev --name init-build
+```
+2. Seed the database, run:
+```bash
+$ docker exec -it nestjs-app npx prisma db seed
+```
+3. If ever you want to reset your migration along with the seed file(optional), run: 
+```bash
+$ docker exec -it nestjs-app npx prisma migrate reset
+```
 
-Add a new server with these connection details:
+## Step 3: Accessing the system
+1. First, open bash terminal, run: 
+```bash
+$ docker-compose up
+```
+2. Access Endpoints: 
+- Access Prisma Studio for database GUI
 
-Host name/address: postgres (the service name from Compose) | use postgres as default in docker-compose.yml file
+ - Open [http://localhost:5555](http://localhost:5555) in your browser.
 
-Port: 5432
+> **Note:** make sure prisma client is generated.
 
-Username: postgres
+- Access pgAdmin
 
-Password: postgres
+ - Open [http://localhost:8080](http://localhost:8080) in your browser.
 
-## How to connect Swagger API Documentation: 
-Open your browser and go to http://localhost:3000/api/documentation
+  - Login with:
+   - **Email:** `admin@admin.com`
+   - **Password:** `admin`
 
-## How to initialize first migration: 
-MIGRATION SET UP FOR DOCKERIZED PGADMIN AND POSTGRESQL
+  - Add a new server:
+   - **Host name/address:** `postgres`
+   - **Port:** `5432`
+   - **Username:** `postgres`
+   - **Password:** `postgres`
 
-open docker
+> **Note:** `postgres` is the service name defined in `docker-compose.yml`, not `localhost`. Docker Compose allows internal service resolution by name.
 
-Run Prisma Commands Inside Docker
+- Access Swagger API Docs
 
-docker exec -it nestjs-app npx prisma migrate dev --name init-build
+ - Visit http://localhost:3000/api/documentation
 
-## How to seed your migration:
-open docker
+- Access with Postman API
 
-Run Prisma Commands Inside Docker
-
-docker exec -it nestjs-app npx prisma db seed
-
-## How to reset your migration along with the seed file
-docker exec -it nestjs-app npx prisma migrate reset
-
-## How to set up you .env file with email:
-# Database
-DB_USER=postgres
-DB_PASSWORD=postgres
-DB_NAME=abas_v2
-DB_HOST=postgres
-DB_PORT=5432
-
-# Prisma
-DATABASE_URL=postgresql://postgres:postgres@postgres:5432/abas_v2
-JWT_SECRET=supersecuredevsecret
-
-# User registration email
-SMTP_USER=dummybusiness29@gmail.com
-SMTP_PASS=awfzdjimmzipukeg
+ - Copy this endpoint http://localhost:3000 in postman new request
+ - Navigate through the controller endpoints provided in postman testing workspace
 
 ## Compile and run the project
 
 ```bash
+# Install dependencies (local dev only)
+$ npm install
+
 # development
 $ npm run start
 
@@ -114,6 +129,44 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## Optional commands for docker simulation, at your convenience: 
+
+1. Stop and remove Containers, Networks and Volumes, run:
+```bash
+$ docker-compose down -v
+```
+ - -v ensures named volumes like pgdata, pgadmin_data, and node_modules are also removed. 
+ - This gives you a clean environment, like a new developer's first run.
+
+> **Note:** `postgres` is the service name defined in `docker-compose.yml`, not `localhost`. Docker Compose allows internal service resolution by name.
+2. Rebuild and Start Everything Fresh
+```bash
+$ docker-compose up --build -d
+```
+ - This rebuilds the nestjs-app image using your Dockerfile, pulls fresh images if needed, starts all services in detached mode (-d).
+3. Verify Everything Is Running
+```bash
+$ docker-compose ps
+```
+4. Re-run Prisma Migration and Seeding
+```bash
+$ docker exec -it nestjs-app npx prisma migrate dev --name init-build
+$ docker exec -it nestjs-app npx prisma db seed
+```
+4. Regenerate prisma client
+```bash
+$ npx prisma generate
+```
+
+## Optional: Simulate as a New Dev
+
+1. You could even remove your local .env and recreate it:
+```bash
+$ rm .env
+$ cp .env.example .env
+```
+  - This helps test whether your .env.example file is truly sufficient for onboarding.
 
 ## Deployment
 

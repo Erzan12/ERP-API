@@ -10,7 +10,6 @@ services:
       - "3000:3000"
     volumes:
       - .:/app
-      - node_modules:/app/node_modules
     env_file:
       - .env
     command: npm run start:dev
@@ -28,21 +27,26 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   prisma-studio:
+    image: node:lts
     container_name: prisma-studio
-    build:
-      context: .
+    working_dir: /app
+    volumes:
+      - .:/app
     command: npx prisma studio
     ports:
       - "5555:5555"
     depends_on:
       - postgres
-    volumes:
-      - .:/app
 
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4:7.6      #pin to stable version
     container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
@@ -57,4 +61,3 @@ services:
 volumes:
   pgdata:
   pgadmin_data:
-  node_modules:
