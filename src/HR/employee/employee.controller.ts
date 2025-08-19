@@ -22,10 +22,9 @@ export class EmployeeController {
         module: [MODULE_HR]
   })
   async createEmployee(
-    @Body() createDto: CreateEmployeeWithDetailsDto,
+    @Body() createDto: CreateEmployeeWithDetailsDto, 
     @SessionUser() user: RequestUser,
   ) {
-    const { person, employee } = createDto;
-    return this.employeeService.createEmployee( person, employee,  user);
+    return this.employeeService.createEmployee( createDto, user);
   }
 }

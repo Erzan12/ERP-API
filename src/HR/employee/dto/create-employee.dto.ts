@@ -28,10 +28,10 @@ export class CreateEmployeeDto {
     @IsInt()
     @IsNotEmpty()
     salary: number;
-    
+
     @IsDateString()
-    @Type(() => Date)
-    hire_date: Date;
+    @IsNotEmpty()
+    hire_date: string;
 
     @IsNotEmpty()
     pay_frequency: string;
