@@ -15,20 +15,44 @@ export class UpdatePositionDto {
     @ApiProperty({ example: "New Position name", description: 'If you want to update the Position Name' })
     position_name?: string;
 
-    @IsOptional()
     @IsInt()
-    @ApiProperty({ example: 1, description: 'ID of the department you want to update' })
-    department_id?: number;
+    @ApiProperty({ example: 2, description: 'Sorting number of the position' })
+    sorting?: number;
 
     @IsInt()
-    @IsNotEmpty()
-    @Expose({ name: 'status' }) // maps "status" input field to this property
-    @ApiProperty({ name: 'status', example: 'active or inactive', description: 'Must be lowercase, if you want to update your Position status' })
+    @IsDefined()
+    @Expose({ name: 'department' })
+    @ApiProperty({
+        name: 'department',
+        example: 'human resources = 1, information technology = 2, accounting = 6',
+        description: 'The Department where the position is available'
+    })
+    @Transform(({ value }) => {
+        console.log('Transforming status:', value);
+        if (value === 'human resources') return 1;
+        if (value === 'information technology') return 2;
+        if (value === 'accounting') return 6;
+        throw new BadRequestException(
+            `Invalid status value ${value}. Allowed values are "active" or "inactive"`
+        )
+    })
+    department_id: number;
+
+    @IsInt()
+    @IsDefined()
+    @Expose({ name: 'status' }) // maps " status" input field to this property
+    @ApiProperty({
+        name: 'status',
+        example: 'active or inactive',
+        description: 'active = 1, inactive = 0'
+    })
     @Transform(({ value }) => {
         console.log('Transforming status:', value);
         if (value === 'active') return 1;
-        throw new BadRequestException(`Invalid status value: ${value}. Allowed value is active`);
+        if (value === 'inactive') return 0;
+        throw new BadRequestException(
+            `Invalid status value ${value}. Allowed values are "active" or "inactive"`
+        );
     })
-    @IsDefined()
     stat?: number;
 }

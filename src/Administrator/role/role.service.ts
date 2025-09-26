@@ -177,7 +177,6 @@ export class RoleService {
             }))
         );
 
-
         const uniqueRoleIds = [...new Set(flattenedRolePermissionIds.map(rp => rp.role_id))];
         const uniqueModuleIds = [...new Set(flattenedRolePermissionIds.map(rp => rp.module_id))];
 

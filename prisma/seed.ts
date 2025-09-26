@@ -1,6 +1,6 @@
 //with role and role permission latest seed
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+// import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
 const prisma = new PrismaClient();
@@ -14,7 +14,7 @@ async function main() {
       prisma.company.upsert({
         where: { abbreviation: abbr },
         update: {},
-        create: { name: abbr, abbreviation: abbr, company_code: abbr },
+        create: { name: abbr, abbreviation: abbr },
       }),
     )
   );

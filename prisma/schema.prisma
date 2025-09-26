@@ -150,14 +150,14 @@ model UserRole {
 
 model Company {
   id                      Int                     @id @default(autoincrement())
-  name                    String                  @unique
-  address                 String                  @default("TEMP")
-  abbreviation            String                  @unique @db.VarChar(10)
-  telephone_no            String                  @default("23401802")
-  company_code            String                  @unique @default("TEMP") @db.VarChar(10)
-  tin_no                  String                  @default("4726828000")
-  is_top_20000            Boolean?                @default(true)
-  stat                    Int                     @default(1)
+  name                    String?                 @unique       
+  address                 String?                                 
+  telephone_no            String?  
+  fax_no                  String?                               
+  company_tin             String?                 
+  abbreviation            String                  @unique @db.VarChar(100) 
+  is_top_20000            Int                     @default(0)             
+  stat                    Int?                    @default(1)
   created_at              DateTime                @default(now())
   employee                Employee[]
   permission_templates    PermissionTemplate[]
@@ -166,8 +166,8 @@ model Company {
 
 model Division {
   id               Int          @id @default(autoincrement())
-  name             String       @db.VarChar(255)
-  division_head_id Int
+  name             String?      @db.VarChar(255) 
+  division_head_id Int?                        
   stat             Int          @default(1)
   created_at       DateTime     @default(now())
   employee         Employee[]
@@ -178,7 +178,8 @@ model Department {
   id                             Int                            @id @default(autoincrement())
   name                           String                         @db.VarChar(255)
   division_id                    Int
-  stat                           Int                            @default(1)
+  sorting                        Int? 
+  stat                           Int?                            @default(1)
   department_head_id             Int?
   created_at                     DateTime                       @default(now())
   division                       Division                       @relation(fields: [division_id], references: [id])
@@ -192,8 +193,9 @@ model Department {
 model Position {
   id            Int        @id @default(autoincrement())
   name          String     @db.VarChar(255)
+  sorting       Int? 
   department_id Int
-  stat          Int        @default(1)
+  stat          Int?       @default(1)
   employee      Employee[]
   department    Department @relation(fields: [department_id], references: [id])
 }

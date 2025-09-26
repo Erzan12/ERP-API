@@ -33,6 +33,8 @@ export const SM_ADMIN = {
     MASTER_TABLE : 'Master Tables',
     MASTER_TABLE_POSITION : 'Master Tables - Positions',
     MASTER_TABLE_DEPARTMENT : 'Master Tables - Departments',
+    MASTER_TABLE_DIVISION: 'Master Tables - Divisions',
+    MASTER_TABLE_COMPANY: 'Master Tables - Company',
     USER_ACCOUNT : 'User Accounts',
     USER_TOKEN_KEY : 'User Token Keys',
     SMS_SUBSCRIPTION : 'SMS Subscriptions',

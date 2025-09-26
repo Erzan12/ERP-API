@@ -280,12 +280,12 @@
         ]
       }
     },
-    "/mastertables/position": {
+    "/mastertables/positions": {
       "get": {
         "operationId": "MasterController_getPosition",
         "parameters": [],
         "responses": {
-          "201": {
+          "200": {
             "description": "List of positions retrieve"
           },
           "400": {
@@ -394,105 +394,22 @@
         ]
       }
     },
-    "/mastertables/position/deactivate": {
-      "patch": {
-        "operationId": "MasterController_deactivatePos",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to Deactivate Position",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeactivatePositionDto"
-              }
+    "/mastertables/departments": {
+      "get": {
+        "operationId": "MasterController_departmentStat",
+        "parameters": [
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Position has been deactivated"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "409": {
-            "description": "Conflict - Resource deactivated already"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Deactivate a current position",
-        "tags": [
-          "Mastertables"
-        ]
-      }
-    },
-    "/mastertables/position/reactivate": {
-      "patch": {
-        "operationId": "MasterController_reactivatePos",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to Reactivate Position",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReactivatePositionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Position has been activated"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "409": {
-            "description": "Conflict - Resource deactivated already"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Reactivate a current Position",
-        "tags": [
-          "Mastertables"
-        ]
-      }
-    },
-    "/mastertables/position/status": {
-      "get": {
-        "operationId": "MasterController_positionStat",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": "Position status successfully fetched"
+            "description": "Department status fetched succussfully"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -512,39 +429,7 @@
             "access-token": []
           }
         ],
-        "summary": "Status of Positions",
-        "tags": [
-          "Mastertables"
-        ]
-      }
-    },
-    "/mastertables/department": {
-      "get": {
-        "operationId": "MasterController_getDepartment",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": "List of departments retrieved"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Get all departments",
+        "summary": "Get department status",
         "tags": [
           "Mastertables"
         ]
@@ -632,114 +517,13 @@
         ]
       }
     },
-    "/mastertables/department/deactivate": {
-      "patch": {
-        "operationId": "MasterController_deactivateDept",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to deactivate department",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeactivateDepartmentDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Department deactivated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "409": {
-            "description": "Conflict - Resource deactivated already"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Deactivate a department",
-        "tags": [
-          "Mastertables"
-        ]
-      }
-    },
-    "/mastertables/department/reactivate": {
-      "patch": {
-        "operationId": "MasterController_reactivateDept",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to activate department",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReactivateDepartmentDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Department activated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "409": {
-            "description": "Conflict - Resource deactivated already"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Activate a department",
-        "tags": [
-          "Mastertables"
-        ]
-      }
-    },
-    "/mastertables/departments": {
+    "/mastertables/divisions": {
       "get": {
-        "operationId": "MasterController_departmentStat",
-        "parameters": [
-          {
-            "name": "status",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "operationId": "MasterController_getDivision",
+        "parameters": [],
         "responses": {
-          "201": {
-            "description": "Department status fetched succussfully"
+          "200": {
+            "description": "List of divisions retrieved"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -759,7 +543,203 @@
             "access-token": []
           }
         ],
-        "summary": "Get department status",
+        "summary": "Get all divisions",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "post": {
+        "operationId": "MasterController_createDivision",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Division",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDivisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Division created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new division",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "patch": {
+        "operationId": "MasterController_updateDivision",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update division",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDivisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Division updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current division information",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/companies": {
+      "get": {
+        "operationId": "MasterController_getCompany",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of companies retrieved"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all departments",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "post": {
+        "operationId": "MasterController_createCompany",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create company",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Company created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new company",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "patch": {
+        "operationId": "MasterController_updateCompany",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update company",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Company updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current company information",
         "tags": [
           "Mastertables"
         ]
@@ -1530,20 +1510,26 @@
             "example": "Software Engineer",
             "description": "The name of the position"
           },
-          "department_id": {
+          "sorting": {
             "type": "number",
             "example": 2,
-            "description": "ID of the department this position belongs to"
+            "description": "Sorting number of the position"
+          },
+          "department": {
+            "type": "number",
+            "example": "human resources = 1, information technology = 2, accounting = 6",
+            "description": "The Department where the position is available"
           },
           "status": {
             "type": "number",
-            "example": "active",
-            "description": "active = 1"
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
-          "department_id",
+          "sorting",
+          "department",
           "status"
         ]
       },
@@ -1560,84 +1546,58 @@
             "example": "New Position name",
             "description": "If you want to update the Position Name"
           },
-          "department_id": {
+          "sorting": {
             "type": "number",
-            "example": 1,
-            "description": "ID of the department you want to update"
+            "example": 2,
+            "description": "Sorting number of the position"
+          },
+          "department": {
+            "type": "number",
+            "example": "human resources = 1, information technology = 2, accounting = 6",
+            "description": "The Department where the position is available"
           },
           "status": {
             "type": "number",
             "example": "active or inactive",
-            "description": "Must be lowercase, if you want to update your Position status"
+            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "position_id",
           "position_name",
-          "department_id",
-          "status"
-        ]
-      },
-      "DeactivatePositionDto": {
-        "type": "object",
-        "properties": {
-          "position_id": {
-            "type": "number",
-            "example": 0,
-            "description": "ID of the position you want to deactivate"
-          },
-          "status": {
-            "type": "number",
-            "example": "inactive",
-            "description": "Must be lowercase, if you want to update your Position status"
-          }
-        },
-        "required": [
-          "position_id",
-          "status"
-        ]
-      },
-      "ReactivatePositionDto": {
-        "type": "object",
-        "properties": {
-          "position_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the position you want to activate"
-          },
-          "status": {
-            "type": "number",
-            "example": "active",
-            "description": "Must be lowercase, if you want to update your Position status"
-          }
-        },
-        "required": [
-          "position_id",
+          "sorting",
+          "department",
           "status"
         ]
       },
       "CreateDepartmentDto": {
         "type": "object",
         "properties": {
-          "name": {
+          "department_name": {
             "type": "string",
             "example": "Human Resources",
             "description": "The name of the department"
           },
-          "division_id": {
+          "sorting": {
             "type": "number",
             "example": 2,
-            "description": "ID of the division where the department belongs to"
+            "description": "Sorting number of the department"
+          },
+          "division": {
+            "type": "number",
+            "example": "corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 4",
+            "description": "The Division where the department belongs to"
           },
           "status": {
             "type": "number",
-            "example": "active",
-            "description": "active = 1"
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
-          "name",
-          "division_id",
+          "department_name",
+          "sorting",
+          "division",
           "status"
         ]
       },
@@ -1654,53 +1614,193 @@
             "example": "New Department name",
             "description": "If you want to update the Department Name"
           },
+          "sorting": {
+            "type": "number",
+            "example": 2,
+            "description": "Sorting number of the department"
+          },
+          "division": {
+            "type": "number",
+            "example": "corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 3",
+            "description": "The Division where the department belongs to"
+          },
           "status": {
             "type": "number",
             "example": "active or inactive",
-            "description": "Must be lowercase, if you want to update your Department status"
+            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "department_id",
           "department_name",
+          "sorting",
+          "division",
           "status"
         ]
       },
-      "DeactivateDepartmentDto": {
+      "CreateDivisionDto": {
         "type": "object",
         "properties": {
-          "department_id": {
-            "type": "number",
-            "example": 0,
-            "description": "ID of the department you want to deactivate"
+          "name": {
+            "type": "string",
+            "example": "Cebu Air Inc",
+            "description": "The name of the division"
           },
-          "status": {
+          "division_head_id": {
             "type": "number",
-            "example": "inactive",
-            "description": "Must be lowercase, if you want to update your Position status"
-          }
-        },
-        "required": [
-          "department_id",
-          "status"
-        ]
-      },
-      "ReactivateDepartmentDto": {
-        "type": "object",
-        "properties": {
-          "department_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the department you want to activate"
+            "example": 3,
+            "description": "ID number of the division head it belongs to"
           },
           "status": {
             "type": "number",
             "example": "active",
-            "description": "Must be lowercase, if you want to update your Position status"
+            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
-          "department_id",
+          "name",
+          "division_head_id",
+          "status"
+        ]
+      },
+      "UpdateDivisionDto": {
+        "type": "object",
+        "properties": {
+          "division_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the division you want to update"
+          },
+          "division_name": {
+            "type": "string",
+            "example": "New Division Name",
+            "description": "If you want to update the Division name"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "division_id",
+          "division_name",
+          "status"
+        ]
+      },
+      "CreateCompanyDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Avega Bros. Integrated Shipping Corp",
+            "description": "Name of the company"
+          },
+          "address": {
+            "type": "string",
+            "example": "Cebu City, Cebu",
+            "description": "Address or location of the company"
+          },
+          "telephone_no": {
+            "type": "string",
+            "example": "011-63-45-123-4567",
+            "description": "Telephone No. of the company"
+          },
+          "fax_no": {
+            "type": "string",
+            "example": "011-63-2-1234567",
+            "description": "Fax No. of the company"
+          },
+          "company_tin": {
+            "type": "string",
+            "example": "11-M1115-1234",
+            "description": "Registered Tax Identification No. of the company"
+          },
+          "is_top_20000": {
+            "type": "number",
+            "example": "yes or no",
+            "description": "yes = 1, no = 0"
+          },
+          "abbreviation": {
+            "type": "string",
+            "example": "ABISC",
+            "description": "Short name or abbreviation of the company"
+          },
+          "stat": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "name",
+          "address",
+          "telephone_no",
+          "fax_no",
+          "company_tin",
+          "is_top_20000",
+          "abbreviation",
+          "stat"
+        ]
+      },
+      "UpdateCompanyDto": {
+        "type": "object",
+        "properties": {
+          "company_id": {
+            "type": "number",
+            "example": "1",
+            "description": "ID No. of the company"
+          },
+          "name": {
+            "type": "string",
+            "example": "Avega Bros. Integrated Shipping Corp",
+            "description": "Update current company name"
+          },
+          "address": {
+            "type": "string",
+            "example": "Cebu City, Cebu",
+            "description": "Update current company location"
+          },
+          "telephone_no": {
+            "type": "string",
+            "example": "011-63-45-123-4567",
+            "description": "Update current company telephone no."
+          },
+          "fax_no": {
+            "type": "string",
+            "example": "011-63-2-1234567",
+            "description": "Update current company fax no."
+          },
+          "company_tin": {
+            "type": "string",
+            "example": "11-M1115-1234",
+            "description": "Update current company tin no."
+          },
+          "is_top_20000": {
+            "type": "number",
+            "example": "yes or no",
+            "description": "Update current company is top 20000?"
+          },
+          "abbreviation": {
+            "type": "string",
+            "example": "ABISC",
+            "description": "Update current company abbreviation"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "Update current company status"
+          }
+        },
+        "required": [
+          "company_id",
+          "name",
+          "address",
+          "telephone_no",
+          "fax_no",
+          "company_tin",
+          "is_top_20000",
+          "abbreviation",
           "status"
         ]
       },

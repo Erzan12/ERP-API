@@ -36,11 +36,6 @@ const Conflict: ApiResponseOptions = {
     description: 'Conflict - Resource already exist or duplicate entry',
 };
 
-const DeactivateConflict: ApiResponseOptions = {
-    status: 409,
-    description: 'Conflict - Resource deactivated already',
-};
-
 //custom group decorators
 export function ApiPostResponse(description = 'Resource created successfully') {
     return applyDecorators(
@@ -54,7 +49,7 @@ export function ApiPostResponse(description = 'Resource created successfully') {
 
 export function ApiGetResponse(description = 'Resource(s) fetch successfully') {
     return applyDecorators(
-        ApiResponse({ status: 201, description }),
+        ApiResponse({ status: 200, description }),
         ApiResponse(BadRequest),
         ApiResponse(Unauthorized),
         ApiResponse(Forbidden),
@@ -88,7 +83,6 @@ export function ApiDeactivateResponse(description = 'Resource deactivated succes
         ApiResponse(Unauthorized),
         ApiResponse(Forbidden),
         ApiResponse(NotFound),
-        ApiResponse(DeactivateConflict),
     )
 }
 
@@ -99,7 +93,6 @@ export function ApiActivateResponse(description = 'Resource activated successful
         ApiResponse(Unauthorized),
         ApiResponse(Forbidden),
         ApiResponse(NotFound),
-        ApiResponse(DeactivateConflict),
     )
 }
 

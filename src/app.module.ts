@@ -22,6 +22,7 @@ import { MasterModule } from './Master/master.module';
 import { DepartmentService } from './Master/department/department.service';
 import { CreatePositionDto } from './Master/position/dto/create-position.dto';
 import { CreateDepartmentDto } from './Master/department/dto/create-dept.dto';
+import { CreateDivisionDto } from './Master/division/dto/create-division.dto';
 import { CaslModule } from './Components/casl/casl.module';
 import { CaslAbilityService } from './Components/casl/casl.service';
 import { HrController } from './HR/hr.controller';
@@ -34,6 +35,9 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { AuthController } from './Auth/auth.controller';
 import { UserController } from './User/user.controller';
 import { HomeController, ProfileController } from './Global/global.controller';
+import { DivisionService } from './Master/division/division.service';
+import { CreateCompanyDto } from './Master/company/dto/create-company.dto';
+import { CompanyService } from './Master/company/company.service';
 
 
 @Module({
@@ -72,7 +76,7 @@ import { HomeController, ProfileController } from './Global/global.controller';
     // },
     MailService, 
     PersonService, 
-    EmployeeService, UserService, AdministratorService, PositionService, DepartmentService, CreateDepartmentDto, CreatePositionDto, CaslAbilityService, HrService
+    EmployeeService, UserService, AdministratorService, PositionService, DepartmentService, CaslAbilityService, HrService, DivisionService, CompanyService, CreateDepartmentDto, CreatePositionDto, CreateDivisionDto, CreateCompanyDto
   ],
   controllers: [PersonController, EmployeeController, AdministratorController, MasterController, HrController, ManagerController, HomeController, ProfileController, AuthController, UserController],
 })
