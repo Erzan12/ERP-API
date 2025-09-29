@@ -8,7 +8,6 @@ import { CreateUserWithTemplateDto } from './dto/create-user-with-template.dto';
 import { DeactivateUserAccountDto, ReactivateUserAccountDto } from './dto/user-account-status.dto';
 import { RequestUser } from '../Components/types/request-user.interface';
 import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
-import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class UserService {

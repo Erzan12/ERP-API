@@ -149,6 +149,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
           "Module"
         ]
@@ -396,20 +401,11 @@
     },
     "/mastertables/departments": {
       "get": {
-        "operationId": "MasterController_departmentStat",
-        "parameters": [
-          {
-            "name": "status",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "operationId": "MasterController_getDepartment",
+        "parameters": [],
         "responses": {
           "200": {
-            "description": "Department status fetched succussfully"
+            "description": "List of departments retrieved"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -429,7 +425,7 @@
             "access-token": []
           }
         ],
-        "summary": "Get department status",
+        "summary": "Get all departments",
         "tags": [
           "Mastertables"
         ]
@@ -484,7 +480,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateDeptDto"
+                "$ref": "#/components/schemas/UpdateDepartmentDto"
               }
             }
           }
@@ -1159,6 +1155,131 @@
         ]
       }
     },
+    "/administrator/module/view/{id}": {
+      "get": {
+        "operationId": "ModuleController_getModule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details of the module with submodules"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get module by ID",
+        "tags": [
+          "Module"
+        ]
+      }
+    },
+    "/administrator/modules": {
+      "get": {
+        "operationId": "ModuleController_getModules",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are all the Modules available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get modules",
+        "tags": [
+          "Module"
+        ]
+      }
+    },
+    "/administrator/module/view/edit/{id}": {
+      "patch": {
+        "operationId": "ModuleController_updateModule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update the module info",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateModuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Module updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update current module",
+        "tags": [
+          "Module"
+        ]
+      }
+    },
     "/role": {
       "post": {
         "operationId": "RoleController_createRole",
@@ -1601,7 +1722,7 @@
           "status"
         ]
       },
-      "UpdateDeptDto": {
+      "UpdateDepartmentDto": {
         "type": "object",
         "properties": {
           "department_id": {
@@ -1861,6 +1982,10 @@
         "properties": {}
       },
       "CreateModuleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateModuleDto": {
         "type": "object",
         "properties": {}
       },
