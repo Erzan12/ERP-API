@@ -496,7 +496,7 @@ export class UserService {
             permissions: userRole.user_permissions.map(up => ({
                 action: up.user_role_permission,
                 permissionName: up.role_permission?.permission.name,
-                status: up.role_permission?.status,
+                // status: up.role_permission?.status,
             })),
             })),
         }));

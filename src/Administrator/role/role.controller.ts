@@ -61,19 +61,19 @@ export class RoleController {
     }
 
     //unassign role permission
-    @Patch('unassign_role_permission')
-    @Can({
-        action: ACTION_UPDATE,
-        subject: SM_ADMIN.CORE_MODULE_ROLE,
-        module: [MODULE_ADMIN]
-    })
-    async unassingRolePermission(
-        @Body() unassingRolePermissionDto: UnassignRolePermissionDto,
-        @SessionUser() user: RequestUser,
-    ) {
-        console.log('Current User:', user)
-        return this.roleService.unassignRolePermission(unassingRolePermissionDto, user);
-    }
+    // @Patch('unassign_role_permission')
+    // @Can({
+    //     action: ACTION_UPDATE,
+    //     subject: SM_ADMIN.CORE_MODULE_ROLE,
+    //     module: [MODULE_ADMIN]
+    // })
+    // async unassingRolePermission(
+    //     @Body() unassingRolePermissionDto: UnassignRolePermissionDto,
+    //     @SessionUser() user: RequestUser,
+    // ) {
+    //     console.log('Current User:', user)
+    //     return this.roleService.unassignRolePermission(unassingRolePermissionDto, user);
+    // }
 
     //filter/show active or inactive roles permission for a submodule
     @Get(':subModuleId/permissions')

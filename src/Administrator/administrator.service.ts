@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, UnauthorizedException, Forbidde
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateModuleDto } from './module/dto/create-module.dto';
 import { CreateSubModuleDto } from './sub_module/dto/create-sub-module.dto';
-import { CreateSubModulePermissionDto } from '../Administrator/sub_module/dto/create-sub-module-permission.dto'
+import { AssignSubModulePermissionDto } from './sub_module/dto/assign-sub-module-permission.dto'
 import { CreatePermissionTemplateDto } from './role/dto/create-permission-template.dto';
 import { CreateRoleDto } from './role/dto/create-role.dto';
 import { CreateRolePermissionDto } from './role/dto/create-role-permission.dto';

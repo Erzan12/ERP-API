@@ -58,7 +58,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       permissions: ur.role.role_permissions.map((rp) => ({
           action: rp.action,
           permission: { name: rp.permission.name },
-          status: rp.status,
+          // status: rp.status,
         })),
       })),
     };

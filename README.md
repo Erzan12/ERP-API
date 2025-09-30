@@ -41,13 +41,17 @@ Follow the steps below to set up the project:
 ```bash
 $ cp .env.example .env
 ```
-3. Next, build and start the containers of docker in bash terminal:
+3. Run, npm install to install the required dependencies needed for you local development
+```bash
+$ npm install
+```
+4. Next, build and start the containers of docker in bash terminal:
 ```bash
 $ docker-compose up --build -d
 ```
-4. This step builds your NestJs aap's Docker image, pulls necessary images in docker-compose.yml (e.g., postgres,pgadmin). This will also start all the services ( nest.js, postgres, etc) in the background.
+5. This step builds your NestJs aap's Docker image, pulls necessary images in docker-compose.yml (e.g., postgres,pgadmin). This will also start all the services ( nest.js, postgres, etc) in the background.
 
-> **Note:** `npm install` is already added in docker file so when running `docker-compose up --build -d` it is be included already.
+> **Note:** `npm install` is already added in docker file but you will need to run `npm install` again in terminal for your local development.
 
 ## Step 2: Migrate and Seed the Database
 

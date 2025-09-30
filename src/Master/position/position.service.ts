@@ -11,10 +11,11 @@ export class PositionService {
     async getPositions(user: RequestUser) {
 
         const existingPositions = await this.prisma.position.findMany({
+            where: {stat:1},
             include: {
                 department: true,
-            }
-        })
+            },
+        });
 
         if(existingPositions.length === 0 ) {
             throw new BadRequestException('No available or active position exist!')
@@ -25,8 +26,8 @@ export class PositionService {
             message: 'Here are the list of Positions',
             data: {
                 existingPositions
-            }
-        }
+            },
+        };
     }
 
     async createPosition(createPositionDto: CreatePositionDto, user: RequestUser) {
@@ -132,17 +133,6 @@ export class PositionService {
         }
         }
 
-        const checkStat = await this.prisma.position.findFirst({
-            where: { id: updatePositionDto.position_id },
-            select: {
-                stat: true,
-            },
-        })
-
-        if(checkStat?.stat === 0) {
-            throw new ForbiddenException(`${existingPosition.name} Position status is currently inactive`)
-        }
-
         const updatePositionInfo = await this.prisma.position.update({
             where: { id: updatePositionDto.position_id },
             data: {
@@ -176,7 +166,7 @@ export class PositionService {
             status: 'success',
             message: `${existingPosition.name} Position has been updated Successfully!`,
             updated_by: {
-                id: requestUser,
+                id: requestUser.id,
                 name: userName,
                 position: userPos,
             },

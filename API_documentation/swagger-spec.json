@@ -145,8 +145,20 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Module created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
         "security": [
@@ -154,6 +166,7 @@
             "access-token": []
           }
         ],
+        "summary": "Create a new Module",
         "tags": [
           "Module"
         ]
@@ -1113,6 +1126,7 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Payload for creating submodule",
           "content": {
             "application/json": {
               "schema": {
@@ -1122,10 +1136,103 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Submodulecreated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new submodule",
+        "tags": [
+          "SubModule"
+        ]
+      }
+    },
+    "/administrator/submodules": {
+      "get": {
+        "operationId": "SubModuleController_getSubmodules",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are all the Sub modules available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get modules",
+        "tags": [
+          "SubModule"
+        ]
+      }
+    },
+    "/administrator/submodule/permission": {
+      "post": {
+        "operationId": "SubModuleController_createSubModulePermission",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to assign permissions for submodule",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignSubModulePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permission assigned to a submodule successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Assign a new permission for submodule",
         "tags": [
           "SubModule"
         ]
@@ -1133,25 +1240,128 @@
     },
     "/administrator/submodule/permissions": {
       "post": {
-        "operationId": "SubModuleController_createSubModulePermission",
+        "operationId": "SubModuleController_createPermission",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Payload to create permissions for submodule",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateSubModulePermissionDto"
+                "$ref": "#/components/schemas/AddSubModulePermissionDto"
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Permission created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new permission for submodule",
         "tags": [
           "SubModule"
+        ]
+      }
+    },
+    "/administrator/submodule/permissions/edit/{id}": {
+      "patch": {
+        "operationId": "SubModuleController_updatePermission",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update the current sub module permission",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubModulePermisisonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sub module permission updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current sub module permission",
+        "tags": [
+          "SubModule"
+        ]
+      }
+    },
+    "/administrator/modules": {
+      "get": {
+        "operationId": "ModuleController_getModules",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are all the Modules available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get modules",
+        "tags": [
+          "Module"
         ]
       }
     },
@@ -1191,38 +1401,6 @@
           }
         ],
         "summary": "Get module by ID",
-        "tags": [
-          "Module"
-        ]
-      }
-    },
-    "/administrator/modules": {
-      "get": {
-        "operationId": "ModuleController_getModules",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Here are all the Modules available"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Get modules",
         "tags": [
           "Module"
         ]
@@ -1338,30 +1516,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateRolePermissionsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Role"
-        ]
-      }
-    },
-    "/role/unassign_role_permission": {
-      "patch": {
-        "operationId": "RoleController_unassingRolePermission",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UnassignRolePermissionDto"
               }
             }
           }
@@ -1975,11 +2129,91 @@
       },
       "CreateSubModuleDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Administrator",
+            "description": "The name of the sub module"
+          },
+          "module_id": {
+            "type": "number",
+            "example": 1,
+            "description": "Module ID of the submodule "
+          }
+        },
+        "required": [
+          "name",
+          "module_id"
+        ]
       },
-      "CreateSubModulePermissionDto": {
+      "AssignSubModulePermissionDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "action": {
+            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
+            "description": "Assign permissions to sub module, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sub_module_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the Sub Module"
+          }
+        },
+        "required": [
+          "action",
+          "sub_module_id"
+        ]
+      },
+      "AddSubModulePermissionDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "example": "[\"view\", \"create\", \"update\", \"note\", \"delete\"]",
+            "description": "Create permission for sub module, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "action",
+          "status"
+        ]
+      },
+      "UpdateSubModulePermisisonDto": {
+        "type": "object",
+        "properties": {
+          "sub_module_permission_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the sub module permission you want to update"
+          },
+          "action": {
+            "type": "string",
+            "example": "view, create, update, note, delete",
+            "description": "if you want to update the current actions"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "If you want to update the status of the action "
+          }
+        },
+        "required": [
+          "sub_module_permission_id",
+          "action",
+          "status"
+        ]
       },
       "CreateModuleDto": {
         "type": "object",
@@ -1998,10 +2232,6 @@
         "properties": {}
       },
       "UpdateRolePermissionsDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UnassignRolePermissionDto": {
         "type": "object",
         "properties": {}
       },

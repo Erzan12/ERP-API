@@ -7,7 +7,7 @@ import { SessionUser } from '../../Components/decorators/session-user.decorator'
 import { RequestUser } from '../../Components/types/request-user.interface';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiGetResponse, ApiPatchResponse } from 'src/Components/helpers/swagger-response.helper';
+import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/Components/helpers/swagger-response.helper';
 import { UpdateModuleDto } from './dto/update-module.dto';
 
 @ApiBearerAuth('access-token')
@@ -16,7 +16,23 @@ import { UpdateModuleDto } from './dto/update-module.dto';
 export class ModuleController {
     constructor(private moduleService: ModuleService) {}
 
-    @Post('module')                                                                       
+    @Get('modules')
+    @ApiOperation({ summary: 'Get modules' })
+    @ApiGetResponse('Here are all the Modules available')
+    @Can({
+        action: ACTION_READ,
+        subject: SM_ADMIN.CORE_MODULE_MODULE,
+        module: [MODULE_ADMIN],
+    })
+    async getModules(
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.moduleService.listModule(user);
+    }
+
+    @Post('module')
+    @ApiOperation({ summary: 'Create a new Module' })
+    @ApiPostResponse('Module created successfully')                                                                       
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.CORE_MODULE_MODULE,
@@ -42,20 +58,6 @@ export class ModuleController {
         @Param('id') id: number, // 👈 this gets the `:id` from the URL
     ) {
         return this.moduleService.viewModule(user, id); // 👈 pass the id to your service
-    }
-
-    @Get('modules')
-    @ApiOperation({ summary: 'Get modules' })
-    @ApiGetResponse('Here are all the Modules available')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.CORE_MODULE_MODULE,
-        module: [MODULE_ADMIN],
-    })
-    async getModules(
-        @SessionUser() user: RequestUser,
-    ) {
-        return this.moduleService.listModule(user);
     }
 
     @Patch('module/view/edit/:id')

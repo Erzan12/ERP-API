@@ -14,7 +14,7 @@ import { AdministratorService } from '../Administrator/administrator.service';
 import { CreateModuleDto } from './module/dto/create-module.dto';
 import { RequestUser } from '../Components/types/request-user.interface';
 import { CreateSubModuleDto } from './sub_module/dto/create-sub-module.dto';
-import { CreateSubModulePermissionDto } from '../Administrator/sub_module/dto/create-sub-module-permission.dto';
+import { AssignSubModulePermissionDto } from './sub_module/dto/assign-sub-module-permission.dto';
 import { CreateRoleDto } from './role/dto/create-role.dto';
 import { CreateRolePermissionDto } from './role/dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from '../Administrator/role/dto/update-role-permisisons.dto';

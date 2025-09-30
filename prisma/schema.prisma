@@ -74,29 +74,38 @@ model Role {
   name                String               @unique
   description         String
   created_at          DateTime             @default(now())
+  stat                Int              @default(1)
   role_permissions    RolePermission[]
   users               User[]               @relation("UserToRoles")
   user_roles          UserRole[]
   permission_template PermissionTemplate[] @relation("PermissionTemplateToRole")
 }
 
+model AddedSubModPermission {
+  id           Int      @id @default(autoincrement())
+  action       String
+  created_at   DateTime @default(now())
+  stat         Int      @default(1)
+  sub_module_permission SubModulePermission[]
+}
+
 model SubModulePermission {
-  id               Int              @id @default(autoincrement())
-  action           String
-  sub_module_id    Int
-  created_at       DateTime         @default(now())
-  stat             Int              @default(1)
-  role_permissions RolePermission[]
-  sub_module       SubModule        @relation(fields: [sub_module_id], references: [id])
+  id                          Int              @id @default(autoincrement())
+  action                      String
+  added_sub_mod_permission_id Int?    //TEMPORARY
+  sub_module_id               Int
+  created_at                  DateTime         @default(now())
+  role_permissions            RolePermission[]
+  sub_module                  SubModule        @relation(fields: [sub_module_id], references: [id])
+  added_sub_mod_permission    AddedSubModPermission? @relation(fields: [added_sub_mod_permission_id], references: [id])
 }
 
 model RolePermission {
-  id                       Int     @id @default(autoincrement())
-  role_id                  Int
-  sub_module_id            Int
-  module_id                Int
-  action                   String
-  status                   Boolean @default(true)
+  id                  Int     @id @default(autoincrement())
+  role_id             Int
+  sub_module_id       Int
+  module_id           Int
+  action              String
   sub_module_permission_id Int?
 
   permission_template_links PermissionTemplateRolePermission[]
@@ -204,6 +213,7 @@ model Module {
   id             Int              @id @default(autoincrement())
   name           String
   created_at     DateTime         @default(now())
+  stat             Int              @default(1)
   sub_module     SubModule[]
   users          User[]           @relation("ModuleToUsers") 
   user_role      UserRole[]
@@ -216,6 +226,7 @@ model SubModule {
   name            String
   module_id       Int
   created_at      DateTime              @default(now())
+  stat             Int              @default(1)
   department_id   Int?
   role_permission RolePermission[]
   department      Department?           @relation(fields: [department_id], references: [id])
