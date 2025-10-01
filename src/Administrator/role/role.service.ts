@@ -8,14 +8,14 @@ import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
 import { AddPermissionToExistingRoleDto } from './dto/add-permission-template.dto';
 import { AddPermissionToExistingUserDto } from './dto/add-permission-template.dto';
 import { UnassignRolePermissionDto } from './dto/unassign-role-permission.dto';
-import { SessionUser } from '../../Components/decorators/session-user.decorator';
+import { RequestUser } from 'src/Components/types/request-user.interface';
 
 @Injectable()
 export class RoleService {
     constructor(private prisma:PrismaService) {}
 
-    async createRole(createRoleDto: CreateRoleDto, user) {
-        const { name, description } = createRoleDto;
+    async createRole(createRoleDto: CreateRoleDto, user: RequestUser) {
+        const { name, description, stat } = createRoleDto;
 
         const role = await this.prisma.role.findUnique({
             where: { name: createRoleDto.name }
@@ -48,6 +48,7 @@ export class RoleService {
             data: {
                 name,
                 description,
+                stat
             }
         })
     
@@ -64,30 +65,34 @@ export class RoleService {
         }
     }
 
-    async createRolePermissions(createRolePermissionDto: CreateRolePermissionDto, user) {
+    //Add Get Role -> to query the roles available
+
+    //Add Get submodule permission -> to query the submodule permission table for available submolues with permission
+
+    async createRolePermissions(createRolePermissionDto: CreateRolePermissionDto, user: RequestUser) {
         const { action, sub_module_id, module_id, role_id } = createRolePermissionDto;
 
-        const rolePermissions = await this.prisma.role.findFirst({
+        const existingRole = await this.prisma.role.findFirst({
             where: { id: createRolePermissionDto.role_id },
         })
 
-        if(!rolePermissions) {
+        if(!existingRole) {
             throw new BadRequestException('Role not found or does not exist!')
         }
 
-        const moduleID = await this.prisma.module.findFirst({
+        const existingModule = await this.prisma.module.findFirst({
             where: { id: module_id},
         });
 
-        if(!moduleID) {
+        if(!existingModule) {
             throw new BadRequestException('Module not found or does not exist!')
         }
 
-        const subID = await this.prisma.subModule.findFirst({
+        const existingSubModule = await this.prisma.subModule.findFirst({
             where: { id: sub_module_id}
         })
 
-        if(!subID) {
+        if(!existingSubModule) {
             throw new BadRequestException('Sub Module not found or does not exist!')
         }
 

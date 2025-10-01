@@ -130,7 +130,7 @@ export class PermissionsGuard implements CanActivate {
 
     for (const role of user.roles) {
       for (const perm of role.permissions) {
-        if (!perm.status) continue;
+        // if (!perm.status) continue;
         const pAction = perm.action.toLowerCase();
         const pSubject = perm.permission?.name?.toLowerCase();
         this.logger.debug(`Allowed: ${pAction} on ${pSubject}`);

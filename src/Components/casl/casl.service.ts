@@ -20,7 +20,7 @@ export class CaslAbilityService {
     permissions: {
       action: string;
       permission: { name: string };
-      status: boolean;
+      // status: boolean;
     }[];
   }[]) {
     const { can, build } = new AbilityBuilder(this.Ability);
@@ -33,7 +33,7 @@ export class CaslAbilityService {
       if (!role.permissions) continue;
 
       for (const perm of role.permissions) {
-        if (!perm.status) continue;
+        // if (!perm.status) continue;
 
         const rawAction = perm.action.toLowerCase().trim();
         const subject = perm.permission?.name?.toLowerCase().trim() || '';

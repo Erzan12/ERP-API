@@ -206,9 +206,29 @@ async function main() {
 
   const subModules = await prisma.subModule.findMany();
 
+  // 6.5 Create Permissions for submodules
+  // await prisma.addedSubModPermission.createMany({
+  //   data: [
+  //     { action: 'view', stat: 1 },
+  //     { action: 'create', stat: 1 },
+  //     { action: 'read', stat: 1 },
+  //     { action: 'update', stat: 1 },
+  //     { action: 'delete', stat: 1 },
+  //   ],
+  //   skipDuplicates: true, // Optional: avoids re-inserting existing actions
+  // });
+
+  // 6.5 Create Permissions for submodules
+  const defaultActions = ['view', 'create', 'read', 'update', 'delete'];
+
+  await prisma.addedSubModPermission.createMany({
+    data: defaultActions.map(action => ({ action, stat: 1 })),
+    skipDuplicates: true,
+  });
+
   // 7. Create Permissions
   const permissions = [
-    { action: 'read', sub_module_id: 1 },
+    { action: 'read', sub_module_id: 1, added_sub_mod_permission_id: 1 },
     { action: 'update', sub_module_id: 1 },
     { action: 'create', sub_module_id: 1 },
     { action: 'read', sub_module_id: 2 },
@@ -259,13 +279,36 @@ async function main() {
     { action: 'delete', sub_module_id: 13 },
   ];
 
-  const permissionRecords = await Promise.all(
-    permissions.map((perm) =>
-      prisma.subModulePermission.create({
-        data: perm,
-      })
+  // const permissionRecords = await Promise.all(
+  //   permissions.map((perm) =>
+  //     prisma.subModulePermission.create({
+  //       data: perm,
+  //     })
       
-    )
+  //   )
+  // );
+  const addedPermissions = await prisma.addedSubModPermission.findMany();
+  const actionMap = new Map<string, number>();
+
+  addedPermissions.forEach((perm) => {
+    actionMap.set(perm.action, perm.id);
+  });
+
+  const permissionRecords = await Promise.all(
+    permissions.map((perm) => {
+      const addedPermId = actionMap.get(perm.action);
+
+      if (!addedPermId) {
+        throw new Error(`Unknown action: ${perm.action}`);
+      }
+
+      return prisma.subModulePermission.create({
+        data: {
+          ...perm,
+          added_sub_mod_permission_id: addedPermId,
+        },
+      });
+    })
   );
 
   // 8. Create Roles

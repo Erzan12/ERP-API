@@ -198,6 +198,46 @@
         "tags": [
           "Administrator"
         ]
+      },
+      "post": {
+        "operationId": "RoleController_createRole",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create new role",
+        "tags": [
+          "Role"
+        ]
       }
     },
     "/administrator/maintenance_schedule": {
@@ -1458,31 +1498,7 @@
         ]
       }
     },
-    "/role": {
-      "post": {
-        "operationId": "RoleController_createRole",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRoleDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Role"
-        ]
-      }
-    },
-    "/role/role_permission": {
+    "/administrator/role_permission": {
       "post": {
         "operationId": "RoleController_createRolePermission",
         "parameters": [],
@@ -1497,16 +1513,32 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Permissions added to role"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Adding permission to role",
         "tags": [
           "Role"
         ]
-      }
-    },
-    "/role/update_role_permission": {
+      },
       "patch": {
         "operationId": "RoleController_updateRolePermissions",
         "parameters": [],
@@ -1522,15 +1554,33 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Permissions updated to role"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Updating current permission to role",
         "tags": [
           "Role"
         ]
       }
     },
-    "/role/{subModuleId}/permissions": {
+    "/administrator/{subModuleId}/permissions": {
       "get": {
         "operationId": "RoleController_getPermissions",
         "parameters": [
@@ -1556,12 +1606,17 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
           "Role"
         ]
       }
     },
-    "/role/permission_templates": {
+    "/administrator/permission_templates": {
       "post": {
         "operationId": "RoleController_create",
         "parameters": [],
@@ -1580,12 +1635,17 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
           "Role"
         ]
       }
     },
-    "/role/assign_permission_template/roles": {
+    "/administrator/assign_permission_template/roles": {
       "patch": {
         "operationId": "RoleController_assignPermissionTemplateByRole",
         "parameters": [],
@@ -1604,12 +1664,17 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
           "Role"
         ]
       }
     },
-    "/role/assign_permission_template/user": {
+    "/administrator/assign_permission_template/user": {
       "patch": {
         "operationId": "RoleController_assignPermissionTemplateByUser",
         "parameters": [],
@@ -1628,6 +1693,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
           "Role"
         ]
@@ -2225,7 +2295,27 @@
       },
       "CreateRoleDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "IT Staff",
+            "description": "Name of the role"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the role"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "status"
+        ]
       },
       "CreateRolePermissionDto": {
         "type": "object",

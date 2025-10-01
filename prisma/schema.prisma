@@ -21,16 +21,16 @@ model Person {
   suffix                    String?
   date_of_birth             DateTime
   gender                    String?
-  email                     String?        
+  email                     String?
   contact_no                String?        @default("9632306492")
   civil_status              String         @default("single")
-  home_address              String?        
-  city_provice              String?        
-  nationality               String?        
-  country                   String?        
+  home_address              String?
+  city_provice              String?
+  nationality               String?
+  country                   String?
   zip_code                  String?
-  emergency_contact_person  String?       
-  emergency_contact_number  String?           
+  emergency_contact_person  String?
+  emergency_contact_number  String?
   created_at                DateTime       @default(now())
   anonymization_preferences Json?
   other_person_data         Json?
@@ -65,8 +65,8 @@ model User {
   user_token           UserToken[]
 
   user_permission UserPermission[]
-  roles          Role[]                @relation("UserToRoles")
-  modules        Module[]              @relation("ModuleToUsers")
+  roles           Role[]           @relation("UserToRoles")
+  modules         Module[]         @relation("ModuleToUsers")
 }
 
 model Role {
@@ -74,7 +74,7 @@ model Role {
   name                String               @unique
   description         String
   created_at          DateTime             @default(now())
-  stat                Int              @default(1)
+  stat                Int                  @default(1)
   role_permissions    RolePermission[]
   users               User[]               @relation("UserToRoles")
   user_roles          UserRole[]
@@ -82,73 +82,68 @@ model Role {
 }
 
 model AddedSubModPermission {
-  id           Int      @id @default(autoincrement())
-  action       String
-  created_at   DateTime @default(now())
-  stat         Int      @default(1)
+  id                    Int                   @id @default(autoincrement())
+  action                String
+  created_at            DateTime              @default(now())
+  stat                  Int                   @default(1)
   sub_module_permission SubModulePermission[]
 }
 
 model SubModulePermission {
-  id                          Int              @id @default(autoincrement())
+  id                          Int                    @id @default(autoincrement())
   action                      String
-  added_sub_mod_permission_id Int?    //TEMPORARY
+  added_sub_mod_permission_id Int
   sub_module_id               Int
-  created_at                  DateTime         @default(now())
+  created_at                  DateTime               @default(now())
   role_permissions            RolePermission[]
-  sub_module                  SubModule        @relation(fields: [sub_module_id], references: [id])
+  sub_module                  SubModule              @relation(fields: [sub_module_id], references: [id])
   added_sub_mod_permission    AddedSubModPermission? @relation(fields: [added_sub_mod_permission_id], references: [id])
 }
 
 model RolePermission {
-  id                  Int     @id @default(autoincrement())
-  role_id             Int
-  sub_module_id       Int
-  module_id           Int
-  action              String
+  id                       Int     @id @default(autoincrement())
+  role_id                  Int
+  role_name                String?
+  action                   String
   sub_module_permission_id Int?
+  sub_module_id            Int
+  module_id                Int?
 
   permission_template_links PermissionTemplateRolePermission[]
+  user_permission           UserPermission[]
+  user_role                 UserRole[]
 
-  role                  Role                 @relation(fields: [role_id], references: [id])
-  permission            SubModule            @relation(fields: [sub_module_id], references: [id])
-  module                Module               @relation(fields: [module_id], references: [id]) // <--- Add this line!
-  sub_module_permission SubModulePermission? @relation(fields: [sub_module_permission_id], references: [id])
-  user_permission       UserPermission[]
+  role                   Role                 @relation(fields: [role_id], references: [id])
+  sub_module_permission  SubModulePermission?  @relation(fields: [sub_module_permission_id], references: [id])
+  module                 Module?              @relation(fields: [module_id], references: [id])
+  sub_module             SubModule            @relation(fields: [sub_module_id], references: [id])
 
-  @@unique([role_id, sub_module_id, module_id, action], map: "role_sub_module_module_action_unique")
+  @@unique([role_id, sub_module_permission_id, action], map: "unique_role_permission")
 }
 
 model UserPermission {
-  id                   Int                     @id @default(autoincrement())
-  user_role_permission String                  @default("tempo")
+  id                   Int             @id @default(autoincrement())
+  user_role_permission String
   user_id              Int
   user_role_id         Int
   role_permission_id   Int?
-  role_permission      RolePermission?         @relation(fields: [role_permission_id], references: [id])
-  user                 User                    @relation(fields: [user_id], references: [id])
-  user_role            UserRole                @relation(fields: [user_role_id], references: [id])
-  companies            UserPermissionCompany[]
-}
-
-model UserPermissionCompany {
-  user_permission_id Int
-  company_id         Int
-  company            Company        @relation(fields: [company_id], references: [id])
-  user_permission    UserPermission @relation(fields: [user_permission_id], references: [id])
-
-  @@id([user_permission_id, company_id])
+  role_permission      RolePermission? @relation(fields: [role_permission_id], references: [id])
+  user                 User            @relation(fields: [user_id], references: [id])
+  user_role            UserRole        @relation(fields: [user_role_id], references: [id])
 }
 
 model UserRole {
-  id            Int      @id @default(autoincrement())
-  user_id       Int
-  role_id       Int
-  module_id     Int      @default(1)
-  created_at    DateTime @default(now())
-  department_id Int      @default(1)
+  id                 Int      @id @default(autoincrement())
+  user_id            Int
+  role_permission_id Int?
+  role_id            Int
+  role_name          String?
+  module_id          Int      @default(1)
+  created_at         DateTime @default(now())
+  department_id      Int?      @default(1)
 
   user_permissions UserPermission[]
+  role_permission  RolePermission?  @relation(fields: [role_permission_id], references: [id])
   department       Department?      @relation(fields: [department_id], references: [id])
   module           Module           @relation(fields: [module_id], references: [id])
   role             Role             @relation(fields: [role_id], references: [id])
@@ -158,25 +153,24 @@ model UserRole {
 }
 
 model Company {
-  id                      Int                     @id @default(autoincrement())
-  name                    String?                 @unique       
-  address                 String?                                 
-  telephone_no            String?  
-  fax_no                  String?                               
-  company_tin             String?                 
-  abbreviation            String                  @unique @db.VarChar(100) 
-  is_top_20000            Int                     @default(0)             
-  stat                    Int?                    @default(1)
-  created_at              DateTime                @default(now())
-  employee                Employee[]
-  permission_templates    PermissionTemplate[]
-  user_permission_company UserPermissionCompany[]
+  id                   Int                  @id @default(autoincrement())
+  name                 String?              @unique
+  address              String?
+  telephone_no         String?
+  fax_no               String?
+  company_tin          String?
+  abbreviation         String               @unique @db.VarChar(100)
+  is_top_20000         Int                  @default(0)
+  stat                 Int?                 @default(1)
+  created_at           DateTime             @default(now())
+  employee             Employee[]
+  permission_templates PermissionTemplate[]
 }
 
 model Division {
   id               Int          @id @default(autoincrement())
-  name             String?      @db.VarChar(255) 
-  division_head_id Int?                        
+  name             String?      @db.VarChar(255)
+  division_head_id Int?
   stat             Int          @default(1)
   created_at       DateTime     @default(now())
   employee         Employee[]
@@ -187,8 +181,8 @@ model Department {
   id                             Int                            @id @default(autoincrement())
   name                           String                         @db.VarChar(255)
   division_id                    Int
-  sorting                        Int? 
-  stat                           Int?                            @default(1)
+  sorting                        Int?
+  stat                           Int?                           @default(1)
   department_head_id             Int?
   created_at                     DateTime                       @default(now())
   division                       Division                       @relation(fields: [division_id], references: [id])
@@ -202,7 +196,7 @@ model Department {
 model Position {
   id            Int        @id @default(autoincrement())
   name          String     @db.VarChar(255)
-  sorting       Int? 
+  sorting       Int?
   department_id Int
   stat          Int?       @default(1)
   employee      Employee[]
@@ -210,14 +204,14 @@ model Position {
 }
 
 model Module {
-  id             Int              @id @default(autoincrement())
-  name           String
-  created_at     DateTime         @default(now())
-  stat             Int              @default(1)
-  sub_module     SubModule[]
-  users          User[]           @relation("ModuleToUsers") 
-  user_role      UserRole[]
-  role_permission RolePermission[]
+  id                   Int                  @id @default(autoincrement())
+  name                 String
+  created_at           DateTime             @default(now())
+  stat                 Int                  @default(1)
+  sub_module           SubModule[]
+  users                User[]               @relation("ModuleToUsers")
+  user_role            UserRole[]
+  role_permission      RolePermission[]
   permission_templates PermissionTemplate[] @relation("ModuleToPermissionTemplates")
 }
 
@@ -226,7 +220,7 @@ model SubModule {
   name            String
   module_id       Int
   created_at      DateTime              @default(now())
-  stat             Int              @default(1)
+  stat            Int                   @default(1)
   department_id   Int?
   role_permission RolePermission[]
   department      Department?           @relation(fields: [department_id], references: [id])
@@ -264,9 +258,9 @@ model PermissionTemplate {
   role_permissions PermissionTemplateRolePermission[]
   role             Role[]                             @relation("PermissionTemplateToRole")
   user             User[]                             @relation("UserToPermissionTemplates")
-  
-  module_id        Int                                @default(1) 
-  module           Module[]                           @relation("ModuleToPermissionTemplates")
+
+  module_id Int      @default(1)
+  module    Module[] @relation("ModuleToPermissionTemplates")
 }
 
 model PermissionTemplateDepartment {

@@ -32,7 +32,8 @@ export class SubModuleService {
             },
         };
     }
-
+    
+    //can be upgraded to when creating a submodule it can also set available permissions; right now it can just create submodules cant set permissions
     async createSubModule(createSubModuleDto: CreateSubModuleDto, user: RequestUser) {
 
         const findModule = await this.prisma.module.findUnique({

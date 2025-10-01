@@ -12,14 +12,21 @@ import { ACTION_CREATE, MODULE_ADMIN, ACTION_UPDATE } from '../../Components/dec
 import { SM_ADMIN } from '../../Components/constants/core-constants';
 import { UnassignRolePermissionDto } from './dto/unassign-role-permission.dto';
 import { PrismaService } from 'prisma/prisma.service';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/Components/helpers/swagger-response.helper';
 
-@Controller('role')
+@ApiBearerAuth('access-token')
+@ApiTags('Role')
+@Controller('administrator')
 export class RoleController {
-
     constructor(private roleService: RoleService, private prisma: PrismaService) {}
 
+    //get all available roles
+
     //create role
-    @Post()                                                                          
+    @Post('role')
+    @ApiOperation({ summary: 'Create new role'})   
+    @ApiPostResponse('Role created successfully')                                                                       
     @Can({
         action: ACTION_CREATE,  // the action of the subtion will be match with the current user role permission
         subject: SM_ADMIN.CORE_MODULE_ROLE, // SUBMODULE of Module Admin
@@ -32,8 +39,10 @@ export class RoleController {
         return this.roleService.createRole(createRoleDto, user)
     }
 
-    //add role permisison
-    @Post('role_permission')                                                            
+    //add role permisison -> combining created role with submodule embedded permissions -> and this role permission can be assigned to a user
+    @Post('role_permission')
+    @ApiOperation({ summary: 'Adding permission to role'})
+    @ApiPostResponse('Permissions added to role')                                                            
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.CORE_MODULE_ROLE,
@@ -47,7 +56,9 @@ export class RoleController {
     }
 
     //update role permission
-    @Patch('update_role_permission')
+    @Patch('role_permission')
+    @ApiOperation({ summary: 'Updating current permission to role'})
+    @ApiPatchResponse('Permissions updated to role') 
     @Can({
         action: ACTION_UPDATE,
         subject: SM_ADMIN.CORE_MODULE_ROLE,
