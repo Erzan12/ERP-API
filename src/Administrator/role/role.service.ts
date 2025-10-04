@@ -148,95 +148,95 @@ export class RoleService {
         }
     }
 
-    async createPermissionTemplate(createPermissionTemplateDto: CreatePermissionTemplateDto, user) {
-        console.log('DTO Received:', createPermissionTemplateDto);
+    // async createPermissionTemplate(createPermissionTemplateDto: CreatePermissionTemplateDto, user) {
+    //     console.log('DTO Received:', createPermissionTemplateDto);
 
-        const requestUser = await this.prisma.user.findUnique({
-            where: { id: user.id },
-            include:{
-                employee: {
-                    include: {
-                        person: true,
-                        position: true,
-                    }
-                }
-            }
-        })
+    //     const requestUser = await this.prisma.user.findUnique({
+    //         where: { id: user.id },
+    //         include:{
+    //             employee: {
+    //                 include: {
+    //                     person: true,
+    //                     position: true,
+    //                 }
+    //             }
+    //         }
+    //     })
 
-        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-            throw new BadRequestException(`User does not exist.`);
-        }
+    //     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+    //         throw new BadRequestException(`User does not exist.`);
+    //     }
 
-        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const userPos = requestUser.employee.position.name;
+    //     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    //     const userPos = requestUser.employee.position.name;
 
-        const { name, department_ids, company_id, rolePermissionIds } = createPermissionTemplateDto;
+    //     const { name, department_ids, company_id, rolePermissionIds } = createPermissionTemplateDto;
 
-        // Flatten the actions so each action is its own object
-        const flattenedRolePermissionIds = rolePermissionIds.flatMap(({ role_id, sub_module_id, module_id, action }) =>
-            action.map((act) => ({
-                role_id,
-                sub_module_id,
-                module_id,
-                action: act,
-            }))
-        );
+    //     // Flatten the actions so each action is its own object
+    //     const flattenedRolePermissionIds = rolePermissionIds.flatMap(({ role_id, sub_module_id, module_id, action }) =>
+    //         action.map((act) => ({
+    //             role_id,
+    //             sub_module_id,
+    //             module_id,
+    //             action: act,
+    //         }))
+    //     );
 
-        const uniqueRoleIds = [...new Set(flattenedRolePermissionIds.map(rp => rp.role_id))];
-        const uniqueModuleIds = [...new Set(flattenedRolePermissionIds.map(rp => rp.module_id))];
+    //     const uniqueRoleIds = [...new Set(flattenedRolePermissionIds.map(rp => rp.role_id))];
+    //     const uniqueModuleIds = [...new Set(flattenedRolePermissionIds.map(rp => rp.module_id))];
 
-        const createPermTemplate = await this.prisma.permissionTemplate.create({
-            data: {
-                name,
-                    company: {
-                    connect: { id: company_id },
-                },
-                departments: {
-                    create: department_ids.map(department_id => ({
-                    department: { connect: { id: department_id } },
-                })),
-                },
-                role: {
-                    connect: uniqueRoleIds.map(id => ({ id })),
-                },
-                module: {
-                    connect: uniqueModuleIds.map(id => ({ id })),
-                },
-                role_permissions: {
-                create: flattenedRolePermissionIds.map(({ role_id, sub_module_id, module_id, action }) => ({
-                    role_permission: {
-                    connect: {
-                        role_id_sub_module_id_module_id_action: {
-                        role_id,
-                        sub_module_id,
-                        module_id,
-                        action,
-                        }
-                    }
-                    }
-                })),
-                },
-            },
-            include: {
-                company: true,
-                role_permissions: true,
-                role: true,
-                module: true,
-            },
-        });
+    //     const createPermTemplate = await this.prisma.permissionTemplate.create({
+    //         data: {
+    //             name,
+    //                 company: {
+    //                 connect: { id: company_id },
+    //             },
+    //             departments: {
+    //                 create: department_ids.map(department_id => ({
+    //                 department: { connect: { id: department_id } },
+    //             })),
+    //             },
+    //             role: {
+    //                 connect: uniqueRoleIds.map(id => ({ id })),
+    //             },
+    //             module: {
+    //                 connect: uniqueModuleIds.map(id => ({ id })),
+    //             },
+    //             role_permissions: {
+    //             create: flattenedRolePermissionIds.map(({ role_id, sub_module_id, module_id, action }) => ({
+    //                 role_permission: {
+    //                 connect: {
+    //                     role_id_sub_module_id_module_id_action: {
+    //                     role_id,
+    //                     sub_module_id,
+    //                     module_id,
+    //                     action,
+    //                     }
+    //                 }
+    //                 }
+    //             })),
+    //             },
+    //         },
+    //         include: {
+    //             company: true,
+    //             role_permissions: true,
+    //             role: true,
+    //             module: true,
+    //         },
+    //     });
 
-        return {
-            status: 'success',
-            message: `New Permission Template has been added to the system!`,
-            created_by: {
-                    id: requestUser.id,
-                    name: userName,
-                    position: userPos,
-                },
-            permission_template_id: createPermTemplate.id,
-            permission_template_name: createPermTemplate.name
-        }
-    }
+    //     return {
+    //         status: 'success',
+    //         message: `New Permission Template has been added to the system!`,
+    //         created_by: {
+    //                 id: requestUser.id,
+    //                 name: userName,
+    //                 position: userPos,
+    //             },
+    //         permission_template_id: createPermTemplate.id,
+    //         permission_template_name: createPermTemplate.name
+    //     }
+    // }
 
     async updateRolePermissions(updateRolePermissionsDto: UpdateRolePermissionsDto, user) {
         const { role_id, action_updates = [] } = updateRolePermissionsDto;

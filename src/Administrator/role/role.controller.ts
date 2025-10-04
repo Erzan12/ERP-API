@@ -102,18 +102,18 @@ export class RoleController {
         });
     }
 
-    @Post('permission_templates')
-    @Can({
-        action: ACTION_CREATE,
-        subject: SM_ADMIN.CORE_MODULE_ROLE,
-        module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
-    })
-    async create(
-        @Body() dto: CreatePermissionTemplateDto,
-        @SessionUser() user: RequestUser,
-    ) {
-        return this.roleService.createPermissionTemplate(dto,user);
-    }
+    // @Post('permission_templates')
+    // @Can({
+    //     action: ACTION_CREATE,
+    //     subject: SM_ADMIN.CORE_MODULE_ROLE,
+    //     module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
+    // })
+    // async create(
+    //     @Body() dto: CreatePermissionTemplateDto,
+    //     @SessionUser() user: RequestUser,
+    // ) {
+    //     return this.roleService.createPermissionTemplate(dto,user);
+    // }
 
     @Patch('assign_permission_template/roles')
     @Can({

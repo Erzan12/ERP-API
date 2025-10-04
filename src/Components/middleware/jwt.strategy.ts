@@ -19,24 +19,44 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     console.log('Correct payload:', payload);         // Should now show { sub: 3, ... }
     console.log('payload.sub:', payload.sub);         // Should now show 3
 
+    // const user = await this.prisma.user.findUnique({
+    //   where: { id: payload.sub },
+    //   include: {
+    //     user_roles: {
+    //       include: {
+    //       //   role: {
+    //           // include: {
+    //             role_permission: {
+    //               include: {
+    //                 // permission: true,
+    //                 sub_module_permission: true
+    //               },
+    //             },
+    //         //   },
+    //         // },
+    //         module: true,
+    //       },
+    //     },
+    //     // module: true,
+    //   },
+    // });
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
       include: {
         user_roles: {
           include: {
-            role: {
+            role_permission: {
               include: {
-                role_permissions: {
+                sub_module_permission: {
                   include: {
-                    permission: true,
-                  }
-                }
+                    added_sub_mod_permission: true,
+                  },
+                },
               },
             },
             module: true,
           },
         },
-        // module: true,
       },
     });
 
@@ -48,14 +68,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       id: user.id,
       email: user.email,
       roles: user.user_roles.map((ur) => ({
-        id: ur.role_id,
-        name: ur.role.name,
+        //replaced with direct role permission
+        // id: ur.role_id,
+        // name: ur.role.name,
+        //role permission is combined role and the permission for that role with submodule
+        id: ur.role_permission_id,
+        name: ur.role_permission.role_name,
         //handle multi module per user
         module: {
           id: ur.module.id,
           name: ur.module.name,
         },
-      permissions: ur.role.role_permissions.map((rp) => ({
+      permission: ur.role_permission.map((rp) => ({
           action: rp.action,
           permission: { name: rp.permission.name },
           // status: rp.status,
