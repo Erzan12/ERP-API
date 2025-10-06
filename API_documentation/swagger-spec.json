@@ -1146,20 +1146,6 @@
         ]
       }
     },
-    "/users/with_roles_permissions": {
-      "get": {
-        "operationId": "UserController_getAllWithRolesPermissions",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "User"
-        ]
-      }
-    },
     "/administrator/submodule": {
       "post": {
         "operationId": "SubModuleController_createSubModule",
@@ -1498,6 +1484,38 @@
         ]
       }
     },
+    "/administrator/roles": {
+      "get": {
+        "operationId": "RoleController_getAllRole",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of Roles"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all Roles",
+        "tags": [
+          "Role"
+        ]
+      }
+    },
     "/administrator/role_permission": {
       "post": {
         "operationId": "RoleController_createRolePermission",
@@ -1580,7 +1598,7 @@
         ]
       }
     },
-    "/administrator/{subModuleId}/permissions": {
+    "/administrator/{subModulePermissionId}/permissions": {
       "get": {
         "operationId": "RoleController_getPermissions",
         "parameters": [
@@ -1616,35 +1634,6 @@
         ]
       }
     },
-    "/administrator/permission_templates": {
-      "post": {
-        "operationId": "RoleController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePermissionTemplateDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "tags": [
-          "Role"
-        ]
-      }
-    },
     "/administrator/assign_permission_template/roles": {
       "patch": {
         "operationId": "RoleController_assignPermissionTemplateByRole",
@@ -1655,35 +1644,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AddPermissionToExistingRoleDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "tags": [
-          "Role"
-        ]
-      }
-    },
-    "/administrator/assign_permission_template/user": {
-      "patch": {
-        "operationId": "RoleController_assignPermissionTemplateByUser",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddPermissionToExistingUserDto"
               }
             }
           }
@@ -2202,7 +2162,7 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "Administrator",
+            "example": "User Account",
             "description": "The name of the sub module"
           },
           "module_id": {
@@ -2303,6 +2263,7 @@
           },
           "description": {
             "type": "string",
+            "example": "Office staff for IT department",
             "description": "Description of the role"
           },
           "status": {
@@ -2319,21 +2280,37 @@
       },
       "CreateRolePermissionDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "action": {
+            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
+            "description": "Assign permissions to role, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sub_module_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the Sub Module"
+          },
+          "role_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the Role"
+          }
+        },
+        "required": [
+          "action",
+          "sub_module_id",
+          "role_id"
+        ]
       },
       "UpdateRolePermissionsDto": {
         "type": "object",
         "properties": {}
       },
-      "CreatePermissionTemplateDto": {
-        "type": "object",
-        "properties": {}
-      },
       "AddPermissionToExistingRoleDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "AddPermissionToExistingUserDto": {
         "type": "object",
         "properties": {}
       },

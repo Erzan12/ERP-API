@@ -19,7 +19,7 @@ export class EmployeeController {
   @Can({
         action: ACTION_CREATE,
         subject: SM_HR.EMPLOYEE_MASTERLIST,
-        module: [MODULE_HR]
+        // module: [MODULE_HR]
   })
   async createEmployee(
     @Body() createDto: CreateEmployeeWithDetailsDto, 

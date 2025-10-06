@@ -314,16 +314,15 @@ async function main() {
   // 8. Create Roles
   const roleNames = [
     'Administrator',
-    'Supervison',
-    'Accounting',
-    'Operations',
-    'Payroll',
-    'Inventory',
-    'Purchasing',
-    'Finance',
-    'Asset Management',
-    'Compliance',
-    'Information Technology',
+    'Supervisor',
+    'Guest',
+    'Staff',
+    'Executive',
+    'HR Clerk',
+    'HR Staff',
+    'Network Manager',
+    'Jr. Systems Developer',
+    'Sr. Systems Developer',
     'Eportal User',
     'Manager'
   ];

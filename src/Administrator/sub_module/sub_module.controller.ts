@@ -25,7 +25,7 @@ export class SubModuleController {
     @Can({
         action: ACTION_CREATE,  // the action of the subtion will be match with the current user role permission
         subject: SM_ADMIN.CORE_MODULE_SUB_MODULE, // SUBMODULE of Module Admin
-        module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
+        // module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
     })
     async createSubModule( 
         @Body() createSubModuleDto: CreateSubModuleDto,
@@ -41,7 +41,7 @@ export class SubModuleController {
     @Can({
         action: ACTION_READ,
         subject: SM_ADMIN.CORE_MODULE_SUB_MODULE,
-        module: [MODULE_ADMIN],
+        // module: [MODULE_ADMIN],
     }) 
     async getSubmodules(
         @SessionUser() user: RequestUser,
@@ -57,7 +57,7 @@ export class SubModuleController {
     @Can({
         action: ACTION_CREATE,  // the action of the subtion will be match with the current user role permission
         subject: SM_ADMIN.CORE_MODULE_SUB_MODULE, // SUBMODULE of Module Admin
-        module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
+        // module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
     })
     async createSubModulePermission( 
         @Body() assignSubModulePermissionDto: AssignSubModulePermissionDto,
@@ -77,7 +77,7 @@ export class SubModuleController {
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.CORE_MODULE_SUB_MODULE,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async createPermission(
         @Body() addSubModuleDto: AddSubModulePermissionDto,
@@ -95,7 +95,7 @@ export class SubModuleController {
     @Can({
         action: ACTION_UPDATE,
         subject: SM_ADMIN.CORE_MODULE_SUB_MODULE,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async updatePermission(
         @Body() updateSubModulePermisisonDto: UpdateSubModulePermisisonDto,

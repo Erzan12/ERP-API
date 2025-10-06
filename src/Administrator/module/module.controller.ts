@@ -22,7 +22,7 @@ export class ModuleController {
     @Can({
         action: ACTION_READ,
         subject: SM_ADMIN.CORE_MODULE_MODULE,
-        module: [MODULE_ADMIN],
+        // module: [MODULE_ADMIN],
     })
     async getModules(
         @SessionUser() user: RequestUser,
@@ -36,7 +36,7 @@ export class ModuleController {
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.CORE_MODULE_MODULE,
-        module: [MODULE_ADMIN],
+        // module: [MODULE_ADMIN],
     })
     async createModule( 
         @Body() createModuleDto: CreateModuleDto,
@@ -51,7 +51,7 @@ export class ModuleController {
     @Can({
         action: ACTION_READ,
         subject: SM_ADMIN.CORE_MODULE_MODULE,
-        module: [MODULE_ADMIN],
+        // module: [MODULE_ADMIN],
     })
     async getModule(
         @SessionUser() user: RequestUser,
@@ -67,7 +67,7 @@ export class ModuleController {
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.CORE_MODULE_MODULE,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async updateModule(
         @Body() updateModuleDto: UpdateModuleDto,

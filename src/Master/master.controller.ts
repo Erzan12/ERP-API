@@ -31,7 +31,7 @@ export class MasterController {
     @Can({
         action: ACTION_READ,
         subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async getPosition(
         @SessionUser() user: RequestUser,
@@ -46,7 +46,7 @@ export class MasterController {
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async createPosition(
         @Body() createPositionDto: CreatePositionDto, 
@@ -64,7 +64,7 @@ export class MasterController {
     @Can({
         action: ACTION_UPDATE,
         subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async updatePositionInfo(
         @Body() updatePositionDto: UpdatePositionDto,
@@ -79,7 +79,7 @@ export class MasterController {
     @Can({
         action: ACTION_READ,
         subject: SM_ADMIN.MASTER_TABLE_DEPARTMENT,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async getDepartment(
         @SessionUser() user: RequestUser,
@@ -94,7 +94,7 @@ export class MasterController {
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.MASTER_TABLE_DEPARTMENT,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async createDepartment(
         @Body() createDepartmentDto: CreateDepartmentDto,
@@ -110,7 +110,7 @@ export class MasterController {
     @Can({
         action: ACTION_UPDATE,
         subject: SM_ADMIN.MASTER_TABLE_DEPARTMENT,
-        module: [MODULE_ADMIN],
+        // module: [MODULE_ADMIN],
     })
     async updateDept(
         @Body() updateDeptDto: UpdateDepartmentDto,
@@ -125,7 +125,7 @@ export class MasterController {
     @Can({
         action: ACTION_READ,
         subject: SM_ADMIN.MASTER_TABLE_DIVISION,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async getDivision(
         @SessionUser() user: RequestUser,
@@ -140,7 +140,7 @@ export class MasterController {
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.MASTER_TABLE_DIVISION,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async createDivision(
         @Body() createDivisionDto: CreateDivisionDto,
@@ -158,7 +158,7 @@ export class MasterController {
     @Can({
         action: ACTION_UPDATE,
         subject: SM_ADMIN.MASTER_TABLE_DIVISION,
-        module: [MODULE_ADMIN],
+        // module: [MODULE_ADMIN],
     })
     async updateDivision(
         @Body() updateDivisiionDto: UpdateDivisionDto,
@@ -173,7 +173,7 @@ export class MasterController {
     @Can({
         action: ACTION_READ,
         subject: SM_ADMIN.MASTER_TABLE_COMPANY,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async getCompany(
         @SessionUser() user: RequestUser,
@@ -188,7 +188,7 @@ export class MasterController {
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.MASTER_TABLE_COMPANY,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async createCompany(
         @Body() createCompanyDto: CreateCompanyDto,
@@ -206,7 +206,7 @@ export class MasterController {
     @Can({
         action: ACTION_UPDATE,
         subject: SM_ADMIN.MASTER_TABLE_COMPANY,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async updateCompany(
         @Body() updateCompanyDto: UpdateCompanyDto,

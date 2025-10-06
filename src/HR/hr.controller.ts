@@ -20,7 +20,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.DASHBOARD,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getHRDashBoard(
         @SessionUser() user: RequestUser,
@@ -30,9 +30,9 @@ export class HrController {
 
     @Get('employees')
     @Can({
-            action: ACTION_CREATE,
-            subject: SM_HR.EMPLOYEE_MASTERLIST,
-            module: [MODULE_HR]
+        action: ACTION_CREATE,
+        subject: SM_HR.EMPLOYEE_MASTERLIST,
+        // module: [MODULE_HR]
     })
     async getEmployees(
         @SessionUser() user: RequestUser,
@@ -44,7 +44,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.RECRUITMENT,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getRecruitment() {
         return { message: 'hr recruitement'};
@@ -54,7 +54,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.ACTION_MEMOS,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getActionMem() {
         return { message: 'hr action memos' }
@@ -64,7 +64,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.CREW_MOVEMENTS,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getCrewMove() {
         return { message: 'hr crew movements' }
@@ -74,7 +74,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.AWOL_CASE,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getAwolCase() {
         return { message: 'hr AWOL Case' }
@@ -84,7 +84,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.EMPLOYEE_RELATION,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getEmpRelCase() {
         return { message: 'hr employee relation' }
@@ -94,7 +94,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.LEAVE_APPLICATION,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getLeaveApp() {
         return { message: 'hr leave application' }
@@ -104,7 +104,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.OT_APPLICATION,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getOTApp() {
         return { message: 'hr OT Applications' }
@@ -114,7 +114,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.UT_APPLICATION,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getUTApp() {
         return { message: 'hr UT Applications' }
@@ -124,7 +124,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.OB_APPLICATION,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getOBApp() {
         return { message: 'hr OB Applications' }
@@ -134,7 +134,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.OB_APPLICATION,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getOJTTrainees() {
         return { message: 'hr On-The-Job Trainees' }
@@ -144,7 +144,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.PERFORMANCE_EVALUATION,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getPerEval() {
         return { message: 'hr Performance Evaluations' }
@@ -154,7 +154,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.BULLETIN,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getBulletin() {
         return { message: 'hr Bulletin' }
@@ -164,7 +164,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.VACCINE_CARD,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getVaccine() {
         return { message: 'hr Vaccine Card' }
@@ -174,7 +174,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.ORG_CHART,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getOrgChart() {
         return { message: 'hr Organization Chart' }
@@ -184,7 +184,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.INCIDENT_REPORTS,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getIncidentRep() {
         return { message: 'hr Incident Reports' }
@@ -194,7 +194,7 @@ export class HrController {
     @Can({
         action: ACTION_READ,
         subject: SM_HR.HR_REPORTS,
-        module: [MODULE_HR],
+        // module: [MODULE_HR],
     })
     getHRreport() {
         return { message: 'hr HR Reports' }

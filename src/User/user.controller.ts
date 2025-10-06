@@ -18,7 +18,7 @@ export class UserController {
         @Can({
             action: ACTION_READ,
             subject: SM_ADMIN.USER_ACCOUNT,
-            module: [ MODULE_MNGR, MODULE_ADMIN ] // or MODULE_HR if it's from Admin
+            // module: [ MODULE_MNGR, MODULE_ADMIN ] // or MODULE_HR if it's from Admin
         })
         async viewUsers(
             @SessionUser() user: RequestUser,
@@ -31,7 +31,7 @@ export class UserController {
         @Can({
             action: ACTION_CREATE,
             subject: SM_ADMIN.USER_ACCOUNT,
-            module: [ MODULE_MNGR, MODULE_ADMIN] // or MODULE_HR if it's from Admin
+            // module: [ MODULE_MNGR, MODULE_ADMIN] // or MODULE_HR if it's from Admin
         })
         async createUser(
             @Body() createUserWithTemplateDto: CreateUserWithTemplateDto,
@@ -45,7 +45,7 @@ export class UserController {
         @Can({
             action: ACTION_CREATE,
             subject: SM_ADMIN.USER_ACCOUNT,
-            module: [MODULE_MNGR, MODULE_ADMIN] // or MODULE_HR if it's from Admin
+            // module: [MODULE_MNGR, MODULE_ADMIN] // or MODULE_HR if it's from Admin
         })     
         async newResetToken(
             @Body() userEmailResetTokenDto: UserEmailResetTokenDto,
@@ -60,7 +60,7 @@ export class UserController {
         @Can({
             action: ACTION_READ,
             subject: SM_ADMIN.USER_TOKEN_KEY,
-            module: [MODULE_ADMIN]
+            // module: [MODULE_ADMIN]
         })
          async viewUserKeys(
             @Body() createUserWithTemplateDto: CreateUserWithTemplateDto,
@@ -73,7 +73,7 @@ export class UserController {
         @Can({
             action: ACTION_UPDATE,
             subject: SM_ADMIN.USER_ACCOUNT,
-            module: [MODULE_ADMIN],
+            // module: [MODULE_ADMIN],
         })
         async deactivateUser(
             @Body() deactivateUserAccountDto: DeactivateUserAccountDto,
@@ -86,7 +86,7 @@ export class UserController {
         @Can({
             action: ACTION_UPDATE,
             subject: SM_ADMIN.USER_ACCOUNT,
-            module: [MODULE_ADMIN],
+            // module: [MODULE_ADMIN],
         })
         async reactivateUser(
             @Body() reactivateUserAccountDto: ReactivateUserAccountDto,
@@ -99,7 +99,7 @@ export class UserController {
         @Can({
             action: ACTION_READ,
             subject: SM_ADMIN.USER_ACCOUNT,
-            module: [MODULE_ADMIN,MODULE_MNGR]
+            // module: [MODULE_ADMIN,MODULE_MNGR]
         })
         async viewNewEmployees(
             @SessionUser() user: RequestUser,
@@ -107,16 +107,16 @@ export class UserController {
             return this.userService.viewNewEmployeeWithoutUserAccount(user)
         }
 
-        @Get('with_roles_permissions')
-        @Can({
-            action: ACTION_READ,
-            subject: SM_ADMIN.USER_ACCOUNT,
-            module: [MODULE_ADMIN,MODULE_MNGR]
-        })
-        async getAllWithRolesPermissions(
-        ) {
-            return this.userService.getUsersWithRolesAndPermissions();
-        }
+        // @Get('with_roles_permissions')
+        // @Can({
+        //     action: ACTION_READ,
+        //     subject: SM_ADMIN.USER_ACCOUNT,
+        //     module: [MODULE_ADMIN,MODULE_MNGR]
+        // })
+        // async getAllWithRolesPermissions(
+        // ) {
+        //     return this.userService.getUsersWithRolesAndPermissions();
+        // }
 
 }
 

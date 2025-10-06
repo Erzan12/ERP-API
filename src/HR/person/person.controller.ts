@@ -21,7 +21,7 @@ export class PersonController {
     @Can({
             action: ACTION_DELETE,
             subject: SM_HR.EMPLOYEE_MASTERLIST,
-            module: [MODULE_HR] // or MODULE_HR if it's from Admin
+            // module: [MODULE_HR] // or MODULE_HR if it's from Admin
     })
     @HttpCode(HttpStatus.NO_CONTENT)
         async deletePerson(@Body() dto: DeletePersonDto): Promise<void> {

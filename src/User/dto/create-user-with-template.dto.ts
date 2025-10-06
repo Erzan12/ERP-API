@@ -20,5 +20,5 @@ export class CreateUserWithTemplateDto {
   @IsArray()
   @ArrayNotEmpty()
   @IsInt({ each: true })
-  user_permission_template_ids: number[];
+  role_permission_ids?: number[]  // IDs from RolePermission
 }

@@ -64,26 +64,56 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Invalid or inactive user');
     }
  //returns only the necessary user details needed for auth and role and permission
+    // return {
+    //   id: user.id,
+    //   email: user.email,
+    //   roles: user.user_roles.map((ur) => ({
+    //     //replaced with direct role permission
+    //     // id: ur.role_id,
+    //     // name: ur.role.name,
+    //     //role permission is combined role and the permission for that role with submodule
+    //     id: ur.role_permission_id,
+    //     name: ur.role_permission.role_name,
+    //     //handle multi module per user
+    //     module: {
+    //       id: ur.module.id,
+    //       name: ur.module.name,
+    //     },
+    //   // permission: ur.role_permission.map((rp) => ({
+    //   //     action: rp.action,
+    //   //     permission: { name: rp.sub_module_permission_id.id },
+    //   //     // status: rp.status,
+    //   //   })),
+    //   // })),
+    //   // user has only one role_permission per user_role
+    //   permission: [{
+    //       action: ur.role_permission.action,
+    //       permission: {
+    //         name: ur.role_permission.sub_module_permission?.added_sub_mod_permission?.action,
+    //       },
+    //     }],
+    //   })),
+    //   // user have multiple role permissions
+    //   // permission: ur.role_permissions.map((rp) => ({
+    //   //   action: rp.action,
+    //   //   permission: {
+    //   //     name: rp.sub_module_permission?.added_sub_mod_permission?.action,
+    //   //   },
+    //   // })),
+    // };
+    //revamped method of return without module
     return {
       id: user.id,
       email: user.email,
       roles: user.user_roles.map((ur) => ({
-        //replaced with direct role permission
-        // id: ur.role_id,
-        // name: ur.role.name,
-        //role permission is combined role and the permission for that role with submodule
         id: ur.role_permission_id,
         name: ur.role_permission.role_name,
-        //handle multi module per user
-        module: {
-          id: ur.module.id,
-          name: ur.module.name,
-        },
-      permission: ur.role_permission.map((rp) => ({
-          action: rp.action,
-          permission: { name: rp.permission.name },
-          // status: rp.status,
-        })),
+        permissions: [{
+          action: ur.role_permission.action,
+          permission: {
+            name: ur.role_permission.sub_module_permission?.added_sub_mod_permission?.action,
+          },
+        }],
       })),
     };
   }

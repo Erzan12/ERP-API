@@ -8,7 +8,7 @@ import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
 import { CreatePermissionTemplateDto } from './dto/create-permission-template.dto';
 import { AddPermissionToExistingRoleDto, AddPermissionToExistingUserDto } from './dto/add-permission-template.dto';
-import { ACTION_CREATE, MODULE_ADMIN, ACTION_UPDATE } from '../../Components/decorators/ability';
+import { ACTION_CREATE, MODULE_ADMIN, ACTION_UPDATE, ACTION_READ } from '../../Components/decorators/ability';
 import { SM_ADMIN } from '../../Components/constants/core-constants';
 import { UnassignRolePermissionDto } from './dto/unassign-role-permission.dto';
 import { PrismaService } from 'prisma/prisma.service';
@@ -22,6 +22,18 @@ export class RoleController {
     constructor(private roleService: RoleService, private prisma: PrismaService) {}
 
     //get all available roles
+    @Get('roles')
+    @ApiOperation({ summary: 'Get all Roles' })
+    @ApiGetResponse('Here are the list of Roles')
+    @Can({
+        action: ACTION_READ,
+        subject: SM_ADMIN.CORE_MODULE_ROLE,
+    })
+    async getAllRole(
+        @SessionUser() user: RequestUser
+    ) {
+        return this.roleService.getAllRole(user)
+    }
 
     //create role
     @Post('role')
@@ -30,7 +42,7 @@ export class RoleController {
     @Can({
         action: ACTION_CREATE,  // the action of the subtion will be match with the current user role permission
         subject: SM_ADMIN.CORE_MODULE_ROLE, // SUBMODULE of Module Admin
-        module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
+        // module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
     })
     async createRole(
         @Body() createRoleDto: CreateRoleDto,
@@ -46,7 +58,7 @@ export class RoleController {
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.CORE_MODULE_ROLE,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })       
     async createRolePermission(
         @Body() createRolePermissionDto: CreateRolePermissionDto,
@@ -62,7 +74,7 @@ export class RoleController {
     @Can({
         action: ACTION_UPDATE,
         subject: SM_ADMIN.CORE_MODULE_ROLE,
-        module: [MODULE_ADMIN] 
+        // module: [MODULE_ADMIN] 
     })
     async updateRolePermissions( 
         @Body() updateRolePermissionsDto: UpdateRolePermissionsDto,
@@ -87,7 +99,7 @@ export class RoleController {
     // }
 
     //filter/show active or inactive roles permission for a submodule
-    @Get(':subModuleId/permissions')
+    @Get(':subModulePermissionId/permissions')
     async getPermissions(
         @Param('subModuleId', ParseIntPipe) subModuleId: number,
         @Query('status') status?: string, // optional query param
@@ -96,7 +108,7 @@ export class RoleController {
 
         return await this.prisma.rolePermission.findMany({
             where: {
-            sub_module_id: subModuleId,
+            sub_module_permission_id: subModuleId,
             ...(isActive !== undefined && { status: isActive }), // conditionally add `status`
             },
         });
@@ -119,7 +131,7 @@ export class RoleController {
     @Can({
         action: ACTION_UPDATE,  // the action of the subtion will be match with the current user role permission
         subject: SM_ADMIN.CORE_MODULE_ROLE, // SUBMODULE of Module Admin
-        module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
+        // module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
     })
     async assignPermissionTemplateByRole( 
         @Body() addPermissionTemplateDto: AddPermissionToExistingRoleDto,   
@@ -128,15 +140,15 @@ export class RoleController {
         return this.roleService.assignPermissionTemplateByRole(addPermissionTemplateDto,user);
     }   
 
-    @Patch('assign_permission_template/user')
-    @Can({
-        action: ACTION_UPDATE,
-        subject: SM_ADMIN.CORE_MODULE_MODULE,
-        module: [MODULE_ADMIN]
-    })
-    async assignPermissionTemplateByUser(
-        @Body() addPermissionTemplateDto: AddPermissionToExistingUserDto,
-    ) {
-        return this.roleService.assignPermissionTemplateByUser(addPermissionTemplateDto);
-    }
+    // @Patch('assign_permission_template/user')
+    // @Can({
+    //     action: ACTION_UPDATE,
+    //     subject: SM_ADMIN.CORE_MODULE_MODULE,
+    //     module: [MODULE_ADMIN]
+    // })
+    // async assignPermissionTemplateByUser(
+    //     @Body() addPermissionTemplateDto: AddPermissionToExistingUserDto,
+    // ) {
+    //     return this.roleService.assignPermissionTemplateByUser(addPermissionTemplateDto);
+    // }
 }

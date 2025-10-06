@@ -7,7 +7,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateSubModuleDto {
     @IsString()
     @IsNotEmpty()
-    @ApiProperty({ example: 'Administrator', description: 'The name of the sub module' })
+    @ApiProperty({ example: 'User Account', description: 'The name of the sub module' })
     name: string;
 
     @IsInt()

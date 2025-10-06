@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { Expose, Transform } from "class-transformer";
-import { IsNotEmpty, IsString, IsInt, IsDefined } from "class-validator";
+import { IsNotEmpty, IsString, IsInt, IsDefined, IsOptional } from "class-validator";
 
 export class CreateRoleDto {
     @IsNotEmpty()
@@ -10,8 +10,8 @@ export class CreateRoleDto {
     name: string;
 
     @IsString()
-    @IsNotEmpty()
-    @ApiProperty({ description: 'Description of the role'})
+    @IsOptional()
+    @ApiProperty({ example: 'Office staff for IT department', description: 'Description of the role'})
     description: string;
 
     @IsInt()

@@ -16,7 +16,7 @@ export class EmploymentStatusController {
     @Can({
         action: ACTION_READ,
         subject: SM_ADMIN.EMP_STATUS,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async getEmpStat(
         @SessionUser() user: RequestUser,
@@ -29,7 +29,7 @@ export class EmploymentStatusController {
     @Can({
         action: ACTION_CREATE,
         subject: SM_ADMIN.EMP_STATUS,
-        module: [MODULE_ADMIN]
+        // module: [MODULE_ADMIN]
     })
     async createEmpStat(
         @Body() createEmpStat: EmpStatusDto,
@@ -42,7 +42,7 @@ export class EmploymentStatusController {
     @Can({
         action: ACTION_UPDATE,
         subject: SM_ADMIN.EMP_STATUS,
-        module: [MODULE_ADMIN],
+        // module: [MODULE_ADMIN],
     })
     async(
         @Body() updateEmpStatusDto: UpdateEmpStatusDto,
