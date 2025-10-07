@@ -195,6 +195,19 @@ export class PermissionsGuard implements CanActivate {
 
     const ability = this.caslAbilityService.defineAbilitiesFor(user.roles);
 
+    this.logger.debug(
+      'User roles structure: ' + JSON.stringify(user.roles, null, 2)
+    );
+
+    // // Debug all granted permissions
+    // this.logger.debug(
+    //   `User ${user.email} permissions:\n` +
+    //   user.roles.map(role =>
+    //     `Role: ${role.name}\n` +
+    //     role.permissions.map(p => `  → ${p.action} on ${p.permission.name}`).join('\n')
+    //   ).join('\n')
+    // );
+
     const canAccess = ability.can(action, subject);
 
     if (!canAccess) {

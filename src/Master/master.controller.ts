@@ -25,14 +25,16 @@ import { UpdateCompanyDto } from './company/dto/update-company.dto';
 export class MasterController {
     constructor(private positionService: PositionService, private departmentService: DepartmentService, private divisionService: DivisionService, private companyService: CompanyService) {} 
 
+    //testing query
     @Get('positions')
     @ApiOperation({ summary: 'Get all positions' })
     @ApiGetResponse('List of positions retrieve')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        // module: [MODULE_ADMIN]
-    })
+    // @Can({
+    //     action: ACTION_READ,
+    //     subject: SM_ADMIN.MASTER_TABLE,
+    //     // module: [MODULE_ADMIN]
+    // })
+    @Can({ action: 'read', subject: 'Mastertables' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
     async getPosition(
         @SessionUser() user: RequestUser,
     ) {
@@ -43,11 +45,12 @@ export class MasterController {
     @ApiBody({ type: CreatePositionDto, description: 'Payload to create Position'})
     @ApiOperation({ summary: 'Create a new position' })
     @ApiPostResponse('Position created successfully')
-    @Can({
-        action: ACTION_CREATE,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        // module: [MODULE_ADMIN]
-    })
+    // @Can({
+    //     action: ACTION_CREATE,
+    //     subject: SM_ADMIN.MASTER_TABLE,
+    //     // module: [MODULE_ADMIN]
+    // })
+    @Can({ action: 'create', subject: 'Mastertables' })
     async createPosition(
         @Body() createPositionDto: CreatePositionDto, 
         @SessionUser() user: RequestUser,
@@ -63,7 +66,7 @@ export class MasterController {
     @ApiPatchResponse('Position updated successfully')
     @Can({
         action: ACTION_UPDATE,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
+        subject: SM_ADMIN.MASTER_TABLE,
         // module: [MODULE_ADMIN]
     })
     async updatePositionInfo(
@@ -76,11 +79,12 @@ export class MasterController {
     @Get('departments')
     @ApiOperation({ summary: 'Get all departments' })
     @ApiGetResponse('List of departments retrieved')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.MASTER_TABLE_DEPARTMENT,
-        // module: [MODULE_ADMIN]
-    })
+    // @Can({
+    //     action: ACTION_READ,
+    //     subject: SM_ADMIN.MASTER_TABLE,
+    //     // module: [MODULE_ADMIN]
+    // })
+    @Can({ action: 'read', subject: 'Mastertables' })
     async getDepartment(
         @SessionUser() user: RequestUser,
     ) {
@@ -93,7 +97,7 @@ export class MasterController {
     @ApiPostResponse('Department created successfully')
     @Can({
         action: ACTION_CREATE,
-        subject: SM_ADMIN.MASTER_TABLE_DEPARTMENT,
+        subject: SM_ADMIN.MASTER_TABLE,
         // module: [MODULE_ADMIN]
     })
     async createDepartment(
@@ -109,7 +113,7 @@ export class MasterController {
     @ApiPatchResponse('Department updated successfully')
     @Can({
         action: ACTION_UPDATE,
-        subject: SM_ADMIN.MASTER_TABLE_DEPARTMENT,
+        subject: SM_ADMIN.MASTER_TABLE,
         // module: [MODULE_ADMIN],
     })
     async updateDept(
@@ -124,7 +128,7 @@ export class MasterController {
     @ApiGetResponse('List of divisions retrieved')
     @Can({
         action: ACTION_READ,
-        subject: SM_ADMIN.MASTER_TABLE_DIVISION,
+        subject: SM_ADMIN.MASTER_TABLE,
         // module: [MODULE_ADMIN]
     })
     async getDivision(
@@ -139,7 +143,7 @@ export class MasterController {
     @ApiPostResponse('Division created successfully')
     @Can({
         action: ACTION_CREATE,
-        subject: SM_ADMIN.MASTER_TABLE_DIVISION,
+        subject: SM_ADMIN.MASTER_TABLE,
         // module: [MODULE_ADMIN]
     })
     async createDivision(
@@ -157,7 +161,7 @@ export class MasterController {
     @ApiPatchResponse('Division updated successfully')
     @Can({
         action: ACTION_UPDATE,
-        subject: SM_ADMIN.MASTER_TABLE_DIVISION,
+        subject: SM_ADMIN.MASTER_TABLE,
         // module: [MODULE_ADMIN],
     })
     async updateDivision(
@@ -172,7 +176,7 @@ export class MasterController {
     @ApiGetResponse('List of companies retrieved')
     @Can({
         action: ACTION_READ,
-        subject: SM_ADMIN.MASTER_TABLE_COMPANY,
+        subject: SM_ADMIN.MASTER_TABLE,
         // module: [MODULE_ADMIN]
     })
     async getCompany(
@@ -187,7 +191,7 @@ export class MasterController {
     @ApiPostResponse('Company created successfully')
     @Can({
         action: ACTION_CREATE,
-        subject: SM_ADMIN.MASTER_TABLE_COMPANY,
+        subject: SM_ADMIN.MASTER_TABLE,
         // module: [MODULE_ADMIN]
     })
     async createCompany(
@@ -205,7 +209,7 @@ export class MasterController {
     @ApiPatchResponse('Company updated successfully')
     @Can({
         action: ACTION_UPDATE,
-        subject: SM_ADMIN.MASTER_TABLE_COMPANY,
+        subject: SM_ADMIN.MASTER_TABLE,
         // module: [MODULE_ADMIN]
     })
     async updateCompany(

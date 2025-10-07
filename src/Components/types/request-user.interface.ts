@@ -4,16 +4,16 @@ export interface RequestUser {
   roles: {
     id: number;
     name: string;
-    module: {
-      id: number;
-      name: string;
-    };
+    // module: {
+    //   id: number;
+    //   name: string;
+    // };
     permissions: {
       action: string;
       permission: {
         name: string;
       };
-      status: boolean;
+      // status: boolean;
     }[];
   }[];
 }

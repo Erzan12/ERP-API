@@ -64,11 +64,11 @@ model User {
   user_roles      UserRole[] // retained
   user_permission UserPermission[] // retained
   user_token      UserToken[]
+  roles           Role[]           
 
   // ⛔️ removed:
   // role_permission      RolePermission[]
   // permission_templates PermissionTemplate[] @relation("UserToPermissionTemplates")
-  // roles                Role[]           @relation("UserToRoles")
   // modules              Module[]         @relation("ModuleToUsers")
 }
 
@@ -80,6 +80,7 @@ model Role {
   stat                Int                  @default(1)
   role_permissions    RolePermission[]
   user_roles          UserRole[]
+  users               User[]
   permission_template PermissionTemplate[] @relation("PermissionTemplateToRole")
 
   // ⛔️ removed:
@@ -149,16 +150,17 @@ model UserRole {
 
   user_permissions UserPermission[]
   role_permission  RolePermission   @relation(fields: [role_permission_id], references: [id])
-  department       Department?      @relation(fields: [department_id], references: [id])
-  module           Module           @relation(fields: [module_id], references: [id])
+  
   role             Role?            @relation(fields: [role_id], references: [id])
   user             User             @relation(fields: [user_id], references: [id])
 
-  @@unique([user_id, role_id, module_id]) //Ensures unique role-module per user
+  @@unique([user_id, role_id]) //Ensures each user can have a specific role only once
 
   // ⛔️ removed:
   //module_id          Int      @default(1)
   //department_id      Int?     @default(1)
+  //department         Department?      @relation(fields: [department_id], references: [id])
+  //module             Module           @relation(fields: [module_id], references: [id])
 }
 
 model Company {
@@ -199,7 +201,9 @@ model Department {
   permission_template_deparmtent PermissionTemplateDepartment[]
   positions                      Position[]
   sub_modules                    SubModule[]
-  user_roles                     UserRole[]
+
+  // ⛔️ removed:
+  //user_roles                     UserRole[]
 }
 
 model Position {
@@ -218,11 +222,11 @@ model Module {
   created_at           DateTime             @default(now())
   stat                 Int                  @default(1)
   sub_module           SubModule[]
-  user_role            UserRole[]
   permission_templates PermissionTemplate[] @relation("ModuleToPermissionTemplates")
 
   // ⛔️ removed:
   //role_permission      RolePermission[]
+  //user_role            UserRole[]
   //users                User[]               @relation("ModuleToUsers")
 }
 

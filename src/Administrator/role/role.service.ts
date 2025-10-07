@@ -451,150 +451,150 @@ export class RoleService {
     // }
 
     //assigning permission template to user who doesnt have a permission yet
-    async assignPermissionTemplateByRole(addPermissionTemplate:AddPermissionToExistingRoleDto, user) {
-        const { role_ids, permission_template_id } = addPermissionTemplate;
+    // async assignPermissionTemplateByRole(addPermissionTemplate:AddPermissionToExistingRoleDto, user) {
+    //     const { role_ids, permission_template_id } = addPermissionTemplate;
 
-         const requestUser = await this.prisma.user.findUnique({
-            where: { id: user.id },
-            include:{
-                employee: {
-                    include: {
-                        person: true,
-                        position: true,
-                    }
-                }
-            }
-        })
+    //      const requestUser = await this.prisma.user.findUnique({
+    //         where: { id: user.id },
+    //         include:{
+    //             employee: {
+    //                 include: {
+    //                     person: true,
+    //                     position: true,
+    //                 }
+    //             }
+    //         }
+    //     })
 
-        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-            throw new BadRequestException(`User does not exist.`);
-        }
+    //     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+    //         throw new BadRequestException(`User does not exist.`);
+    //     }
 
-        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const userPos = requestUser.employee.position.name;
+    //     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    //     const userPos = requestUser.employee.position.name;
 
-        if (!role_ids || !permission_template_id) {
-            throw new BadRequestException('Missing role_id or permission_template_id');
-        }
+    //     if (!role_ids || !permission_template_id) {
+    //         throw new BadRequestException('Missing role_id or permission_template_id');
+    //     }
 
-        // 1. Fetch users with their permission_templates
-        const existingUsers = await this.prisma.user.findMany({
-        where: {
-            user_roles: {
-            some: {
-                role_id: {
-                in: addPermissionTemplate.role_ids, // ✅ filter users who have at least one of the given role_ids
-                },
-            },
-            },
-        },
-        include: {
-            permission_templates: true,
-        },
-        });
+    //     // 1. Fetch users with their permission_templates
+    //     const existingUsers = await this.prisma.user.findMany({
+    //     where: {
+    //         user_roles: {
+    //         some: {
+    //             role_id: {
+    //             in: addPermissionTemplate.role_ids, // ✅ filter users who have at least one of the given role_ids
+    //             },
+    //         },
+    //         },
+    //     },
+    //     include: {
+    //         permission_templates: true,
+    //     },
+    //     });
 
-        console.log('Matching users:', existingUsers);
+    //     console.log('Matching users:', existingUsers);
         
-        console.log('Existing Users:', existingUsers);
+    //     console.log('Existing Users:', existingUsers);
 
-        if (existingUsers.length === 0) {
-                throw new BadRequestException('No users found for this role');
-        }
+    //     if (existingUsers.length === 0) {
+    //             throw new BadRequestException('No users found for this role');
+    //     }
 
-        const usersAlreadyAssigned = existingUsers.filter(role =>
-            role.permission_templates.some(pt => pt.id === permission_template_id)
-        );
+    //     const usersAlreadyAssigned = existingUsers.filter(role =>
+    //         role.permission_templates.some(pt => pt.id === permission_template_id)
+    //     );
 
-        if (usersAlreadyAssigned.length > 0) {
-            const usernames = usersAlreadyAssigned.map(u => u.username).join(', ');
-            throw new BadRequestException(`These users already have this template: ${usernames}`);
-        }
+    //     if (usersAlreadyAssigned.length > 0) {
+    //         const usernames = usersAlreadyAssigned.map(u => u.username).join(', ');
+    //         throw new BadRequestException(`These users already have this template: ${usernames}`);
+    //     }
 
-        const existingPermissionTemplate = await this.prisma.permissionTemplate.findUnique({
-            where: {id: permission_template_id},
-        })
+    //     const existingPermissionTemplate = await this.prisma.permissionTemplate.findUnique({
+    //         where: {id: permission_template_id},
+    //     })
 
-        if(!existingPermissionTemplate) {
-            throw new BadRequestException('Permission Template not found')
-        }
-        //if data is existing in db but want to assign a role or permission just update not create
-        // ✅ Step 1: Assign template to role (many-to-many)
-        // await Promise.all(
-        //     addPermissionTemplate.role_ids.map(roleId =>
-        //         this.prisma.role.update({
-        //             where: { id: roleId },
-        //             data: {
-        //                 permission_template: {
-        //                 connect: { id: permission_template_id },
-        //                 },
-        //             },
-        //         }),
-        //     ),
-        // );
-        const roleUpdates = role_ids.map(roleId =>
-            this.prisma.role.update({
-                where: { id: roleId },
-                data: {
-                    permission_template: {
-                        connect: { id: permission_template_id },
-                    },
-                },
-            })
-        );
+    //     if(!existingPermissionTemplate) {
+    //         throw new BadRequestException('Permission Template not found')
+    //     }
+    //     //if data is existing in db but want to assign a role or permission just update not create
+    //     // ✅ Step 1: Assign template to role (many-to-many)
+    //     // await Promise.all(
+    //     //     addPermissionTemplate.role_ids.map(roleId =>
+    //     //         this.prisma.role.update({
+    //     //             where: { id: roleId },
+    //     //             data: {
+    //     //                 permission_template: {
+    //     //                 connect: { id: permission_template_id },
+    //     //                 },
+    //     //             },
+    //     //         }),
+    //     //     ),
+    //     // );
+    //     const roleUpdates = role_ids.map(roleId =>
+    //         this.prisma.role.update({
+    //             where: { id: roleId },
+    //             data: {
+    //                 permission_template: {
+    //                     connect: { id: permission_template_id },
+    //                 },
+    //             },
+    //         })
+    //     );
 
-        // 2. Filter out users who already have this template
-        const usersToUpdate = existingUsers.filter(user =>
-            !user.permission_templates.some(pt => pt.id === permission_template_id)
-        );
+    //     // 2. Filter out users who already have this template
+    //     const usersToUpdate = existingUsers.filter(user =>
+    //         !user.permission_templates.some(pt => pt.id === permission_template_id)
+    //     );
 
-        // 3. Add the template to those users
-        // for (const user of usersToUpdate) {
-        //     await this.prisma.user.update({
-        //         where: { id: user.id },
-        //         data: {
-        //             permission_templates: {
-        //                 connect: { id: permission_template_id },
-        //             },
-        //         },
-        //     });
-        // }
-        const userUpdates = usersToUpdate.map(user =>
-            this.prisma.user.update({
-                where: { id: user.id },
-                data: {
-                    permission_templates: {
-                        connect: { id: permission_template_id },
-                    },
-                },
-            })
-        );
+    //     // 3. Add the template to those users
+    //     // for (const user of usersToUpdate) {
+    //     //     await this.prisma.user.update({
+    //     //         where: { id: user.id },
+    //     //         data: {
+    //     //             permission_templates: {
+    //     //                 connect: { id: permission_template_id },
+    //     //             },
+    //     //         },
+    //     //     });
+    //     // }
+    //     const userUpdates = usersToUpdate.map(user =>
+    //         this.prisma.user.update({
+    //             where: { id: user.id },
+    //             data: {
+    //                 permission_templates: {
+    //                     connect: { id: permission_template_id },
+    //                 },
+    //             },
+    //         })
+    //     );
 
-        //rollback if roleUpdates fail so no update will push in db
-        await this.prisma.$transaction([
-            ...roleUpdates,
-            ...userUpdates,
-        ]);
+    //     //rollback if roleUpdates fail so no update will push in db
+    //     await this.prisma.$transaction([
+    //         ...roleUpdates,
+    //         ...userUpdates,
+    //     ]);
 
         
 
-        const updatedTemplate = await this.prisma.permissionTemplate.findUnique({
-            where: { id: permission_template_id },
-            include: { user: true }, // should show the users you just updated
-        });
+    //     const updatedTemplate = await this.prisma.permissionTemplate.findUnique({
+    //         where: { id: permission_template_id },
+    //         include: { user: true }, // should show the users you just updated
+    //     });
 
-        return {
-            status: 'success',
-            message: `Assigned permission template to role and all users with role: ${addPermissionTemplate.role_ids}`,
-            created_by: {
-                    id: requestUser.id,
-                    name: userName,
-                    position: userPos,
-            },
-            updated_data: {
-                updatedTemplate
-            }    
-        };
-    }
+    //     return {
+    //         status: 'success',
+    //         message: `Assigned permission template to role and all users with role: ${addPermissionTemplate.role_ids}`,
+    //         created_by: {
+    //                 id: requestUser.id,
+    //                 name: userName,
+    //                 position: userPos,
+    //         },
+    //         updated_data: {
+    //             updatedTemplate
+    //         }    
+    //     };
+    // }
 
     // async assignPermissionTemplateByUser(addPermissionTemplate: AddPermissionToExistingUserDto) {
     //     const { user_ids, permission_template_id } = addPermissionTemplate;

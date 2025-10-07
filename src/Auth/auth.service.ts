@@ -102,20 +102,20 @@ export class AuthService {
         where: { username },
         include: {
             user_roles: {
-            include: {
-                // role: {
-                // include: {
-                    role_permission: {
-                    include: {
-                        // permission: true,
-                        sub_module_permission: true,
-                    
-                    },
-                    },
-                // },
-                // },
-                module: true,
-            },
+                include: {
+                    // role: {
+                    // include: {
+                        role_permission: {
+                        include: {
+                            // permission: true,
+                            sub_module_permission: true,
+                        
+                        },
+                        },
+                    // },
+                    // },
+                    // module: true,
+                },
             },
         },
         });

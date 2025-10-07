@@ -32,6 +32,7 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Payload to create a new employee",
           "content": {
             "application/json": {
               "schema": {
@@ -41,10 +42,28 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Employee created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new Employee",
         "tags": [
           "Employee"
         ]
@@ -1006,9 +1025,27 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Here are all the User Accounts available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get User Accounts",
         "tags": [
           "User"
         ]
@@ -1018,19 +1055,112 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Payload to create User Account",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserWithTemplateDto"
+                "$ref": "#/components/schemas/CreateUserWithRolePermissionDto"
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "User Account created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new user account",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users/me/permissions": {
+      "get": {
+        "operationId": "UserController_getMyPermissions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the User Account info available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get User Account",
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/users/role_permission": {
+      "post": {
+        "operationId": "UserController_addRolePermission",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddUserRolePermissionsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role permission added to user successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Add Role permissions to user",
         "tags": [
           "User"
         ]
@@ -1055,6 +1185,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
           "User"
         ]
@@ -1069,7 +1204,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserWithTemplateDto"
+                "$ref": "#/components/schemas/CreateUserWithRolePermissionDto"
               }
             }
           }
@@ -1079,6 +1214,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
           "User"
         ]
@@ -1103,6 +1243,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
           "User"
         ]
@@ -1127,6 +1272,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
           "User"
         ]
@@ -1141,6 +1291,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
           "User"
         ]
@@ -1152,7 +1307,7 @@
         "parameters": [],
         "requestBody": {
           "required": true,
-          "description": "Payload for creating submodule",
+          "description": "Payload to create Submodule",
           "content": {
             "application/json": {
               "schema": {
@@ -1163,7 +1318,7 @@
         },
         "responses": {
           "200": {
-            "description": "Submodulecreated successfully"
+            "description": "Submodule created successfully"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -1183,7 +1338,7 @@
             "access-token": []
           }
         ],
-        "summary": "Create a new submodule",
+        "summary": "Create a new Submodule",
         "tags": [
           "SubModule"
         ]
@@ -1634,35 +1789,6 @@
         ]
       }
     },
-    "/administrator/assign_permission_template/roles": {
-      "patch": {
-        "operationId": "RoleController_assignPermissionTemplateByRole",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddPermissionToExistingRoleDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "tags": [
-          "Role"
-        ]
-      }
-    },
     "/employment_status": {
       "get": {
         "operationId": "EmploymentStatusController_getEmpStat",
@@ -1803,9 +1929,158 @@
         "type": "object",
         "properties": {}
       },
+      "CreatePersonDto": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "example": "Juan",
+            "description": "First name of the employee"
+          },
+          "middle_name": {
+            "type": "string",
+            "example": "Hindi",
+            "description": "Middle name of the employee but it is optional"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "Tamad",
+            "description": "Last name of the employee"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "example": "2025-07-10",
+            "description": "Date of birth of the employee"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ],
+            "example": "male",
+            "description": "Gender of the employee"
+          },
+          "civil_status": {
+            "type": "string",
+            "enum": [
+              "single",
+              "married",
+              "separated",
+              "widowed"
+            ],
+            "example": "single",
+            "description": "Civil Status of the employee"
+          },
+          "email": {
+            "type": "string",
+            "example": "sample@gmail.com",
+            "description": "Email of the employee"
+          }
+        },
+        "required": [
+          "first_name",
+          "middle_name",
+          "last_name",
+          "date_of_birth",
+          "gender",
+          "civil_status",
+          "email"
+        ]
+      },
+      "CreateEmployeeDto": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "number",
+            "example": "abmci, svsc, lmvc, abisc ",
+            "description": "Company of the employee"
+          },
+          "department": {
+            "type": "number",
+            "example": "it department, hr department",
+            "description": "Department of the employee"
+          },
+          "position": {
+            "type": "number",
+            "example": "it manager, administrator, it staff, hr manager, hr clerk",
+            "description": "Position of the employee"
+          },
+          "division": {
+            "type": "number",
+            "example": "Asset Management, Corporate Services",
+            "description": "Division of the employee"
+          },
+          "salary": {
+            "type": "number",
+            "example": 21000,
+            "description": "The salary of the employee"
+          },
+          "hire_date": {
+            "type": "string",
+            "example": "2025-07-10",
+            "description": "Hired date of the employee"
+          },
+          "pay_frequency": {
+            "type": "string",
+            "example": "Monthly",
+            "description": "Pay frequency of the employee salary"
+          },
+          "employment_status": {
+            "type": "number",
+            "example": "regular, on Leave, terminated, resigned, probationary",
+            "description": "The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated"
+          },
+          "monthly_equivalent_salary": {
+            "type": "number",
+            "example": 21000,
+            "description": "The equivalent amount of salary per month of the employee"
+          },
+          "archive_date": {
+            "type": "string",
+            "example": "can be left out for now since its optional",
+            "description": "The archived date of this employee record"
+          },
+          "other_employee_data": {
+            "type": "object",
+            "example": "Hobbies, Personal Experiences, etc. can be left out for now since its optional",
+            "description": "Other personal data or details of the employee"
+          },
+          "corporate_rank_id": {
+            "type": "number",
+            "example": "can be left out for now since its optional",
+            "description": "Rank of the employee in the company"
+          }
+        },
+        "required": [
+          "company",
+          "department",
+          "position",
+          "division",
+          "salary",
+          "hire_date",
+          "pay_frequency",
+          "employment_status",
+          "monthly_equivalent_salary",
+          "archive_date",
+          "other_employee_data",
+          "corporate_rank_id"
+        ]
+      },
       "CreateEmployeeWithDetailsDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/CreatePersonDto"
+          },
+          "employee": {
+            "$ref": "#/components/schemas/CreateEmployeeDto"
+          }
+        },
+        "required": [
+          "person",
+          "employee"
+        ]
       },
       "CreatePositionDto": {
         "type": "object",
@@ -2141,9 +2416,84 @@
           "newPassword"
         ]
       },
-      "CreateUserWithTemplateDto": {
+      "UserDetailsDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "ABISC-250710-001",
+            "description": "The ID of the employee to link this user to"
+          },
+          "username": {
+            "type": "string",
+            "example": "sample_username",
+            "description": "The username for the new user"
+          },
+          "email": {
+            "type": "string",
+            "example": "sample@gmail.com",
+            "description": "Email address for the new user"
+          },
+          "password": {
+            "type": "string",
+            "example": "avegabros",
+            "description": "Password for the new user"
+          }
+        },
+        "required": [
+          "employee_id",
+          "username",
+          "email",
+          "password"
+        ]
+      },
+      "CreateUserWithRolePermissionDto": {
+        "type": "object",
+        "properties": {
+          "user_details": {
+            "$ref": "#/components/schemas/UserDetailsDto"
+          },
+          "role_permission_ids": {
+            "example": [
+              1
+            ],
+            "description": "The role permission IDs to assign to the user",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "user_details",
+          "role_permission_ids"
+        ]
+      },
+      "AddUserRolePermissionsDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "number",
+            "example": 1,
+            "description": "The id of the user to add role permission"
+          },
+          "rolePermissionIds": {
+            "example": [
+              101,
+              102,
+              103
+            ],
+            "description": "The role permission id that will be assign or added to the user it is array because you can add multiple role permission",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "userId",
+          "rolePermissionIds"
+        ]
       },
       "UserEmailResetTokenDto": {
         "type": "object",
@@ -2269,7 +2619,7 @@
           "status": {
             "type": "number",
             "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
+            "description": "active, inactive"
           }
         },
         "required": [
@@ -2307,10 +2657,6 @@
         ]
       },
       "UpdateRolePermissionsDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "AddPermissionToExistingRoleDto": {
         "type": "object",
         "properties": {}
       },

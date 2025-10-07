@@ -9,15 +9,32 @@ async function main() {
   const now = new Date();
 
   // 1. Seed Companies
+  //with full company names
+  const companies = [
+    { name: 'Avega Bros. Integrated Shipping Corp.', abbreviation: 'ABISC' },
+    { name: 'Avega Bros. Marine Carriers, Inc.', abbreviation: 'ABMCI' },
+    { name: 'Sandy Victor Shipping Corp.', abbreviation: 'SVSC' },
+    { name: 'Ligaya Maritime Ventures Corp.', abbreviation: 'LMVC' },
+  ];
+
   const [abisc, abmci, svsc, lmvc] = await Promise.all(
-    ['ABISC', 'ABMCI', 'SVSC', 'LMVC'].map((abbr) =>
+    companies.map(({ name, abbreviation }) =>
       prisma.company.upsert({
-        where: { abbreviation: abbr },
+        where: { abbreviation },
         update: {},
-        create: { name: abbr, abbreviation: abbr },
-      }),
+        create: { name, abbreviation },
+      })
     )
   );
+  // const [abisc, abmci, svsc, lmvc] = await Promise.all(
+  //   ['ABISC', 'ABMCI', 'SVSC', 'LMVC'].map((abbr) =>
+  //     prisma.company.upsert({
+  //       where: { abbreviation: abbr },
+  //       update: {},
+  //       create: { name: abbr, abbreviation: abbr },
+  //     }),
+  //   )
+  // );
 
   // 2. Seed Persons
   const hrPerson = await prisma.person.create({
@@ -56,7 +73,7 @@ async function main() {
   // 4. Create Departments
   const hrDept = await prisma.department.create({
     data: {
-      name: 'HUMAN RESOURCES DEPARTMENT',
+      name: 'hr department',
       division_id: corpServices.id,
       department_head_id: 0,
     },
@@ -64,7 +81,31 @@ async function main() {
 
   const itDept = await prisma.department.create({
     data: {
-      name: 'I.T DEPARTMENT',
+      name: 'it department',
+      division_id: assetMgmt.id,
+      department_head_id: 0,
+    },
+  });
+
+  const accDept = await prisma.department.create({
+    data: {
+      name: 'accounting department',
+      division_id: assetMgmt.id,
+      department_head_id: 0,
+    },
+  });
+
+  const purDept = await prisma.department.create({
+    data: {
+      name: 'purchasing department',
+      division_id: assetMgmt.id,
+      department_head_id: 0,
+    },
+  });
+
+  const wareDept = await prisma.department.create({
+    data: {
+      name: 'warehouse department',
       division_id: assetMgmt.id,
       department_head_id: 0,
     },
@@ -153,31 +194,31 @@ async function main() {
   const [itManager, hrManager, administrator, itStaff, hrClerk] = await Promise.all([
     prisma.position.create({
       data: {
-        name: 'ADMINISTRATOR',
+        name: 'administrator',
         department_id: itDept.id,
       },
     }),
     prisma.position.create({
       data: {
-        name: 'IT MANAGER',
+        name: 'it manager',
         department_id: itDept.id,
       },
     }),
     prisma.position.create({
       data: {
-        name: 'IT STAFF',
+        name: 'it staff',
         department_id: itDept.id,
       },
     }),
     prisma.position.create({
       data: {
-        name: 'HR MANAGER',
+        name: 'hr manager',
         department_id: hrDept.id,
       },
     }),
     prisma.position.create({
       data: {
-        name: 'HR CLERK',
+        name: 'hr clerk',
         department_id: hrDept.id,
       },
     }),
@@ -193,13 +234,13 @@ async function main() {
       { name: 'Inbox', module_id: managerModule.id },
       { name: 'Dashboard', module_id: adminModule.id },
       { name: 'Audit Trail', module_id: adminModule.id },
-      { name: 'Master Tables - Position', module_id: adminModule.id },
-      { name: 'Master Tables - Department', module_id: adminModule.id },
-      { name: 'Master Tables - Company', module_id: adminModule.id },
-      { name: 'Master Tables - Division', module_id: adminModule.id },
+      { name: 'Master Tables', module_id: adminModule.id },
+      // { name: 'Master Tables - Position', module_id: adminModule.id },
+      // { name: 'Master Tables - Department', module_id: adminModule.id },
+      // { name: 'Master Tables - Company', module_id: adminModule.id },
+      // { name: 'Master Tables - Division', module_id: adminModule.id },
       { name: 'User Account', module_id: adminModule.id },
       { name: 'User Token Keys', module_id: adminModule.id },
-      
     ],
     skipDuplicates: true,
   });

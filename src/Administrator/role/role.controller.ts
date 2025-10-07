@@ -127,18 +127,18 @@ export class RoleController {
     //     return this.roleService.createPermissionTemplate(dto,user);
     // }
 
-    @Patch('assign_permission_template/roles')
-    @Can({
-        action: ACTION_UPDATE,  // the action of the subtion will be match with the current user role permission
-        subject: SM_ADMIN.CORE_MODULE_ROLE, // SUBMODULE of Module Admin
-        // module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
-    })
-    async assignPermissionTemplateByRole( 
-        @Body() addPermissionTemplateDto: AddPermissionToExistingRoleDto,   
-        @SessionUser() user: RequestUser,                                                      // to make enum decorator
-     ) {
-        return this.roleService.assignPermissionTemplateByRole(addPermissionTemplateDto,user);
-    }   
+    // @Patch('assign_permission_template/roles')
+    // @Can({
+    //     action: ACTION_UPDATE,  // the action of the subtion will be match with the current user role permission
+    //     subject: SM_ADMIN.CORE_MODULE_ROLE, // SUBMODULE of Module Admin
+    //     // module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
+    // })
+    // async assignPermissionTemplateByRole( 
+    //     @Body() addPermissionTemplateDto: AddPermissionToExistingRoleDto,   
+    //     @SessionUser() user: RequestUser,                                                      // to make enum decorator
+    //  ) {
+    //     return this.roleService.assignPermissionTemplateByRole(addPermissionTemplateDto,user);
+    // }   
 
     // @Patch('assign_permission_template/user')
     // @Can({

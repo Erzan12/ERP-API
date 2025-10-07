@@ -20,7 +20,7 @@ export class CreateRoleDto {
     @ApiProperty({
         name: 'status',
         example: 'active or inactive',
-        description: 'active = 1, inactive = 0'
+        description: 'active, inactive'
     })
     @Transform(({ value }) => {
         console.log('Transforming status:', value);

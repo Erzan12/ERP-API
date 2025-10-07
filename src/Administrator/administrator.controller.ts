@@ -7,7 +7,7 @@ import {
   ACTION_ACCESS
 } from '../Components/decorators/ability';
 import { AddPermissionToExistingUserDto } from './role/dto/add-permission-template.dto';
-import { CreateUserWithTemplateDto } from '../User/dto/create-user-with-template.dto';
+import { CreateUserWithRolePermissionDto } from '../User/dto/create-user-with-role-permission.dto';
 import { UserService } from 'src/User/user.service';
 import { Body, Controller, Post, Req, Patch, Get } from '@nestjs/common';
 import { AdministratorService } from '../Administrator/administrator.service';

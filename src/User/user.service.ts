@@ -4,7 +4,7 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailService } from 'src/Mail/mail.service';
 import { CreatePermissionTemplateDto } from 'src/Administrator/role/dto/create-permission-template.dto';
-import { CreateUserWithTemplateDto } from './dto/create-user-with-template.dto';
+import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-permission.dto';
 import { DeactivateUserAccountDto, ReactivateUserAccountDto } from './dto/user-account-status.dto';
 import { RequestUser } from '../Components/types/request-user.interface';
 import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
@@ -39,16 +39,16 @@ export class UserService {
     }
 
     //refactored version no more role_ids and module_ids in user account creation will be basing on the permission_tempalte model
-    async createUserAccount(createUserWithTemplateDto: CreateUserWithTemplateDto, user) {
+    async createUserAccount(createUserWithRolePermissionDto: CreateUserWithRolePermissionDto, user) {
         return this.prisma.$transaction(async (tx) => {
-            const plainPassword = createUserWithTemplateDto.user_details.password;
+            const plainPassword = createUserWithRolePermissionDto.user_details.password;
             const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
             const existingUser = await this.prisma.user.findFirst({
                 where: {
                     OR: [
-                        { username: createUserWithTemplateDto.user_details.username },
-                        { email: createUserWithTemplateDto.user_details.email },
+                        { username: createUserWithRolePermissionDto.user_details.username },
+                        { email: createUserWithRolePermissionDto.user_details.email },
                     ],
                 },
             });
@@ -77,7 +77,7 @@ export class UserService {
             const adminPos = createUser.employee.position.name;
 
             const employee = await this.prisma.employee.findUnique({
-                where: { employee_id: createUserWithTemplateDto.user_details.employee_id },
+                where: { employee_id: createUserWithRolePermissionDto.user_details.employee_id },
                 include: { person: true },
             });
 
@@ -97,8 +97,8 @@ export class UserService {
                 data: {
                     employee_id: employee.id,
                     person_id: employee.person.id,
-                    username: createUserWithTemplateDto.user_details.username,
-                    email: createUserWithTemplateDto.user_details.email,
+                    username: createUserWithRolePermissionDto.user_details.username,
+                    email: createUserWithRolePermissionDto.user_details.email,
                     password: hashedPassword,
                     stat: 1,
                     require_reset: 1,
@@ -118,10 +118,10 @@ export class UserService {
             }
 
             //optional role permission creation upon creating user account
-            if (createUserWithTemplateDto.role_permission_ids?.length) {
+            if (createUserWithRolePermissionDto.role_permission_ids?.length) {
                 const rolePermissions = await this.prisma.rolePermission.findMany({
                     where: {
-                    id: { in: createUserWithTemplateDto.role_permission_ids },
+                    id: { in: createUserWithRolePermissionDto.role_permission_ids },
                     },
                 });
 
@@ -227,7 +227,7 @@ export class UserService {
     }
 
     //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
-    async addUserRolePermissions(userId: number, rolePermissionIds: number[]) {
+    async addUserRolePermissions(userId: number, rolePermissionIds: number[], user: RequestUser) {
         return this.prisma.$transaction(async (tx) => {
             const user = await tx.user.findUnique({ where: { id: userId } });
             if (!user) throw new BadRequestException('User not found');
@@ -248,8 +248,8 @@ export class UserService {
                     user_id: user.id,
                     role_id: rp.role_id,
                     role_permission_id: rp.id,
-                    module_id: 1,
-                    department_id: 1,
+                    // module_id: 1,
+                    // department_id: 1,
                     created_at: new Date(),
                 },
                 });
@@ -268,6 +268,61 @@ export class UserService {
 
             return { message: 'Roles and permissions added to user.' };
         });
+    }
+
+    //for querying user info
+    async getUserPermissions(userId: number) {
+    const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+        user_roles: {
+            include: {
+            role: true,
+            role_permission: {
+                include: {
+                sub_module: true,
+                sub_module_permission: true,
+                },
+            },
+            user_permissions: {
+                include: {
+                role_permission: {
+                    include: {
+                    sub_module: true,
+                    sub_module_permission: true,
+                    },
+                },
+                },
+            },
+            },
+        },
+        },
+    });
+
+    if (!user) {
+        throw new BadRequestException('User not found.');
+    }
+
+    const rolePermissions = user.user_roles.flatMap((userRole) =>
+        userRole.user_permissions.map((perm) => ({
+        role_id: userRole.role?.id,
+        role_name: userRole.role?.name,
+        action: perm.user_role_permission,
+        sub_module: perm.role_permission?.sub_module?.name ?? 'N/A',
+        sub_module_id: perm.role_permission?.sub_module?.id ?? null,
+        }))
+    );
+
+    return {
+        user_id: user.id,
+        username: user.username,
+        email: user.email,
+        roles: user.user_roles.map(r => ({
+        id: r.role?.id,
+        name: r.role?.name,
+        })),
+        permissions: rolePermissions,
+    };
     }
 
     async userNewResetToken(userEmailResetTokenDto: UserEmailResetTokenDto, user: RequestUser) {

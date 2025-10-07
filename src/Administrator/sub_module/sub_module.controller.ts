@@ -19,9 +19,9 @@ export class SubModuleController {
     constructor(private subModuleService: SubModuleService) {}
     //create submodule
     @Post('submodule')
-    @ApiBody({ type: CreateSubModuleDto, description: 'Payload for creating submodule' })
-    @ApiOperation({ summary: 'Create a new submodule'})
-    @ApiPostResponse('Submodulecreated successfully')                                                                         
+    @ApiBody({ type: CreateSubModuleDto, description: 'Payload to create Submodule' })
+    @ApiOperation({ summary: 'Create a new Submodule'})
+    @ApiPostResponse('Submodule created successfully')                                                                         
     @Can({
         action: ACTION_CREATE,  // the action of the subtion will be match with the current user role permission
         subject: SM_ADMIN.CORE_MODULE_SUB_MODULE, // SUBMODULE of Module Admin

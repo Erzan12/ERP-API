@@ -38,7 +38,7 @@ import { HomeController, ProfileController } from './Global/global.controller';
 import { DivisionService } from './Master/division/division.service';
 import { CreateCompanyDto } from './Master/company/dto/create-company.dto';
 import { CompanyService } from './Master/company/company.service';
-
+import { PermissionsGuard } from './Components/guards/permission.guard';
 
 @Module({
   imports: [
@@ -69,11 +69,11 @@ import { CompanyService } from './Master/company/company.service';
       provide: APP_GUARD,
       useClass: CustomJwtAuthGuard,
     },
-    // {
-    //   //global roles permission guard
-    //   provide: APP_GUARD,
-    //   useClass: PermissionsGuard,
-    // },
+    {
+      //global roles permission guard
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
+    },
     MailService, 
     PersonService, 
     EmployeeService, UserService, AdministratorService, PositionService, DepartmentService, CaslAbilityService, HrService, DivisionService, CompanyService, CreateDepartmentDto, CreatePositionDto, CreateDivisionDto, CreateCompanyDto
