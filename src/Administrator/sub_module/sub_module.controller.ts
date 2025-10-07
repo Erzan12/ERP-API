@@ -13,40 +13,33 @@ import { ApiPatchResponse, ApiPostResponse, ApiGetResponse } from 'src/Component
 import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
 
 @ApiBearerAuth('access-token')
-@ApiTags('SubModule')
+@ApiTags('System Management')
 @Controller('administrator')
 export class SubModuleController {
     constructor(private subModuleService: SubModuleService) {}
+    
+    //get list of submodules
+    @Get('submodules')
+    @ApiOperation({ summary: 'Get modules' })
+    @ApiGetResponse('Here are all the Sub modules available')
+    @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    async getSubmodules(
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.subModuleService.listSubModule(user);
+    }
+    
     //create submodule
     @Post('submodule')
     @ApiBody({ type: CreateSubModuleDto, description: 'Payload to create Submodule' })
     @ApiOperation({ summary: 'Create a new Submodule'})
     @ApiPostResponse('Submodule created successfully')                                                                         
-    @Can({
-        action: ACTION_CREATE,  // the action of the subtion will be match with the current user role permission
-        subject: SM_ADMIN.CORE_MODULE_SUB_MODULE, // SUBMODULE of Module Admin
-        // module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
-    })
+    @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
     async createSubModule( 
         @Body() createSubModuleDto: CreateSubModuleDto,
-        @SessionUser() user: RequestUser                                                          //to make decorator
-        ) {
-        return this.subModuleService.createSubModule(createSubModuleDto, user)
-    }
-
-    //get list of submodules
-    @Get('submodules')
-    @ApiOperation({ summary: 'Get modules' })
-    @ApiGetResponse('Here are all the Sub modules available')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.CORE_MODULE_SUB_MODULE,
-        // module: [MODULE_ADMIN],
-    }) 
-    async getSubmodules(
-        @SessionUser() user: RequestUser,
+        @SessionUser() user: RequestUser                                                          
     ) {
-        return this.subModuleService.listSubModule(user);
+        return this.subModuleService.createSubModule(createSubModuleDto, user)
     }
 
     //add permissions to submodules
@@ -54,15 +47,11 @@ export class SubModuleController {
     @ApiBody({ type: AssignSubModulePermissionDto, description: 'Payload to assign permissions for submodule' })
     @ApiOperation({ summary: 'Assign a new permission for submodule'})
     @ApiPostResponse('Permission assigned to a submodule successfully')                                                                        
-    @Can({
-        action: ACTION_CREATE,  // the action of the subtion will be match with the current user role permission
-        subject: SM_ADMIN.CORE_MODULE_SUB_MODULE, // SUBMODULE of Module Admin
-        // module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
-    })
+    @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
     async createSubModulePermission( 
         @Body() assignSubModulePermissionDto: AssignSubModulePermissionDto,
         @SessionUser() user: RequestUser 
-        ) {
+    ) {
         return this.subModuleService.assignSubModulePermissions(assignSubModulePermissionDto, user)
     }
 
@@ -74,11 +63,7 @@ export class SubModuleController {
     @ApiBody({ type: AddSubModulePermissionDto, description: 'Payload to create permissions for submodule' })
     @ApiOperation({ summary: 'Create a new permission for submodule'})
     @ApiPostResponse('Permission created successfully')
-    @Can({
-        action: ACTION_CREATE,
-        subject: SM_ADMIN.CORE_MODULE_SUB_MODULE,
-        // module: [MODULE_ADMIN]
-    })
+    @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
     async createPermission(
         @Body() addSubModuleDto: AddSubModulePermissionDto,
         @SessionUser() user: RequestUser,
@@ -92,11 +77,7 @@ export class SubModuleController {
     @ApiBody({ type: UpdateSubModulePermisisonDto, description: 'Payload to update the current sub module permission' })
     @ApiOperation({ summary: 'Update a current sub module permission' })
     @ApiPatchResponse('Sub module permission updated successfully')
-    @Can({
-        action: ACTION_UPDATE,
-        subject: SM_ADMIN.CORE_MODULE_SUB_MODULE,
-        // module: [MODULE_ADMIN]
-    })
+    @Can({ action: 'update', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
     async updatePermission(
         @Body() updateSubModulePermisisonDto: UpdateSubModulePermisisonDto,
         @SessionUser() user: RequestUser,

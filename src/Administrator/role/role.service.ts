@@ -165,7 +165,7 @@ export class RoleService {
             sub_module_id,
             role_id,
             role_name: existingRole.name,
-            sub_module_permission_id: subModulePermissionMap.get(act),
+            sub_module_permission_id: subModulePermissionMap.get(act)!, // ! to asset sub_mobule_permission id if it is always defined and cannot be null
         }));
 
         await this.prisma.rolePermission.createMany({

@@ -26,15 +26,6 @@ async function main() {
       })
     )
   );
-  // const [abisc, abmci, svsc, lmvc] = await Promise.all(
-  //   ['ABISC', 'ABMCI', 'SVSC', 'LMVC'].map((abbr) =>
-  //     prisma.company.upsert({
-  //       where: { abbreviation: abbr },
-  //       update: {},
-  //       create: { name: abbr, abbreviation: abbr },
-  //     }),
-  //   )
-  // );
 
   // 2. Seed Persons
   const hrPerson = await prisma.person.create({
@@ -234,7 +225,7 @@ async function main() {
       { name: 'Inbox', module_id: managerModule.id },
       { name: 'Dashboard', module_id: adminModule.id },
       { name: 'Audit Trail', module_id: adminModule.id },
-      { name: 'Master Tables', module_id: adminModule.id },
+      { name: 'Mastertables', module_id: adminModule.id },
       // { name: 'Master Tables - Position', module_id: adminModule.id },
       // { name: 'Master Tables - Department', module_id: adminModule.id },
       // { name: 'Master Tables - Company', module_id: adminModule.id },
@@ -248,18 +239,6 @@ async function main() {
   const subModules = await prisma.subModule.findMany();
 
   // 6.5 Create Permissions for submodules
-  // await prisma.addedSubModPermission.createMany({
-  //   data: [
-  //     { action: 'view', stat: 1 },
-  //     { action: 'create', stat: 1 },
-  //     { action: 'read', stat: 1 },
-  //     { action: 'update', stat: 1 },
-  //     { action: 'delete', stat: 1 },
-  //   ],
-  //   skipDuplicates: true, // Optional: avoids re-inserting existing actions
-  // });
-
-  // 6.5 Create Permissions for submodules
   const defaultActions = ['view', 'create', 'read', 'update', 'delete'];
 
   await prisma.addedSubModPermission.createMany({
@@ -267,90 +246,6 @@ async function main() {
     skipDuplicates: true,
   });
 
-  // 7. Create Permissions
-  const permissions = [
-    { action: 'read', sub_module_id: 1, added_sub_mod_permission_id: 1 },
-    { action: 'update', sub_module_id: 1 },
-    { action: 'create', sub_module_id: 1 },
-    { action: 'read', sub_module_id: 2 },
-    { action: 'update', sub_module_id: 2 },
-    { action: 'create', sub_module_id: 2 },
-    { action: 'delete', sub_module_id: 2 },
-    { action: 'read', sub_module_id: 3 },
-    { action: 'create', sub_module_id: 3 },
-    { action: 'update', sub_module_id: 3 },
-    { action: 'delete', sub_module_id: 3 },
-    { action: 'read', sub_module_id: 4 },
-    { action: 'update', sub_module_id: 4 },
-    { action: 'create', sub_module_id: 4 },
-    { action: 'read', sub_module_id: 5 },
-    { action: 'create', sub_module_id: 5 },
-    { action: 'update', sub_module_id: 5 },
-    { action: 'delete', sub_module_id: 5 },
-    { action: 'read', sub_module_id: 6 },
-    { action: 'update', sub_module_id: 6 },
-    { action: 'create', sub_module_id: 6 },
-    { action: 'read', sub_module_id: 7 },
-    { action: 'create', sub_module_id: 7 },
-    { action: 'update', sub_module_id: 7 },
-    { action: 'delete', sub_module_id: 7 },
-    { action: 'read', sub_module_id: 8 },
-    { action: 'create', sub_module_id: 8 },
-    { action: 'update', sub_module_id: 8 },
-    { action: 'delete', sub_module_id: 8 },
-    { action: 'read', sub_module_id: 9 },
-    { action: 'create', sub_module_id: 9 },
-    { action: 'update', sub_module_id: 9 },
-    { action: 'delete', sub_module_id: 9 },
-    { action: 'read', sub_module_id: 10 },
-    { action: 'create', sub_module_id: 10 },
-    { action: 'update', sub_module_id: 10 },
-    { action: 'delete', sub_module_id: 10 },
-    { action: 'read', sub_module_id: 11 },
-    { action: 'create', sub_module_id: 11 },
-    { action: 'update', sub_module_id: 11 },
-    { action: 'delete', sub_module_id: 11 },
-    { action: 'read', sub_module_id: 12 },
-    { action: 'create', sub_module_id: 12 },
-    { action: 'update', sub_module_id: 12 },
-    { action: 'delete', sub_module_id: 12 },
-    { action: 'read', sub_module_id: 13 },
-    { action: 'create', sub_module_id: 13 },
-    { action: 'update', sub_module_id: 13 },
-    { action: 'delete', sub_module_id: 13 },
-  ];
-
-  // const permissionRecords = await Promise.all(
-  //   permissions.map((perm) =>
-  //     prisma.subModulePermission.create({
-  //       data: perm,
-  //     })
-      
-  //   )
-  // );
-  const addedPermissions = await prisma.addedSubModPermission.findMany();
-  const actionMap = new Map<string, number>();
-
-  addedPermissions.forEach((perm) => {
-    actionMap.set(perm.action, perm.id);
-  });
-
-  const permissionRecords = await Promise.all(
-    permissions.map((perm) => {
-      const addedPermId = actionMap.get(perm.action);
-
-      if (!addedPermId) {
-        throw new Error(`Unknown action: ${perm.action}`);
-      }
-
-      return prisma.subModulePermission.create({
-        data: {
-          ...perm,
-          added_sub_mod_permission_id: addedPermId,
-        },
-      });
-    })
-  );
 
   // 8. Create Roles
   const roleNames = [
@@ -383,88 +278,11 @@ async function main() {
   const itRole = roleRecords.find((r) => r.name === 'IT Staff')!;
   const manRole = roleRecords.find((r) => r.name === 'Manager')!;
 
-  // 9. Create RolePermissions
-  // await prisma.rolePermission.createMany({
-  //   data: [
-  //     {
-  //       role_id: hrRole.id,
-  //       sub_module_id: permissionRecords[1].sub_module_id,
-  //       module_id: hrModule.id,
-  //       action: permissionRecords[1].action,
-  //       sub_module_permission_id: permissionRecords[1].id,
-  //     },
-  //     {
-  //       role_id: hrRole.id,
-  //       sub_module_id: permissionRecords[2].sub_module_id,
-  //       module_id: hrModule.id,
-  //       action: permissionRecords[2].action,
-  //       sub_module_permission_id: permissionRecords[2].id,
-  //     },
-  //     {
-  //       role_id: itRole.id,
-  //       sub_module_id: permissionRecords[3].sub_module_id,
-  //       module_id: managerModule.id,
-  //       action: permissionRecords[3].action,
-  //       sub_module_permission_id: permissionRecords[3].id,
-  //     },
-  //     {
-  //       role_id: itRole.id,
-  //       sub_module_id: permissionRecords[4].sub_module_id,
-  //       module_id: managerModule.id,
-  //       action: permissionRecords[4].action,
-  //       sub_module_permission_id: permissionRecords[4].id,
-  //     },
-  //     {
-  //       role_id: itRole.id,
-  //       sub_module_id: permissionRecords[5].sub_module_id,
-  //       module_id: managerModule.id,
-  //       action: permissionRecords[5].action,
-  //       sub_module_permission_id: permissionRecords[5].id,
-  //     },
-  //     {
-  //       role_id: adminRole.id,
-  //       sub_module_id: permissionRecords[6].sub_module_id,
-  //       module_id: adminModule.id,
-  //       action: permissionRecords[6].action,
-  //       sub_module_permission_id: permissionRecords[6].id,
-  //     },
-  //     {
-  //       role_id: adminRole.id,
-  //       sub_module_id: permissionRecords[7].sub_module_id,
-  //       module_id: adminModule.id,
-  //       action: permissionRecords[7].action,
-  //       sub_module_permission_id: permissionRecords[7].id,
-  //     },
-  //     {
-  //       role_id: adminRole.id,
-  //       sub_module_id: permissionRecords[8].sub_module_id,
-  //       module_id: adminModule.id,
-  //       action: permissionRecords[8].action,
-  //       sub_module_permission_id: permissionRecords[8].id,
-  //     },
-  //     {
-  //       role_id: adminRole.id,
-  //       sub_module_id: permissionRecords[9].sub_module_id,
-  //       module_id: adminModule.id,
-  //       action: permissionRecords[9].action,
-  //       sub_module_permission_id: permissionRecords[9].id,
-  //     },
-  //     {
-  //       role_id: adminRole.id,
-  //       sub_module_id: permissionRecords[10].sub_module_id,
-  //       module_id: adminModule.id,
-  //       action: permissionRecords[10].action,
-  //       sub_module_permission_id: permissionRecords[10].id,
-  //     },
-  //   ],
-  //   skipDuplicates: true,
-  // });
-
     // Create Employement Status
   // async function main() {
     // EmploymentStatus seed
     const employmentStatuses = [
-      { code: 'ACTIVE', label: 'Active' },
+      { code: 'REGULAR', label: 'Regular' },
       { code: 'ON_LEAVE', label: 'On Leave' },
       { code: 'TERMINATED', label: 'Terminated' },
       { code: 'RESIGNED', label: 'Resigned' },
@@ -483,7 +301,7 @@ async function main() {
   // }
 
   // After upserting employment statuses
-  const activeStatus = await prisma.employmentStatus.findUnique({ where: { code: 'ACTIVE' } });
+  const activeStatus = await prisma.employmentStatus.findUnique({ where: { code: 'REGULAR' } });
 
   if (!activeStatus) {
     throw new Error("Active employment status not found!");

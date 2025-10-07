@@ -76,8 +76,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
-          "Hr"
+          "Human Resources"
         ]
       }
     },
@@ -187,7 +192,7 @@
         ],
         "summary": "Create a new Module",
         "tags": [
-          "Module"
+          "System Management"
         ]
       }
     },
@@ -255,7 +260,7 @@
         ],
         "summary": "Create new role",
         "tags": [
-          "Role"
+          "System Management"
         ]
       }
     },
@@ -822,8 +827,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
-          "Hr"
+          "Human Resources"
         ]
       }
     },
@@ -836,8 +846,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
-          "Hr"
+          "Human Resources"
         ]
       }
     },
@@ -850,8 +865,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
-          "Hr"
+          "Human Resources"
         ]
       }
     },
@@ -864,8 +884,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
-          "Hr"
+          "Human Resources"
         ]
       }
     },
@@ -878,8 +903,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
-          "Hr"
+          "Human Resources"
         ]
       }
     },
@@ -892,8 +922,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
-          "Hr"
+          "Human Resources"
         ]
       }
     },
@@ -906,8 +941,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "tags": [
-          "Hr"
+          "Human Resources"
         ]
       }
     },
@@ -967,9 +1007,14 @@
             "description": "Not Found - User not found"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "summary": "User authorized login",
         "tags": [
-          "Auth"
+          "Authentication"
         ]
       }
     },
@@ -1013,9 +1058,14 @@
             "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "summary": "User reset password",
         "tags": [
-          "Auth"
+          "Authentication"
         ]
       }
     },
@@ -1301,6 +1351,38 @@
         ]
       }
     },
+    "/administrator/submodules": {
+      "get": {
+        "operationId": "SubModuleController_getSubmodules",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are all the Sub modules available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get modules",
+        "tags": [
+          "System Management"
+        ]
+      }
+    },
     "/administrator/submodule": {
       "post": {
         "operationId": "SubModuleController_createSubModule",
@@ -1340,39 +1422,7 @@
         ],
         "summary": "Create a new Submodule",
         "tags": [
-          "SubModule"
-        ]
-      }
-    },
-    "/administrator/submodules": {
-      "get": {
-        "operationId": "SubModuleController_getSubmodules",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Here are all the Sub modules available"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Get modules",
-        "tags": [
-          "SubModule"
+          "System Management"
         ]
       }
     },
@@ -1415,7 +1465,7 @@
         ],
         "summary": "Assign a new permission for submodule",
         "tags": [
-          "SubModule"
+          "System Management"
         ]
       }
     },
@@ -1458,7 +1508,7 @@
         ],
         "summary": "Create a new permission for submodule",
         "tags": [
-          "SubModule"
+          "System Management"
         ]
       }
     },
@@ -1510,7 +1560,7 @@
         ],
         "summary": "Update a current sub module permission",
         "tags": [
-          "SubModule"
+          "System Management"
         ]
       }
     },
@@ -1542,7 +1592,7 @@
         ],
         "summary": "Get modules",
         "tags": [
-          "Module"
+          "System Management"
         ]
       }
     },
@@ -1583,7 +1633,7 @@
         ],
         "summary": "Get module by ID",
         "tags": [
-          "Module"
+          "System Management"
         ]
       }
     },
@@ -1635,7 +1685,7 @@
         ],
         "summary": "Update current module",
         "tags": [
-          "Module"
+          "System Management"
         ]
       }
     },
@@ -1667,7 +1717,7 @@
         ],
         "summary": "Get all Roles",
         "tags": [
-          "Role"
+          "System Management"
         ]
       }
     },
@@ -1709,7 +1759,7 @@
         ],
         "summary": "Adding permission to role",
         "tags": [
-          "Role"
+          "System Management"
         ]
       },
       "patch": {
@@ -1749,7 +1799,7 @@
         ],
         "summary": "Updating current permission to role",
         "tags": [
-          "Role"
+          "System Management"
         ]
       }
     },
@@ -1785,7 +1835,7 @@
           }
         ],
         "tags": [
-          "Role"
+          "System Management"
         ]
       }
     },
@@ -1856,7 +1906,7 @@
   },
   "tags": [
     {
-      "name": "Auth",
+      "name": "Authentication",
       "description": "Endpoint for user authorization."
     },
     {
@@ -1864,7 +1914,7 @@
       "description": "Enpoint for managing users."
     },
     {
-      "name": "Hr",
+      "name": "Human Resources",
       "description": "Endpoint for managing employees."
     },
     {
@@ -1876,28 +1926,20 @@
       "description": "Endppoint for managing the system"
     },
     {
-      "name": "Module",
-      "description": "Endpoint for core modules"
+      "name": "System Management",
+      "description": "Administer modules, submodules, and role permissions"
     },
     {
-      "name": "SubModule",
-      "description": "Endpoint for core modules"
-    },
-    {
-      "name": "Role",
-      "description": "Endpoint for core modules"
-    },
-    {
-      "name": "EmploymentStatus",
+      "name": "Employment Status",
       "description": "Endpoint for employement status crud"
     },
     {
       "name": "Employee",
-      "description": "Endpoint for employee crud"
+      "description": "Endpoint for employee"
     },
     {
       "name": "Person",
-      "description": "Endpoint for person crud"
+      "description": "Endpoint for person"
     },
     {
       "name": "Home",

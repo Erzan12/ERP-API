@@ -61,7 +61,6 @@ import { PermissionsGuard } from './Components/guards/permission.guard';
   ],
   providers: [ 
     // ManagerService,
-    // JwtStrategy,
     UserService,
     PrismaService,
     {
@@ -81,37 +80,3 @@ import { PermissionsGuard } from './Components/guards/permission.guard';
   controllers: [PersonController, EmployeeController, AdministratorController, MasterController, HrController, ManagerController, HomeController, ProfileController, AuthController, UserController],
 })
 export class AppModule {}
-
-// implements NestModule{
-//   configure(consumer: MiddlewareConsumer) {
-//       consumer
-//         .apply(Authenticated)
-//         .exclude({path: 'auth/login', method: RequestMethod.POST}) //skip routes will not be included in refreshtoken session logout - 
-//         .forRoutes('*')
-//         //apply for all routes -> forRoutes('*')
-//   }
-// }
-
-// implements NestModule{
-//   configure(consumer: MiddlewareConsumer) {
-//       // consumer.apply(JwtMiddleware).forRoutes('*') // Apply to all routes for now
-
-//       // consumer
-//       //   .apply(JwtMiddleware)
-//       //   .exclude('auth/login') // skip routes
-//       //   .forRoutes('*'); 
-
-//       //alternative approach for excluding a public route
-//       consumer
-//       .apply(JwtStrategy)
-//       .exclude(
-//         { path: 'auth/login', method: RequestMethod.POST },
-//         { path: 'auth/reset-password', method: RequestMethod.POST},
-//         { path: 'person/:id', method: RequestMethod.DELETE},
-//         { path: 'admin/user-register', method: RequestMethod.POST },
-//         { path: 'hr/employee-create', method: RequestMethod.POST},
-//         // Add more exclusions here if needed
-//       )
-//       .forRoutes('*');
-//   }
-// }

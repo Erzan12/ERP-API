@@ -105,16 +105,22 @@ export class AuthService {
                 include: {
                     // role: {
                     // include: {
-                        role_permission: {
-                        include: {
-                            // permission: true,
-                            sub_module_permission: true,
+                        // role_permission: {
+                        // include: {
+                        //     // permission: true,
+                        //     sub_module_permission: true,
                         
-                        },
-                        },
-                    // },
-                    // },
-                    // module: true,
+                        // },
+                        // },
+                    user_permissions: {
+                        include: {
+                            role_permission: {
+                                include: {
+                                    sub_module_permission: true,
+                                }
+                            }
+                        }
+                    }
                 },
             },
         },

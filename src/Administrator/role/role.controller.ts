@@ -16,7 +16,7 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/Components/helpers/swagger-response.helper';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Role')
+@ApiTags('System Management')
 @Controller('administrator')
 export class RoleController {
     constructor(private roleService: RoleService, private prisma: PrismaService) {}
@@ -25,10 +25,7 @@ export class RoleController {
     @Get('roles')
     @ApiOperation({ summary: 'Get all Roles' })
     @ApiGetResponse('Here are the list of Roles')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.CORE_MODULE_ROLE,
-    })
+    @Can({ action: 'read', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
     async getAllRole(
         @SessionUser() user: RequestUser
     ) {
@@ -39,11 +36,7 @@ export class RoleController {
     @Post('role')
     @ApiOperation({ summary: 'Create new role'})   
     @ApiPostResponse('Role created successfully')                                                                       
-    @Can({
-        action: ACTION_CREATE,  // the action of the subtion will be match with the current user role permission
-        subject: SM_ADMIN.CORE_MODULE_ROLE, // SUBMODULE of Module Admin
-        // module: [MODULE_ADMIN] // or MODULE_HR if it's from Admin
-    })
+    @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
     async createRole(
         @Body() createRoleDto: CreateRoleDto,
         @SessionUser() user: RequestUser 
@@ -55,11 +48,7 @@ export class RoleController {
     @Post('role_permission')
     @ApiOperation({ summary: 'Adding permission to role'})
     @ApiPostResponse('Permissions added to role')                                                            
-    @Can({
-        action: ACTION_CREATE,
-        subject: SM_ADMIN.CORE_MODULE_ROLE,
-        // module: [MODULE_ADMIN]
-    })       
+    @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc     
     async createRolePermission(
         @Body() createRolePermissionDto: CreateRolePermissionDto,
         @SessionUser() user: RequestUser,
@@ -71,11 +60,7 @@ export class RoleController {
     @Patch('role_permission')
     @ApiOperation({ summary: 'Updating current permission to role'})
     @ApiPatchResponse('Permissions updated to role') 
-    @Can({
-        action: ACTION_UPDATE,
-        subject: SM_ADMIN.CORE_MODULE_ROLE,
-        // module: [MODULE_ADMIN] 
-    })
+    @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
     async updateRolePermissions( 
         @Body() updateRolePermissionsDto: UpdateRolePermissionsDto,
         @SessionUser() user: RequestUser,                                                       

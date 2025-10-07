@@ -11,7 +11,7 @@ import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/Component
 import { UpdateModuleDto } from './dto/update-module.dto';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Module')
+@ApiTags('System Management')
 @Controller('administrator')
 export class ModuleController {
     constructor(private moduleService: ModuleService) {}
@@ -19,11 +19,7 @@ export class ModuleController {
     @Get('modules')
     @ApiOperation({ summary: 'Get modules' })
     @ApiGetResponse('Here are all the Modules available')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.CORE_MODULE_MODULE,
-        // module: [MODULE_ADMIN],
-    })
+    @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async getModules(
         @SessionUser() user: RequestUser,
     ) {
@@ -33,14 +29,10 @@ export class ModuleController {
     @Post('module')
     @ApiOperation({ summary: 'Create a new Module' })
     @ApiPostResponse('Module created successfully')                                                                       
-    @Can({
-        action: ACTION_CREATE,
-        subject: SM_ADMIN.CORE_MODULE_MODULE,
-        // module: [MODULE_ADMIN],
-    })
+    @Can({ action: 'create', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async createModule( 
         @Body() createModuleDto: CreateModuleDto,
-        @SessionUser() user: RequestUser                                                            // to make enum decorator
+        @SessionUser() user: RequestUser                                       
         ) {
         return this.moduleService.createModule(createModuleDto, user)
     }
@@ -48,11 +40,7 @@ export class ModuleController {
     @Get('module/view/:id')
     @ApiOperation({ summary: 'Get module by ID' })
     @ApiGetResponse('Details of the module with submodules')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.CORE_MODULE_MODULE,
-        // module: [MODULE_ADMIN],
-    })
+    @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async getModule(
         @SessionUser() user: RequestUser,
         @Param('id') id: number, // 👈 this gets the `:id` from the URL
@@ -64,11 +52,7 @@ export class ModuleController {
     @ApiBody({ type: UpdateModuleDto, description: 'Payload to update the module info'})
     @ApiOperation({ summary: 'Update current module' })
     @ApiPatchResponse('Module updated successfully')
-    @Can({
-        action: ACTION_CREATE,
-        subject: SM_ADMIN.CORE_MODULE_MODULE,
-        // module: [MODULE_ADMIN]
-    })
+    @Can({ action: 'update', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async updateModule(
         @Body() updateModuleDto: UpdateModuleDto,
         @SessionUser() user: RequestUser,

@@ -57,7 +57,7 @@ export class UserService {
                 throw new BadRequestException('Username or email address already exist!');
             }
 
-            const createUser = await this.prisma.user.findUnique({
+            const creatorUser = await this.prisma.user.findUnique({
                 where: { id: user.id },
                 include: {
                     employee: {
@@ -69,12 +69,12 @@ export class UserService {
                 },
             });
 
-            if (!createUser || !createUser.employee || !createUser.employee.person) {
+            if (!creatorUser  || !creatorUser.employee || !creatorUser.employee.person) {
                 throw new BadRequestException(`Creator (manager) information not found.`);
             }
 
-            const admin = `${createUser.employee.person.first_name} ${createUser.employee.person.last_name}`;
-            const adminPos = createUser.employee.position.name;
+            const admin = `${creatorUser.employee.person.first_name} ${creatorUser.employee.person.last_name}`;
+            const adminPos = creatorUser.employee.position.name;
 
             const employee = await this.prisma.employee.findUnique({
                 where: { employee_id: createUserWithRolePermissionDto.user_details.employee_id },
@@ -93,7 +93,7 @@ export class UserService {
                 throw new BadRequestException('User already exist');
             }
 
-            const userCreate = await tx.user.create({
+            const newUser = await tx.user.create({
                 data: {
                     employee_id: employee.id,
                     person_id: employee.person.id,
@@ -102,7 +102,7 @@ export class UserService {
                     password: hashedPassword,
                     stat: 1,
                     require_reset: 1,
-                    created_by: createUser.id,
+                    created_by: creatorUser.id,
                     created_at: new Date(),
                 },
                 include: { employee: true },
@@ -131,54 +131,53 @@ export class UserService {
                 const userRolesMap = new Map<string, any>();
 
                 for (const rp of rolePermissions) {
-                const key = `${rp.role_id}-${rp.sub_module_id}`;
+                    const key = `${rp.role_id}-${rp.sub_module_id}`;
 
-                let userRole = userRolesMap.get(key);
+                    let userRole = userRolesMap.get(key);
 
-                // Check if UserRole already exists (based on user_id, role_id, module_id)
-                if (!userRole) {
-                    userRole = await tx.userRole.findFirst({
-                    where: {
-                        user_id: userCreate.id,
-                        role_id: rp.role_id,
-                    },
-                    });
-
-                    // If not exists, create new
                     if (!userRole) {
-                    userRole = await tx.userRole.create({
-                        data: {
-                            user_id: userCreate.id,
-                            role_id: rp.role_id,
-                            role_name: rp.role_name ?? null, // Store from RolePermission
-                            role_permission_id: rp.id,
-                            created_at: new Date(),
-                        },
+                            // Check if UserRole already exists
+                            userRole = await tx.userRole.findFirst({
+                            where: {
+                                user_id: newUser.id,
+                                role_id: rp.role_id,
+                            },
                         });
+
+                        // If not exists, create it
+                        if (!userRole) {
+                            userRole = await tx.userRole.create({
+                                data: {
+                                    user_id: newUser.id,
+                                    role_id: rp.role_id,
+                                    role_name: rp.role_name,
+                                    created_at: new Date(),
+                                },
+                            });
+                        }
+
+                        userRolesMap.set(key, userRole);
                     }
 
-                    userRolesMap.set(key, userRole);
-                }
-
-                // Check if UserPermission already exists for this user + role_permission
-                const existingPermission = await tx.userPermission.findFirst({
-                    where: {
-                    user_id: userCreate.id,
-                    user_role_id: userRole.id,
-                    role_permission_id: rp.id,
-                    },
-                });
-
-                if (!existingPermission) {
-                    await tx.userPermission.create({
-                    data: {
-                        user_id: userCreate.id,
-                        user_role_id: userRole.id,
-                        user_role_permission: rp.action,
-                        role_permission_id: rp.id,
-                    },
+                    // Ensure no duplicate permission
+                    const existingPermission = await tx.userPermission.findFirst({
+                        where: {
+                            user_id: newUser.id,
+                            user_role_id: userRole.id,
+                            role_permission_id: rp.id,
+                        },
                     });
-                }
+
+                    if (!existingPermission) {
+                            await tx.userPermission.create({
+                            data: {
+                                user_id: newUser.id,
+                                user_role_id: userRole.id,
+                                role_permission_id: rp.id,
+                                action: rp.action,
+                            },
+                        });
+                    }
                 }
             }
 
@@ -186,7 +185,7 @@ export class UserService {
             const tokenKey = crypto.randomBytes(64).toString('hex');
             const createdToken = await tx.passwordResetToken.create({
                 data: {
-                    user_id: userCreate.id,
+                    user_id: newUser.id,
                     password_token: tokenKey,
                     expires_at: new Date(Date.now() + 60 * 60 * 24 * 3 * 1000),
                 },
@@ -196,7 +195,7 @@ export class UserService {
             const userToken = crypto.randomBytes(64).toString('hex');
             await tx.userToken.create({
                 data: {
-                    user_id: userCreate.id,
+                    user_id: newUser.id,
                     user_token: userToken,
                 },
             });
@@ -211,14 +210,14 @@ export class UserService {
 
             return {
                 status: 'success',
-                message: `User ${userCreate.username} with Employee ID ${userCreate.employee.employee_id} created with temporary password.`,
+                message: `User ${newUser.username} with Employee ID ${newUser.employee.employee_id} created with temporary password.`,
                 created_by: {
-                    id: createUser.id,
+                    id: creatorUser.id,
                     name: admin,
                     position: adminPos,
                 },
-                user_id: userCreate.id,
-                username: userCreate.username,
+                user_id: newUser.id,
+                username: newUser.username,
                 password: plainPassword,
                 reset_token: createdToken.password_token,
                 // user_permission_template: templates
@@ -241,29 +240,55 @@ export class UserService {
             for (const rp of rolePermissions) {
             const key = `${rp.role_id}-${rp.sub_module_id}`;
 
+            // let userRole = userRolesMap.get(key);
+            // if (!userRole) {
+            //     userRole = await tx.userRole.create({
+            //     data: {
+            //         user_id: user.id,
+            //         role_id: rp.role_id,
+            //         role_permission_id: rp.id,
+            //         role_name: rp.role_name ?? null,
+            //         // module_id: 1,
+            //         // department_id: 1,
+            //         created_at: new Date(),
+            //     },
+            //     });
+            //     userRolesMap.set(key, userRole);
+            // }
             let userRole = userRolesMap.get(key);
+
+            // Check DB for existing UserRole (user_id + role_id)
             if (!userRole) {
-                userRole = await tx.userRole.create({
-                data: {
+                userRole = await tx.userRole.findFirst({
+                    where: {
                     user_id: user.id,
                     role_id: rp.role_id,
-                    role_permission_id: rp.id,
-                    // module_id: 1,
-                    // department_id: 1,
-                    created_at: new Date(),
                 },
+            });
+
+            if (!userRole) {
+                userRole = await tx.userRole.create({
+                    data: {
+                        user_id: user.id,
+                        role_id: rp.role_id,
+                        role_name: rp.role_name ?? null,
+                        // role_permission_id: rp.id,
+                        created_at: new Date(),
+                    },
                 });
-                userRolesMap.set(key, userRole);
+            }
+
+            userRolesMap.set(key, userRole);
             }
 
             await tx.userPermission.create({
-                data: {
-                user_id: user.id,
-                user_role_id: userRole.id,
-                user_role_permission: rp.action,
-                role_permission_id: rp.id,
-                },
-            });
+                    data: {
+                        user_id: user.id,
+                        user_role_id: userRole.id,
+                        role_permission_id: rp.id,
+                        action: rp.action,
+                    },
+                });
             }
 
             return { message: 'Roles and permissions added to user.' };
@@ -278,12 +303,12 @@ export class UserService {
         user_roles: {
             include: {
             role: true,
-            role_permission: {
-                include: {
-                sub_module: true,
-                sub_module_permission: true,
-                },
-            },
+            // role_permission: {
+            //     include: {
+            //     sub_module: true,
+            //     sub_module_permission: true,
+            //     },
+            // },
             user_permissions: {
                 include: {
                 role_permission: {
@@ -304,12 +329,12 @@ export class UserService {
     }
 
     const rolePermissions = user.user_roles.flatMap((userRole) =>
-        userRole.user_permissions.map((perm) => ({
-        role_id: userRole.role?.id,
-        role_name: userRole.role?.name,
-        action: perm.user_role_permission,
-        sub_module: perm.role_permission?.sub_module?.name ?? 'N/A',
-        sub_module_id: perm.role_permission?.sub_module?.id ?? null,
+            userRole.user_permissions.map((perm) => ({
+            role_id: userRole.role?.id,
+            role_name: userRole.role?.name,
+            action: perm.action,
+            sub_module: perm.role_permission?.sub_module?.name ?? 'N/A',
+            sub_module_id: perm.role_permission?.sub_module?.id ?? null,
         }))
     );
 

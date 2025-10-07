@@ -141,12 +141,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             //     module: true,
             //   },
             // },
-            role_permission: {
-              include: {
-                sub_module: true,
-                sub_module_permission: true,
-              },
-            },
+            // role_permission: {
+            //   include: {
+            //     sub_module: true,
+            //     sub_module_permission: true,
+            //   },
+            // },
             user_permissions: {
               include: {
                 role_permission: {
