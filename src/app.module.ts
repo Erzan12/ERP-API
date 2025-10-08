@@ -68,11 +68,11 @@ import { PermissionsGuard } from './Components/guards/permission.guard';
       provide: APP_GUARD,
       useClass: CustomJwtAuthGuard,
     },
-    {
-      //global roles permission guard
-      provide: APP_GUARD,
-      useClass: PermissionsGuard,
-    },
+    // {
+    //   //global roles permission guard
+    //   provide: APP_GUARD,
+    //   useClass: PermissionsGuard,
+    // },
     MailService, 
     PersonService, 
     EmployeeService, UserService, AdministratorService, PositionService, DepartmentService, CaslAbilityService, HrService, DivisionService, CompanyService, CreateDepartmentDto, CreatePositionDto, CreateDivisionDto, CreateCompanyDto

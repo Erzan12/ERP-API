@@ -1,8 +1,8 @@
-import {
-  ACTION_CREATE,
-  MODULE_ADMIN,
-  MODULE_HR,
-} from '../../Components/decorators/ability';
+// import {
+//   ACTION_CREATE,
+//   MODULE_ADMIN,
+//   MODULE_HR,
+// } from '../../Components/decorators/ability';
 import { Controller, Post, Body, Get, ValidationPipe, UsePipes } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { CreateEmployeeWithDetailsDto } from './dto/create-employee-with-details.dto';
@@ -23,11 +23,11 @@ export class EmployeeController {
   @ApiBody ({ type: CreateEmployeeWithDetailsDto, description: 'Payload to create a new employee' })
   @ApiOperation({ summary: 'Create a new Employee'})
   @ApiPostResponse('Employee created successfully')
-  @Can({
-        action: ACTION_CREATE,
-        subject: SM_HR.EMPLOYEE_MASTERLIST,
-        // module: [MODULE_HR]
-  })
+  // @Can({
+  //       action: ACTION_CREATE,
+  //       subject: SM_HR.EMPLOYEE_MASTERLIST,
+  //       // module: [MODULE_HR]
+  // })
   async createEmployee(
     @Body() createDto: CreateEmployeeWithDetailsDto, 
     @SessionUser() user: RequestUser,

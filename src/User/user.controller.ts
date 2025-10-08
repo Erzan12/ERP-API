@@ -3,7 +3,7 @@ import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-per
 import { SessionUser } from '../Components/decorators/session-user.decorator';
 import { UserService } from '../User/user.service';
 import { Can } from '../Components/decorators/can.decorator';
-import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, MODULE_ADMIN, MODULE_MNGR } from '../Components/decorators/ability';
+// import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, MODULE_ADMIN, MODULE_MNGR } from '../Components/decorators/ability';
 import { SM_ADMIN } from '../Components/constants/core-constants';
 import { RequestUser } from '../Components/types/request-user.interface';
 import { DeactivateUserAccountDto, ReactivateUserAccountDto } from './dto/user-account-status.dto';
@@ -23,11 +23,11 @@ export class UserController {
         @Get()
         @ApiOperation({ summary: 'Get User Accounts' })
         @ApiGetResponse('Here are all the User Accounts available')
-        @Can({
-            action: ACTION_READ,
-            subject: SM_ADMIN.USER_ACCOUNT,
-            // module: [ MODULE_MNGR, MODULE_ADMIN ] // or MODULE_HR if it's from Admin
-        })
+        // @Can({
+        //     action: ACTION_READ,
+        //     subject: SM_ADMIN.USER_ACCOUNT,
+        //     // module: [ MODULE_MNGR, MODULE_ADMIN ] // or MODULE_HR if it's from Admin
+        // })
         async viewUsers(
             @SessionUser() user: RequestUser,
         ) {
@@ -46,11 +46,11 @@ export class UserController {
         @ApiBody({ type: CreateUserWithRolePermissionDto, description: 'Payload to create User Account'})
         @ApiOperation({ summary: 'Create a new user account' })
         @ApiPostResponse('User Account created successfully')
-        @Can({
-            action: ACTION_CREATE,
-            subject: SM_ADMIN.USER_ACCOUNT,
-            // module: [ MODULE_MNGR, MODULE_ADMIN] // or MODULE_HR if it's from Admin
-        })
+        // @Can({
+        //     action: ACTION_CREATE,
+        //     subject: SM_ADMIN.USER_ACCOUNT,
+        //     // module: [ MODULE_MNGR, MODULE_ADMIN] // or MODULE_HR if it's from Admin
+        // })
         async createUser(
             @Body() createUserWithRolePermissionDto: CreateUserWithRolePermissionDto,
             @SessionUser() user: RequestUser
@@ -62,10 +62,10 @@ export class UserController {
         @Post('role_permission')
         @ApiOperation({ summary: 'Add Role permissions to user' })
         @ApiPostResponse('Role permission added to user successfully')
-        @Can({
-            action: ACTION_CREATE,
-            subject: SM_ADMIN.USER_ACCOUNT,
-        })
+        // @Can({
+        //     action: ACTION_CREATE,
+        //     subject: SM_ADMIN.USER_ACCOUNT,
+        // })
         async addRolePermission(
             @Body() addUserRolePermissionsDto: AddUserRolePermissionsDto,
             @SessionUser() user: RequestUser
@@ -75,11 +75,11 @@ export class UserController {
 
         //for expired first time login reset token key 
         @Post('new_reset_token')
-        @Can({
-            action: ACTION_CREATE,
-            subject: SM_ADMIN.USER_ACCOUNT,
-            // module: [MODULE_MNGR, MODULE_ADMIN] // or MODULE_HR if it's from Admin
-        })     
+        // @Can({
+        //     action: ACTION_CREATE,
+        //     subject: SM_ADMIN.USER_ACCOUNT,
+        //     // module: [MODULE_MNGR, MODULE_ADMIN] // or MODULE_HR if it's from Admin
+        // })     
         async newResetToken(
             @Body() userEmailResetTokenDto: UserEmailResetTokenDto,
             @SessionUser() user: RequestUser,
@@ -90,11 +90,11 @@ export class UserController {
         // view user tokens
         // to set up viewuser token keys in service
         @Get('token_keys')
-        @Can({
-            action: ACTION_READ,
-            subject: SM_ADMIN.USER_TOKEN_KEY,
-            // module: [MODULE_ADMIN]
-        })
+        // @Can({
+        //     action: ACTION_READ,
+        //     subject: SM_ADMIN.USER_TOKEN_KEY,
+        //     // module: [MODULE_ADMIN]
+        // })
          async viewUserKeys(
             @Body() createUserWithTemplateDto: CreateUserWithRolePermissionDto,
             @SessionUser() user: RequestUser
@@ -103,11 +103,11 @@ export class UserController {
         }
 
         @Patch('deactivate')
-        @Can({
-            action: ACTION_UPDATE,
-            subject: SM_ADMIN.USER_ACCOUNT,
-            // module: [MODULE_ADMIN],
-        })
+        // @Can({
+        //     action: ACTION_UPDATE,
+        //     subject: SM_ADMIN.USER_ACCOUNT,
+        //     // module: [MODULE_ADMIN],
+        // })
         async deactivateUser(
             @Body() deactivateUserAccountDto: DeactivateUserAccountDto,
             @SessionUser() user: RequestUser,
@@ -116,11 +116,11 @@ export class UserController {
         }
 
         @Patch('reactivate')
-        @Can({
-            action: ACTION_UPDATE,
-            subject: SM_ADMIN.USER_ACCOUNT,
-            // module: [MODULE_ADMIN],
-        })
+        // @Can({
+        //     action: ACTION_UPDATE,
+        //     subject: SM_ADMIN.USER_ACCOUNT,
+        //     // module: [MODULE_ADMIN],
+        // })
         async reactivateUser(
             @Body() reactivateUserAccountDto: ReactivateUserAccountDto,
             @SessionUser() user: RequestUser,
@@ -129,11 +129,11 @@ export class UserController {
         }
 
         @Get('new_employees')
-        @Can({
-            action: ACTION_READ,
-            subject: SM_ADMIN.USER_ACCOUNT,
-            // module: [MODULE_ADMIN,MODULE_MNGR]
-        })
+        // @Can({
+        //     action: ACTION_READ,
+        //     subject: SM_ADMIN.USER_ACCOUNT,
+        //     // module: [MODULE_ADMIN,MODULE_MNGR]
+        // })
         async viewNewEmployees(
             @SessionUser() user: RequestUser,
         ) {

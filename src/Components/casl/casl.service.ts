@@ -14,47 +14,6 @@ export class CaslAbilityService {
     this.Ability = PureAbility as any;
   }
 
-  // defineAbilitiesFor(roles: {
-  //   id: number;
-  //   name: string;
-  //   permissions: {
-  //     action: string;
-  //     permission: { name: string };
-  //     // status: boolean;
-  //   }[];
-  // }[]) {
-  //   const { can, build } = new AbilityBuilder(this.Ability);
-
-  //   const actionMap: Record<string, string[]> = {
-  //     manage: ['create', 'read', 'update', 'delete'],
-  //   };
-
-  //   for (const role of roles) {
-  //     if (!role.permissions) continue;
-
-  //     for (const perm of role.) {
-  //       // if (!perm.status) continue;
-
-  //       const rawAction = perm.action.toLowerCase().trim();
-  //       const subject = perm.permission?.name?.toLowerCase().trim() || '';
-
-  //       if (
-  //         !VALID_ACTIONS.includes(rawAction) &&
-  //         !Object.keys(ACTION_MAP).includes(rawAction)
-  //       ) {
-  //         continue;
-  //       }
-
-  //       const actionsToGrant = actionMap[rawAction] ?? [rawAction];
-
-  //       for (const action of actionsToGrant) {
-  //         can(action, subject);
-  //       }
-  //     }
-  //   }
-
-  //   return build();
-  // }
   //revamped version simplified
   defineAbilitiesFor(roles: {
     id: number;
@@ -66,18 +25,18 @@ export class CaslAbilityService {
   }[]) {
     const { can, build } = new AbilityBuilder(this.Ability);
 
-    const actionMap: Record<string, string[]> = {
-      manage: ['create', 'read', 'update', 'delete'],
-    };
+    // const actionMap: Record<string, string[]> = {
+    //   manage: ['create', 'read', 'update', 'delete'],
+    // };
 
     for (const role of roles) {
       if (!role.permissions) continue;
 
       for (const perm of role.permissions) {
         const rawAction = perm.action.toLowerCase().trim();
-        const subject = perm.permission?.name?.toLowerCase().trim() || '';
+        const subject = perm.permission.name.toLowerCase().trim() || '';
 
-        const actionsToGrant = actionMap[rawAction] ?? [rawAction];
+        const actionsToGrant = ACTION_MAP[rawAction] ?? [rawAction];
 
         for (const action of actionsToGrant) {
           can(action, subject);

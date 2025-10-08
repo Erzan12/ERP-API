@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Patch, Query, Get } from '@nestjs/common';
 import { PositionService } from './position/position.service';
-import { CreatePositionDto } from './position/dto/create-position.dto';
+// import { CreatePositionDto } from './position/dto/create-position.dto';
 import { CreateDepartmentDto } from './department/dto/create-dept.dto';
 import { RequestUser } from '../Components/types/request-user.interface';
 import { DepartmentService } from './department/department.service';
@@ -9,7 +9,7 @@ import { Can } from '../Components/decorators/can.decorator';
 // import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, MODULE_ADMIN } from '../Components/decorators/ability';
 // import { SM_ADMIN } from '../Components/constants/core-constants';
 import { UpdateDepartmentDto } from './department/dto/update-dept.dto';
-import { UpdatePositionDto } from './position/dto/update-position.dto';
+// import { UpdatePositionDto } from './position/dto/update-position.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger'; // <-- import these
 import { ApiActivateResponse, ApiDeactivateResponse, ApiGetResponse, ApiPatchResponse, ApiPostResponse } from '../Components/helpers/swagger-response.helper';
 import { CreateDivisionDto } from './division/dto/create-division.dto';
@@ -18,6 +18,8 @@ import { UpdateDivisionDto } from './division/dto/update-division.dto.';
 import { CreateCompanyDto } from './company/dto/create-company.dto';
 import { CompanyService } from './company/company.service';
 import { UpdateCompanyDto } from './company/dto/update-company.dto';
+import { ACTION_CREATE, ACTION_READ, MASTERTABLES } from 'src/Components/constants/ability.constant';
+import { Read } from 'src/Components/helpers/permission.helper';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Mastertables')
@@ -28,43 +30,18 @@ export class MasterController {
     @Get('positions')
     @ApiOperation({ summary: 'Get all positions' })
     @ApiGetResponse('List of positions retrieve')
-    @Can({ action: 'read', subject: 'Mastertables' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+    @Can({ action: ACTION_READ, subject: MASTERTABLES }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
     async getPosition(
         @SessionUser() user: RequestUser,
     ) {
         return this.positionService.getPositions( user );
     }
 
-    @Post('positions')
-    @ApiBody({ type: CreatePositionDto, description: 'Payload to create Position'})
-    @ApiOperation({ summary: 'Create a new position' })
-    @ApiPostResponse('Position created successfully')
-    @Can({ action: 'create', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-    async createPosition(
-        @Body() createPositionDto: CreatePositionDto, 
-        @SessionUser() user: RequestUser,
-    ) {
-        console.log('createPositionDto:', createPositionDto);
-        console.log('stat:', createPositionDto.stat);
-        return this.positionService.createPosition( createPositionDto, user);
-    }
-
-    @Patch('positions')
-    @ApiBody({ type: UpdatePositionDto, description: 'Payload to update Position Info'})
-    @ApiOperation({ summary: 'Update a current position information'})
-    @ApiPatchResponse('Position updated successfully')
-    @Can({ action: 'update', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-    async updatePositionInfo(
-        @Body() updatePositionDto: UpdatePositionDto,
-        @SessionUser() user: RequestUser,
-    ) {
-        return this.positionService.updatePosition( updatePositionDto, user);
-    }
-
     @Get('departments')
     @ApiOperation({ summary: 'Get all departments' })
     @ApiGetResponse('List of departments retrieved')
-    @Can({ action: 'read', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    // @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    @Read(MASTERTABLES)
     async getDepartment(
         @SessionUser() user: RequestUser,
     ) {
@@ -75,7 +52,7 @@ export class MasterController {
     @ApiBody({ type: CreateDepartmentDto, description: 'Payload to create Department' })
     @ApiOperation({ summary: 'Create a new department' })
     @ApiPostResponse('Department created successfully')
-    @Can({ action: 'create', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async createDepartment(
         @Body() createDepartmentDto: CreateDepartmentDto,
         @SessionUser() user: RequestUser,

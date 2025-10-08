@@ -392,88 +392,6 @@
         "tags": [
           "Mastertables"
         ]
-      },
-      "post": {
-        "operationId": "MasterController_createPosition",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to create Position",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePositionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Position created successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Create a new position",
-        "tags": [
-          "Mastertables"
-        ]
-      },
-      "patch": {
-        "operationId": "MasterController_updatePositionInfo",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to update Position Info",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePositionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Position updated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Update a current position information",
-        "tags": [
-          "Mastertables"
-        ]
       }
     },
     "/mastertables/departments": {
@@ -1896,6 +1814,90 @@
           "EmploymentStatus"
         ]
       }
+    },
+    "/position/positions": {
+      "post": {
+        "operationId": "PositionController_createPosition",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Position",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePositionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Position created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new position",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "patch": {
+        "operationId": "PositionController_updatePositionInfo",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Position Info",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePositionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Position updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current position information",
+        "tags": [
+          "Mastertables"
+        ]
+      }
     }
   },
   "info": {
@@ -2122,74 +2124,6 @@
         "required": [
           "person",
           "employee"
-        ]
-      },
-      "CreatePositionDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Software Engineer",
-            "description": "The name of the position"
-          },
-          "sorting": {
-            "type": "number",
-            "example": 2,
-            "description": "Sorting number of the position"
-          },
-          "department": {
-            "type": "number",
-            "example": "human resources = 1, information technology = 2, accounting = 6",
-            "description": "The Department where the position is available"
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
-          }
-        },
-        "required": [
-          "name",
-          "sorting",
-          "department",
-          "status"
-        ]
-      },
-      "UpdatePositionDto": {
-        "type": "object",
-        "properties": {
-          "position_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the position you want to update"
-          },
-          "position_name": {
-            "type": "string",
-            "example": "New Position name",
-            "description": "If you want to update the Position Name"
-          },
-          "sorting": {
-            "type": "number",
-            "example": 2,
-            "description": "Sorting number of the position"
-          },
-          "department": {
-            "type": "number",
-            "example": "human resources = 1, information technology = 2, accounting = 6",
-            "description": "The Department where the position is available"
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
-          }
-        },
-        "required": [
-          "position_id",
-          "position_name",
-          "sorting",
-          "department",
-          "status"
         ]
       },
       "CreateDepartmentDto": {
@@ -2709,6 +2643,74 @@
       "UpdateEmpStatusDto": {
         "type": "object",
         "properties": {}
+      },
+      "CreatePositionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Software Engineer",
+            "description": "The name of the position"
+          },
+          "sorting": {
+            "type": "number",
+            "example": 2,
+            "description": "Sorting number of the position"
+          },
+          "department": {
+            "type": "number",
+            "example": "human resources = 1, information technology = 2, accounting = 6",
+            "description": "The Department where the position is available"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "name",
+          "sorting",
+          "department",
+          "status"
+        ]
+      },
+      "UpdatePositionDto": {
+        "type": "object",
+        "properties": {
+          "position_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the position you want to update"
+          },
+          "position_name": {
+            "type": "string",
+            "example": "New Position name",
+            "description": "If you want to update the Position Name"
+          },
+          "sorting": {
+            "type": "number",
+            "example": 2,
+            "description": "Sorting number of the position"
+          },
+          "department": {
+            "type": "number",
+            "example": "human resources = 1, information technology = 2, accounting = 6",
+            "description": "The Department where the position is available"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "position_id",
+          "position_name",
+          "sorting",
+          "department",
+          "status"
+        ]
       }
     }
   }

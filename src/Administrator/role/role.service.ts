@@ -212,7 +212,6 @@ export class RoleService {
             role_name: rolePermission.name
         }
     }
-
     // async createPermissionTemplate(createPermissionTemplateDto: CreatePermissionTemplateDto, user) {
     //     console.log('DTO Received:', createPermissionTemplateDto);
 

@@ -13,8 +13,8 @@ import { RoleService } from './role/role.service';
 import { ModuleService } from './module/module.service';
 import { ModuleController } from './module/module.controller';
 import { SubModuleController } from './sub_module/sub_module.controller';
-import { EmploymentStatusController } from './employment_status/employment_status.controller';
-import { EmploymentStatusService } from './employment_status/employment_status.service';
+import { EmploymentStatusController } from '../Master/employment_status/employment_status.controller';
+import { EmploymentStatusService } from '../Master/employment_status/employment_status.service';
 
 @Module({
     imports:[AuthModule],

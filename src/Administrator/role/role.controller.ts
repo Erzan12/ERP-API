@@ -8,7 +8,7 @@ import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
 import { CreatePermissionTemplateDto } from './dto/create-permission-template.dto';
 import { AddPermissionToExistingRoleDto, AddPermissionToExistingUserDto } from './dto/add-permission-template.dto';
-import { ACTION_CREATE, MODULE_ADMIN, ACTION_UPDATE, ACTION_READ } from '../../Components/decorators/ability';
+// import { ACTION_CREATE, MODULE_ADMIN, ACTION_UPDATE, ACTION_READ } from '../../Components/decorators/ability';
 import { SM_ADMIN } from '../../Components/constants/core-constants';
 import { UnassignRolePermissionDto } from './dto/unassign-role-permission.dto';
 import { PrismaService } from 'prisma/prisma.service';
