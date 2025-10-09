@@ -43,16 +43,14 @@ model Person {
 
 model User {
   id                  Int      @id @default(autoincrement())
-  employee_id         Int      @unique
+  employee_id         Int      
   username            String   @unique
   password            String
   email               String   @unique
   stat                Int      @default(1)
-  must_reset_password Boolean  @default(true)
-  password_reset      String?  @default("")
-  require_reset       Int      @default(0)
+  password_reset      String?  
+  require_reset       Int      @default(1)
   reports_to          Int?
-  is_active           Boolean  @default(true)
   last_login          DateTime @default(now())
   security_questions  Json?
   created_by          String
@@ -73,6 +71,8 @@ model User {
   // role_permission      RolePermission[]
   // permission_templates PermissionTemplate[] @relation("UserToPermissionTemplates")
   // modules              Module[]         @relation("ModuleToUsers")
+  // is_active            Boolean  @default(true)
+  // must_reset_password  Boolean  @default(true)
 }
 
 model Role {
@@ -179,14 +179,14 @@ model UserRole {
 
 model Company {
   id                   Int                  @id @default(autoincrement())
-  name                 String?              @unique
+  name                 String              
   address              String?
   telephone_no         String?
   fax_no               String?
   company_tin          String?
-  abbreviation         String               @unique @db.VarChar(100)
+  abbreviation         String               
   is_top_20000         Int                  @default(0)
-  stat                 Int?                 @default(1)
+  stat                 Int                  @default(1)
   created_at           DateTime             @default(now())
   updated_at           DateTime             @updatedAt
   employee             Employee[]
@@ -195,7 +195,7 @@ model Company {
 
 model Division {
   id               Int          @id @default(autoincrement())
-  name             String?      @db.VarChar(255)
+  name             String      
   division_head_id Int?
   stat             Int          @default(1)
   created_at       DateTime     @default(now())
@@ -206,10 +206,10 @@ model Division {
 
 model Department {
   id                             Int                            @id @default(autoincrement())
-  name                           String                         @db.VarChar(255)
+  name                           String                         
   division_id                    Int
   sorting                        Int?
-  stat                           Int?                           @default(1)
+  stat                           Int                            @default(1)
   department_head_id             Int?
   created_at                     DateTime                       @default(now())
   updated_at                     DateTime                       @updatedAt

@@ -102,7 +102,7 @@ export class UserService {
                     password: hashedPassword,
                     stat: 1,
                     require_reset: 1,
-                    created_by: creatorUser.id,
+                    created_by: admin,
                     created_at: new Date(),
                 },
                 include: { employee: true },
