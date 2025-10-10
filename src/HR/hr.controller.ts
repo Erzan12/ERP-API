@@ -5,8 +5,10 @@ import { SM_HR } from '../Components/constants/core-constants';
 import { SessionUser } from '../Components/decorators/session-user.decorator';
 import { RequestUser } from '../Components/types/request-user.interface';
 import { HrService } from './hr.service';
-import { EmployeeService } from './employee/employee.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { EmployeeService } from './employee_masterlist/employee.service';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiGetResponse } from 'src/Components/helpers/swagger-response.helper';
+import { ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/Components/constants/ability.constant';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Human Resources')
@@ -16,11 +18,9 @@ export class HrController {
     
     //sample path for each submodules employee_masterlist->retrievelistofemployees->action: view,add,edit,delete->retrievesingledocument->action: view,add,edit,delete
     @Get()
-    // @Can({
-    //     action: ACTION_READ,
-    //     subject: SM_HR.DASHBOARD,
-    //     // module: [MODULE_HR],
-    // })
+    @ApiOperation({ summary: 'Can give you the summary and report'})
+    @ApiGetResponse('Dashboard')
+    @Can ({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getHRDashBoard(
         @SessionUser() user: RequestUser,
     ) {

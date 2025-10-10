@@ -43,7 +43,7 @@ model Person {
 
 model User {
   id                  Int      @id @default(autoincrement())
-  employee_id         Int      
+  employee_id         Int      @unique    
   username            String   @unique
   password            String
   email               String   @unique
@@ -53,7 +53,7 @@ model User {
   reports_to          Int?
   last_login          DateTime @default(now())
   security_questions  Json?
-  created_by          String
+  created_by          String?
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
   person_id           Int
@@ -91,7 +91,7 @@ model Role {
   //users               User[]               @relation("UserToRoles")
 }
 
-model AddedSubModPermission {
+model SubModuleAction {
   id                    Int                   @id @default(autoincrement())
   action                String
   created_at            DateTime              @default(now())
@@ -103,13 +103,13 @@ model AddedSubModPermission {
 model SubModulePermission {
   id                          Int                   @id @default(autoincrement())
   action                      String
-  added_sub_mod_permission_id Int
+  sub_module_action_id        Int
   sub_module_id               Int
   created_at                  DateTime              @default(now())
   updated_at                  DateTime              @updatedAt
   role_permissions            RolePermission[]
   sub_module                  SubModule             @relation(fields: [sub_module_id], references: [id])
-  added_sub_mod_permission    AddedSubModPermission @relation(fields: [added_sub_mod_permission_id], references: [id])
+  sub_module_action           SubModuleAction @relation(fields: [sub_module_action_id], references: [id])
 }
 
 model RolePermission {
@@ -119,6 +119,7 @@ model RolePermission {
   action                   String
   sub_module_permission_id Int
   sub_module_id            Int
+  stat                     Int      @default(1)
   created_at               DateTime @default(now())
   updated_at               DateTime @updatedAt
 
@@ -174,7 +175,7 @@ model UserRole {
   //department         Department?      @relation(fields: [department_id], references: [id])
   //module             Module           @relation(fields: [module_id], references: [id])
 
-  @@unique([user_id, role_id]) //Ensures each user can have a specific role only once
+  @@unique([user_id, role_id]) // // ✅ Prevent duplicates Ensures each user can have a specific role only once
 }
 
 model Company {
@@ -184,7 +185,7 @@ model Company {
   telephone_no         String?
   fax_no               String?
   company_tin          String?
-  abbreviation         String               
+  abbreviation         String               @unique     
   is_top_20000         Int                  @default(0)
   stat                 Int                  @default(1)
   created_at           DateTime             @default(now())
@@ -341,10 +342,10 @@ model Employee {
   company_id                Int
   person_id                 Int       @unique
   employee_id               String    @unique
-  department_id             Int
+  department_id             Int       
   hire_date                 DateTime
   position_id               Int
-  division_id               Int
+  division_id               Int?
   salary                    Decimal
   pay_frequency             String
   employment_status_id      Int
@@ -361,7 +362,7 @@ model Employee {
   department        Department       @relation(fields: [department_id], references: [id])
   person            Person           @relation("PersonEmployee", fields: [person_id], references: [id])
   position          Position         @relation(fields: [position_id], references: [id])
-  division          Division         @relation(fields: [division_id], references: [id])
+  division          Division?        @relation(fields: [division_id], references: [id])
   user              User?
 }
 

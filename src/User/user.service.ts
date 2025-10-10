@@ -105,7 +105,10 @@ export class UserService {
                     created_by: admin,
                     created_at: new Date(),
                 },
-                include: { employee: true },
+                include: {
+                    employee: true,
+                    roles: true,
+                },
             });
             
             const empDept = await this.prisma.employee.findUnique({
@@ -228,7 +231,14 @@ export class UserService {
     //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
     async addUserRolePermissions(userId: number, rolePermissionIds: number[], user: RequestUser) {
         return this.prisma.$transaction(async (tx) => {
-            const user = await tx.user.findUnique({ where: { id: userId } });
+            const user = await tx.user.findUnique({ 
+                where: { id: userId },
+                include: {
+                    user_roles: {
+                        include: { role: true }, // ⬅️ Optional: eager-load existing roles
+                    },
+                },
+            });
             if (!user) throw new BadRequestException('User not found');
 
             const rolePermissions = await tx.rolePermission.findMany({
@@ -238,60 +248,81 @@ export class UserService {
             const userRolesMap = new Map<string, any>();
 
             for (const rp of rolePermissions) {
-            const key = `${rp.role_id}-${rp.sub_module_id}`;
+                const key = `${rp.role_id}-${rp.sub_module_id}`;
 
-            // let userRole = userRolesMap.get(key);
-            // if (!userRole) {
-            //     userRole = await tx.userRole.create({
-            //     data: {
-            //         user_id: user.id,
-            //         role_id: rp.role_id,
-            //         role_permission_id: rp.id,
-            //         role_name: rp.role_name ?? null,
-            //         // module_id: 1,
-            //         // department_id: 1,
-            //         created_at: new Date(),
-            //     },
-            //     });
-            //     userRolesMap.set(key, userRole);
-            // }
-            let userRole = userRolesMap.get(key);
+                // let userRole = userRolesMap.get(key);
+                // if (!userRole) {
+                //     userRole = await tx.userRole.create({
+                //     data: {
+                //         user_id: user.id,
+                //         role_id: rp.role_id,
+                //         role_permission_id: rp.id,
+                //         role_name: rp.role_name ?? null,
+                //         // module_id: 1,
+                //         // department_id: 1,
+                //         created_at: new Date(),
+                //     },
+                //     });
+                //     userRolesMap.set(key, userRole);
+                // }
+                let userRole = userRolesMap.get(key);
 
-            // Check DB for existing UserRole (user_id + role_id)
-            if (!userRole) {
-                userRole = await tx.userRole.findFirst({
-                    where: {
-                    user_id: user.id,
-                    role_id: rp.role_id,
-                },
-            });
-
-            if (!userRole) {
-                userRole = await tx.userRole.create({
-                    data: {
+                // Check DB for existing UserRole (user_id + role_id)
+                if (!userRole) {
+                    userRole = await tx.userRole.findFirst({
+                        where: {
                         user_id: user.id,
                         role_id: rp.role_id,
-                        role_name: rp.role_name ?? null,
-                        // role_permission_id: rp.id,
-                        created_at: new Date(),
+                    },
+                    include: { role: true }, // ⬅️ load role to later return
+                });
+
+                if (!userRole) {
+                    userRole = await tx.userRole.create({
+                        data: {
+                            user_id: user.id,
+                            role_id: rp.role_id,
+                            role_name: rp.role_name ?? null,
+                            // role_permission_id: rp.id,
+                            created_at: new Date(),
+                        },
+                        include: {
+                            role: true, // ⬅️ ensure we include the actual Role model
+                        },
+                    });
+                }
+
+                userRolesMap.set(key, userRole);
+                }
+
+                // Ensure permission not already assigned
+                const exists = await tx.userPermission.findFirst({
+                    where: {
+                    user_id: user.id,
+                    user_role_id: userRole.id,
+                    role_permission_id: rp.id,
                     },
                 });
+
+                if (!exists) {
+                    await tx.userPermission.create({
+                        data: {
+                            user_id: user.id,
+                            user_role_id: userRole.id,
+                            role_permission_id: rp.id,
+                            action: rp.action,
+                        },
+                    });
+                }
             }
 
-            userRolesMap.set(key, userRole);
-            }
+            // 🧠 Optional: Extract all roles from the map and return them
+            const roles = Array.from(userRolesMap.values()).map((ur) => ur.role);
 
-            await tx.userPermission.create({
-                    data: {
-                        user_id: user.id,
-                        user_role_id: userRole.id,
-                        role_permission_id: rp.id,
-                        action: rp.action,
-                    },
-                });
-            }
-
-            return { message: 'Roles and permissions added to user.' };
+            return {
+                message: 'Roles and permissions added to user.',
+                roles, // ⬅️ return roles if you want to update UI or check in frontend
+            };
         });
     }
 
@@ -413,7 +444,7 @@ export class UserService {
             where: { id: deactivateUserAccountDto.user_id },
             data: {
                 stat: 0,
-                is_active: false,
+                // is_active: false,
             },
         });
 
@@ -442,7 +473,7 @@ export class UserService {
             where: { id: reactivateUserAccountDto.user_id },
             data: {
                 stat: 1,
-                is_active: true,
+                // is_active: true,
             },
         });
 

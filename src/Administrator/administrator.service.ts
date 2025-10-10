@@ -17,8 +17,8 @@ export class AdministratorService {
     
     async getAdminDashboardStats(user: RequestUser) {
         const totalUsers = await this.prisma.user.count();
-        const activeUsers = await this.prisma.user.count({ where: { is_active: true }});
-        const inActiceUsers = await this.prisma.user.count({ where: { is_active: false}});
+        const activeUsers = await this.prisma.user.count({ where: { stat: 1 }});
+        const inActiceUsers = await this.prisma.user.count({ where: { stat: 0}});
         
         const roles = await this.prisma.role.findMany({
             include: {

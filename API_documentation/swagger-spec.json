@@ -1,28 +1,17 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/person": {
-      "delete": {
-        "operationId": "PersonController_deletePerson",
+    "/api.avegabros.org": {
+      "get": {
+        "operationId": "LandingPageController_getLandingPage",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeletePersonDto"
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "Delete a person record including its employee and user record will be used for testing only"
+            "description": ""
           }
         },
-        "summary": "Delete a person",
         "tags": [
-          "Person"
+          "LandingPage"
         ]
       }
     },
@@ -65,7 +54,7 @@
         ],
         "summary": "Create a new Employee",
         "tags": [
-          "Employee"
+          "Human Resources"
         ]
       },
       "get": {
@@ -987,7 +976,7 @@
         ]
       }
     },
-    "/users": {
+    "/user": {
       "get": {
         "operationId": "UserController_viewUsers",
         "parameters": [],
@@ -1015,7 +1004,7 @@
         ],
         "summary": "Get User Accounts",
         "tags": [
-          "User"
+          "Manager"
         ]
       },
       "post": {
@@ -1056,17 +1045,17 @@
         ],
         "summary": "Create a new user account",
         "tags": [
-          "User"
+          "Manager"
         ]
       }
     },
-    "/users/me/permissions": {
+    "/user/me/permissions": {
       "get": {
         "operationId": "UserController_getMyPermissions",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Here are the User Account info available"
+            "description": "My user account"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -1086,13 +1075,13 @@
             "access-token": []
           }
         ],
-        "summary": "Get User Account",
+        "summary": "My User Account",
         "tags": [
-          "User"
+          "Manager"
         ]
       }
     },
-    "/users/role_permission": {
+    "/user/role_permission": {
       "post": {
         "operationId": "UserController_addRolePermission",
         "parameters": [],
@@ -1130,16 +1119,17 @@
         ],
         "summary": "Add Role permissions to user",
         "tags": [
-          "User"
+          "Manager"
         ]
       }
     },
-    "/users/new_reset_token": {
+    "/user/new_reset_token": {
       "post": {
         "operationId": "UserController_newResetToken",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Payload for new user reset token",
           "content": {
             "application/json": {
               "schema": {
@@ -1149,8 +1139,20 @@
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Password reset done! you can now log in!"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
         "security": [
@@ -1158,12 +1160,13 @@
             "access-token": []
           }
         ],
+        "summary": "Reset token for first time log in",
         "tags": [
-          "User"
+          "Manager"
         ]
       }
     },
-    "/users/token_keys": {
+    "/user/token_keys": {
       "get": {
         "operationId": "UserController_viewUserKeys",
         "parameters": [],
@@ -1187,12 +1190,13 @@
             "access-token": []
           }
         ],
+        "summary": "",
         "tags": [
-          "User"
+          "Manager"
         ]
       }
     },
-    "/users/deactivate": {
+    "/user/deactivate": {
       "patch": {
         "operationId": "UserController_deactivateUser",
         "parameters": [],
@@ -1217,11 +1221,11 @@
           }
         ],
         "tags": [
-          "User"
+          "Manager"
         ]
       }
     },
-    "/users/reactivate": {
+    "/user/reactivate": {
       "patch": {
         "operationId": "UserController_reactivateUser",
         "parameters": [],
@@ -1246,11 +1250,11 @@
           }
         ],
         "tags": [
-          "User"
+          "Manager"
         ]
       }
     },
-    "/users/new_employees": {
+    "/user/new_employees": {
       "get": {
         "operationId": "UserController_viewNewEmployees",
         "parameters": [],
@@ -1265,7 +1269,7 @@
           }
         ],
         "tags": [
-          "User"
+          "Manager"
         ]
       }
     },
@@ -1757,17 +1761,35 @@
         ]
       }
     },
-    "/employment_status": {
+    "/Mmastertables": {
       "get": {
         "operationId": "EmploymentStatusController_getEmpStat",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Here are the list of available employment status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all employment status",
         "tags": [
-          "EmploymentStatus"
+          "Mastertables"
         ]
       },
       "post": {
@@ -1775,23 +1797,44 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Payload to create employee status",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/EmpStatusDto"
+                "$ref": "#/components/schemas/CreateEmployeeStatusDto"
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": ""
+          "200": {
+            "description": "Employee status created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create new employee status ",
         "tags": [
-          "EmploymentStatus"
+          "Mastertables"
         ]
-      },
+      }
+    },
+    "/Mmastertables/edit": {
       "patch": {
         "operationId": "EmploymentStatusController_async",
         "parameters": [],
@@ -1807,11 +1850,29 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Employee status details updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Updating employee status details",
         "tags": [
-          "EmploymentStatus"
+          "Mastertables"
         ]
       }
     },
@@ -1912,8 +1973,8 @@
       "description": "Endpoint for user authorization."
     },
     {
-      "name": "User",
-      "description": "Enpoint for managing users."
+      "name": "Manager",
+      "description": "Enpoint for Manager managing users account, tokens."
     },
     {
       "name": "Human Resources",
@@ -1930,18 +1991,6 @@
     {
       "name": "System Management",
       "description": "Administer modules, submodules, and role permissions"
-    },
-    {
-      "name": "Employment Status",
-      "description": "Endpoint for employement status crud"
-    },
-    {
-      "name": "Employee",
-      "description": "Endpoint for employee"
-    },
-    {
-      "name": "Person",
-      "description": "Endpoint for person"
     },
     {
       "name": "Home",
@@ -1969,10 +2018,6 @@
       }
     },
     "schemas": {
-      "DeletePersonDto": {
-        "type": "object",
-        "properties": {}
-      },
       "CreatePersonDto": {
         "type": "object",
         "properties": {
@@ -2636,7 +2681,7 @@
         "type": "object",
         "properties": {}
       },
-      "EmpStatusDto": {
+      "CreateEmployeeStatusDto": {
         "type": "object",
         "properties": {}
       },

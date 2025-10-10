@@ -1,4 +1,4 @@
-import { CreatePersonDto } from "src/HR/person/dto/create-person.dto";
+import { CreatePersonDto } from "src/HR/employee_masterlist/dto/create-person.dto";
 import { CreateEmployeeDto } from "./create-employee.dto";
 import { Type } from "class-transformer";
 import { ValidateNested } from "class-validator";

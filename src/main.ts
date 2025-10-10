@@ -35,7 +35,7 @@ async function bootstrap() {
       'access-token', // <-- Name of the security scheme
     )
     .addTag('Authentication', 'Endpoint for user authorization.') // change or add more tags based on your modules
-    .addTag('User', 'Enpoint for managing users.') // change or add more tags based on your modules
+    .addTag('Manager', 'Enpoint for Manager managing users account, tokens.') // change or add more tags based on your modules
     .addTag('Human Resources', 'Endpoint for managing employees.') // change or add more tags based on your modules
     .addTag('Mastertables', 'Endpoint for managing positions, departments and etc.') // change or add more tags based on your modules
     .addTag('Administrator', 'Endppoint for managing the system') // change or add more tags based on your modules
@@ -43,9 +43,9 @@ async function bootstrap() {
     // .addTag('SubModule', 'Endpoint for core modules') // change or add more tags based on your modules
     // .addTag('Role', 'Endpoint for core modules') // change or add more tags based on your modules
     .addTag('System Management', 'Administer modules, submodules, and role permissions')
-    .addTag('Employment Status', 'Endpoint for employement status crud') // change or add more tags based on your modules
-    .addTag('Employee', 'Endpoint for employee') // change or add more tags based on your modules
-    .addTag('Person', 'Endpoint for person') // change or add more tags based on your modules
+    // .addTag('Employment Status', 'Endpoint for employement status crud') // change or add more tags based on your modules
+    // .addTag('Employee', 'Endpoint for employee') // change or add more tags based on your modules
+    // .addTag('Person', 'Endpoint for person') // change or add more tags based on your modules
     .addTag('Home',) // change or add more tags based on your modules
     .addTag('Profile',) // change or add more tags based on your modules
     .addTag('Protected',) // change or add more tags based on your modules

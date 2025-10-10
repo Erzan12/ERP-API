@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
-import { CreatePersonDto } from '../person/dto/create-person.dto';
+import { CreatePersonDto } from './dto/create-person.dto';
 import { RequestUser } from '../../Components/types/request-user.interface';
 import { GetEmployeeDto } from './dto/get-employee.dto';
 import { CivilStatus, Gender } from '../../Components/decorators/global.enums.decorator';

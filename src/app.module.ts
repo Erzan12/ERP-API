@@ -4,11 +4,11 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailService } from './Mail/mail.service';
 import { ConfigModule } from '@nestjs/config';
-import { PersonService } from './HR/person/person.service';
-import { PersonController } from './HR/person/person.controller';
-import { PersonModule } from './HR/person/person.module';
-import { EmployeeService } from './HR/employee/employee.service';
-import { EmployeeController } from './HR/employee/employee.controller';
+// import { PersonService } from './HR/person/person.service';
+// import { PersonController } from './HR/person/person.controller';
+// import { PersonModule } from './HR/person/person.module';
+import { EmployeeService } from './HR/employee_masterlist/employee.service';
+import { EmployeeController } from './HR/employee_masterlist/employee.controller';
 import { UserService } from './User/user.service';
 import { AdministratorController } from 'src/Administrator/administrator.controller';
 import { AdministratorService } from 'src/Administrator/administrator.service';
@@ -51,7 +51,7 @@ import { PermissionsGuard } from './Components/guards/permission.guard';
     JwtModule, 
     UserModule,
     // ManagerModule, 
-    PersonModule,
+    // PersonModule,
     AdministratorModule,
     MasterModule,
     CaslModule,
@@ -68,15 +68,15 @@ import { PermissionsGuard } from './Components/guards/permission.guard';
       provide: APP_GUARD,
       useClass: CustomJwtAuthGuard,
     },
-    // {
-    //   //global roles permission guard
-    //   provide: APP_GUARD,
-    //   useClass: PermissionsGuard,
-    // },
+    {
+      //global roles permission guard
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
+    },
     MailService, 
-    PersonService, 
+    // PersonService, 
     EmployeeService, UserService, AdministratorService, PositionService, DepartmentService, CaslAbilityService, HrService, DivisionService, CompanyService, CreateDepartmentDto, CreatePositionDto, CreateDivisionDto, CreateCompanyDto
   ],
-  controllers: [PersonController, EmployeeController, AdministratorController, MasterController, HrController, ManagerController, HomeController, ProfileController, AuthController, UserController],
+  controllers: [ EmployeeController, AdministratorController, MasterController, HrController, ManagerController, HomeController, ProfileController, AuthController, UserController],
 })
 export class AppModule {}
