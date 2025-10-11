@@ -85,7 +85,7 @@ model Role {
   role_permissions    RolePermission[]
   user_roles          UserRole[]
   users               User[]
-  permission_template PermissionTemplate[] @relation("PermissionTemplateToRole")
+  permission_template PermissionTemplate[] 
 
   // ⛔️ removed:
   //users               User[]               @relation("UserToRoles")
@@ -117,8 +117,9 @@ model RolePermission {
   role_id                  Int
   role_name                String
   action                   String
-  sub_module_permission_id Int
+  sub_module_permission_id Int 
   sub_module_id            Int
+  department_id            Int      //to query for or to filter out the department of which the role permission will be applied to a user and also the position
   stat                     Int      @default(1)
   created_at               DateTime @default(now())
   updated_at               DateTime @updatedAt
@@ -126,6 +127,7 @@ model RolePermission {
   permission_template_links PermissionTemplateRolePermission[]
   user_permission           UserPermission[]
 
+  department            Department          @relation(fields: [department_id], references: [id])
   role                  Role                @relation(fields: [role_id], references: [id])
   sub_module_permission SubModulePermission @relation(fields: [sub_module_permission_id], references: [id])
   sub_module            SubModule           @relation(fields: [sub_module_id], references: [id])
@@ -216,8 +218,9 @@ model Department {
   updated_at                     DateTime                       @updatedAt
   division                       Division                       @relation(fields: [division_id], references: [id])
   employees                      Employee[]
-  permission_template_deparmtent PermissionTemplateDepartment[]
+  permission_template_department PermissionTemplateDepartment[]
   positions                      Position[]
+  role_permissions               RolePermission[]
 
   // ⛔️ removed:
   //user_roles                     UserRole[]
@@ -292,10 +295,8 @@ model PermissionTemplate {
   id               Int                                @id @default(autoincrement())
   name             String
   stat             Int                                @default(1)
-  company_id       Int
   created_at       DateTime                           @default(now())
   updated_at       DateTime                           @updatedAt
-  company          Company                            @relation(fields: [company_id], references: [id])
   departments      PermissionTemplateDepartment[]
   role_permissions PermissionTemplateRolePermission[]
   role             Role[]                             @relation("PermissionTemplateToRole")
@@ -309,19 +310,27 @@ model PermissionTemplate {
 model PermissionTemplateDepartment {
   id                     Int                @id @default(autoincrement())
   permission_template_id Int
+  user_id                Int
   department_id          Int
+  position_id            Int?                
+  position               Position?           @relation(fields: [position_id], references: [id])
   department             Department         @relation(fields: [department_id], references: [id])
   permission_template    PermissionTemplate @relation(fields: [permission_template_id], references: [id])
+  user                   User               @relation(fields: [user_id], references: [id])
+
+  permission_template_role_permissions PermissionTemplateRolePermission[]
 
   @@unique([permission_template_id, department_id])
 }
 
 model PermissionTemplateRolePermission {
-  id                     Int                @id @default(autoincrement())
-  permission_template_id Int
-  role_permission_id     Int
-  permission_template    PermissionTemplate @relation(fields: [permission_template_id], references: [id])
-  role_permission        RolePermission     @relation(fields: [role_permission_id], references: [id])
+  id                                Int                @id @default(autoincrement())
+  role_permission_id                Int
+  permission_template_department_id Int  
+
+  permission_template            PermissionTemplate @relation(fields: [permission_template_id], references: [id])
+  role_permission                RolePermission     @relation(fields: [role_permission_id], references: [id])
+  permission_template_department PermissionTemplateDepartment @relation(fields: [permission_template_department_id], references: [id])
 
   @@unique([permission_template_id, role_permission_id])
 }
