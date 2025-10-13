@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailService } from 'src/Mail/mail.service';
-import { CreatePermissionTemplateDto } from 'src/Administrator/role/dto/create-permission-template.dto';
+import { CreatePermissionTemplateDto } from 'src/Manager/permission_template/dto/create-permission-template.dto';
 import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-permission.dto';
 import { DeactivateUserAccountDto, ReactivateUserAccountDto } from './dto/user-account-status.dto';
 import { RequestUser } from '../Components/types/request-user.interface';

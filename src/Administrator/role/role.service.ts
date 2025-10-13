@@ -3,10 +3,10 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
-import { CreatePermissionTemplateDto } from './dto/create-permission-template.dto';
+import { CreatePermissionTemplateDto } from '../../Manager/permission_template/dto/create-permission-template.dto';
 import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
-import { AddPermissionToExistingRoleDto } from './dto/add-permission-template.dto';
-import { AddPermissionToExistingUserDto } from './dto/add-permission-template.dto';
+import { AddPermissionToExistingRoleDto } from '../../Manager/permission_template/dto/add-permission-template.dto';
+import { AddPermissionToExistingUserDto } from '../../Manager/permission_template/dto/add-permission-template.dto';
 import { UnassignRolePermissionDto } from './dto/unassign-role-permission.dto';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 
@@ -90,7 +90,7 @@ export class RoleService {
     //Add Get submodule permission -> to query the submodule permission table for available submolues with permission
 
     async createRolePermissions(createRolePermissionDto: CreateRolePermissionDto, user: RequestUser) {
-        const { action, sub_module_id, role_id } = createRolePermissionDto;
+        const { action, sub_module_id, role_id, department_id, position_id } = createRolePermissionDto;
 
         const existingRole = await this.prisma.role.findFirst({
             where: { id: role_id },
@@ -123,6 +123,8 @@ export class RoleService {
             role_id,
             role_name: existingRole.name,
             sub_module_permission_id: subModulePermissionMap.get(act)!, // ! to asset sub_mobule_permission id if it is always defined and cannot be null
+            department_id,
+            position_id,
         }));
 
         await this.prisma.rolePermission.createMany({

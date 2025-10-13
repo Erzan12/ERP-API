@@ -1,20 +1,6 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api.avegabros.org": {
-      "get": {
-        "operationId": "LandingPageController_getLandingPage",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "LandingPage"
-        ]
-      }
-    },
     "/hr/employees": {
       "post": {
         "operationId": "EmployeeController_createEmployee",
@@ -2669,12 +2655,24 @@
             "type": "number",
             "example": 1,
             "description": "ID of the Role"
+          },
+          "department_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the Department"
+          },
+          "position_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the Department"
           }
         },
         "required": [
           "action",
           "sub_module_id",
-          "role_id"
+          "role_id",
+          "department_id",
+          "position_id"
         ]
       },
       "UpdateRolePermissionsDto": {

@@ -6,7 +6,7 @@
 //   ACTION_UPDATE,
 //   ACTION_ACCESS
 // } from '../Components/decorators/ability';
-import { AddPermissionToExistingUserDto } from './role/dto/add-permission-template.dto';
+import { AddPermissionToExistingUserDto } from '../Manager/permission_template/dto/add-permission-template.dto';
 import { CreateUserWithRolePermissionDto } from '../User/dto/create-user-with-role-permission.dto';
 import { UserService } from 'src/User/user.service';
 import { Body, Controller, Post, Req, Patch, Get } from '@nestjs/common';
@@ -18,7 +18,7 @@ import { AssignSubModulePermissionDto } from './sub_module/dto/assign-sub-module
 import { CreateRoleDto } from './role/dto/create-role.dto';
 import { CreateRolePermissionDto } from './role/dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from '../Administrator/role/dto/update-role-permisisons.dto';
-import { CreatePermissionTemplateDto } from './role/dto/create-permission-template.dto';
+import { CreatePermissionTemplateDto } from '../Manager/permission_template/dto/create-permission-template.dto';
 import { Can } from '../Components/decorators/can.decorator';
 import { SM_ADMIN } from '../Components/constants/core-constants';
 import { ModuleService } from './module/module.service';
