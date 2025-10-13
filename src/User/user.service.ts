@@ -4,11 +4,10 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailService } from 'src/Mail/mail.service';
 import { CreatePermissionTemplateDto } from 'src/Administrator/role/dto/create-permission-template.dto';
-import { CreateUserWithTemplateDto } from './dto/create-user-with-template.dto';
+import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-permission.dto';
 import { DeactivateUserAccountDto, ReactivateUserAccountDto } from './dto/user-account-status.dto';
 import { RequestUser } from '../Components/types/request-user.interface';
 import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
-import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -40,256 +39,347 @@ export class UserService {
     }
 
     //refactored version no more role_ids and module_ids in user account creation will be basing on the permission_tempalte model
-    async createUserAccount(createUserWithTemplateDto: CreateUserWithTemplateDto, user) {
-    return this.prisma.$transaction(async (tx) => {
-        const plainPassword = createUserWithTemplateDto.user_details.password;
-        const hashedPassword = await bcrypt.hash(plainPassword, 10);
+    async createUserAccount(createUserWithRolePermissionDto: CreateUserWithRolePermissionDto, user) {
+        return this.prisma.$transaction(async (tx) => {
+            const plainPassword = createUserWithRolePermissionDto.user_details.password;
+            const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-        const existingUser = await this.prisma.user.findFirst({
-            where: {
-                OR: [
-                    { username: createUserWithTemplateDto.user_details.username },
-                    { email: createUserWithTemplateDto.user_details.email },
-                ],
-            },
-        });
+            const existingUser = await this.prisma.user.findFirst({
+                where: {
+                    OR: [
+                        { username: createUserWithRolePermissionDto.user_details.username },
+                        { email: createUserWithRolePermissionDto.user_details.email },
+                    ],
+                },
+            });
 
-        if (existingUser) {
-            throw new BadRequestException('Username or email address already exist!');
-        }
+            if (existingUser) {
+                throw new BadRequestException('Username or email address already exist!');
+            }
 
-        const createUser = await this.prisma.user.findUnique({
-            where: { id: user.id },
-            include: {
-                employee: {
-                    include: {
-                        person: true,
-                        position: true,
+            const creatorUser = await this.prisma.user.findUnique({
+                where: { id: user.id },
+                include: {
+                    employee: {
+                        include: {
+                            person: true,
+                            position: true,
+                        },
                     },
                 },
-            },
-        });
+            });
 
-        if (!createUser || !createUser.employee || !createUser.employee.person) {
-            throw new BadRequestException(`Creator (manager) information not found.`);
-        }
+            if (!creatorUser  || !creatorUser.employee || !creatorUser.employee.person) {
+                throw new BadRequestException(`Creator (manager) information not found.`);
+            }
 
-        const admin = `${createUser.employee.person.first_name} ${createUser.employee.person.last_name}`;
-        const adminPos = createUser.employee.position.name;
+            const admin = `${creatorUser.employee.person.first_name} ${creatorUser.employee.person.last_name}`;
+            const adminPos = creatorUser.employee.position.name;
 
-        const employee = await this.prisma.employee.findUnique({
-            where: { employee_id: createUserWithTemplateDto.user_details.employee_id },
-            include: { person: true },
-        });
+            const employee = await this.prisma.employee.findUnique({
+                where: { employee_id: createUserWithRolePermissionDto.user_details.employee_id },
+                include: { person: true },
+            });
 
-        if (!employee) {
-            throw new BadRequestException('Employee not found');
-        }
+            if (!employee) {
+                throw new BadRequestException('Employee not found');
+            }
 
-        const userExist = await this.prisma.user.findUnique({
-            where: { employee_id: employee.id },
-        });
+            const userExist = await this.prisma.user.findUnique({
+                where: { employee_id: employee.id },
+            });
 
-        if (userExist) {
-            throw new BadRequestException('User already exist');
-        }
+            if (userExist) {
+                throw new BadRequestException('User already exist');
+            }
 
-        const userCreate = await tx.user.create({
-            data: {
-                employee_id: employee.id,
-                person_id: employee.person.id,
-                username: createUserWithTemplateDto.user_details.username,
-                email: createUserWithTemplateDto.user_details.email,
-                password: hashedPassword,
-                stat: 1,
-                require_reset: 1,
-                created_by: createUser.id,
-                created_at: new Date(),
-            },
-            include: { employee: true },
-        });
+            const newUser = await tx.user.create({
+                data: {
+                    employee_id: employee.id,
+                    person_id: employee.person.id,
+                    username: createUserWithRolePermissionDto.user_details.username,
+                    email: createUserWithRolePermissionDto.user_details.email,
+                    password: hashedPassword,
+                    stat: 1,
+                    require_reset: 1,
+                    created_by: admin,
+                    created_at: new Date(),
+                },
+                include: {
+                    employee: true,
+                    roles: true,
+                },
+            });
+            
+            const empDept = await this.prisma.employee.findUnique({
+                where: { id: employee.id },
+                include: { department: true },
+            });
 
-        const empDept = await this.prisma.employee.findUnique({
-            where: { id: employee.id },
-            include: { department: true },
-        });
+            if (!empDept) {
+                throw new BadRequestException('Employee Department does not exist');
+            }
 
-        if (!empDept) {
-            throw new BadRequestException('Employee Department does not exist');
-        }
+            //optional role permission creation upon creating user account
+            if (createUserWithRolePermissionDto.role_permission_ids?.length) {
+                const rolePermissions = await this.prisma.rolePermission.findMany({
+                    where: {
+                    id: { in: createUserWithRolePermissionDto.role_permission_ids },
+                    },
+                });
 
-        const permissionTemplateIds = createUserWithTemplateDto.user_permission_template_ids;
+                // const userRolesMap = new Map<string, any>();
+                // const userRolesMap = new Map<string, { id: number }>();
 
-        if (!Array.isArray(permissionTemplateIds) || permissionTemplateIds.length === 0) {
-            throw new BadRequestException('Permission template IDs must be a non-empty array.');
-        }
+                const userRolesMap = new Map<string, any>();
 
-        // Fetch existing template IDs from DB
-        const existingTemplates = await this.prisma.permissionTemplate.findMany({
-            where: { id: { in: permissionTemplateIds } },
-            select: { id: true },
-        });
+                for (const rp of rolePermissions) {
+                    const key = `${rp.role_id}-${rp.sub_module_id}`;
 
-        const existingTemplateIds = existingTemplates.map(t => t.id);
+                    let userRole = userRolesMap.get(key);
 
-        // Find invalid or non-existing IDs
-        const invalidIds = permissionTemplateIds.filter(id => !existingTemplateIds.includes(id));
+                    if (!userRole) {
+                            // Check if UserRole already exists
+                            userRole = await tx.userRole.findFirst({
+                            where: {
+                                user_id: newUser.id,
+                                role_id: rp.role_id,
+                            },
+                        });
 
-        if (invalidIds.length > 0) {
-            throw new BadRequestException(
-                `The following permission template IDs do not exist: [${invalidIds.join(', ')}]`
+                        // If not exists, create it
+                        if (!userRole) {
+                            userRole = await tx.userRole.create({
+                                data: {
+                                    user_id: newUser.id,
+                                    role_id: rp.role_id,
+                                    role_name: rp.role_name,
+                                    created_at: new Date(),
+                                },
+                            });
+                        }
+
+                        userRolesMap.set(key, userRole);
+                    }
+
+                    // Ensure no duplicate permission
+                    const existingPermission = await tx.userPermission.findFirst({
+                        where: {
+                            user_id: newUser.id,
+                            user_role_id: userRole.id,
+                            role_permission_id: rp.id,
+                        },
+                    });
+
+                    if (!existingPermission) {
+                            await tx.userPermission.create({
+                            data: {
+                                user_id: newUser.id,
+                                user_role_id: userRole.id,
+                                role_permission_id: rp.id,
+                                action: rp.action,
+                            },
+                        });
+                    }
+                }
+            }
+
+            // Create password reset token
+            const tokenKey = crypto.randomBytes(64).toString('hex');
+            const createdToken = await tx.passwordResetToken.create({
+                data: {
+                    user_id: newUser.id,
+                    password_token: tokenKey,
+                    expires_at: new Date(Date.now() + 60 * 60 * 24 * 3 * 1000),
+                },
+            });
+
+            // Generate user session token
+            const userToken = crypto.randomBytes(64).toString('hex');
+            await tx.userToken.create({
+                data: {
+                    user_id: newUser.id,
+                    user_token: userToken,
+                },
+            });
+
+            // Send welcome email
+            await this.mailService.sendWelcomeMail(
+                user.email,
+                user.username,
+                plainPassword,
+                tokenKey,
             );
-        }
 
-        // Fetch all permissionTemplateRolePermission entries with related role_permission
-        const templateLinks = await this.prisma.permissionTemplateRolePermission.findMany({
-            where: { permission_template_id: { in: permissionTemplateIds } },
-            include: { role_permission: true }
-        });
-
-        // Group permissions by template ID
-        const groupedByTemplate = new Map<number, typeof templateLinks>();
-
-        for (const id of permissionTemplateIds) {
-            const perms = templateLinks.filter(link => link.permission_template_id === id);
-            if (perms.length > 0) {
-                groupedByTemplate.set(id, perms);
-            }
-        }
-
-        const createdUserRoles = new Map<string, any>();
-
-        for (const [templateId, permissions] of groupedByTemplate.entries()) {
-            const { role_id, module_id } = permissions[0].role_permission;
-            const key = `${role_id}-${module_id}`;
-            const permTemp = await this.prisma.permissionTemplate.findUnique({
-                where: { id: templateId },
-                include: { departments: true },
-            });
-
-            if (!permTemp || permTemp.departments.length === 0) {
-            throw new BadRequestException('Permission template has no associated department');
-            }
-
-            const departmentId = permTemp.departments[0].department_id;
-
-            let userRole = createdUserRoles.get(key);
-            if (!userRole) {
-            userRole = await tx.userRole.create({
-                data: {
-                user_id: userCreate.id,
-                role_id,
-                module_id,
-                department_id: departmentId,
-                created_at: new Date(),
+            return {
+                status: 'success',
+                message: `User ${newUser.username} with Employee ID ${newUser.employee.employee_id} created with temporary password.`,
+                created_by: {
+                    id: creatorUser.id,
+                    name: admin,
+                    position: adminPos,
                 },
-            });
-            createdUserRoles.set(key, userRole);
-            }
-
-            const userPermissionsData = permissions.map(tp => ({
-                user_id: userCreate.id,
-                user_role_id: userRole.id,
-                user_role_permission: tp.role_permission.action,
-                role_permission_id: tp.role_permission_id,
-            }));
-
-            if (userPermissionsData.length > 0) {
-                await tx.userPermission.createMany({ data: userPermissionsData });
-            }
-
-            // Connect user to the permission templates
-            await tx.user.update({
-                where: { id: userCreate.id },
-                data: {
-                    permission_templates: {
-                        connect: permissionTemplateIds.map(id => ({ id })),
-                    },
-                },
-            });
-
-            // Optional: link template to role
-            await tx.role.update({
-                where: { id: role_id },
-                data: {
-                    users: { connect: [{ id: userCreate.id }] },
-                    permission_template: {
-                        connect: [{ id: templateId }],
-                    },
-                },
-            });
-        }
-
-        // connect selected permission templates to corresponding modules & user
-        const templates = await tx.permissionTemplate.findMany({
-            where: { id: { in: permissionTemplateIds } },
-            select: { id: true, name: true,  module_id: true },
+                user_id: newUser.id,
+                username: newUser.username,
+                password: plainPassword,
+                reset_token: createdToken.password_token,
+                // user_permission_template: templates
+            };
         });
-
-        const moduleTemplateMap = new Map<number, number[]>();
-        for (const template of templates) {
-            if (!moduleTemplateMap.has(template.module_id)) {
-                moduleTemplateMap.set(template.module_id, []);
-            }
-            moduleTemplateMap.get(template.module_id)!.push(template.id);
-        }
-
-        for (const [moduleId, templateIds] of moduleTemplateMap.entries()) {
-            await tx.module.update({
-                where: { id: moduleId },
-                data: {
-                    users: { connect: { id: userCreate.id } },
-                    permission_templates: {
-                        connect: templateIds.map(id => ({ id })),
-                    },
-                },
-            });
-        }
-
-        // Create password reset token
-        const tokenKey = crypto.randomBytes(64).toString('hex');
-        const createdToken = await tx.passwordResetToken.create({
-            data: {
-                user_id: userCreate.id,
-                password_token: tokenKey,
-                expires_at: new Date(Date.now() + 60 * 60 * 24 * 3 * 1000),
-            },
-        });
-
-        // Generate user session token
-        const userToken = crypto.randomBytes(64).toString('hex');
-        await tx.userToken.create({
-            data: {
-                user_id: userCreate.id,
-                user_token: userToken,
-            },
-        });
-
-        // Send welcome email
-        await this.mailService.sendWelcomeMail(
-            user.email,
-            user.username,
-            plainPassword,
-            tokenKey,
-        );
-
-        return {
-            status: 'success',
-            message: `User ${userCreate.username} with Employee ID ${userCreate.employee.employee_id} created with temporary password.`,
-            created_by: {
-                id: createUser.id,
-                name: admin,
-                position: adminPos,
-            },
-            user_id: userCreate.id,
-            username: userCreate.username,
-            password: plainPassword,
-            reset_token: createdToken.password_token,
-            user_permission_template: templates
-        };
-    });
     }
 
+    //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
+    async addUserRolePermissions(userId: number, rolePermissionIds: number[], user: RequestUser) {
+        return this.prisma.$transaction(async (tx) => {
+            const user = await tx.user.findUnique({ 
+                where: { id: userId },
+                include: {
+                    user_roles: {
+                        include: { role: true }, // ⬅️ Optional: eager-load existing roles
+                    },
+                },
+            });
+            if (!user) throw new BadRequestException('User not found');
+
+            const rolePermissions = await tx.rolePermission.findMany({
+            where: { id: { in: rolePermissionIds } },
+            });
+
+            const userRolesMap = new Map<string, any>();
+
+            for (const rp of rolePermissions) {
+                const key = `${rp.role_id}-${rp.sub_module_id}`;
+
+                // let userRole = userRolesMap.get(key);
+                // if (!userRole) {
+                //     userRole = await tx.userRole.create({
+                //     data: {
+                //         user_id: user.id,
+                //         role_id: rp.role_id,
+                //         role_permission_id: rp.id,
+                //         role_name: rp.role_name ?? null,
+                //         // module_id: 1,
+                //         // department_id: 1,
+                //         created_at: new Date(),
+                //     },
+                //     });
+                //     userRolesMap.set(key, userRole);
+                // }
+                let userRole = userRolesMap.get(key);
+
+                // Check DB for existing UserRole (user_id + role_id)
+                if (!userRole) {
+                    userRole = await tx.userRole.findFirst({
+                        where: {
+                        user_id: user.id,
+                        role_id: rp.role_id,
+                    },
+                    include: { role: true }, // ⬅️ load role to later return
+                });
+
+                if (!userRole) {
+                    userRole = await tx.userRole.create({
+                        data: {
+                            user_id: user.id,
+                            role_id: rp.role_id,
+                            role_name: rp.role_name ?? null,
+                            // role_permission_id: rp.id,
+                            created_at: new Date(),
+                        },
+                        include: {
+                            role: true, // ⬅️ ensure we include the actual Role model
+                        },
+                    });
+                }
+
+                userRolesMap.set(key, userRole);
+                }
+
+                // Ensure permission not already assigned
+                const exists = await tx.userPermission.findFirst({
+                    where: {
+                    user_id: user.id,
+                    user_role_id: userRole.id,
+                    role_permission_id: rp.id,
+                    },
+                });
+
+                if (!exists) {
+                    await tx.userPermission.create({
+                        data: {
+                            user_id: user.id,
+                            user_role_id: userRole.id,
+                            role_permission_id: rp.id,
+                            action: rp.action,
+                        },
+                    });
+                }
+            }
+
+            // 🧠 Optional: Extract all roles from the map and return them
+            const roles = Array.from(userRolesMap.values()).map((ur) => ur.role);
+
+            return {
+                message: 'Roles and permissions added to user.',
+                roles, // ⬅️ return roles if you want to update UI or check in frontend
+            };
+        });
+    }
+
+    //for querying user info
+    async getUserPermissions(userId: number) {
+    const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+        user_roles: {
+            include: {
+            role: true,
+            // role_permission: {
+            //     include: {
+            //     sub_module: true,
+            //     sub_module_permission: true,
+            //     },
+            // },
+            user_permissions: {
+                include: {
+                role_permission: {
+                    include: {
+                    sub_module: true,
+                    sub_module_permission: true,
+                    },
+                },
+                },
+            },
+            },
+        },
+        },
+    });
+
+    if (!user) {
+        throw new BadRequestException('User not found.');
+    }
+
+    const rolePermissions = user.user_roles.flatMap((userRole) =>
+            userRole.user_permissions.map((perm) => ({
+            role_id: userRole.role?.id,
+            role_name: userRole.role?.name,
+            action: perm.action,
+            sub_module: perm.role_permission?.sub_module?.name ?? 'N/A',
+            sub_module_id: perm.role_permission?.sub_module?.id ?? null,
+        }))
+    );
+
+    return {
+        user_id: user.id,
+        username: user.username,
+        email: user.email,
+        roles: user.user_roles.map(r => ({
+        id: r.role?.id,
+        name: r.role?.name,
+        })),
+        permissions: rolePermissions,
+    };
+    }
 
     async userNewResetToken(userEmailResetTokenDto: UserEmailResetTokenDto, user: RequestUser) {
 
@@ -354,7 +444,7 @@ export class UserService {
             where: { id: deactivateUserAccountDto.user_id },
             data: {
                 stat: 0,
-                is_active: false,
+                // is_active: false,
             },
         });
 
@@ -383,7 +473,7 @@ export class UserService {
             where: { id: reactivateUserAccountDto.user_id },
             data: {
                 stat: 1,
-                is_active: true,
+                // is_active: true,
             },
         });
 
@@ -462,46 +552,46 @@ export class UserService {
         };
     }
     
-    async getUsersWithRolesAndPermissions() {
-        const users = await this.prisma.user.findMany({
-            include: {
-            user_roles: {
-                include: {
-                role: true,
-                module: true,
-                user_permissions: {
-                    include: {
-                    role_permission: {
-                        include: {
-                        permission: true,
-                        },
-                    },
-                    },
-                },
-                },
-            },
-            },
-        });
+    // async getUsersWithRolesAndPermissions() {
+    //     const users = await this.prisma.user.findMany({
+    //         include: {
+    //         user_roles: {
+    //             include: {
+    //             role: true,
+    //             module: true,
+    //             user_permissions: {
+    //                 include: {
+    //                 role_permission: {
+    //                     include: {
+    //                     sub_module_permission: true,
+    //                     },
+    //                 },
+    //                 },
+    //             },
+    //             },
+    //         },
+    //         },
+    //     });
 
-        const formattedUsers = users.map(user => ({
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            roles: user.user_roles.map(userRole => ({
-            roleId: userRole.role.id,
-            roleName: userRole.role.name,
-            module: {
-                id: userRole.module.id,
-                name: userRole.module.name,
-            },
-            permissions: userRole.user_permissions.map(up => ({
-                action: up.user_role_permission,
-                permissionName: up.role_permission?.permission.name,
-                status: up.role_permission?.status,
-            })),
-            })),
-        }));
+    //     const formattedUsers = users.map(user => ({
+    //         id: user.id,
+    //         username: user.username,
+    //         email: user.email,
+    //         roles: user.user_roles.map(userRole => ({
+    //         roleId: userRole.role?.id,
+    //         roleName: userRole.role?.name,
+    //         module: {
+    //             id: userRole.module.id,
+    //             name: userRole.module.name,
+    //         },
+    //         permissions: userRole.user_permissions.map(up => ({
+    //             action: up.user_role_permission,
+    //             permissionName: up.role_permission?.sub_module_permission_id?
+    //             // status: up.role_permission?.status,
+    //         })),
+    //         })),
+    //     }));
 
-        return formattedUsers;
-    }
+    //     return formattedUsers;
+    // }
 }

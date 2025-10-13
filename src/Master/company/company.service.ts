@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, NotFoundException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 import { UpdateCompanyDto } from './dto/update-company.dto';
@@ -81,12 +81,8 @@ export class CompanyService {
             }
         });
 
-        if(!existingCompany){
-            throw new BadRequestException('Company does not exist!');
-        }
-
-        if(existingCompany.stat === 0) {
-            throw new ForbiddenException(`${existingCompany.name} Department status is inactive!`);
+        if(!existingCompany || existingCompany.stat === 0){
+            throw new NotFoundException('Company does not exist or inactive!');
         }
 
         const updateCompany = await this.prisma.company.update({

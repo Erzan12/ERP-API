@@ -4,11 +4,11 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailService } from './Mail/mail.service';
 import { ConfigModule } from '@nestjs/config';
-import { PersonService } from './HR/person/person.service';
-import { PersonController } from './HR/person/person.controller';
-import { PersonModule } from './HR/person/person.module';
-import { EmployeeService } from './HR/employee/employee.service';
-import { EmployeeController } from './HR/employee/employee.controller';
+// import { PersonService } from './HR/person/person.service';
+// import { PersonController } from './HR/person/person.controller';
+// import { PersonModule } from './HR/person/person.module';
+import { EmployeeService } from './HR/employee_masterlist/employee.service';
+import { EmployeeController } from './HR/employee_masterlist/employee.controller';
 import { UserService } from './User/user.service';
 import { AdministratorController } from 'src/Administrator/administrator.controller';
 import { AdministratorService } from 'src/Administrator/administrator.service';
@@ -38,7 +38,7 @@ import { HomeController, ProfileController } from './Global/global.controller';
 import { DivisionService } from './Master/division/division.service';
 import { CreateCompanyDto } from './Master/company/dto/create-company.dto';
 import { CompanyService } from './Master/company/company.service';
-
+import { PermissionsGuard } from './Components/guards/permission.guard';
 
 @Module({
   imports: [
@@ -51,7 +51,7 @@ import { CompanyService } from './Master/company/company.service';
     JwtModule, 
     UserModule,
     // ManagerModule, 
-    PersonModule,
+    // PersonModule,
     AdministratorModule,
     MasterModule,
     CaslModule,
@@ -61,7 +61,6 @@ import { CompanyService } from './Master/company/company.service';
   ],
   providers: [ 
     // ManagerService,
-    // JwtStrategy,
     UserService,
     PrismaService,
     {
@@ -69,49 +68,15 @@ import { CompanyService } from './Master/company/company.service';
       provide: APP_GUARD,
       useClass: CustomJwtAuthGuard,
     },
-    // {
-    //   //global roles permission guard
-    //   provide: APP_GUARD,
-    //   useClass: PermissionsGuard,
-    // },
+    {
+      //global roles permission guard
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
+    },
     MailService, 
-    PersonService, 
+    // PersonService, 
     EmployeeService, UserService, AdministratorService, PositionService, DepartmentService, CaslAbilityService, HrService, DivisionService, CompanyService, CreateDepartmentDto, CreatePositionDto, CreateDivisionDto, CreateCompanyDto
   ],
-  controllers: [PersonController, EmployeeController, AdministratorController, MasterController, HrController, ManagerController, HomeController, ProfileController, AuthController, UserController],
+  controllers: [ EmployeeController, AdministratorController, MasterController, HrController, ManagerController, HomeController, ProfileController, AuthController, UserController],
 })
 export class AppModule {}
-
-// implements NestModule{
-//   configure(consumer: MiddlewareConsumer) {
-//       consumer
-//         .apply(Authenticated)
-//         .exclude({path: 'auth/login', method: RequestMethod.POST}) //skip routes will not be included in refreshtoken session logout - 
-//         .forRoutes('*')
-//         //apply for all routes -> forRoutes('*')
-//   }
-// }
-
-// implements NestModule{
-//   configure(consumer: MiddlewareConsumer) {
-//       // consumer.apply(JwtMiddleware).forRoutes('*') // Apply to all routes for now
-
-//       // consumer
-//       //   .apply(JwtMiddleware)
-//       //   .exclude('auth/login') // skip routes
-//       //   .forRoutes('*'); 
-
-//       //alternative approach for excluding a public route
-//       consumer
-//       .apply(JwtStrategy)
-//       .exclude(
-//         { path: 'auth/login', method: RequestMethod.POST },
-//         { path: 'auth/reset-password', method: RequestMethod.POST},
-//         { path: 'person/:id', method: RequestMethod.DELETE},
-//         { path: 'admin/user-register', method: RequestMethod.POST },
-//         { path: 'hr/employee-create', method: RequestMethod.POST},
-//         // Add more exclusions here if needed
-//       )
-//       .forRoutes('*');
-//   }
-// }

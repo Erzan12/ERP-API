@@ -57,7 +57,6 @@ export class AuthService {
             data: {
                 password: hashedPassword,       // your hashed new password
                 require_reset: 0,               // disable require_reset flag
-                must_reset_password: false,     // also disable must_reset_password
                 password_reset: '',             // clear any reset token/flag
             },
         });
@@ -102,18 +101,26 @@ export class AuthService {
         where: { username },
         include: {
             user_roles: {
-            include: {
-                role: {
                 include: {
-                    role_permissions: {
-                    include: {
-                        permission: true,
-                    },
-                    },
+                    // role: {
+                    // include: {
+                        // role_permission: {
+                        // include: {
+                        //     // permission: true,
+                        //     sub_module_permission: true,
+                        
+                        // },
+                        // },
+                    user_permissions: {
+                        include: {
+                            role_permission: {
+                                include: {
+                                    sub_module_permission: true,
+                                }
+                            }
+                        }
+                    }
                 },
-                },
-                module: true,
-            },
             },
         },
         });
@@ -136,10 +143,10 @@ export class AuthService {
 
         const user = await this.validateUser(username, password);
 
-        if (user.must_reset_password) {
+        if (user.require_reset === 1) {
         return {
             status: 'password_require_reset',
-            message: 'You must reset your password before proceeding',
+            message: 'You must reset your password first for first time login!',
             userId: user.id,
         };
         }

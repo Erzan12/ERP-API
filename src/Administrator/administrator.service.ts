@@ -2,12 +2,12 @@ import { BadRequestException, ConflictException, UnauthorizedException, Forbidde
 import { PrismaService } from 'prisma/prisma.service';
 import { CreateModuleDto } from './module/dto/create-module.dto';
 import { CreateSubModuleDto } from './sub_module/dto/create-sub-module.dto';
-import { CreateSubModulePermissionDto } from '../Administrator/sub_module/dto/create-sub-module-permission.dto'
+import { AssignSubModulePermissionDto } from './sub_module/dto/assign-sub-module-permission.dto'
 import { CreatePermissionTemplateDto } from './role/dto/create-permission-template.dto';
 import { CreateRoleDto } from './role/dto/create-role.dto';
 import { CreateRolePermissionDto } from './role/dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from './role/dto/update-role-permisisons.dto';
-import { UserRole } from '../Components/decorators/ability';
+// import { UserRole } from '../Components/decorators/ability';
 import { AddPermissionToExistingUserDto } from './role/dto/add-permission-template.dto';
 import { RequestUser } from '../Components/types/request-user.interface';
 
@@ -17,8 +17,8 @@ export class AdministratorService {
     
     async getAdminDashboardStats(user: RequestUser) {
         const totalUsers = await this.prisma.user.count();
-        const activeUsers = await this.prisma.user.count({ where: { is_active: true }});
-        const inActiceUsers = await this.prisma.user.count({ where: { is_active: false}});
+        const activeUsers = await this.prisma.user.count({ where: { stat: 1 }});
+        const inActiceUsers = await this.prisma.user.count({ where: { stat: 0}});
         
         const roles = await this.prisma.role.findMany({
             include: {

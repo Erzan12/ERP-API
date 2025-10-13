@@ -7,7 +7,7 @@ export class CreateDivisionDto {
     @IsString()
     @Expose()
     @ApiProperty({ example: 'Cebu Air Inc', description: 'The name of the division'})
-    name?: string
+    name: string
 
     @IsInt()
     @Expose()
