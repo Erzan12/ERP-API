@@ -24,9 +24,9 @@ export class CreateEmployeeDto {
     @Transform(({ value }) => {
         console.log('Transforming company:', value);
         if (value === 'abmci') return 1;
-        if (value === 'svsc') return 2;
-        if (value === 'lmvc') return 3;
-        if (value === 'abisc') return 4;
+        if (value === 'abisc') return 2;
+        if (value === 'svsc') return 3;
+        if (value === 'lmvc') return 4;
         throw new BadRequestException(
             `Invalid company value ${value}. Allowed values are "abmci", "svsc", "lmvc", "abisc"`
         );
@@ -62,10 +62,10 @@ export class CreateEmployeeDto {
     @Transform(({ value }) => {
         console.log('Transforming position:', value);
         if (value === 'it manager') return 1;
-        if (value === 'administrator') return 2;
-        if (value === 'it staff') return 3;
-        if (value === 'hr manager') return 4;
-        if (value === 'hr clerk') return 5;
+        if (value === 'hr clerk') return 2;
+        if (value === 'hr manager') return 3;
+        if (value === 'it staff') return 4;
+        if (value === 'administrator') return 5;
         throw new BadRequestException(
             `Invalid position value ${value}. Allowed values are "it manager", "administrator", "it staff", "hr manager", "hr staff"`
         );
@@ -85,7 +85,7 @@ export class CreateEmployeeDto {
         if (value === 'Asset Management') return 1;
         if (value === 'Corporate Services') return 2;
         throw new BadRequestException(
-            `Invalid division vlaue ${value}. Allowed values are "Asset Management", "Corporate Services"`
+            `Invalid division value ${value}. Allowed values are "Asset Management", "Corporate Services"`
         );
     })
     division_id: number;

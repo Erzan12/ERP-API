@@ -24,7 +24,7 @@ export class EmployeeController {
 
   //can edit employee profile 
 
-  @Post('employees')
+  @Post('employees_masterlist')
   @ApiBody ({ type: CreateEmployeeWithDetailsDto, description: 'Payload to create a new employee' })
   @ApiOperation({ summary: 'Create a new Employee'})
   @ApiPostResponse('Employee created successfully')

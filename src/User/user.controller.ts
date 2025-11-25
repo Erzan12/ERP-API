@@ -77,6 +77,9 @@ export class UserController {
             return this.userService.userNewResetToken(userEmailResetTokenDto, user);
         }
 
+        //first login password reset token
+        
+
         // view user tokens
         // to set up view user token keys in service
         @Get('token_keys')

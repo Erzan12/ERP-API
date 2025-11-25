@@ -1,21 +1,7 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/api.avegabros.org": {
-      "get": {
-        "operationId": "LandingPageController_getLandingPage",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "LandingPage"
-        ]
-      }
-    },
-    "/hr/employees": {
+    "/hr/employees_masterlist": {
       "post": {
         "operationId": "EmployeeController_createEmployee",
         "parameters": [],
@@ -53,23 +39,6 @@
           }
         ],
         "summary": "Create a new Employee",
-        "tags": [
-          "Human Resources"
-        ]
-      },
-      "get": {
-        "operationId": "HrController_getEmployees",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "tags": [
           "Human Resources"
         ]
@@ -728,6 +697,25 @@
     "/hr": {
       "get": {
         "operationId": "HrController_getHRreport",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "tags": [
+          "Human Resources"
+        ]
+      }
+    },
+    "/hr/employees": {
+      "get": {
+        "operationId": "HrController_getEmployees",
         "parameters": [],
         "responses": {
           "200": {
@@ -1959,6 +1947,163 @@
           "Mastertables"
         ]
       }
+    },
+    "/permission-template": {
+      "get": {
+        "operationId": "PermissionTemplateController_getPermissionTemplates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are all the permission templates available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get permission templates",
+        "tags": [
+          "Manager"
+        ]
+      },
+      "post": {
+        "operationId": "PermissionTemplateController_createPermissionTemplate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Permission Template",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePermissionTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permission template created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create new permission template",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/permission-template/me": {
+      "get": {
+        "operationId": "PermissionTemplateController_getPermTemplates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of permission templates available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get available permission templates to user",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/permission-template/user/{id}": {
+      "post": {
+        "operationId": "PermissionTemplateController_assignPermTemplate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to assign permission template to user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permission Template assigned to user successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Assign Permission template to user",
+        "tags": [
+          "Manager"
+        ]
+      }
     }
   },
   "info": {
@@ -2669,12 +2814,24 @@
             "type": "number",
             "example": 1,
             "description": "ID of the Role"
+          },
+          "department_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the Department"
+          },
+          "position_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the Department"
           }
         },
         "required": [
           "action",
           "sub_module_id",
-          "role_id"
+          "role_id",
+          "department_id",
+          "position_id"
         ]
       },
       "UpdateRolePermissionsDto": {
@@ -2755,6 +2912,62 @@
           "sorting",
           "department",
           "status"
+        ]
+      },
+      "CreatePermissionTemplateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Accounting Clerk Template"
+          },
+          "department_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the department for this permission template"
+          },
+          "position_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the position for this permission template"
+          },
+          "role_permission_ids": {
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "description": "List of role_permission IDs to associate with the template",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "department_id",
+          "position_id",
+          "role_permission_ids"
+        ]
+      },
+      "AssignTemplateDto": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "number",
+            "example": "1",
+            "description": "The user id of the user"
+          },
+          "template_id": {
+            "type": "number",
+            "example": "1",
+            "description": "The permission template id to be assigned to user"
+          }
+        },
+        "required": [
+          "user_id",
+          "template_id"
         ]
       }
     }

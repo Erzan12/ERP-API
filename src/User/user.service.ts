@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'prisma/prisma.service';
 import { MailService } from 'src/Mail/mail.service';
-import { CreatePermissionTemplateDto } from 'src/Administrator/role/dto/create-permission-template.dto';
+import { CreatePermissionTemplateDto } from 'src/Manager/permission_template/dto/create-permission-template.dto';
 import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-permission.dto';
 import { DeactivateUserAccountDto, ReactivateUserAccountDto } from './dto/user-account-status.dto';
 import { RequestUser } from '../Components/types/request-user.interface';
@@ -328,57 +328,57 @@ export class UserService {
 
     //for querying user info
     async getUserPermissions(userId: number) {
-    const user = await this.prisma.user.findUnique({
-        where: { id: userId },
-        include: {
-        user_roles: {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
             include: {
-            role: true,
-            // role_permission: {
-            //     include: {
-            //     sub_module: true,
-            //     sub_module_permission: true,
-            //     },
-            // },
-            user_permissions: {
+            user_roles: {
                 include: {
-                role_permission: {
+                role: true,
+                // role_permission: {
+                //     include: {
+                //     sub_module: true,
+                //     sub_module_permission: true,
+                //     },
+                // },
+                user_permissions: {
                     include: {
-                    sub_module: true,
-                    sub_module_permission: true,
+                    role_permission: {
+                        include: {
+                        sub_module: true,
+                        sub_module_permission: true,
+                        },
+                    },
                     },
                 },
                 },
             },
             },
-        },
-        },
-    });
+        });
 
-    if (!user) {
-        throw new BadRequestException('User not found.');
-    }
+        if (!user) {
+            throw new BadRequestException('User not found.');
+        }
 
-    const rolePermissions = user.user_roles.flatMap((userRole) =>
-            userRole.user_permissions.map((perm) => ({
-            role_id: userRole.role?.id,
-            role_name: userRole.role?.name,
-            action: perm.action,
-            sub_module: perm.role_permission?.sub_module?.name ?? 'N/A',
-            sub_module_id: perm.role_permission?.sub_module?.id ?? null,
-        }))
-    );
+        const rolePermissions = user.user_roles.flatMap((userRole) =>
+                userRole.user_permissions.map((perm) => ({
+                role_id: userRole.role?.id,
+                role_name: userRole.role?.name,
+                action: perm.action,
+                sub_module: perm.role_permission?.sub_module?.name ?? 'N/A',
+                sub_module_id: perm.role_permission?.sub_module?.id ?? null,
+            }))
+        );
 
-    return {
-        user_id: user.id,
-        username: user.username,
-        email: user.email,
-        roles: user.user_roles.map(r => ({
-        id: r.role?.id,
-        name: r.role?.name,
-        })),
-        permissions: rolePermissions,
-    };
+        return {
+            user_id: user.id,
+            username: user.username,
+            email: user.email,
+            roles: user.user_roles.map(r => ({
+            id: r.role?.id,
+            name: r.role?.name,
+            })),
+            permissions: rolePermissions,
+        };
     }
 
     async userNewResetToken(userEmailResetTokenDto: UserEmailResetTokenDto, user: RequestUser) {

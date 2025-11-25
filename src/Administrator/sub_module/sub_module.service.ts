@@ -11,7 +11,7 @@ import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison
 export class SubModuleService {
     constructor(private prisma: PrismaService) {}
 
-    async listSubModule(user: RequestUser){
+    async listSubModule(user: RequestUser) {
       
         const existingSubModules = await this.prisma.subModule.findMany({
             where: {stat:1},
@@ -20,7 +20,7 @@ export class SubModuleService {
             },
         });
         
-        if(existingSubModules.length === 0 ) {
+        if (existingSubModules.length === 0 ) {
             throw new BadRequestException('No available or active sub module exist!')
         }
 
