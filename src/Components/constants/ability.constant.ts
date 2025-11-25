@@ -15,4 +15,5 @@ export const INBOX               = 'inbox';
 export const AUDIT_TRAIL         = 'audit trail';
 export const USER_TOKEN_KEY      = 'user token keys';
 export const SYSTEM_MANAGEMENT   = 'system management';
+export const PERMISSION_TEMPLATE = 'permission template'
 

@@ -4,6 +4,7 @@ import {
     ValidateNested,
     IsArray,
     ArrayNotEmpty,
+    IsOptional,
 } from 'class-validator';
 import { Type, Expose } from 'class-transformer';
 import { UserDetailsDto } from './user-details.dto';
@@ -15,8 +16,7 @@ export class CreateUserWithRolePermissionDto {
   @Type(() => UserDetailsDto)
   user_details: UserDetailsDto;
 
-  @IsArray()
-  @ArrayNotEmpty()
+  @IsOptional()
   @IsInt({ each: true })
   @ApiProperty({
     type: [Number],
