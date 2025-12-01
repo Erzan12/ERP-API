@@ -53,6 +53,7 @@ model User {
   reports_to         Int?
   last_login         DateTime @default(now())
   security_questions Json?
+  security_clearance_level Int?
   created_by         String?
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt

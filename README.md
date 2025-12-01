@@ -49,6 +49,9 @@ $ npm install
 ```bash
 $ docker-compose up --build -d
 ```
+```bash
+$ docker compose build --no-cache
+```
 5. This step builds your NestJs aap's Docker image, pulls necessary images in docker-compose.yml (e.g., postgres,pgadmin). This will also start all the services ( nest.js, postgres, etc) in the background.
 
 > **Note:** `npm install` is already added in docker file but you will need to run `npm install` again in terminal for your local development.

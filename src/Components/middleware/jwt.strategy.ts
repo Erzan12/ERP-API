@@ -171,6 +171,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const requestUser: RequestUser = {
       id: user.id,
       email: user.email,
+      security_clearance_level: user.security_clearance_level ?? 0,
       roles: user.user_roles.map((ur) => ({
         id: ur.role?.id ?? 0,
         name: ur.role?.name ?? 'Unkown Role',
@@ -186,6 +187,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           },
         })),
       })),
+      
     };
 
     return requestUser; // 🚀 This becomes `request.user` in controllers and guards

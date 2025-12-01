@@ -16,4 +16,5 @@ export interface RequestUser {
       // status: boolean;
     }[];
   }[];
+  security_clearance_level: number;
 }

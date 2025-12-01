@@ -34,6 +34,12 @@ async function bootstrap() {
       },
       'access-token', // <-- Name of the security scheme
     )
+    .addSecurity('security_clearance', {
+      type: 'apiKey',
+      name: 'Security-Clearance',
+      in: 'header',
+      description: 'Required security clearance level (documentational only).'
+    })
     .addTag('Authentication', 'Endpoint for user authorization.') // change or add more tags based on your modules
     .addTag('Manager', 'Enpoint for Manager managing users account, tokens.') // change or add more tags based on your modules
     .addTag('Human Resources', 'Endpoint for managing employees.') // change or add more tags based on your modules

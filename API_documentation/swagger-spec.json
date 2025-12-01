@@ -966,6 +966,7 @@
     },
     "/user": {
       "get": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_viewUsers",
         "parameters": [],
         "responses": {
@@ -996,6 +997,7 @@
         ]
       },
       "post": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_createUser",
         "parameters": [],
         "requestBody": {
@@ -1039,6 +1041,7 @@
     },
     "/user/me/permissions": {
       "get": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_getMyPermissions",
         "parameters": [],
         "responses": {
@@ -1071,6 +1074,7 @@
     },
     "/user/role_permission": {
       "post": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_addRolePermission",
         "parameters": [],
         "requestBody": {
@@ -1113,6 +1117,7 @@
     },
     "/user/new_reset_token": {
       "post": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_newResetToken",
         "parameters": [],
         "requestBody": {
@@ -1156,6 +1161,7 @@
     },
     "/user/token_keys": {
       "get": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_viewUserKeys",
         "parameters": [],
         "requestBody": {
@@ -1170,7 +1176,19 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Here are all the token keys available for this user"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           }
         },
         "security": [
@@ -1178,7 +1196,7 @@
             "access-token": []
           }
         ],
-        "summary": "",
+        "summary": "Get the token keys for this user",
         "tags": [
           "Manager"
         ]
@@ -1186,6 +1204,7 @@
     },
     "/user/deactivate": {
       "patch": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_deactivateUser",
         "parameters": [],
         "requestBody": {
@@ -1200,7 +1219,19 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "User account deactivated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           }
         },
         "security": [
@@ -1208,6 +1239,7 @@
             "access-token": []
           }
         ],
+        "summary": "Deactivate the user account",
         "tags": [
           "Manager"
         ]
@@ -1215,6 +1247,7 @@
     },
     "/user/reactivate": {
       "patch": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_reactivateUser",
         "parameters": [],
         "requestBody": {
@@ -1229,7 +1262,19 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "User account reactivated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           }
         },
         "security": [
@@ -1237,6 +1282,7 @@
             "access-token": []
           }
         ],
+        "summary": "Reactivate the user account",
         "tags": [
           "Manager"
         ]
@@ -1244,11 +1290,24 @@
     },
     "/user/new_employees": {
       "get": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_viewNewEmployees",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Here are the list of new employees without user accounts"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           }
         },
         "security": [
@@ -1256,6 +1315,7 @@
             "access-token": []
           }
         ],
+        "summary": "Get the new employees without user accounts",
         "tags": [
           "Manager"
         ]
@@ -1864,6 +1924,46 @@
         ]
       }
     },
+    "/security_clearance/{id}": {
+      "patch": {
+        "description": "This endpoint requires a minimun security clearance of level 9.",
+        "operationId": "SecurityClearanceController_updateClearance",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSecurityClearanceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Assign the security clearance level for user",
+        "tags": [
+          "Administrator"
+        ]
+      }
+    },
     "/position/positions": {
       "post": {
         "operationId": "PositionController_createPosition",
@@ -2160,6 +2260,12 @@
         "name": "Authorization",
         "description": "Enter JWT token",
         "in": "header"
+      },
+      "security_clearance": {
+        "type": "apiKey",
+        "name": "Security-Clearance",
+        "in": "header",
+        "description": "Required security clearance level (documentational only)."
       }
     },
     "schemas": {
@@ -2845,6 +2951,19 @@
       "UpdateEmpStatusDto": {
         "type": "object",
         "properties": {}
+      },
+      "UpdateSecurityClearanceDto": {
+        "type": "object",
+        "properties": {
+          "new_level": {
+            "type": "number",
+            "example": 1,
+            "description": "1 is the lowest level of security clearance while 9 is the highest"
+          }
+        },
+        "required": [
+          "new_level"
+        ]
       },
       "CreatePositionDto": {
         "type": "object",
