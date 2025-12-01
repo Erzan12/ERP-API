@@ -44,7 +44,7 @@ export class MailService {
          return await this.transporter.sendMail(mailOption);
     }
 
-        async sendResetTokenEmail(to: string, username:string, token: string) {
+    async sendResetTokenEmail(to: string, username:string, token: string) {
 
         //valdiate config in your app
         if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {

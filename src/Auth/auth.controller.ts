@@ -1,11 +1,13 @@
 import { Body, Controller, Post, Query, ValidationPipe, Res, UsePipes } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from '../Components/decorators/public.decorator';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ApiLoginResponse, ApiPostResponse } from '../Components/helpers/swagger-response.helper';
 import { LoginDto } from './dto/login.dto';
 import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 
+@ApiBearerAuth('access-token')
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}

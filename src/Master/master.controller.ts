@@ -1,144 +1,58 @@
 import { Body, Controller, Post, Patch, Query, Get } from '@nestjs/common';
 import { PositionService } from './position/position.service';
-import { CreatePositionDto } from './position/dto/create-position.dto';
+// import { CreatePositionDto } from './position/dto/create-position.dto';
 import { CreateDepartmentDto } from './department/dto/create-dept.dto';
 import { RequestUser } from '../Components/types/request-user.interface';
 import { DepartmentService } from './department/department.service';
 import { SessionUser } from '../Components/decorators/session-user.decorator';
 import { Can } from '../Components/decorators/can.decorator';
-import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, MODULE_ADMIN } from '../Components/decorators/ability';
-import { SM_ADMIN } from '../Components/constants/core-constants';
-import { UpdateDeptDto } from './department/dto/update-dept.dto';
-import { UpdatePositionDto } from './position/dto/update-position.dto';
+// import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, MODULE_ADMIN } from '../Components/decorators/ability';
+// import { SM_ADMIN } from '../Components/constants/core-constants';
+import { UpdateDepartmentDto } from './department/dto/update-dept.dto';
+// import { UpdatePositionDto } from './position/dto/update-position.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger'; // <-- import these
 import { ApiActivateResponse, ApiDeactivateResponse, ApiGetResponse, ApiPatchResponse, ApiPostResponse } from '../Components/helpers/swagger-response.helper';
-import { DeactivatePositionDto, ReactivatePositionDto } from './position/dto/dept-status.dto';
-import { DeactivateDepartmentDto, ReactivateDepartmentDto } from './department/dto/pos-status.dto';
+import { CreateDivisionDto } from './division/dto/create-division.dto';
+import { DivisionService } from './division/division.service';
+import { UpdateDivisionDto } from './division/dto/update-division.dto.';
+import { CreateCompanyDto } from './company/dto/create-company.dto';
+import { CompanyService } from './company/company.service';
+import { UpdateCompanyDto } from './company/dto/update-company.dto';
+import { ACTION_CREATE, ACTION_READ, MASTERTABLES } from 'src/Components/constants/ability.constant';
+import { Read } from 'src/Components/helpers/permission.helper';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Mastertables')
 @Controller('mastertables')
 export class MasterController {
-    constructor(private positionService: PositionService, private departmentService: DepartmentService) {} 
+    constructor(private positionService: PositionService, private departmentService: DepartmentService, private divisionService: DivisionService, private companyService: CompanyService) {} 
 
-    @Get('position')
+    @Get('positions')
     @ApiOperation({ summary: 'Get all positions' })
     @ApiGetResponse('List of positions retrieve')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN]
-    })
+    @Can({ action: ACTION_READ, subject: MASTERTABLES }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
     async getPosition(
         @SessionUser() user: RequestUser,
     ) {
         return this.positionService.getPositions( user );
     }
 
-    @Post('position')
-    @ApiBody({ type: CreatePositionDto, description: 'Payload to create Position'})
-    @ApiOperation({ summary: 'Create a new position' })
-    @ApiPostResponse('Position created successfully')
-    @Can({
-        action: ACTION_CREATE,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN]
-    })
-    async createPosition(
-        @Body() createPositionDto: CreatePositionDto, 
-        @SessionUser() user: RequestUser,
-    ) {
-        console.log('createPositionDto:', createPositionDto);
-        console.log('stat:', createPositionDto.stat);
-        return this.positionService.createPosition( createPositionDto, user);
-    }
-
-    @Patch('position')
-    @ApiBody({ type: UpdatePositionDto, description: 'Payload to update Position Info'})
-    @ApiOperation({ summary: 'Update a current position information'})
-    @ApiPatchResponse('Position updated successfully')
-    @Can({
-        action: ACTION_UPDATE,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN]
-    })
-    async updatePositionInfo(
-        @Body() updatePositionDto: UpdatePositionDto,
-        @SessionUser() user: RequestUser,
-    ) {
-        return this.positionService.updatePosition( updatePositionDto, user);
-    }
-
-    @Patch('position/deactivate')
-    @ApiBody({ type: DeactivatePositionDto, description: 'Payload to Deactivate Position'})
-    @ApiOperation({ summary: 'Deactivate a current position'})
-    @ApiDeactivateResponse('Position has been deactivated')
-    @Can({
-        action: ACTION_UPDATE,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN]
-    })
-    async deactivatePos(
-        @Body() deactivatePositionDto: DeactivatePositionDto,
-        @SessionUser() user: RequestUser,
-    ) {
-        return this.positionService.deactivatePos( deactivatePositionDto, user )
-    }
-
-    @Patch('position/reactivate')
-    @ApiBody({ type: ReactivatePositionDto, description: 'Payload to Reactivate Position'})
-    @ApiOperation({ summary: 'Reactivate a current Position'})
-    @ApiActivateResponse('Position has been activated')
-    @Can({
-        action: ACTION_UPDATE,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN]
-    })
-    async reactivatePos(
-        @Body() reactivatePositionDto: ReactivatePositionDto,
-        @SessionUser() user: RequestUser,
-    ) {
-        return this.positionService.reactivatePos( reactivatePositionDto, user )
-    }
-
-    @Get('position/status')
-    @ApiOperation({ summary: 'Status of Positions'})
-    @ApiGetResponse('Position status successfully fetched')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN]
-    })
-    async positionStat(
-        @SessionUser() user: RequestUser,
-        @Query() stat?: number,
-    ) {
-        return this.positionService.getPositionStatus(user,stat)
-    }
-
-    @Get('department')
+    @Get('departments')
     @ApiOperation({ summary: 'Get all departments' })
     @ApiGetResponse('List of departments retrieved')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.MASTER_TABLE_DEPARTMENT,
-        module: [MODULE_ADMIN]
-    })
+    // @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    @Read(MASTERTABLES)
     async getDepartment(
         @SessionUser() user: RequestUser,
     ) {
         return this.departmentService.getDepartments(user)
     }
 
-    @Post('department')
+    @Post('departments')
     @ApiBody({ type: CreateDepartmentDto, description: 'Payload to create Department' })
     @ApiOperation({ summary: 'Create a new department' })
     @ApiPostResponse('Department created successfully')
-    @Can({
-        action: ACTION_CREATE,
-        subject: SM_ADMIN.MASTER_TABLE_DEPARTMENT,
-        module: [MODULE_ADMIN]
-    })
+    @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async createDepartment(
         @Body() createDepartmentDto: CreateDepartmentDto,
         @SessionUser() user: RequestUser,
@@ -146,66 +60,89 @@ export class MasterController {
         return this.departmentService.createDepartment( createDepartmentDto, user);
     }
 
-    @Patch('department')
-    @ApiBody({ type: UpdateDeptDto, description: 'Payload to update department'})
+    @Patch('departments')
+    @ApiBody({ type: UpdateDepartmentDto, description: 'Payload to update department'})
     @ApiOperation({ summary: 'Update a current department information' })
     @ApiPatchResponse('Department updated successfully')
-    @Can({
-        action: ACTION_UPDATE,
-        subject: SM_ADMIN.MASTER_TABLE_DEPARTMENT,
-        module: [MODULE_ADMIN],
-    })
+    @Can({ action: 'update', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async updateDept(
-        @Body() updateDeptInfoDto: UpdateDeptDto,
+        @Body() updateDeptDto: UpdateDepartmentDto,
         @SessionUser() user: RequestUser,
     ) {
-        return this.departmentService.updateDept( updateDeptInfoDto, user)
+        return this.departmentService.updateDept( updateDeptDto, user)
     }
 
-    @Patch('department/deactivate')
-    @ApiBody({ type: DeactivateDepartmentDto, description: 'Payload to deactivate department' })
-    @ApiOperation({ summary: 'Deactivate a department' })
-    @ApiDeactivateResponse('Department deactivated successfully')
-    @Can({
-        action: ACTION_UPDATE,
-        subject: SM_ADMIN.MASTER_TABLE_DEPARTMENT,
-        module: [MODULE_ADMIN],
-    })
-    async deactivateDept(
-        @Body() deactivateDepartmentDto: DeactivateDepartmentDto,
+    @Get('divisions')
+    @ApiOperation({ summary: 'Get all divisions'})
+    @ApiGetResponse('List of divisions retrieved')
+    @Can({ action: 'read', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    async getDivision(
         @SessionUser() user: RequestUser,
     ) {
-        return this.departmentService.deactivateDept( deactivateDepartmentDto, user )
+        return this.divisionService.getDivisions(user)
     }
 
-    @Patch('department/reactivate')
-    @ApiBody({ type: ReactivateDepartmentDto, description: 'Payload to activate department'})
-    @ApiOperation({ summary: 'Activate a department' })
-    @ApiActivateResponse('Department activated successfully')
-    @Can({
-        action: ACTION_UPDATE,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN],
-    })
-    async reactivateDept(
-        @Body() reactivateDepartmentDto: ReactivateDepartmentDto,
+    @Post('divisions')
+    @ApiBody({ type: CreateDivisionDto, description: 'Payload to create Division'})
+    @ApiOperation({ summary: 'Create a new division' })
+    @ApiPostResponse('Division created successfully')
+    @Can({ action: 'create', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    async createDivision(
+        @Body() createDivisionDto: CreateDivisionDto,
         @SessionUser() user: RequestUser,
     ) {
-        return this.departmentService.reactivateDept( reactivateDepartmentDto, user )
+        console.log('createDivisionDto:', createDivisionDto);
+        console.log('stat:', createDivisionDto.stat);
+        return this.divisionService.createDivision( createDivisionDto,user);
     }
 
-    @Get('departments')
-    @ApiOperation({ summary: 'Get department status' })
-    @ApiGetResponse('Department status fetched succussfully')
-    @Can({
-        action: ACTION_READ,
-        subject: SM_ADMIN.MASTER_TABLE_POSITION,
-        module: [MODULE_ADMIN],
-    })
-    async departmentStat(
+    @Patch('divisions')
+    @ApiBody({ type: UpdateDivisionDto, description: 'Payload to update division'})
+    @ApiOperation({ summary: 'Update a current division information' })
+    @ApiPatchResponse('Division updated successfully')
+    @Can({ action: 'update', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    async updateDivision(
+        @Body() updateDivisiionDto: UpdateDivisionDto,
         @SessionUser() user: RequestUser,
-        @Query('status') status?: string,
     ) {
-        return this.departmentService.getDepartmentStatus(user, status);
+        return this.divisionService.updateDivision( updateDivisiionDto, user)
+    }
+
+    @Get('companies')
+    @ApiOperation({ summary: 'Get all departments' })
+    @ApiGetResponse('List of companies retrieved')
+    @Can({ action: 'read', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    async getCompany(
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.companyService.getCompanies(user)
+    }
+
+    @Post('companies')
+    @ApiBody({ type: CreateCompanyDto, description: 'Payload to create company'})
+    @ApiOperation({ summary: 'Create a new company'})
+    @ApiPostResponse('Company created successfully')
+    @Can({ action: 'create', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    async createCompany(
+        @Body() createCompanyDto: CreateCompanyDto,
+        @SessionUser() user: RequestUser,
+    ) {
+        console.log('createCompanyDto:', createCompanyDto.name);
+        console.log('stat:', createCompanyDto.stat);
+        return this.companyService.createCompany(createCompanyDto,user);
+    }
+
+    @Patch('companies')
+    @ApiBody({ type: UpdateCompanyDto, description: 'Payload to update company'})
+    @ApiOperation({ summary: 'Update a current company information'})
+    @ApiPatchResponse('Company updated successfully')
+    @Can({ action: 'update', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    async updateCompany(
+        @Body() updateCompanyDto: UpdateCompanyDto,
+        @SessionUser() user: RequestUser,
+    ) {
+        console.log('updateCompanyDto:', updateCompanyDto.name);
+        console.log('stat:', updateCompanyDto.stat);
+        return this.companyService.updateCompany(updateCompanyDto,user);
     }
 }

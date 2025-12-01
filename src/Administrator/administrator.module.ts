@@ -13,13 +13,15 @@ import { RoleService } from './role/role.service';
 import { ModuleService } from './module/module.service';
 import { ModuleController } from './module/module.controller';
 import { SubModuleController } from './sub_module/sub_module.controller';
-import { EmploymentStatusController } from './employment_status/employment_status.controller';
-import { EmploymentStatusService } from './employment_status/employment_status.service';
+import { EmploymentStatusController } from '../Master/employment_status/employment_status.controller';
+import { EmploymentStatusService } from '../Master/employment_status/employment_status.service';
+import { SecurityClearanceService } from './security_clearance/security-clearance.service';
+import { SecurityClearanceController } from './security_clearance/security-clearance.controller';
 
 @Module({
     imports:[AuthModule],
-    controllers: [AdministratorController, SubModuleController, ModuleController, RoleController, EmploymentStatusController, EmploymentStatusController],
-    providers: [AdministratorService, JwtStrategy, JwtService, PrismaService, UserService, MailService, SubModuleService, ModuleService, RoleService, EmploymentStatusService],
+    controllers: [AdministratorController, SubModuleController, ModuleController, RoleController, EmploymentStatusController, EmploymentStatusController, SecurityClearanceController],
+    providers: [AdministratorService, JwtStrategy, JwtService, PrismaService, UserService, MailService, SubModuleService, ModuleService, RoleService, EmploymentStatusService, SecurityClearanceService],
     exports: [AdministratorModule]
 
 })
