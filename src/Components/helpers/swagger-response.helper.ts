@@ -1,4 +1,4 @@
-import { ApiResponse, ApiResponseOptions } from '@nestjs/swagger';
+import { ApiResponse, ApiResponseOptions, ApiOperation } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
 
 //standard responses and custom responses
@@ -93,6 +93,15 @@ export function ApiActivateResponse(description = 'Resource activated successful
         ApiResponse(Unauthorized),
         ApiResponse(Forbidden),
         ApiResponse(NotFound),
+    )
+}
+
+export function ApiSecurityClearance(level: number) {
+    return applyDecorators(
+        ApiOperation({
+            summary: `Requires Security Clearance Level ${level}`,
+            description: `This endpoint requires a minimun security clearance of level ${level}.`,
+        })
     )
 }
 

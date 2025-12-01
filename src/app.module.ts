@@ -39,6 +39,7 @@ import { DivisionService } from './Master/division/division.service';
 import { CreateCompanyDto } from './Master/company/dto/create-company.dto';
 import { CompanyService } from './Master/company/company.service';
 import { PermissionsGuard } from './Components/guards/permission.guard';
+import { SecurityClearanceGuard } from './Components/security_clearance/security-clearance.guard';
 
 @Module({
   imports: [
@@ -72,6 +73,11 @@ import { PermissionsGuard } from './Components/guards/permission.guard';
       //global roles permission guard
       provide: APP_GUARD,
       useClass: PermissionsGuard,
+    },
+    {
+      //global security clearance level guard
+      provide: APP_GUARD,
+      useClass: SecurityClearanceGuard,
     },
     MailService, 
     // PersonService, 
