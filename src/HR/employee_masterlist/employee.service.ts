@@ -6,6 +6,8 @@ import { RequestUser } from '../../Components/types/request-user.interface';
 import { GetEmployeeDto } from './dto/get-employee.dto';
 import { CivilStatus, Gender } from '../../Components/decorators/global.enums.decorator';
 import { CreateEmployeeWithDetailsDto } from './dto/create-employee-with-details.dto';
+import { UpdateEmployeeWithDetailsDto } from './dto/update-employee-with-details.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
 
 @Injectable()
 export class EmployeeService {
@@ -217,19 +219,103 @@ export class EmployeeService {
         };
     }
 
-    async getEmployee(getEmployeeDto: GetEmployeeDto, user: RequestUser) {
+    // async getEmployee(getEmployeeDto: GetEmployeeDto, user: RequestUser) {
 
-        const getEmp = await this.prisma.employee.findUnique({
-            where: { id: getEmployeeDto.employee_id},
-            include: {
-                person: true,
-            }
-        })
-        const getPersonDetails = await this.prisma.person.findFirst({
-            where: { id: getEmp?.person_id },
-            select: {
+    //     const getEmp = await this.prisma.employee.findUnique({
+    //         where: { id: getEmployeeDto.employee_id},
+    //         include: {
+    //             person: true,
+    //         }
+    //     })
+    //     const getPersonDetails = await this.prisma.person.findFirst({
+    //         where: { id: getEmp?.person_id },
+    //         select: {
                 
+    //         }
+    //     })
+    // }
+    async getEmployee(employeeId: number, user: RequestUser) {
+        // 1. Find the employee
+        const employee = await this.prisma.employee.findUnique({
+            where: { id: employeeId },
+            include: {
+                person: true, // fetch person details automatically
+            },
+        });
+
+        if (!employee) {
+            throw new BadRequestException('Employee not found.');
+        }
+
+        // 2. Optional: select specific person fields if you want
+        const personDetails = await this.prisma.person.findFirst({
+            where: { id: employee.person_id },
+            select: {
+                first_name: true,
+                last_name: true,
+                middle_name: true,
+                date_of_birth: true,
+                gender: true,
+                civil_status: true,
+                email: true,
+                contact_no: true,
+            },
+        });
+
+        return {
+            employee,
+            person: personDetails,
+        };
+    }
+
+    async updateEmployee(employeeId: number, updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto, user: RequestUser) {
+        return await this.prisma.$transaction(async (prisma) => {
+            //1. check employee existence
+            const employee = await prisma.employee.findUnique({
+                where: { id: employeeId },
+                include: { person: true},
+            });
+
+            if (!employee) {
+                throw new BadRequestException('Employee not found.');
             }
-        })
+
+            const { person: UpdatePersonDto, employee: UpdateEmployeeDto } = updateEmployeeWithDetailsDto;
+
+            //2. validate enums only if provided
+            if (UpdatePersonDto?.gender) {
+                if (!Object.values(Gender).includes(UpdatePersonDto.gender)) {
+                    throw new BadRequestException('Invalid gender value.');
+                }
+            }
+
+            if (UpdatePersonDto?.civil_status) {
+                if (!Object.values(CivilStatus).includes(UpdatePersonDto.civil_status)) {
+                    throw new BadRequestException('Invalid civil status vlue.');
+                }
+            }
+
+            //3. update person table
+            const updatedPerson = UpdatePersonDto
+                ? await prisma.person.update({
+                    where: { id: employee.person_id },
+                    data: { ...UpdatePersonDto },
+                })
+            : null;
+
+            //4. update employee table
+            const updatedEmployee = UpdateEmployeeDto
+                ? await prisma.employee.update({
+                    where: { id: employeeId },
+                    data: { ...UpdateEmployeeDto},
+                })
+            : null;
+
+            //5. return combined result
+            return {
+                employee: updatedEmployee,
+                person: updatedPerson,
+            };
+        });
     }
 }
