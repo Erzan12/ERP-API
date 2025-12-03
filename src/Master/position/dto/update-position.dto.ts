@@ -5,11 +5,6 @@ import { IsNotEmpty, IsInt, IsString, IsDefined, IsOptional } from "class-valida
 
 export class UpdatePositionDto {
 
-    @IsInt()
-    @IsNotEmpty()
-    @ApiProperty({ example: 1, description: 'ID of the position you want to update' })
-    position_id: number;
-
     @IsOptional()
     @IsString()
     @ApiProperty({ example: "New Position name", description: 'If you want to update the Position Name' })
@@ -24,7 +19,7 @@ export class UpdatePositionDto {
     @Expose({ name: 'department' })
     @ApiProperty({
         name: 'department',
-        example: 'human resources = 1, information technology = 2, accounting = 6',
+        example: 'human resources, information technology, accounting',
         description: 'The Department where the position is available'
     })
     @Transform(({ value }) => {

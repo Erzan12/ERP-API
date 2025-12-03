@@ -40,6 +40,8 @@ import { CreateCompanyDto } from './Master/company/dto/create-company.dto';
 import { CompanyService } from './Master/company/company.service';
 import { PermissionsGuard } from './Components/guards/permission.guard';
 import { SecurityClearanceGuard } from './Components/security_clearance/security-clearance.guard';
+import { EmploymentStatusService } from './Master/employment_status/employment_status.service';
+import { EmploymentStatusController } from './Master/employment_status/employment_status.controller';
 
 @Module({
   imports: [
@@ -81,7 +83,7 @@ import { SecurityClearanceGuard } from './Components/security_clearance/security
     },
     MailService, 
     // PersonService, 
-    EmployeeService, UserService, AdministratorService, PositionService, DepartmentService, CaslAbilityService, HrService, DivisionService, CompanyService, CreateDepartmentDto, CreatePositionDto, CreateDivisionDto, CreateCompanyDto
+    EmployeeService, UserService, AdministratorService, PositionService, DepartmentService, CaslAbilityService, HrService, DivisionService, CompanyService, EmploymentStatusService, CreateDepartmentDto, CreatePositionDto, CreateDivisionDto, CreateCompanyDto
   ],
   controllers: [ EmployeeController, AdministratorController, MasterController, HrController, ManagerController, HomeController, ProfileController, AuthController, UserController],
 })
