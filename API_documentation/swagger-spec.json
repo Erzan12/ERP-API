@@ -1,6 +1,98 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/hr/employees_masterlist/{employeeId}": {
+      "get": {
+        "operationId": "EmployeeController_getEmployee",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employees information"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "View employee profile",
+        "tags": [
+          "Human Resources"
+        ]
+      },
+      "patch": {
+        "operationId": "EmployeeController_updateEmployee",
+        "parameters": [
+          {
+            "name": "employeeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update a current employee",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployeeWithDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employee information updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current Employee",
+        "tags": [
+          "Human Resources"
+        ]
+      }
+    },
     "/hr/employees_masterlist": {
       "post": {
         "operationId": "EmployeeController_createEmployee",
@@ -322,7 +414,7 @@
     },
     "/mastertables/positions": {
       "get": {
-        "operationId": "MasterController_getPosition",
+        "operationId": "MasterController_getAllPositions",
         "parameters": [],
         "responses": {
           "200": {
@@ -350,11 +442,143 @@
         "tags": [
           "Mastertables"
         ]
+      },
+      "post": {
+        "operationId": "MasterController_createPosition",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Position",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePositionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Position created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new position",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/positions/{positionId}": {
+      "get": {
+        "operationId": "MasterController_getPosition",
+        "parameters": [
+          {
+            "name": "positionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the position."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a position.",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "patch": {
+        "operationId": "MasterController_updatePositionInfo",
+        "parameters": [
+          {
+            "name": "positionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Position Info",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePositionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Position updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current position information",
+        "tags": [
+          "Mastertables"
+        ]
       }
     },
     "/mastertables/departments": {
       "get": {
-        "operationId": "MasterController_getDepartment",
+        "operationId": "MasterController_getAllDepartments",
         "parameters": [],
         "responses": {
           "200": {
@@ -423,10 +647,60 @@
         "tags": [
           "Mastertables"
         ]
+      }
+    },
+    "/mastertables/departments/{departmentId}": {
+      "get": {
+        "operationId": "MasterController_getDepartment",
+        "parameters": [
+          {
+            "name": "departmentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the department"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a department",
+        "tags": [
+          "Mastertables"
+        ]
       },
       "patch": {
         "operationId": "MasterController_updateDept",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "departmentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "description": "Payload to update department",
@@ -468,7 +742,7 @@
     },
     "/mastertables/divisions": {
       "get": {
-        "operationId": "MasterController_getDivision",
+        "operationId": "MasterController_getAllDivisions",
         "parameters": [],
         "responses": {
           "200": {
@@ -537,10 +811,60 @@
         "tags": [
           "Mastertables"
         ]
+      }
+    },
+    "/mastertables/divisions/{divisionId}": {
+      "get": {
+        "operationId": "MasterController_getDivision",
+        "parameters": [
+          {
+            "name": "divisionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the division"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a division",
+        "tags": [
+          "Mastertables"
+        ]
       },
       "patch": {
         "operationId": "MasterController_updateDivision",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "divisionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "description": "Payload to update division",
@@ -582,7 +906,7 @@
     },
     "/mastertables/companies": {
       "get": {
-        "operationId": "MasterController_getCompany",
+        "operationId": "MasterController_getAllCompany",
         "parameters": [],
         "responses": {
           "200": {
@@ -651,10 +975,62 @@
         "tags": [
           "Mastertables"
         ]
-      },
+      }
+    },
+    "/mastertables/company/{companyId}": {
+      "get": {
+        "operationId": "MasterController_getCompany",
+        "parameters": [
+          {
+            "name": "companyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the company"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a company",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/companies/{companyId}": {
       "patch": {
         "operationId": "MasterController_updateCompany",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "companyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "description": "Payload to update company",
@@ -689,6 +1065,171 @@
           }
         ],
         "summary": "Update a current company information",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/employment_status": {
+      "get": {
+        "operationId": "MasterController_getEmpStat",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of available employment status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all employment status",
+        "tags": [
+          "Mastertables"
+        ]
+      },
+      "post": {
+        "operationId": "MasterController_createEmpStat",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create employee status.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employee status created successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create new employee status.",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/employment_status/{employmentStatusId}": {
+      "get": {
+        "operationId": "MasterController_getEmpStatus",
+        "parameters": [
+          {
+            "name": "employmentStatusId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the employment status."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get an employment status.",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/employment_status/update/{employmentStatusId}": {
+      "patch": {
+        "operationId": "MasterController_async",
+        "parameters": [
+          {
+            "name": "employmentStatusId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmpStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employee status details updated successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Updating employee status details.",
         "tags": [
           "Mastertables"
         ]
@@ -1809,121 +2350,6 @@
         ]
       }
     },
-    "/Mmastertables": {
-      "get": {
-        "operationId": "EmploymentStatusController_getEmpStat",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Here are the list of available employment status"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Get all employment status",
-        "tags": [
-          "Mastertables"
-        ]
-      },
-      "post": {
-        "operationId": "EmploymentStatusController_createEmpStat",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to create employee status",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEmployeeStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Employee status created successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Create new employee status ",
-        "tags": [
-          "Mastertables"
-        ]
-      }
-    },
-    "/Mmastertables/edit": {
-      "patch": {
-        "operationId": "EmploymentStatusController_async",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEmpStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Employee status details updated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Updating employee status details",
-        "tags": [
-          "Mastertables"
-        ]
-      }
-    },
     "/security_clearance/{id}": {
       "patch": {
         "description": "This endpoint requires a minimun security clearance of level 9.",
@@ -1961,90 +2387,6 @@
         "summary": "Assign the security clearance level for user",
         "tags": [
           "Administrator"
-        ]
-      }
-    },
-    "/position/positions": {
-      "post": {
-        "operationId": "PositionController_createPosition",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to create Position",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePositionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Position created successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Create a new position",
-        "tags": [
-          "Mastertables"
-        ]
-      },
-      "patch": {
-        "operationId": "PositionController_updatePositionInfo",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to update Position Info",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePositionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Position updated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Update a current position information",
-        "tags": [
-          "Mastertables"
         ]
       }
     },
@@ -2269,6 +2611,50 @@
       }
     },
     "schemas": {
+      "UpdatePersonDto": {
+        "type": "object",
+        "properties": {
+          "civil_status": {
+            "type": "string",
+            "enum": [
+              "single",
+              "married",
+              "separated",
+              "widowed"
+            ],
+            "example": "single",
+            "description": "Civil Status of the employee"
+          },
+          "email": {
+            "type": "string",
+            "example": "sample@gmail.com",
+            "description": "Email of the employee"
+          }
+        },
+        "required": [
+          "civil_status",
+          "email"
+        ]
+      },
+      "UpdateEmployeeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateEmployeeWithDetailsDto": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/UpdatePersonDto"
+          },
+          "employee": {
+            "$ref": "#/components/schemas/UpdateEmployeeDto"
+          }
+        },
+        "required": [
+          "person",
+          "employee"
+        ]
+      },
       "CreatePersonDto": {
         "type": "object",
         "properties": {
@@ -2420,6 +2806,68 @@
         "required": [
           "person",
           "employee"
+        ]
+      },
+      "CreatePositionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Software Engineer",
+            "description": "The name of the position"
+          },
+          "sorting": {
+            "type": "number",
+            "example": 2,
+            "description": "Sorting number of the position"
+          },
+          "department": {
+            "type": "number",
+            "example": "human resources = 1, information technology = 2, accounting = 6",
+            "description": "The Department where the position is available"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "name",
+          "sorting",
+          "department",
+          "status"
+        ]
+      },
+      "UpdatePositionDto": {
+        "type": "object",
+        "properties": {
+          "position_name": {
+            "type": "string",
+            "example": "New Position name",
+            "description": "If you want to update the Position Name"
+          },
+          "sorting": {
+            "type": "number",
+            "example": 2,
+            "description": "Sorting number of the position"
+          },
+          "department": {
+            "type": "number",
+            "example": "human resources, information technology, accounting",
+            "description": "The Department where the position is available"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "position_name",
+          "sorting",
+          "department",
+          "status"
         ]
       },
       "CreateDepartmentDto": {
@@ -2655,6 +3103,14 @@
           "abbreviation",
           "status"
         ]
+      },
+      "CreateEmployeeStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateEmpStatusDto": {
+        "type": "object",
+        "properties": {}
       },
       "LoginDto": {
         "type": "object",
@@ -2944,14 +3400,6 @@
         "type": "object",
         "properties": {}
       },
-      "CreateEmployeeStatusDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateEmpStatusDto": {
-        "type": "object",
-        "properties": {}
-      },
       "UpdateSecurityClearanceDto": {
         "type": "object",
         "properties": {
@@ -2963,74 +3411,6 @@
         },
         "required": [
           "new_level"
-        ]
-      },
-      "CreatePositionDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Software Engineer",
-            "description": "The name of the position"
-          },
-          "sorting": {
-            "type": "number",
-            "example": 2,
-            "description": "Sorting number of the position"
-          },
-          "department": {
-            "type": "number",
-            "example": "human resources = 1, information technology = 2, accounting = 6",
-            "description": "The Department where the position is available"
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
-          }
-        },
-        "required": [
-          "name",
-          "sorting",
-          "department",
-          "status"
-        ]
-      },
-      "UpdatePositionDto": {
-        "type": "object",
-        "properties": {
-          "position_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the position you want to update"
-          },
-          "position_name": {
-            "type": "string",
-            "example": "New Position name",
-            "description": "If you want to update the Position Name"
-          },
-          "sorting": {
-            "type": "number",
-            "example": 2,
-            "description": "Sorting number of the position"
-          },
-          "department": {
-            "type": "number",
-            "example": "human resources = 1, information technology = 2, accounting = 6",
-            "description": "The Department where the position is available"
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
-          }
-        },
-        "required": [
-          "position_id",
-          "position_name",
-          "sorting",
-          "department",
-          "status"
         ]
       },
       "CreatePermissionTemplateDto": {

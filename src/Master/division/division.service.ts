@@ -8,7 +8,27 @@ import { UpdateDivisionDto } from './dto/update-division.dto.';
 export class DivisionService {
     constructor(private prisma: PrismaService) {}
 
-    async getDivisions(user: RequestUser) {
+    //query single division
+    async getDivision(divisionId: number, user: RequestUser) {
+        const division = await this.prisma.division.findUnique({
+            where: { id: divisionId },
+        });
+
+        if (!division) {
+            throw new BadRequestException('Division not found.')
+        }
+        
+        return {
+            status: 'success',
+            message: 'Here is the Division',
+            data: {
+                division,
+            },
+        };
+    }
+
+    //query all available divisions
+    async getAllDivisions(user: RequestUser) {
         const division = await this.prisma.department.findMany()
         
         if(!division) {
@@ -78,28 +98,30 @@ export class DivisionService {
         }
     }
 
-    async updateDivision(updateDivisionDto: UpdateDivisionDto, user: RequestUser) {
-        const existingDivision = await this.prisma.division.findUnique({
-            where: { id: updateDivisionDto.division_id },
+    async updateDivision(divisionId: number, updateDivisionDto: UpdateDivisionDto, user: RequestUser) {
+        const { division_name, stat } = updateDivisionDto;
+
+        const division = await this.prisma.division.findUnique({
+            where: { id: divisionId },
             select: {
                 name: true,
                 stat: true,
             }
         });
 
-        if(!existingDivision){
+        if(!division){
             throw new BadRequestException('Department does not exist!');
         }
 
-        if(existingDivision.stat === 0) {
-            throw new ForbiddenException(`${existingDivision.name} Division status is inactive!`)
+        if(division.stat === 0) {
+            throw new ForbiddenException(`${division.name} Division status is inactive!`)
         }
 
         const updateDivision = await this.prisma.division.update({
-            where: { id: updateDivisionDto.division_id },
+            where: { id: divisionId },
             data: {
-                name: updateDivisionDto.division_name,
-                stat: updateDivisionDto.stat,
+                name: division_name,
+                stat,
             },
         });
 
