@@ -1,14 +1,34 @@
 import { Injectable, ForbiddenException, ConflictException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 import { RequestUser } from '../../Components/types/request-user.interface';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class PositionService {
     constructor(private prisma: PrismaService) {}
 
-    async getPositions(user: RequestUser) {
+    //get a single position
+    async  getPosition(positionId: number, user: RequestUser) {
+        const position = await this.prisma.position.findUnique({
+            where: { id: positionId }
+        });
+
+        if (!position) {
+            throw new BadRequestException('Position not found.')
+        };
+
+        return {
+            status: 'success',
+            message: 'Here is the Position',
+            data: {
+                position,
+            },
+        };
+    }
+
+    //get all available and active positions
+    async getAllPositions(user: RequestUser) {
 
         const existingPositions = await this.prisma.position.findMany({
             where: {stat:1},
@@ -103,24 +123,24 @@ export class PositionService {
         };
     }
 
-    async updatePosition(updatePositionDto: UpdatePositionDto, user: RequestUser) {
-        const { position_id, position_name, department_id, stat } = updatePositionDto;
+    async updatePosition(positionId: number, updatePositionDto: UpdatePositionDto, user: RequestUser) {
+        const { position_name, department_id, stat } = updatePositionDto;
 
-        const existingPosition = await this.prisma.position.findFirst({
-            where: { id: updatePositionDto.position_id },
+        const position = await this.prisma.position.findUnique({
+            where: { id: positionId },
             select: {
                 id: true,
                 name: true,
                 stat: true,
             }
-        });
+        })
 
-        if(!existingPosition){
-            throw new BadRequestException('Position not found!');
+        if (!position) {
+            throw new BadRequestException('Position not Found.')
         }
 
-        if(existingPosition.stat === 0){
-            throw new ForbiddenException(`${existingPosition.name} Position status is inactive!`)
+        if (position.stat === 0){
+            throw new ForbiddenException(`${position.name} Position status is inactive!`)
         }
 
         if (updatePositionDto.department_id !== undefined) {
@@ -134,10 +154,10 @@ export class PositionService {
         }
 
         const updatePositionInfo = await this.prisma.position.update({
-            where: { id: updatePositionDto.position_id },
+            where: { id: positionId },
             data: {
-                id: existingPosition.id,
                 name: position_name,
+                sorting: updatePositionDto.sorting,
                 department_id,
                 stat,
             },
@@ -164,7 +184,7 @@ export class PositionService {
 
         return {
             status: 'success',
-            message: `${existingPosition.name} Position has been updated Successfully!`,
+            message: `${position.name} Position has been updated Successfully!`,
             updated_by: {
                 id: requestUser.id,
                 name: userName,

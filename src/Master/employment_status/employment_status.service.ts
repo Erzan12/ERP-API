@@ -1,23 +1,43 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEmployeeStatusDto } from './dto/create-emp-stat.dto';
 import { RequestUser } from '../../Components/types/request-user.interface';
-import { PrismaService } from 'prisma/prisma.service';
 import { UpdateEmpStatusDto } from './dto/update-emp-stat.dto';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class EmploymentStatusService {
     constructor(private prisma: PrismaService) {}
 
+    //get a single employee_status
+    async getEmpStatus (employeeStatusId: number, user: RequestUser) {
+        const employeeStatus = await this.prisma.employmentStatus.findUnique({
+            where: { id: employeeStatusId },
+        });
+
+        if (!employeeStatus) {
+            throw new BadRequestException('Employee status not found.')
+        }
+
+        return {
+            status: 'success',
+            message: 'Here is the Employee Status',
+            data: {
+                employeeStatus,
+            },
+        };
+    }
+
+    //get all employee_status
     async getEmpStat (user: RequestUser) {
-    const existingEmpStat = await this.prisma.employmentStatus.findMany()
+        const existingEmpStat = await this.prisma.employmentStatus.findMany()
 
-    const formattedEmpStat = existingEmpStat.map(employmentStatus => ({
-        emp_stat_id: employmentStatus.id,
-        code: employmentStatus.code,
-        label: employmentStatus.label,
-    }))
+        const formattedEmpStat = existingEmpStat.map(employmentStatus => ({
+            emp_stat_id: employmentStatus.id,
+            code: employmentStatus.code,
+            label: employmentStatus.label,
+        }))
 
-    return formattedEmpStat;
+        return formattedEmpStat;
     }
 
     async createEmpStat (empStatusDto: CreateEmployeeStatusDto, user: RequestUser) {
@@ -47,21 +67,20 @@ export class EmploymentStatusService {
         }
     }
 
-    async updateEmpStat (updateEmpStatusDto: UpdateEmpStatusDto, user: RequestUser) {
-        const { emp_stat_id, code, label } = updateEmpStatusDto;
-        
-        const exisitingEmptStat = await this.prisma.employmentStatus.findUnique({
-            where: { id: updateEmpStatusDto.emp_stat_id }
-        });
+    async updateEmpStat (employmentStatusId: number, updateEmpStatusDto: UpdateEmpStatusDto, user: RequestUser) {
+        const {  code, label } = updateEmpStatusDto;
 
-        if(!exisitingEmptStat) {
-            throw new BadRequestException('Employee status does not exist');
+        const employment_status = await this.prisma.employmentStatus.findUnique({
+            where: { id: employmentStatusId},
+        })
+
+        if(!employment_status) {
+            throw new BadRequestException('Employee status does not exist.');
         }
 
         const updateEmpStat = await this.prisma.employmentStatus.update({
-            where: { id: updateEmpStatusDto.emp_stat_id },
+            where: { id: employmentStatusId},
             data: {
-                id: emp_stat_id,
                 code,
                 label,
             },
@@ -69,7 +88,7 @@ export class EmploymentStatusService {
         
         return {
             status: 'success',
-            message: 'Employee Status updated successfully',
+            message: 'Employment Status updated successfully.',
             data: {
                 updateEmpStat
             },

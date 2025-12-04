@@ -1,19 +1,11 @@
-import { BadRequestException, ConflictException, UnauthorizedException, ForbiddenException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
-import { CreateModuleDto } from './module/dto/create-module.dto';
-import { CreateSubModuleDto } from './sub_module/dto/create-sub-module.dto';
-import { AssignSubModulePermissionDto } from './sub_module/dto/assign-sub-module-permission.dto'
-import { CreatePermissionTemplateDto } from '../Manager/permission_template/dto/create-permission-template.dto';
-import { CreateRoleDto } from './role/dto/create-role.dto';
-import { CreateRolePermissionDto } from './role/dto/create-role-permission.dto';
-import { UpdateRolePermissionsDto } from './role/dto/update-role-permisisons.dto';
-// import { UserRole } from '../Components/decorators/ability';
-import { RequestUser } from '../Components/types/request-user.interface';
+import { Injectable } from '@nestjs/common';
+import { RequestUser } from 'src/Components/types/request-user.interface';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
-export class AdministratorService {
+export class DashboardService {
     constructor (private prisma: PrismaService) {}
-    
+
     async getAdminDashboardStats(user: RequestUser) {
         const totalUsers = await this.prisma.user.count();
         const activeUsers = await this.prisma.user.count({ where: { stat: 1 }});
@@ -57,5 +49,4 @@ export class AdministratorService {
             },
         };
     }
-    
 }

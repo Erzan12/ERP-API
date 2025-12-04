@@ -1,11 +1,11 @@
 import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { CreateSubModuleDto } from './dto/create-sub-module.dto';
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
-import { PrismaService } from 'prisma/prisma.service';
 import { UnassignSubmodulePermissionsDto } from './dto/unassign-submodule.dto';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
 import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class SubModuleService {

@@ -1,23 +1,43 @@
 import { BadRequestException, NotFoundException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { CreateCompanyDto } from './dto/create-company.dto';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class CompanyService {
     constructor(private prisma: PrismaService) {}
 
-    async getCompanies(user: RequestUser) {
-        const company = await this.prisma.company.findMany()
+    //query single company
+    async getCompany(companyId: number, user: RequestUser) {
+        const company = await this.prisma.company.findUnique({
+            where: { id: companyId }
+        })
 
-        if(!company) {
-            throw new BadRequestException('No available companies found');
+        if (!company) {
+            throw new BadRequestException('Company not found.');
         }
 
         return {
             status: 'success',
-            message: 'Here are the list of Companies',
+            message: 'Here is the Company.',
+            data: {
+                company,
+            }
+        }
+    }
+
+    //query all company available
+    async getAllCompany(user: RequestUser) {
+        const company = await this.prisma.company.findMany()
+
+        if(!company) {
+            throw new BadRequestException('No available companies found.');
+        }
+
+        return {
+            status: 'success',
+            message: 'Here are the list of Companies.',
             data: {
                 company,
             }
@@ -72,30 +92,32 @@ export class CompanyService {
         }
     }
 
-    async updateCompany(updateCompanyDto: UpdateCompanyDto, user: RequestUser) {
-        const existingCompany = await this.prisma.company.findUnique({
-            where: { id: updateCompanyDto.company_id },
+    async updateCompany(companyId: number, updateCompanyDto: UpdateCompanyDto, user: RequestUser) {
+        const { name, address, telephone_no, fax_no, company_tin, is_top_20000, abbreviation, stat } = updateCompanyDto
+
+        const company = await this.prisma.company.findUnique({
+            where: { id: companyId },
             select: {
                 name: true,
                 stat: true,
             }
         });
 
-        if(!existingCompany || existingCompany.stat === 0){
+        if(!company || company.stat === 0){
             throw new NotFoundException('Company does not exist or inactive!');
         }
 
         const updateCompany = await this.prisma.company.update({
-            where: { id: updateCompanyDto.company_id },
+            where: { id: companyId },
             data: {
-                name: updateCompanyDto.name,
-                address: updateCompanyDto.address,
-                telephone_no: updateCompanyDto.telephone_no,
-                fax_no: updateCompanyDto.fax_no,
-                company_tin: updateCompanyDto.company_tin,
-                is_top_20000: updateCompanyDto.is_top_20000,
-                abbreviation: updateCompanyDto.abbreviation,
-                stat: updateCompanyDto.stat,
+                name,
+                address,
+                telephone_no,
+                fax_no,
+                company_tin,
+                is_top_20000,
+                abbreviation,
+                stat,
             }
         });
 

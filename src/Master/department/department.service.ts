@@ -1,14 +1,15 @@
 import { Injectable, ForbiddenException, ConflictException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { CreateDepartmentDto } from './dto/create-dept.dto';
 import { UpdateDepartmentDto } from './dto/update-dept.dto';
 import { RequestUser } from '../../Components/types/request-user.interface';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class DepartmentService {
     constructor(private prisma: PrismaService) {}
 
-    async getDepartments(user: RequestUser) {
+    //query all available departments
+    async getAllDepartments(user: RequestUser) {
         const department = await this.prisma.department.findMany({
             include: {
                 division: true,
@@ -19,11 +20,30 @@ export class DepartmentService {
         }
         return {
             status: 'success',
-            message: 'Here are the list of Departments',
+            message: 'Here are the list of Departments.',
             data: {
                 department,
             }
         }
+    }
+    
+    //to add single query of department
+    async getDepartment(departmentId: number, user: RequestUser) {
+        const department = await this.prisma.department.findUnique({
+            where: { id: departmentId },
+        });
+
+        if (!department) {
+            throw new BadRequestException('Department not found.');
+        }
+
+        return {
+            status: 'success',
+            message: 'Here is the Department',
+            data: {
+                department,
+            }
+        };
     }
 
     async createDepartment(createDepartmentDto: CreateDepartmentDto, user) {
@@ -82,29 +102,31 @@ export class DepartmentService {
         };
     }
 
-    async updateDept(updateDepartmentDto: UpdateDepartmentDto, user) {
-        const existingDept = await this.prisma.department.findUnique({
-            where: { id: updateDepartmentDto.department_id },
+    async updateDept(departmentId:number, updateDepartmentDto: UpdateDepartmentDto, user) {
+        const { department_name, division_id, stat } = updateDepartmentDto;
+
+        const department = await this.prisma.department.findUnique({
+            where: { id: departmentId },
             select: {
                 name: true,
                 stat: true,
             }
         });
 
-        if(!existingDept){
+        if(!department){
             throw new BadRequestException('Department does not exist!');
         }
 
-        if(existingDept.stat === 0) {
-            throw new ForbiddenException(`${existingDept.name} Department status is inactive!`);
+        if(department.stat === 0) {
+            throw new ForbiddenException(`${department.name} Department status is inactive!`);
         }
 
         const updateDept = await this.prisma.department.update({
-            where: { id: updateDepartmentDto.department_id },
+            where: { id: departmentId },
             data: {
-                name: updateDepartmentDto.department_name,  // assuming you want to change the name
-                division_id: updateDepartmentDto.division_id,
-                stat: updateDepartmentDto.stat,
+                name: department_name,  // assuming you want to change the name
+                division_id,
+                stat,
                 //will be added to department schema updated_by and updated_at fields
                 // updated_by: user.id,           // optional: if you track who updated it
                 // updated_at: new Date(),        // optional: if you track timestamps

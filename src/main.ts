@@ -2,9 +2,9 @@ import { NestFactory, Reflector} from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { PrismaService } from '../prisma/prisma.service';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
+import { PrismaService } from './Prisma/prisma.service';
 
 class JwtAuthGuard extends AuthGuard('jwt') {}
 
