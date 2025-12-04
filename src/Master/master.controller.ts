@@ -128,7 +128,7 @@ export class MasterController {
     @Get('divisions')
     @ApiOperation({ summary: 'Get all divisions'})
     @ApiGetResponse('List of divisions retrieved')
-    @Can({ action: 'read', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async getAllDivisions(
         @SessionUser() user: RequestUser,
     ) {
@@ -151,7 +151,7 @@ export class MasterController {
     @ApiBody({ type: CreateDivisionDto, description: 'Payload to create Division'})
     @ApiOperation({ summary: 'Create a new division' })
     @ApiPostResponse('Division created successfully')
-    @Can({ action: 'create', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async createDivision(
         @Body() createDivisionDto: CreateDivisionDto,
         @SessionUser() user: RequestUser,
@@ -165,7 +165,7 @@ export class MasterController {
     @ApiBody({ type: UpdateDivisionDto, description: 'Payload to update division'})
     @ApiOperation({ summary: 'Update a current division information' })
     @ApiPatchResponse('Division updated successfully')
-    @Can({ action: 'update', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async updateDivision(
         @Param('divisionId', ParseIntPipe) divisionId:number,
         @Body() updateDivisiionDto: UpdateDivisionDto,
@@ -178,7 +178,7 @@ export class MasterController {
     @Get('companies')
     @ApiOperation({ summary: 'Get all departments' })
     @ApiGetResponse('List of companies retrieved')
-    @Can({ action: 'read', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async getAllCompany(
         @SessionUser() user: RequestUser,
     ) {
@@ -201,7 +201,7 @@ export class MasterController {
     @ApiBody({ type: CreateCompanyDto, description: 'Payload to create company'})
     @ApiOperation({ summary: 'Create a new company'})
     @ApiPostResponse('Company created successfully')
-    @Can({ action: 'create', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async createCompany(
         @Body() createCompanyDto: CreateCompanyDto,
         @SessionUser() user: RequestUser,
@@ -215,7 +215,7 @@ export class MasterController {
     @ApiBody({ type: UpdateCompanyDto, description: 'Payload to update company'})
     @ApiOperation({ summary: 'Update a current company information'})
     @ApiPatchResponse('Company updated successfully')
-    @Can({ action: 'update', subject: 'Mastertables' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+    @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async updateCompany(
         @Param('companyId', ParseIntPipe) companyId: number,
         @Body() updateCompanyDto: UpdateCompanyDto,
