@@ -1,12 +1,10 @@
 import { Module} from '@nestjs/common';
 import { AuthModule } from './Auth/auth.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'prisma/prisma.service';
 import { MailService } from './Mail/mail.service';
 import { ConfigModule } from '@nestjs/config';
 import { EmployeeService } from './HR/employee_masterlist/employee.service';
 import { EmployeeController } from './HR/employee_masterlist/employee.controller';
-import { AdministratorController } from 'src/Administrator/administrator.controller';
 import { AdministratorModule } from 'src/Administrator/administrator.module';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomJwtAuthGuard } from './Components/middleware/jwt.auth.guard';
@@ -22,7 +20,6 @@ import { CaslAbilityService } from './Components/casl/casl.service';
 import { HrModule } from './HR/hr.module';
 import { ManagerModule } from './Manager/manager.module';
 import { JwtStrategy } from './Components/middleware/jwt.strategy';
-import { PrismaModule } from '../prisma/prisma.module';
 import { AuthController } from './Auth/auth.controller';
 import { HomeController, ProfileController } from './Global/global.controller';
 import { DivisionService } from './Master/division/division.service';
@@ -34,6 +31,8 @@ import { EmploymentStatusService } from './Master/employment_status/employment_s
 import { EmploymentStatusController } from './Master/employment_status/employment_status.controller';
 import { UserService } from './Manager/user/user.service';
 import { UserController } from './Manager/user/user.controller';
+import { PrismaModule } from './Prisma/prisma.module';
+import { PrismaService } from './Prisma/prisma.service';
 
 @Module({
   imports: [
@@ -76,6 +75,6 @@ import { UserController } from './Manager/user/user.controller';
     // PersonService, 
     EmployeeService, UserService, PositionService, DepartmentService, CaslAbilityService, DivisionService, CompanyService, EmploymentStatusService, CreateDepartmentDto, CreatePositionDto, CreateDivisionDto, CreateCompanyDto
   ],
-  controllers: [ EmployeeController, AdministratorController, MasterController, HomeController, ProfileController, AuthController, UserController],
+  controllers: [ EmployeeController, MasterController, HomeController, ProfileController, AuthController, UserController],
 })
 export class AppModule {}

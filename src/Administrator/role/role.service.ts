@@ -1,12 +1,12 @@
 import { Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { PrismaService } from 'prisma/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { CreatePermissionTemplateDto } from '../../Manager/permission_template/dto/create-permission-template.dto';
 import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
 import { UnassignRolePermissionDto } from './dto/unassign-role-permission.dto';
 import { RequestUser } from 'src/Components/types/request-user.interface';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class RoleService {

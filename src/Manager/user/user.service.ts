@@ -1,13 +1,13 @@
 import { Injectable, BadRequestException, ForbiddenException, ConflictException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
-import { PrismaService } from 'prisma/prisma.service';
 import { MailService } from 'src/Mail/mail.service';
 import { CreatePermissionTemplateDto } from 'src/Manager/permission_template/dto/create-permission-template.dto';
 import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-permission.dto';
 import { DeactivateUserAccountDto, ReactivateUserAccountDto } from './dto/user-account-status.dto';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class UserService {

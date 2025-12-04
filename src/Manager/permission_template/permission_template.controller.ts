@@ -4,12 +4,12 @@ import { Can } from 'src/Components/decorators/can.decorator';
 import { SessionUser } from 'src/Components/decorators/session-user.decorator';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 import { CreatePermissionTemplateDto } from './dto/create-permission-template.dto';
-import { PrismaService } from 'prisma/prisma.service';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/Components/helpers/swagger-response.helper';
 import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, PERMISSION_TEMPLATE } from 'src/Components/constants/ability.constant';
 import { AssignTemplateDto } from './dto/assign-template.dto';
 import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Manager')

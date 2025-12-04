@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from 'prisma/prisma.service';
 import { AuthService } from 'src/Auth/auth.service';
 import { AuthModule } from 'src/Auth/auth.module';
 import { MailService } from 'src/Mail/mail.service';
@@ -9,6 +8,7 @@ import { PermissionTemplateController } from './permission_template/permission_t
 import { PermissionTemplateService } from './permission_template/permission_template.service';
 import { UserController } from './user/user.controller';
 import { JwtStrategy } from 'src/Components/middleware/jwt.strategy';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Module({
   imports: [ AuthModule ],

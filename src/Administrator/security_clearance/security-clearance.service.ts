@@ -1,16 +1,11 @@
 import { Injectable, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class SecurityClearanceService {
   constructor(private prisma: PrismaService) {}
 
-  async updateUserClearance(
-    adminId: number,
-    targetUserId: number,
-    newClearanceLevel: number,
-    adminClearanceLevel: number,
-  ) {
+  async updateUserClearance(adminId: number,targetUserId: number,newClearanceLevel: number,adminClearanceLevel: number) {
     // validate admin authority
     if (adminClearanceLevel < 9) {
       throw new ForbiddenException(

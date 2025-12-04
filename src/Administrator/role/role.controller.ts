@@ -7,12 +7,11 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
 import { CreatePermissionTemplateDto } from '../../Manager/permission_template/dto/create-permission-template.dto';
-import { SM_ADMIN } from '../../Components/constants/core-constants';
 import { UnassignRolePermissionDto } from './dto/unassign-role-permission.dto';
-import { PrismaService } from 'prisma/prisma.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/Components/helpers/swagger-response.helper';
 import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, SYSTEM_MANAGEMENT } from 'src/Components/constants/ability.constant';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @ApiBearerAuth('access-token')
 @ApiTags('System Management')

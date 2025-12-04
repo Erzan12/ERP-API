@@ -1,13 +1,7 @@
-// import {
-//   ACTION_CREATE,
-//   MODULE_ADMIN,
-//   MODULE_HR,
-// } from '../../Components/decorators/ability';
 import { Controller, Post, Body, Get, ValidationPipe, UsePipes, Patch, ParseIntPipe, Param } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { CreateEmployeeWithDetailsDto } from './dto/create-employee-with-details.dto';
 import { Can } from '../../Components/decorators/can.decorator';
-import { SM_HR } from '../../Components/constants/core-constants';
 import { SessionUser } from '../../Components/decorators/session-user.decorator';
 import { RequestUser } from '../../Components/types/request-user.interface';
 import { ApiBearerAuth, ApiTags, ApiBody, ApiOperation } from '@nestjs/swagger';

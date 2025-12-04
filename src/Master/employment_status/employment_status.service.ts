@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEmployeeStatusDto } from './dto/create-emp-stat.dto';
 import { RequestUser } from '../../Components/types/request-user.interface';
-import { PrismaService } from 'prisma/prisma.service';
 import { UpdateEmpStatusDto } from './dto/update-emp-stat.dto';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class EmploymentStatusService {
