@@ -539,7 +539,7 @@
         ],
         "requestBody": {
           "required": true,
-          "description": "Payload to update Position Info",
+          "description": "Payload to update Position information",
           "content": {
             "application/json": {
               "schema": {
@@ -2390,9 +2390,9 @@
         ]
       }
     },
-    "/permission-template": {
+    "/permission_template": {
       "get": {
-        "operationId": "PermissionTemplateController_getPermissionTemplates",
+        "operationId": "PermissionTemplateController_getAllPermissionTemplate",
         "parameters": [],
         "responses": {
           "200": {
@@ -2463,10 +2463,110 @@
         ]
       }
     },
-    "/permission-template/me": {
+    "/permission_template/{permissionTemplateId}": {
       "get": {
-        "operationId": "PermissionTemplateController_getPermTemplates",
-        "parameters": [],
+        "operationId": "PermissionTemplateController_getPermissionTemplate",
+        "parameters": [
+          {
+            "name": "permissionTemplateId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the permission template"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a permission template",
+        "tags": [
+          "Manager"
+        ]
+      },
+      "patch": {
+        "operationId": "PermissionTemplateController_updatePermissionTemplate",
+        "parameters": [
+          {
+            "name": "permissionTemplateId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Permission Template",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePermissionTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permissin Template has been updated."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get available permissin templates to user",
+        "tags": [
+          "Manager"
+        ]
+      }
+    },
+    "/permission_template/user/{userPermissionTemplateId}": {
+      "get": {
+        "operationId": "PermissionTemplateController_getUserPermissionTemplate",
+        "parameters": [
+          {
+            "name": "userPermissionTemplateId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Here are the list of permission templates available"
@@ -2495,7 +2595,7 @@
         ]
       }
     },
-    "/permission-template/user/{id}": {
+    "/permission_template/user/{id}": {
       "post": {
         "operationId": "PermissionTemplateController_assignPermTemplate",
         "parameters": [
@@ -3411,6 +3511,43 @@
         },
         "required": [
           "new_level"
+        ]
+      },
+      "UpdatePermissionTemplateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Accounting Clerk Template"
+          },
+          "department_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the department for this permission template"
+          },
+          "position_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the position for this permission template"
+          },
+          "role_permission_ids": {
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "description": "List of role_permission IDs to associate with the template",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "department_id",
+          "position_id",
+          "role_permission_ids"
         ]
       },
       "CreatePermissionTemplateDto": {

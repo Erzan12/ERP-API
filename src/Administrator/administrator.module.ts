@@ -5,7 +5,6 @@ import { AdministratorService } from 'src/Administrator/administrator.service';
 import { JwtStrategy } from '../Components/middleware/jwt.strategy';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'prisma/prisma.service';
-import { UserService } from 'src/User/user.service';
 import { MailService } from 'src/Mail/mail.service';
 import { SubModuleService } from './sub_module/sub_module.service';
 import { RoleController } from './role/role.controller';
@@ -17,6 +16,7 @@ import { EmploymentStatusController } from '../Master/employment_status/employme
 import { EmploymentStatusService } from '../Master/employment_status/employment_status.service';
 import { SecurityClearanceService } from './security_clearance/security-clearance.service';
 import { SecurityClearanceController } from './security_clearance/security-clearance.controller';
+import { UserService } from 'src/Manager/user/user.service';
 
 @Module({
     imports:[AuthModule],
