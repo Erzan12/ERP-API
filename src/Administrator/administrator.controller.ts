@@ -1,4 +1,3 @@
-import { UserService } from 'src/User/user.service';
 import { Body, Controller, Post, Req, Patch, Get } from '@nestjs/common';
 import { AdministratorService } from '../Administrator/administrator.service';
 import { CreateModuleDto } from './module/dto/create-module.dto';

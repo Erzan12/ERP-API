@@ -6,7 +6,7 @@ import { MailService } from 'src/Mail/mail.service';
 import { CreatePermissionTemplateDto } from 'src/Manager/permission_template/dto/create-permission-template.dto';
 import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-permission.dto';
 import { DeactivateUserAccountDto, ReactivateUserAccountDto } from './dto/user-account-status.dto';
-import { RequestUser } from '../Components/types/request-user.interface';
+import { RequestUser } from 'src/Components/types/request-user.interface';
 import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
 
 @Injectable()
