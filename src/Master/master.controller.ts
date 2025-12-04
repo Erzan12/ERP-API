@@ -65,7 +65,7 @@ export class MasterController {
     }
 
     @Patch('positions/:positionId')
-    @ApiBody({ type: UpdatePositionDto, description: 'Payload to update Position Info'})
+    @ApiBody({ type: UpdatePositionDto, description: 'Payload to update Position information'})
     @ApiOperation({ summary: 'Update a current position information'})
     @ApiPatchResponse('Position updated successfully')
     @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
