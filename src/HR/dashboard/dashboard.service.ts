@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { RequestUser } from '../Components/types/request-user.interface';
+import { RequestUser } from 'src/Components/types/request-user.interface';
 
 @Injectable()
-export class HrService {
-    constructor(private prisma: PrismaService) {}
+export class DashboardService {
+    constructor (private prisma: PrismaService) {}
 
     async getHRDashboard(user: RequestUser) {
         const totalActEmp = await this.prisma.user.count({ where: { stat: 1 }});
