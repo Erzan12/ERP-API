@@ -10,11 +10,11 @@ import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Administrator')
-@Controller('security_clearance')
+@Controller('administrator')
 export class SecurityClearanceController {
   constructor(private clearanceService: SecurityClearanceService) {}
 
-  @Patch(':id')
+  @Patch('/security_clearance/:id')
   @ApiOperation({ summary: 'Assign the security clearance level for user' })
   @ApiSecurityClearance(SEC_LVL_9)
   @SecurityClearance(SEC_LVL_9) // admin must be 9+ to update others
