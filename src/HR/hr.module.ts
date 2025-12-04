@@ -6,10 +6,12 @@ import { EmployeeService } from './employee_masterlist/employee.service';
 // import { PersonModule } from './person/person.module';
 import { PrismaService } from 'prisma/prisma.service';
 // import { PersonService } from './person/person.service';
+import { DashboardService } from './dashboard/dashboard.service';
+import { DashboardController } from './dashboard/dashboard.controller';
 
 @Module({
-  providers: [HrService, EmployeeService, PrismaService],
-  controllers: [EmployeeController],
+  providers: [HrService, EmployeeService, PrismaService, DashboardService],
+  controllers: [EmployeeController, DashboardController],
   exports: [HrModule]
 })
 export class HrModule {}

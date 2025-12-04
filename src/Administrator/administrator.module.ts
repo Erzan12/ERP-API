@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from 'src/Auth/auth.module';
 import { AdministratorController } from 'src/Administrator/administrator.controller';
-import { AdministratorService } from 'src/Administrator/administrator.service';
 import { JwtStrategy } from '../Components/middleware/jwt.strategy';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'prisma/prisma.service';
@@ -17,11 +16,13 @@ import { EmploymentStatusService } from '../Master/employment_status/employment_
 import { SecurityClearanceService } from './security_clearance/security-clearance.service';
 import { SecurityClearanceController } from './security_clearance/security-clearance.controller';
 import { UserService } from 'src/Manager/user/user.service';
+import { DashboardService } from './dashboard/dashboard.service';
+import { DashboardController } from './dashboard/dashboard.controller';
 
 @Module({
     imports:[AuthModule],
-    controllers: [AdministratorController, SubModuleController, ModuleController, RoleController, EmploymentStatusController, EmploymentStatusController, SecurityClearanceController],
-    providers: [AdministratorService, JwtStrategy, JwtService, PrismaService, UserService, MailService, SubModuleService, ModuleService, RoleService, EmploymentStatusService, SecurityClearanceService],
+    controllers: [AdministratorController, SubModuleController, ModuleController, RoleController, EmploymentStatusController, EmploymentStatusController, SecurityClearanceController, DashboardController],
+    providers: [ JwtStrategy, JwtService, PrismaService, UserService, MailService, SubModuleService, ModuleService, RoleService, EmploymentStatusService, SecurityClearanceService, DashboardService],
     exports: [AdministratorModule]
 
 })
