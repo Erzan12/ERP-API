@@ -1,8 +1,8 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { CreateDivisionDto } from './dto/create-division.dto';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 import { UpdateDivisionDto } from './dto/update-division.dto.';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class DivisionService {

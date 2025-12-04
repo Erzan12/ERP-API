@@ -1,8 +1,8 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateModuleDto } from './dto/create-module.dto';
-import { PrismaService } from 'prisma/prisma.service';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 import { UpdateModuleDto } from './dto/update-module.dto';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class ModuleService {

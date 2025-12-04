@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { CreatePermissionTemplateDto } from 'src/Manager/permission_template/dto/create-permission-template.dto';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 import { AssignTemplateDto } from './dto/assign-template.dto';
 import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 
 @Injectable()

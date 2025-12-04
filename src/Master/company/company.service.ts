@@ -1,8 +1,8 @@
 import { BadRequestException, NotFoundException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { CreateCompanyDto } from './dto/create-company.dto';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class CompanyService {

@@ -1,8 +1,8 @@
 import { Injectable, ForbiddenException, ConflictException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { CreateDepartmentDto } from './dto/create-dept.dto';
 import { UpdateDepartmentDto } from './dto/update-dept.dto';
 import { RequestUser } from '../../Components/types/request-user.interface';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class DepartmentService {

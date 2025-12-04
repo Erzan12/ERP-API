@@ -1,6 +1,4 @@
 import { Controller, Post, Body, Patch, Param, Get } from '@nestjs/common';
-import { SM_ADMIN } from '../../Components/constants/core-constants';
-// import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, MODULE_ADMIN } from '../../Components/decorators/ability';
 import { Can } from '../../Components/decorators/can.decorator';
 import { CreateSubModuleDto } from './dto/create-sub-module.dto';
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';

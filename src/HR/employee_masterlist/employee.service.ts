@@ -1,5 +1,4 @@
 import { Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { RequestUser } from '../../Components/types/request-user.interface';
@@ -8,10 +7,12 @@ import { CivilStatus, Gender } from '../../Components/decorators/global.enums.de
 import { CreateEmployeeWithDetailsDto } from './dto/create-employee-with-details.dto';
 import { UpdateEmployeeWithDetailsDto } from './dto/update-employee-with-details.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Injectable()
 export class EmployeeService {
     constructor (private prisma: PrismaService) {}
+    
     async createEmployee(createEmployeeWithDetails: CreateEmployeeWithDetailsDto, user) {
         return await this.prisma.$transaction(async (prisma) => {
             const { gender, civil_status } = createEmployeeWithDetails.person;

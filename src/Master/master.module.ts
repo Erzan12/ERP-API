@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MasterController } from '../Master/master.controller';
 import { PositionService } from '../Master/position/position.service';
-import { PrismaService } from 'prisma/prisma.service';
 import { CreatePositionDto } from './position/dto/create-position.dto';
 import { DepartmentService } from './department/department.service';
 import { CreateDepartmentDto } from './department/dto/create-dept.dto';
@@ -15,6 +14,7 @@ import { CompanyController } from './company/company.controller';
 import { DivisionController } from './division/division.controller';
 import { EmploymentStatusService } from './employment_status/employment_status.service';
 import { EmploymentStatusController } from './employment_status/employment_status.controller';
+import { PrismaService } from 'src/Prisma/prisma.service';
 
 @Module({
     imports: [],
