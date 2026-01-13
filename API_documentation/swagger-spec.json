@@ -1348,7 +1348,7 @@
         ]
       }
     },
-    "/security_clearance/{id}": {
+    "/administrator/security_clearance/{id}": {
       "patch": {
         "description": "This endpoint requires a minimun security clearance of level 9.",
         "operationId": "SecurityClearanceController_updateClearance",
@@ -1748,7 +1748,7 @@
         ]
       }
     },
-    "/company/companies": {
+    "/mastertables/companies": {
       "get": {
         "operationId": "CompanyController_getAllCompany",
         "parameters": [],
@@ -1769,9 +1769,14 @@
             "description": "Not Found - The requested resource was not found."
           }
         },
-        "summary": "Get all departments",
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all companies",
         "tags": [
-          "Company"
+          "Mastertables"
         ]
       },
       "post": {
@@ -1805,13 +1810,18 @@
             "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "summary": "Create a new company",
         "tags": [
-          "Company"
+          "Mastertables"
         ]
       }
     },
-    "/company/company/{companyId}": {
+    "/mastertables/companies/{companyId}": {
       "get": {
         "operationId": "CompanyController_getCompany",
         "parameters": [
@@ -1841,13 +1851,16 @@
             "description": "Not Found - The requested resource was not found."
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "summary": "Get a company",
         "tags": [
-          "Company"
+          "Mastertables"
         ]
-      }
-    },
-    "/company/companies/{companyId}": {
+      },
       "patch": {
         "operationId": "CompanyController_updateCompany",
         "parameters": [
@@ -1888,9 +1901,14 @@
             "description": "Not Found - The requested resource was not found."
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "summary": "Update a current company information",
         "tags": [
-          "Company"
+          "Mastertables"
         ]
       }
     },

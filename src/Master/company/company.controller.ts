@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, MASTERTABLES } from 'src/Components/constants/ability.constant';
 import { Can } from 'src/Components/decorators/can.decorator';
 import { SessionUser } from 'src/Components/decorators/session-user.decorator';
@@ -9,12 +9,15 @@ import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
-@Controller('company')
+@ApiBearerAuth('access-token')
+@ApiTags('Mastertables')
+@Controller('mastertables')
 export class CompanyController {
     constructor (private companyService: CompanyService) {}
+
     //get all available companies
     @Get('companies')
-    @ApiOperation({ summary: 'Get all departments' })
+    @ApiOperation({ summary: 'Get all companies' })
     @ApiGetResponse('List of companies retrieved')
     @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async getAllCompany(
@@ -24,7 +27,7 @@ export class CompanyController {
     }
 
     //get a single company
-    @Get('company/:companyId')
+    @Get('companies/:companyId')
     @ApiOperation({ summary: 'Get a company'})
     @ApiGetResponse('Here is the company')
     @Can({ action: ACTION_READ, subject: MASTERTABLES })
