@@ -1,19 +1,20 @@
-# Use full Node 20 image (better for development)
-FROM node:20
+# dockerfile with bind mount to sync local dev with docker linux container to enable hot reload
 
-# Install build tools for native modules (safe in dev)
-RUN apt-get update && apt-get install -y \
-  python3 \
-  make \
-  g++ \
-  && rm -rf /var/lib/apt/lists/*
+# Stage 1: Builder (General Dependencies)
+FROM node:20-alpine AS builder
 
-  # Set working directory
 WORKDIR /app
 
-# Copy and install dependencies
 COPY package*.json ./
+
 RUN npm install
+
+# Use full Node 20 image (better for development)
+FROM node:20-alpine AS development
+
+# Set working directory
+WORKDIR /app
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy app source
 COPY . .
@@ -26,3 +27,6 @@ EXPOSE 3000
 
 # Start in development mode
 CMD ["npm", "run", "start:dev"]
+
+# Stage 3: Production (For final builds, omitted here for brevity)
+#

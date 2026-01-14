@@ -611,7 +611,7 @@
         ]
       }
     },
-    "/user_locations/user_locations": {
+    "/mastertables/user_locations": {
       "get": {
         "operationId": "UserLocationController_getAllUserLocations",
         "parameters": [],
