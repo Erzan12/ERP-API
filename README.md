@@ -57,25 +57,29 @@ $ docker compose build --no-cache
 > **Note:** `npm install` is already added in docker file but you will need to run `npm install` again in terminal for your local development.
 
 ## Step 2: Migrate and Seed the Database
-1. Run Prisma migration (inside the running container or docker terminal): 
+1. Make sure containers are running
+```bash
+$ docker-compose up -d
+```
+2. Run Prisma migration (inside the running container or docker terminal, this creates the database + tables): 
 ```bash
 $ docker exec -it nestjs-app npx prisma migrate dev --name init-build
 ```
-2. Seed the database, run:
+3. Seed the database, run:
 ```bash
 $ docker exec -it nestjs-app npx prisma db seed
 ```
-3. After migrating and seeding your migration database, run to sync your changes with prisma schema
+4. After migrating and seeding your migration database, generate prisma client
 ```bash
 $ docker exec -it nestjs-app npx prisma generate
 ```
-4. If ever you want to reset your migration along with the seed file(optional), run: 
+5. If ever you want to reset your migration along with the seed file(optional), run: 
 ```bash
 $ docker exec -it nestjs-app npx prisma migrate reset
 ```
 
 ## Step 3: Accessing the system
-1. First, open bash terminal, run: 
+1. First, open bash terminal, run(to make sure containers are running): 
 ```bash
 $ docker-compose up
 ```
