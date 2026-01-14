@@ -251,7 +251,7 @@ model UserLocation {
   address         String
   stat            Int      @default(1)
   created_at      DateTime @default(now())
-  updated_at      DateTime
+  updated_at      DateTime @default(now())
 }
 
 model Module {
