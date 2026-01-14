@@ -80,6 +80,7 @@ $ docker exec -it nestjs-app npx prisma migrate reset
 $ docker-compose up
 ```
 2. Access Endpoints: 
+```bash
 Access pgAdmin(Important! To register the database in pgAdmin server)
 
  - Open [http://localhost:8080](http://localhost:8080) in your browser.
@@ -99,21 +100,25 @@ Access pgAdmin(Important! To register the database in pgAdmin server)
    - **Password:** `postgres`
 
 > **Note:** After successfully migrating and seeding the database you also need to register the server manually for the database. `postgres` is the service name defined in `docker-compose.yml`, not `localhost`. Docker Compose allows internal service resolution by name.
-
+```
+```bash
 Access Prisma Studio for database GUI
 
  - Open [http://localhost:5555](http://localhost:5555) in your browser.
 
 > **Note:** make sure prisma client is generated.
-
+```
+```bash
 Access Swagger API Docs
 
  - Visit http://localhost:3000/api/documentation
-
+```
+```bash
 Access with Postman API
 
  - Copy this endpoint http://localhost:3000 in postman new request
  - Navigate through the controller endpoints provided in postman testing workspace
+```
 
 ## Compile and run the project
 
