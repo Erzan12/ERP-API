@@ -66,7 +66,11 @@ $ docker exec -it nestjs-app npx prisma migrate dev --name init-build
 ```bash
 $ docker exec -it nestjs-app npx prisma db seed
 ```
-3. If ever you want to reset your migration along with the seed file(optional), run: 
+3. After migrating and seeding your migration database, run to sync your changes with prisma schema
+```bash
+$ docker exec -it nestjs-app npx prisma generate
+```
+4. If ever you want to reset your migration along with the seed file(optional), run: 
 ```bash
 $ docker exec -it nestjs-app npx prisma migrate reset
 ```
