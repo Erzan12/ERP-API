@@ -611,6 +611,38 @@
         ]
       }
     },
+    "/user_locations/user_locations": {
+      "get": {
+        "operationId": "UserLocationController_getAllUserLocations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of user locations available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all user locations",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
     "/administrator/submodules": {
       "get": {
         "operationId": "SubModuleController_getSubmodules",
@@ -1590,7 +1622,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of departments retrieved"
+            "description": "List of departments available"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
