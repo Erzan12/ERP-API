@@ -57,19 +57,9 @@ export class DepartmentService {
         });
 
         if(existingDepartment) {
-            throw new BadRequestException('Department name already exists!');
+            throw new BadRequestException('Department already exists!');
         }
 
-        const createdDepartment = await this.prisma.department.create({
-            data: {
-                name: createDepartmentDto.name,
-                division: {
-                connect: { id: createDepartmentDto.division_id }
-                },
-                stat: stat,
-            }
-        });
- 
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
             include: {
@@ -78,32 +68,51 @@ export class DepartmentService {
                         person: true,
                         position: true,
                     }
-                }
+                },
+                user_roles: true,
             }
         })
 
-        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        if(!requestUser || !requestUser.employee || !requestUser.employee.person) {
             throw new BadRequestException(`User does not exist.`);
         }
+
+        const isAdmin = requestUser.user_roles.some(
+            role => role.role_id === 3 && role.role_name === 'Administrator'
+        );
+
+        if (!isAdmin) {
+            throw new ForbiddenException(`User is not allowed to add new Department.`);
+        }
+
+        const createDepartment = await this.prisma.department.create({
+            data: {
+                name: createDepartmentDto.name,
+                division: {
+                connect: { id: createDepartmentDto.division_id }
+                },
+                stat: stat,
+            }
+        });
 
         const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
         const userPos  = requestUser.employee.position.name;
 
         return {
             status: 'success',
-            message: `${createdDepartment.name} Department has been created successfully!`,
+            message: `${createDepartment.name} Department has been created successfully!`,
             created_by: {
                 id: requestUser.id,
                 name: userName,
                 position: userPos,
             },
-            department_id: createdDepartment.id,
-            department_name: createdDepartment.name
+            department_id: createDepartment.id,
+            department_name: createDepartment.name
         };
     }
 
     async updateDept(departmentId:number, updateDepartmentDto: UpdateDepartmentDto, user) {
-        const { department_name, division_id, stat } = updateDepartmentDto;
+        const { department_name, sorting,  division_id, stat } = updateDepartmentDto;
 
         const department = await this.prisma.department.findUnique({
             where: { id: departmentId },
@@ -125,6 +134,7 @@ export class DepartmentService {
             where: { id: departmentId },
             data: {
                 name: department_name,  // assuming you want to change the name
+                sorting,
                 division_id,
                 stat,
                 //will be added to department schema updated_by and updated_at fields

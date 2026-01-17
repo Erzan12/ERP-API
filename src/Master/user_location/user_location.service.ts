@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, ForbiddenException, Injectable 
 import { CreateUserLocationDto } from './dto/create-user-location.dto';
 import { RequestUser } from 'src/Components/types/request-user.interface';
 import { PrismaService } from 'src/Prisma/prisma.service';
+import { UpdateUserLocationDto } from './dto/update-user-location.dto';
 
 @Injectable()
 export class UserLocationService {
@@ -14,11 +15,92 @@ export class UserLocationService {
             throw new BadRequestException('No avaiable User Locations found');
         }
         return {
-            status: 'sucess',
+            status: 'success',
             message: 'Here are the list of User Locations.',
             data: {
                 user_location,
             }
         }
+    }
+
+    //query a user location
+    async getUserLocation(user: RequestUser) {
+        const user_location = await this.prisma.userLocation.findMany()
+        if(!user_location) {
+            throw new BadRequestException('User Location not found');
+        }
+        return {
+            status: 'success',
+            message: 'Here is the User Location.',
+            data: {
+                user_location,
+            }
+        }
+    }
+
+    //create a user location
+    async createUserLocation(createUserLocationDto: CreateUserLocationDto, user) {
+        const { location_name, address, stat } = createUserLocationDto;
+
+        const existingUserLocation = await this.prisma.userLocation.findFirst({
+            where: {
+                location_name: createUserLocationDto.location_name,
+            }
+        });
+        if(existingUserLocation){
+            throw new BadRequestException('User Location already exists!');
+        }
+
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                    include: {
+                        person: true,
+                        position: true,
+                    }
+                },
+                user_roles: true,
+            }
+        });
+
+        if(!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+
+        const isAdmin = requestUser.user_roles.some(
+            role => role.role_id === 3 && role.role_name === 'Administrator'
+        );
+
+        if (!isAdmin) {
+            throw new ForbiddenException(`User is not allowed to add new Department.`);
+        }
+
+        const createUserLocation = await this.prisma.userLocation.create({
+            data: {
+                location_name: location_name,
+                address: address,
+                stat: stat,
+            }
+        });
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPos = requestUser.employee.position.name;
+
+        return {
+            status: 'success',
+            message: `${createUserLocation.location_name} User Location has been created successfully!`,
+            created_by: {
+                id: requestUser.id,
+                name: userName,
+                position: userPos,
+            },
+            user_location_id: createUserLocation.id,
+            user_location_name: createUserLocation.location_name
+        };
+    }
+
+    async updateUserLocation(userLocationId:number, updateUserLocationDto: UpdateUserLocationDto, user) {
+        const { location_name, address, stat } = updateUserLocationDto;
     }
 }
