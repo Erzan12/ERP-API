@@ -47,43 +47,45 @@ $ npm install
 ```
 4. Next, build and start the containers of docker in bash terminal:
 ```bash
-$ docker-compose up --build -d
+$ docker-compose up --build
 ```
 ```bash
-$ docker compose build --no-cache
+$ docker compose build
 ```
 5. This step builds your NestJs aap's Docker image, pulls necessary images in docker-compose.yml (e.g., postgres,pgadmin). This will also start all the services ( nest.js, postgres, etc) in the background.
 
 > **Note:** `npm install` is already added in docker file but you will need to run `npm install` again in terminal for your local development.
 
 ## Step 2: Migrate and Seed the Database
-
-1. Run Prisma migration (inside the running container or docker terminal): 
+1. Make sure containers are running
+```bash
+$ docker-compose up -d
+```
+2. Run Prisma migration (inside the running container or docker terminal, this creates the database + tables): 
 ```bash
 $ docker exec -it nestjs-app npx prisma migrate dev --name init-build
 ```
-2. Seed the database, run:
+3. Seed the database, run:
 ```bash
 $ docker exec -it nestjs-app npx prisma db seed
 ```
-3. If ever you want to reset your migration along with the seed file(optional), run: 
+4. After migrating and seeding your migration database, generate prisma client
+```bash
+$ docker exec -it nestjs-app npx prisma generate
+```
+5. If ever you want to reset your migration along with the seed file(optional), run: 
 ```bash
 $ docker exec -it nestjs-app npx prisma migrate reset
 ```
 
 ## Step 3: Accessing the system
-1. First, open bash terminal, run: 
+1. First, open bash terminal, run(to make sure containers are running): 
 ```bash
 $ docker-compose up
 ```
 2. Access Endpoints: 
-- Access Prisma Studio for database GUI
-
- - Open [http://localhost:5555](http://localhost:5555) in your browser.
-
-> **Note:** make sure prisma client is generated.
-
-- Access pgAdmin
+```bash
+Access pgAdmin(Important! To register the database in pgAdmin server)
 
  - Open [http://localhost:8080](http://localhost:8080) in your browser.
 
@@ -91,22 +93,36 @@ $ docker-compose up
    - **Email:** `admin@admin.com`
    - **Password:** `admin`
 
+  - General tab:
+   - **Name:** `PostgreSQL Docker`(or any name you are comfortable using)
+
   - Add a new server:
    - **Host name/address:** `postgres`
    - **Port:** `5432`
+   - **Maintenance Database:** `postgres`
    - **Username:** `postgres`
    - **Password:** `postgres`
 
-> **Note:** `postgres` is the service name defined in `docker-compose.yml`, not `localhost`. Docker Compose allows internal service resolution by name.
+> **Note:** After successfully migrating and seeding the database you also need to register the server manually for the database. `postgres` is the service name defined in `docker-compose.yml`, not `localhost`. Docker Compose allows internal service resolution by name.
+```
+```bash
+Access Prisma Studio for database GUI
 
-- Access Swagger API Docs
+ - Open [http://localhost:5555](http://localhost:5555) in your browser.
+
+> **Note:** make sure prisma client is generated.
+```
+```bash
+Access Swagger API Docs
 
  - Visit http://localhost:3000/api/documentation
-
-- Access with Postman API
+```
+```bash
+Access with Postman API
 
  - Copy this endpoint http://localhost:3000 in postman new request
  - Navigate through the controller endpoints provided in postman testing workspace
+```
 
 ## Compile and run the project
 
