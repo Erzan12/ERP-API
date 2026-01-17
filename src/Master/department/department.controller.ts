@@ -17,7 +17,7 @@ export class DepartmentController {
     
     @Get('departments')
     @ApiOperation({ summary: 'Get all departments' })
-    @ApiGetResponse('List of departments retrieved')
+    @ApiGetResponse('List of departments available')
     @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
     async getAllDepartments(
         @SessionUser() user: RequestUser,

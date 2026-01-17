@@ -3,14 +3,18 @@ services:
     container_name: nestjs-app
     build:
       context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+      # dockerfile: Dockerfile
+      target: development
     volumes:
       - .:/app
+      - /app/node_modules
+    command: npm run start:dev
+    ports:
+      - "3000:3000"
+    environment:
+      WATCHPACK_POLLING: "true"
     env_file:
       - .env
-    command: npm run start:dev
     depends_on:
       - postgres
   postgres:

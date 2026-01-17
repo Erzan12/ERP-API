@@ -447,12 +447,15 @@ async function main() {
       const subModulePermissionId = subModulePermissionMap.get(`${sub.id}-${action}`);
       if (!subModulePermissionId) continue; // skip if permission not found
 
+      const DEFAULT_DEPARTMENT_ID = 2;
+
       rolePermissionPayload.push({
         action,
         sub_module_id: sub.id,
         role_id: adminRole.id,
         role_name: adminRole.name,
         sub_module_permission_id: subModulePermissionId,
+        department_id: DEFAULT_DEPARTMENT_ID,
       });
     }
   }
@@ -500,7 +503,6 @@ async function main() {
   });
 
   console.log(`✅ Assigned ${userPermissionsData.length} permissions to user ${userId}`);
-
 
   // 15. Seed Password Reset Tokens
   await prisma.passwordResetToken.createMany({

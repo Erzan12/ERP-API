@@ -15,11 +15,13 @@ import { DivisionController } from './division/division.controller';
 import { EmploymentStatusService } from './employment_status/employment_status.service';
 import { EmploymentStatusController } from './employment_status/employment_status.controller';
 import { PrismaService } from 'src/Prisma/prisma.service';
+import { UserLocationController } from './user_location/user_location.controller';
+import { UserLocationService } from './user_location/user_location.service';
 
 @Module({
     imports: [],
-    providers: [PrismaService,PositionService, DepartmentService, CompanyService, DivisionService, EmploymentStatusService, CreateDivisionDto, CreateDepartmentDto, CreatePositionDto, CreateCompanyDto ],
-    controllers: [MasterController, PositionController, DepartmentController, CompanyController, DivisionController, EmploymentStatusController],
+    providers: [PrismaService,PositionService, DepartmentService, CompanyService, DivisionService, EmploymentStatusService, CreateDivisionDto, CreateDepartmentDto, CreatePositionDto, CreateCompanyDto, UserLocationService ],
+    controllers: [MasterController, PositionController, DepartmentController, CompanyController, DivisionController, EmploymentStatusController, UserLocationController],
     exports: [],
 })
 export class MasterModule {}

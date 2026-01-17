@@ -33,6 +33,8 @@ import { UserService } from './Manager/user/user.service';
 import { UserController } from './Manager/user/user.controller';
 import { PrismaModule } from './Prisma/prisma.module';
 import { PrismaService } from './Prisma/prisma.service';
+import { UserLocationController } from './Master/user_location/user_location.controller';
+import { UserLocationService } from './Master/user_location/user_location.service';
 
 @Module({
   imports: [
@@ -73,8 +75,8 @@ import { PrismaService } from './Prisma/prisma.service';
     },
     MailService, 
     // PersonService, 
-    EmployeeService, UserService, PositionService, DepartmentService, CaslAbilityService, DivisionService, CompanyService, EmploymentStatusService, CreateDepartmentDto, CreatePositionDto, CreateDivisionDto, CreateCompanyDto
+    EmployeeService, UserService, PositionService, DepartmentService, CaslAbilityService, DivisionService, CompanyService, EmploymentStatusService, UserLocationService, CreateDepartmentDto, CreatePositionDto, CreateDivisionDto, CreateCompanyDto
   ],
-  controllers: [ EmployeeController, MasterController, HomeController, ProfileController, AuthController, UserController],
+  controllers: [ EmployeeController, MasterController, HomeController, ProfileController, AuthController, UserController, UserLocationController],
 })
 export class AppModule {}

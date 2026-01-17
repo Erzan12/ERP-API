@@ -611,6 +611,38 @@
         ]
       }
     },
+    "/mastertables/user_locations": {
+      "get": {
+        "operationId": "UserLocationController_getAllUserLocations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of user locations available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all user locations",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
     "/administrator/submodules": {
       "get": {
         "operationId": "SubModuleController_getSubmodules",
@@ -1348,7 +1380,7 @@
         ]
       }
     },
-    "/security_clearance/{id}": {
+    "/administrator/security_clearance/{id}": {
       "patch": {
         "description": "This endpoint requires a minimun security clearance of level 9.",
         "operationId": "SecurityClearanceController_updateClearance",
@@ -1590,7 +1622,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of departments retrieved"
+            "description": "List of departments available"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -1748,7 +1780,7 @@
         ]
       }
     },
-    "/company/companies": {
+    "/mastertables/companies": {
       "get": {
         "operationId": "CompanyController_getAllCompany",
         "parameters": [],
@@ -1769,9 +1801,14 @@
             "description": "Not Found - The requested resource was not found."
           }
         },
-        "summary": "Get all departments",
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all companies",
         "tags": [
-          "Company"
+          "Mastertables"
         ]
       },
       "post": {
@@ -1805,13 +1842,18 @@
             "description": "Conflict - Resource already exist or duplicate entry"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "summary": "Create a new company",
         "tags": [
-          "Company"
+          "Mastertables"
         ]
       }
     },
-    "/company/company/{companyId}": {
+    "/mastertables/companies/{companyId}": {
       "get": {
         "operationId": "CompanyController_getCompany",
         "parameters": [
@@ -1841,13 +1883,16 @@
             "description": "Not Found - The requested resource was not found."
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "summary": "Get a company",
         "tags": [
-          "Company"
+          "Mastertables"
         ]
-      }
-    },
-    "/company/companies/{companyId}": {
+      },
       "patch": {
         "operationId": "CompanyController_updateCompany",
         "parameters": [
@@ -1888,9 +1933,14 @@
             "description": "Not Found - The requested resource was not found."
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "summary": "Update a current company information",
         "tags": [
-          "Company"
+          "Mastertables"
         ]
       }
     },
@@ -3021,7 +3071,7 @@
           "department_name": {
             "type": "string",
             "example": "New Department name",
-            "description": "If you want to update the Department Name"
+            "description": "If you want to update the Department name"
           },
           "sorting": {
             "type": "number",
