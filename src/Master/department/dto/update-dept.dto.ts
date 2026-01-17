@@ -10,7 +10,7 @@ export class UpdateDepartmentDto {
     department_id: number;
 
     @IsString()
-    @ApiProperty({ example: 'New Department name', description: 'If you want to update the Department Name' })
+    @ApiProperty({ example: 'New Department name', description: 'If you want to update the Department name' })
     department_name?: string;
 
     @IsInt()
@@ -53,5 +53,5 @@ export class UpdateDepartmentDto {
             `Invalid status value: ${value}. Allowed values are "active" or "inactive".`
         );
     })
-    stat: number;
+    stat?: number;
 }

@@ -3071,7 +3071,7 @@
           "department_name": {
             "type": "string",
             "example": "New Department name",
-            "description": "If you want to update the Department Name"
+            "description": "If you want to update the Department name"
           },
           "sorting": {
             "type": "number",

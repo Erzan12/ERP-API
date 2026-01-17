@@ -68,7 +68,7 @@ model User {
   user_token      UserToken[]
   roles           Role[]
 
-  // ⛔️ removed:
+  //removed:
   // role_permission      RolePermission[]
   // permission_templates PermissionTemplate[] @relation("UserToPermissionTemplates")
   // modules              Module[]         @relation("ModuleToUsers")
@@ -89,7 +89,7 @@ model Role {
   users               User[]
   permission_template PermissionTemplate[]
 
-  // ⛔️ removed:
+  //removed:
   //users               User[]               @relation("UserToRoles")
 }
 
@@ -136,7 +136,7 @@ model RolePermission {
   sub_module_permission SubModulePermission @relation(fields: [sub_module_permission_id], references: [id])
   sub_module            SubModule           @relation(fields: [sub_module_id], references: [id])
 
-  // ⛔️ removed:
+  //removed:
   //module_id           Int?
   //module              Module?              @relation(fields: [module_id], references: [id])
   //user_role           UserRole[]
@@ -157,15 +157,7 @@ model UserRole {
   role Role @relation(fields: [role_id], references: [id])
   user User @relation(fields: [user_id], references: [id])
 
-  // ⛔️ removed:
-  //role_permission_id Int
-  //module_id          Int      @default(1)
-  //department_id      Int?     @default(1)
-  //role_permission  RolePermission   @relation(fields: [role_permission_id], references: [id])
-  //department         Department?      @relation(fields: [department_id], references: [id])
-  //module             Module           @relation(fields: [module_id], references: [id])
-
-  @@unique([user_id, role_id]) // // ✅ Prevent duplicates Ensures each user can have a specific role only once
+  @@unique([user_id, role_id]) //Prevent duplicates Ensures each user can have a specific role only once
 }
 
 model UserPermission {
@@ -181,7 +173,7 @@ model UserPermission {
   user            User            @relation(fields: [user_id], references: [id])
   user_role       UserRole        @relation(fields: [user_role_id], references: [id])
 
-  @@unique([user_role_id, role_permission_id]) // ✅ Prevent duplicates
+  @@unique([user_role_id, role_permission_id]) //Prevent duplicates
 }
 
 model Company {
@@ -225,7 +217,7 @@ model Department {
   positions                      Position[]
   role_permissions               RolePermission[]
 
-  // ⛔️ removed:
+  //removed:
   //user_roles                     UserRole[]
   //sub_modules                    SubModule[]
   PermissionTemplate PermissionTemplate[]
@@ -251,7 +243,7 @@ model UserLocation {
   address         String
   stat            Int      @default(1)
   created_at      DateTime @default(now())
-  updated_at      DateTime
+  updated_at      DateTime @default(now())
 }
 
 model Module {
@@ -262,7 +254,7 @@ model Module {
   updated_at DateTime    @updatedAt
   sub_module SubModule[]
 
-  // ⛔️ removed:
+  //removed:
   //role_permission      RolePermission[]
   //user_role            UserRole[]
   //users                User[]               @relation("ModuleToUsers")
@@ -280,7 +272,7 @@ model SubModule {
   module                 Module                @relation(fields: [module_id], references: [id])
   sub_module_permissions SubModulePermission[]
 
-  // ⛔️ removed:
+  //removed:
   //department_id          Int?
   //department             Department?           @relation(fields: [department_id], references: [id])
 }
@@ -320,7 +312,7 @@ model PermissionTemplate {
   role_permissions PermissionTemplateRolePermission[]
   role             Role[]
 
-  // ⛔️ removed:
+  //removed:
   //user               User[]                             @relation("UserToPermissionTemplates")
   //module_id Int      @default(1)
   //module    Module[] @relation("ModuleToPermissionTemplates")
@@ -354,7 +346,7 @@ model PermissionTemplateRolePermission {
   role_permissions               RolePermission               @relation(fields: [role_permission_id], references: [id])
   permission_template_department PermissionTemplateDepartment @relation(fields: [permission_template_department_id], references: [id])
 
-  // ⛔️ removed:
+  //removed:
 
   @@unique([permission_template_id, role_permission_id])
 }
