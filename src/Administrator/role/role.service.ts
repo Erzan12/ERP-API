@@ -145,8 +145,10 @@ export class RoleService {
                     include: {
                         person: true,
                         position: true,
+                        department: true
                     }
-                }
+                },
+                user_roles: true
             }
         })
 
@@ -156,6 +158,7 @@ export class RoleService {
 
         const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
         const userPos = requestUser.employee.position.name;
+        const userRole = requestUser.user_roles.map(r => r.role_name)
 
         return {
             status: 'success',
@@ -163,7 +166,9 @@ export class RoleService {
             created_by: {
                 id: requestUser.id,
                 name: userName,
+                department: requestUser.employee.department,
                 position: userPos,
+                role: userRole
             },
             role_id: rolePermission.id,
             role_name: rolePermission.name

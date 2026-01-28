@@ -40,6 +40,6 @@ export class CreateRolePermissionDto {
     @IsInt()
     @IsNotEmpty()
     @IsOptional()
-    @ApiProperty({ example: 1, description: 'ID of the Department' })
+    @ApiProperty({ example: 1, description: 'ID of the Position' })
     position_id?: number;
 }

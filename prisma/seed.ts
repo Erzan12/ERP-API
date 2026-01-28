@@ -381,6 +381,18 @@ async function main() {
   await prisma.department.update({ where: { id: hrDept.id }, data: { department_head_id: hrEmployee.id } });
 
   // 12. Create Users
+  const adminUser = await prisma.user.create({
+    data: {
+      employee_id: adminEmployee.id,
+      username: 'admin',
+      email: 'admin@yourdomain.com',
+      password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
+      person_id: adminPerson.id,
+      require_reset: 0,
+      security_clearance_level: 9
+    },
+  });
+
   const hrUser = await prisma.user.create({
     data: {
       employee_id: hrEmployee.id,
@@ -388,7 +400,8 @@ async function main() {
       email: 'hr@abas.com',
       password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
       person_id: hrPerson.id,
-      require_reset: 0
+      require_reset: 0,
+      security_clearance_level: 5
     },
     
   });
@@ -400,18 +413,8 @@ async function main() {
       email: 'it@abas.com',
       password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
       person_id: itPerson.id,
-      require_reset: 0
-    },
-  });
-
-  const adminUser = await prisma.user.create({
-    data: {
-      employee_id: adminEmployee.id,
-      username: 'admin',
-      email: 'admin@yourdomain.com',
-      password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
-      person_id: adminPerson.id,
-      require_reset: 0
+      require_reset: 0,
+      security_clearance_level: 5
     },
   });
 
@@ -470,7 +473,7 @@ async function main() {
   // i also want to add role permission for the admin user the role permission is a role like Administrator and assigned to a existing submodulepermission
 
   // Assuming you have:
-  const userId = 3; // your user ID
+  const userId = 1; // your user ID
   const roleId = adminRole.id; // admin role ID
 
   // Create UserRole linking user to role
