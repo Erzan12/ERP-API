@@ -14,16 +14,16 @@ datasource db {
 }
 
 model Person {
-  id                        Int      @id @default(autoincrement())
+  id                        Int            @id @default(autoincrement())
   first_name                String
   last_name                 String
   middle_name               String?
   suffix                    String?
   date_of_birth             DateTime
   gender                    String?
-  email                     String?
+  email                     String?        @unique // Added unique for faster lookup
   contact_no                String?
-  civil_status              String   @default("single")
+  civil_status              String         @default("single")
   home_address              String?
   city_provice              String?
   nationality               String?
@@ -33,48 +33,49 @@ model Person {
   emergency_contact_number  String?
   anonymization_preferences Json?
   other_person_data         Json?
-  created_at                DateTime @default(now())
-  updated_at                DateTime @updatedAt
+  created_at                DateTime       @default(now())
+  updated_at                DateTime       @updatedAt
 
-  email_addresses EmailAddress[] // this adds the "has many" relation, all emails tied to that employee's person
-  employee        Employee?      @relation("PersonEmployee")
-  users           User[]
+  email_addresses           EmailAddress[]
+  employee                  Employee?      @relation("PersonEmployee")
+  users                     User[]
+
+  @@index([last_name, first_name]) // Faster search for people by name
 }
 
 model User {
-  id                 Int      @id @default(autoincrement())
-  employee_id        Int      @unique
-  username           String   @unique
-  password           String
-  email              String   @unique
-  stat               Int      @default(1)
-  password_reset     String?
-  require_reset      Int      @default(1)
-  reports_to         Int?
-  last_login         DateTime @default(now())
-  security_questions Json?
+  id                       Int                  @id @default(autoincrement())
+  employee_id              Int                  @unique
+  person_id                Int
+  username                 String               @unique
+  password                 String
+  email                    String               @unique
+  stat                     Int                  @default(1)
+  password_reset           String?
+  require_reset            Int                  @default(1)
+  reports_to               Int?
+  last_login               DateTime             @default(now())
+  security_questions       Json?
   security_clearance_level Int?
-  created_by         String?
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
-  person_id          Int
+  created_by               String?
+  created_at               DateTime             @default(now())
+  updated_at               DateTime             @updatedAt
 
-  password_reset_token PasswordResetToken[]
-  employee             Employee             @relation(fields: [employee_id], references: [id])
-  person               Person               @relation(fields: [person_id], references: [id])
-
-  user_roles      UserRole[] // retained
-  user_permission UserPermission[] // retained
-  user_token      UserToken[]
-  roles           Role[]
-
-  //removed:
-  // role_permission      RolePermission[]
-  // permission_templates PermissionTemplate[] @relation("UserToPermissionTemplates")
-  // modules              Module[]         @relation("ModuleToUsers")
-  // is_active            Boolean  @default(true)
-  // must_reset_password  Boolean  @default(true)
+  // Cascade delete tokens when user is removed
+  password_reset_token         PasswordResetToken[]
+  user_token                   UserToken[]
+  user_roles                   UserRole[]
+  user_permission              UserPermission[]
   PermissionTemplateDepartment PermissionTemplateDepartment[]
+
+  employee                     Employee             @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  person                       Person               @relation(fields: [person_id], references: [id], onDelete: Cascade)
+  
+  // Implicit many-to-many relation with Role
+  roles                        Role[]               
+
+  @@index([person_id])
+  @@index([employee_id])
 }
 
 model Role {
@@ -84,13 +85,11 @@ model Role {
   stat                Int                  @default(1)
   created_at          DateTime             @default(now())
   updated_at          DateTime             @updatedAt
+  
   role_permissions    RolePermission[]
   user_roles          UserRole[]
-  users               User[]
   permission_template PermissionTemplate[]
-
-  //removed:
-  //users               User[]               @relation("UserToRoles")
+  users               User[]
 }
 
 model SubModuleAction {
@@ -109,71 +108,72 @@ model SubModulePermission {
   sub_module_id        Int
   created_at           DateTime         @default(now())
   updated_at           DateTime         @updatedAt
+  
   role_permissions     RolePermission[]
-  sub_module           SubModule        @relation(fields: [sub_module_id], references: [id])
-  sub_module_action    SubModuleAction  @relation(fields: [sub_module_action_id], references: [id])
+  sub_module           SubModule        @relation(fields: [sub_module_id], references: [id], onDelete: Cascade)
+  sub_module_action    SubModuleAction  @relation(fields: [sub_module_action_id], references: [id], onDelete: Cascade)
+
+  @@index([sub_module_id])
 }
 
 model RolePermission {
-  id                       Int      @id @default(autoincrement())
+  id                       Int            @id @default(autoincrement())
   role_id                  Int
   role_name                String
   action                   String
   sub_module_permission_id Int
   sub_module_id            Int
-  department_id            Int //to query for or to filter out the department of which the role permission will be applied to a user and also the position
+  department_id            Int
   position_id              Int?
-  stat                     Int      @default(1)
-  created_at               DateTime @default(now())
-  updated_at               DateTime @updatedAt
+  stat                     Int            @default(1)
+  created_at               DateTime       @default(now())
+  updated_at               DateTime       @updatedAt
+
+  department               Department     @relation(fields: [department_id], references: [id])
+  position                 Position?      @relation(fields: [position_id], references: [id])
+  role                     Role           @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  sub_module_permission    SubModulePermission @relation(fields: [sub_module_permission_id], references: [id], onDelete: Cascade)
+  sub_module               SubModule      @relation(fields: [sub_module_id], references: [id])
 
   permission_template_links PermissionTemplateRolePermission[]
   user_permission           UserPermission[]
 
-  department            Department          @relation(fields: [department_id], references: [id])
-  position              Position?           @relation(fields: [position_id], references: [id])
-  role                  Role                @relation(fields: [role_id], references: [id])
-  sub_module_permission SubModulePermission @relation(fields: [sub_module_permission_id], references: [id])
-  sub_module            SubModule           @relation(fields: [sub_module_id], references: [id])
-
-  //removed:
-  //module_id           Int?
-  //module              Module?              @relation(fields: [module_id], references: [id])
-  //user_role           UserRole[]
-
   @@unique([role_id, sub_module_permission_id, action], map: "unique_role_permission")
+  @@index([role_id])
+  @@index([department_id])
 }
 
 model UserRole {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
-  role_id    Int
-  role_name  String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id               Int              @id @default(autoincrement())
+  user_id          Int
+  role_id          Int
+  role_name        String
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @updatedAt
 
   user_permissions UserPermission[]
+  role             Role             @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  user             User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  role Role @relation(fields: [role_id], references: [id])
-  user User @relation(fields: [user_id], references: [id])
-
-  @@unique([user_id, role_id]) //Prevent duplicates Ensures each user can have a specific role only once
+  @@unique([user_id, role_id])
+  @@index([user_id])
 }
 
 model UserPermission {
-  id                 Int      @id @default(autoincrement())
+  id                 Int            @id @default(autoincrement())
   action             String
   user_id            Int
   user_role_id       Int
   role_permission_id Int
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @updatedAt
 
-  role_permission RolePermission? @relation(fields: [role_permission_id], references: [id])
-  user            User            @relation(fields: [user_id], references: [id])
-  user_role       UserRole        @relation(fields: [user_role_id], references: [id])
+  role_permission    RolePermission? @relation(fields: [role_permission_id], references: [id], onDelete: Cascade)
+  user               User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_role          UserRole        @relation(fields: [user_role_id], references: [id], onDelete: Cascade)
 
-  @@unique([user_role_id, role_permission_id]) //Prevent duplicates
+  @@unique([user_role_id, role_permission_id])
+  @@index([user_id])
 }
 
 model Company {
@@ -189,6 +189,9 @@ model Company {
   created_at   DateTime   @default(now())
   updated_at   DateTime   @updatedAt
   employee     Employee[]
+
+  @@index([name])
+  @@index([abbreviation])
 }
 
 model Division {
@@ -200,27 +203,29 @@ model Division {
   updated_at       DateTime     @updatedAt
   employee         Employee[]
   departments      Department[]
+
+  @@index([name])
+  @@index([division_head_id])
 }
 
 model Department {
-  id                             Int                            @id @default(autoincrement())
-  name                           String
-  division_id                    Int
-  sorting                        Int?
-  stat                           Int                            @default(1)
-  department_head_id             Int?
-  created_at                     DateTime                       @default(now())
-  updated_at                     DateTime                       @updatedAt
-  division                       Division                       @relation(fields: [division_id], references: [id])
-  employees                      Employee[]
-  permission_template_department PermissionTemplateDepartment[]
-  positions                      Position[]
-  role_permissions               RolePermission[]
+  id                 Int          @id @default(autoincrement())
+  name               String
+  division_id        Int
+  sorting            Int?
+  stat               Int          @default(1)
+  department_head_id Int?
+  created_at         DateTime     @default(now())
+  updated_at         DateTime     @updatedAt
 
-  //removed:
-  //user_roles                     UserRole[]
-  //sub_modules                    SubModule[]
-  PermissionTemplate PermissionTemplate[]
+  division           Division     @relation(fields: [division_id], references: [id])
+  employees          Employee[]
+  positions          Position[]
+  role_permissions   RolePermission[]
+  permission_templates PermissionTemplate[]
+  permission_template_departments PermissionTemplateDepartment[]
+
+  @@index([division_id])
 }
 
 model Position {
@@ -231,10 +236,13 @@ model Position {
   stat                         Int                            @default(1)
   created_at                   DateTime                       @default(now())
   updated_at                   DateTime                       @updatedAt
+  
   employee                     Employee[]
-  department                   Department                     @relation(fields: [department_id], references: [id])
+  department                   Department                     @relation(fields: [department_id], references: [id], onDelete: Cascade)
   RolePermission               RolePermission[]
   PermissionTemplateDepartment PermissionTemplateDepartment[]
+
+  @@index([department_id])
 }
 
 model UserLocation {
@@ -244,6 +252,9 @@ model UserLocation {
   stat            Int      @default(1)
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
+
+  @@index([location_name])
+  @@index([address])
 }
 
 model Module {
@@ -254,11 +265,7 @@ model Module {
   updated_at DateTime    @updatedAt
   sub_module SubModule[]
 
-  //removed:
-  //role_permission      RolePermission[]
-  //user_role            UserRole[]
-  //users                User[]               @relation("ModuleToUsers")
-  //permission_templates PermissionTemplate[] @relation("ModuleToPermissionTemplates")
+  @@index([name])
 }
 
 model SubModule {
@@ -268,13 +275,12 @@ model SubModule {
   stat                   Int                   @default(1)
   created_at             DateTime              @default(now())
   updated_at             DateTime              @updatedAt
+  
+  module                 Module                @relation(fields: [module_id], references: [id], onDelete: Cascade)
   role_permission        RolePermission[]
-  module                 Module                @relation(fields: [module_id], references: [id])
   sub_module_permissions SubModulePermission[]
 
-  //removed:
-  //department_id          Int?
-  //department             Department?           @relation(fields: [department_id], references: [id])
+  @@index([module_id ])
 }
 
 model UserToken {
@@ -284,7 +290,9 @@ model UserToken {
   status     Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  user       User     @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
 }
 
 model PasswordResetToken {
@@ -295,7 +303,9 @@ model PasswordResetToken {
   is_used        Boolean  @default(false)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
-  user           User     @relation(fields: [user_id], references: [id])
+  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
 }
 
 model PermissionTemplate {
@@ -312,12 +322,7 @@ model PermissionTemplate {
   role_permissions PermissionTemplateRolePermission[]
   role             Role[]
 
-  //removed:
-  //user               User[]                             @relation("UserToPermissionTemplates")
-  //module_id Int      @default(1)
-  //module    Module[] @relation("ModuleToPermissionTemplates")
-  //Company   Company? @relation(fields: [companyId], references: [id])
-  //companyId Int?
+  @@index([name])
 }
 
 model PermissionTemplateDepartment {
@@ -327,13 +332,16 @@ model PermissionTemplateDepartment {
   department_id          Int
   position_id            Int?
   position               Position?          @relation(fields: [position_id], references: [id])
-  department             Department         @relation(fields: [department_id], references: [id])
+  department             Department         @relation(fields: [department_id], references: [id], onDelete: Cascade)
   permission_template    PermissionTemplate @relation(fields: [permission_template_id], references: [id])
   user                   User               @relation(fields: [user_id], references: [id])
 
   permission_template_role_permissions PermissionTemplateRolePermission[]
 
   @@unique([permission_template_id, department_id])
+  @@index([permission_template_id])
+  @@index([position_id])
+  @@index([user_id])
 }
 
 model PermissionTemplateRolePermission {
@@ -342,13 +350,14 @@ model PermissionTemplateRolePermission {
   role_permission_id                Int
   permission_template_department_id Int
 
-  permission_template            PermissionTemplate           @relation(fields: [permission_template_id], references: [id])
+  permission_template            PermissionTemplate           @relation(fields: [permission_template_id], references: [id], onDelete: Cascade)
   role_permissions               RolePermission               @relation(fields: [role_permission_id], references: [id])
-  permission_template_department PermissionTemplateDepartment @relation(fields: [permission_template_department_id], references: [id])
+  permission_template_department PermissionTemplateDepartment @relation(fields: [permission_template_department_id], references: [id], onDelete: Cascade)
 
-  //removed:
-
-  @@unique([permission_template_id, role_permission_id])
+  @@unique([permission_template_id, role_permission_id, permission_template_department_id])
+  @@index([permission_template_id])
+  @@index([permission_template_department_id])
+  @@index([role_permission_id])
 }
 
 model EmailAddress {
@@ -359,36 +368,41 @@ model EmailAddress {
   is_primary    Boolean
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
-  person        Person   @relation(fields: [person_id], references: [id])
+
+  person        Person   @relation(fields: [person_id], references: [id], onDelete:Cascade)
+
+  @@index([person_id])
 }
 
 model Employee {
-  id                        Int       @id @default(autoincrement())
+  id                        Int              @id @default(autoincrement())
   company_id                Int
-  person_id                 Int       @unique
-  employee_id               String    @unique
+  person_id                 Int              @unique
+  employee_id               String           @unique
   department_id             Int
-  hire_date                 DateTime
   position_id               Int
   division_id               Int?
+  hire_date                 DateTime
   salary                    Decimal
   pay_frequency             String
   employment_status_id      Int
   monthly_equivalent_salary Decimal
-  created_at                DateTime  @default(now())
-  updated_at                DateTime  @updatedAt
+  created_at                DateTime         @default(now())
+  updated_at                DateTime         @updatedAt
   archive_date              DateTime?
   other_employee_data       Json?
   corporate_rank_id         Int?
 
-  //Relations
-  employment_status EmploymentStatus @relation(fields: [employment_status_id], references: [id])
-  company           Company          @relation(fields: [company_id], references: [id])
-  department        Department       @relation(fields: [department_id], references: [id])
-  person            Person           @relation("PersonEmployee", fields: [person_id], references: [id])
-  position          Position         @relation(fields: [position_id], references: [id])
-  division          Division?        @relation(fields: [division_id], references: [id])
-  user              User?
+  employment_status         EmploymentStatus @relation(fields: [employment_status_id], references: [id])
+  company                   Company          @relation(fields: [company_id], references: [id])
+  department                Department       @relation(fields: [department_id], references: [id])
+  person                    Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
+  position                  Position         @relation(fields: [position_id], references: [id])
+  division                  Division?        @relation(fields: [division_id], references: [id])
+  user                      User?
+
+  @@index([department_id])
+  @@index([company_id])
 }
 
 model EmploymentStatus {
