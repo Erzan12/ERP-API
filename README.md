@@ -64,7 +64,7 @@ $ docker-compose up -d
 ```
 2. Run Prisma migration (inside the running container or docker terminal, this creates the database + tables): 
 ```bash
-$ docker exec -it nestjs-app npx prisma migrate dev --name init-build
+$ docker exec -it nestjs-app npx prisma migrate dev
 ```
 3. Seed the database, run:
 ```bash
