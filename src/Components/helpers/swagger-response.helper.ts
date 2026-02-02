@@ -3,106 +3,112 @@ import { applyDecorators } from '@nestjs/common';
 
 //standard responses and custom responses
 const BadRequest: ApiResponseOptions = {
-    status: 400,
-    description: 'Bad Request - Invalid or missing input or parameters',
+  status: 400,
+  description: 'Bad Request - Invalid or missing input or parameters',
 };
 
 //unauthorized access
 const Unauthorized: ApiResponseOptions = {
-    status: 401,
-    description: 'Unauthorized - You do not have access to this resource',
+  status: 401,
+  description: 'Unauthorized - You do not have access to this resource',
 };
 
 //forbidden
 const Forbidden: ApiResponseOptions = {
-    status: 403,
-    description: 'Forbidden - You do not have access to this resource',
+  status: 403,
+  description: 'Forbidden - You do not have access to this resource',
 };
 
 //not found
 const NotFound: ApiResponseOptions = {
-    status: 404,
-    description: 'Not Found - The requested resource was not found.',
+  status: 404,
+  description: 'Not Found - The requested resource was not found.',
 };
 
 const UserNotFound: ApiResponseOptions = {
-    status: 404,
-    description: 'Not Found - User not found'
-}
+  status: 404,
+  description: 'Not Found - User not found',
+};
 
 //conflicts
 const Conflict: ApiResponseOptions = {
-    status: 409,
-    description: 'Conflict - Resource already exist or duplicate entry',
+  status: 409,
+  description: 'Conflict - Resource already exist or duplicate entry',
 };
 
 //custom group decorators
 export function ApiPostResponse(description = 'Resource created successfully') {
-    return applyDecorators(
-        ApiResponse({ status: 200, description }),
-        ApiResponse(BadRequest),
-        ApiResponse(Unauthorized),
-        ApiResponse(Forbidden),
-        ApiResponse(Conflict),
-    );
+  return applyDecorators(
+    ApiResponse({ status: 200, description }),
+    ApiResponse(BadRequest),
+    ApiResponse(Unauthorized),
+    ApiResponse(Forbidden),
+    ApiResponse(Conflict),
+  );
 }
 
 export function ApiGetResponse(description = 'Resource(s) fetch successfully') {
-    return applyDecorators(
-        ApiResponse({ status: 200, description }),
-        ApiResponse(BadRequest),
-        ApiResponse(Unauthorized),
-        ApiResponse(Forbidden),
-        ApiResponse(NotFound),
-    )
+  return applyDecorators(
+    ApiResponse({ status: 200, description }),
+    ApiResponse(BadRequest),
+    ApiResponse(Unauthorized),
+    ApiResponse(Forbidden),
+    ApiResponse(NotFound),
+  );
 }
 
-export function ApiPatchResponse(description = 'Resource updated successfully') {
-    return applyDecorators(
-        ApiResponse({ status: 200, description }),
-        ApiResponse(BadRequest),
-        ApiResponse(Unauthorized),
-        ApiResponse(Forbidden),
-        ApiResponse(NotFound),
-    )
+export function ApiPatchResponse(
+  description = 'Resource updated successfully',
+) {
+  return applyDecorators(
+    ApiResponse({ status: 200, description }),
+    ApiResponse(BadRequest),
+    ApiResponse(Unauthorized),
+    ApiResponse(Forbidden),
+    ApiResponse(NotFound),
+  );
 }
 
-export function ApiLoginResponse(description = 'Login successfully - returns JWT Token') {
-    return applyDecorators(
-        ApiResponse({ status: 201, description}),
-        ApiResponse(BadRequest),
-        ApiResponse(Unauthorized),
-        ApiResponse(UserNotFound)
-    )
+export function ApiLoginResponse(
+  description = 'Login successfully - returns JWT Token',
+) {
+  return applyDecorators(
+    ApiResponse({ status: 201, description }),
+    ApiResponse(BadRequest),
+    ApiResponse(Unauthorized),
+    ApiResponse(UserNotFound),
+  );
 }
 
-export function ApiDeactivateResponse(description = 'Resource deactivated successfully') {
-    return applyDecorators(
-        ApiResponse({ status: 200, description }),
-        ApiResponse(BadRequest),
-        ApiResponse(Unauthorized),
-        ApiResponse(Forbidden),
-        ApiResponse(NotFound),
-    )
+export function ApiDeactivateResponse(
+  description = 'Resource deactivated successfully',
+) {
+  return applyDecorators(
+    ApiResponse({ status: 200, description }),
+    ApiResponse(BadRequest),
+    ApiResponse(Unauthorized),
+    ApiResponse(Forbidden),
+    ApiResponse(NotFound),
+  );
 }
 
-export function ApiActivateResponse(description = 'Resource activated successfully') {
-    return applyDecorators(
-        ApiResponse({ status: 200, description }),
-        ApiResponse(BadRequest),
-        ApiResponse(Unauthorized),
-        ApiResponse(Forbidden),
-        ApiResponse(NotFound),
-    )
+export function ApiActivateResponse(
+  description = 'Resource activated successfully',
+) {
+  return applyDecorators(
+    ApiResponse({ status: 200, description }),
+    ApiResponse(BadRequest),
+    ApiResponse(Unauthorized),
+    ApiResponse(Forbidden),
+    ApiResponse(NotFound),
+  );
 }
 
 export function ApiSecurityClearance(level: number) {
-    return applyDecorators(
-        ApiOperation({
-            summary: `Requires Security Clearance Level ${level}`,
-            description: `This endpoint requires a minimun security clearance of level ${level}.`,
-        })
-    )
+  return applyDecorators(
+    ApiOperation({
+      summary: `Requires Security Clearance Level ${level}`,
+      description: `This endpoint requires a minimun security clearance of level ${level}.`,
+    }),
+  );
 }
-
-
