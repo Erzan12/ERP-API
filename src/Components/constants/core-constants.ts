@@ -55,7 +55,7 @@
 //     VES_DRY_DOCK : 'Vessel Dry-dock Repairs Statistics',
 //     VES_TRADE_PUR : 'Vessel Trading Purchase History',
 //     PROC_KPI_REP : 'Procurement KPI Report',
-//     RFP_APPROVAL_HIS: 'RFP Approval History', 
+//     RFP_APPROVAL_HIS: 'RFP Approval History',
 // }
 
 // export const SM_MANAGER = {
@@ -65,7 +65,5 @@
 //     EXEC_REPORT_VES_DRY_DOCK : 'Vessel Dry-dock Repairs Statistics',
 //     EXEC_REPORT_VES_TRADE_PUR : 'Vessel Trading Purchase History',
 //     EXEC_REPORT_PROC_KPI_REP : 'Procurement KPI Report',
-//     EXEC_REPORT_RFP_APPROVAL_HIS: 'RFP Approval History',  
+//     EXEC_REPORT_RFP_APPROVAL_HIS: 'RFP Approval History',
 // }
-
-
