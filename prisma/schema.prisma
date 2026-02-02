@@ -85,6 +85,7 @@ model User {
   user_roles                   UserRole[]
   user_permission              UserPermission[]
   PermissionTemplateDepartment PermissionTemplateDepartment[]
+  audit_logs                   AuditLog[]
 
   employee                     Employee             @relation(fields: [employee_id], references: [id], onDelete: Cascade)
   person                       Person               @relation(fields: [person_id], references: [id], onDelete: Cascade)
@@ -322,6 +323,64 @@ model UserPermission {
 
   @@unique([user_role_id, role_permission_id])
   @@index([user_id])
+}
+
+////////////////////////////////////////
+// AUDIT TRAIL
+////////////////////////////////////////'
+
+model AuditLog {
+  id            Int     @id @default(autoincrement())
+
+  //who performed the action
+  user_id       Int?
+  user_email    String?
+  employee_id   Int?    //link to employee for better tracking
+  user          User?   @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  //what action was performed
+  action        String  //'CREATE','READ','UPDATE','DELETE','LOGIN','LOGOUT', 'PERMISSION_DENIED', etc.
+  resource      String  //'user_account','employee','salary','role_permisison', etc.
+  resource_id   Int?    //ID of the affected record (if applicable)
+
+  //details of the change
+  old_values    Json?   //previos state (for UPDATE/DELETE)
+  new_values    Json?   //new State (for CREATE/UPDATE)
+  change_fields String[]  @default([]) //array of the field names that change_fields
+
+  //context
+  ip_address    String?
+  user_agent    String?
+  endpoint      String? //e.g., 'POST /api/users'
+  http_method   String? //GET,POST,PUT,DELETE
+  status_code   Int?    //200,403,500, etc.
+
+  //result
+  success       Boolean @default(true)
+  error_message String? @db.Text //use text for longer error messages
+
+  //metadata
+  department_id Int?    //track which department the action relates to
+  session_id    String? //track user sessions
+  request_id    String? //for correlating related operations
+
+  //compliance & security
+  severity      String? @default("INFO") //INFO, WARNING, CRITICAL
+  compliance_flag Boolean @default(false) //flag for compliance-critical change_fields
+
+  //timestamp
+  created_at    DateTime  @default(now())
+
+  //indexes for performance
+  @@index([user_id])
+  @@index([employee_id])
+  @@index([resource, resource_id])
+  @@index([created_at])
+  @@index([action])
+  @@index([department_id])
+  @@index([session_id])
+  @@index([success])
+  @@map("audit_logs")  
 }
 
 ////////////////////////////////////////

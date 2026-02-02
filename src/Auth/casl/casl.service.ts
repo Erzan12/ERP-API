@@ -21,7 +21,7 @@ export class CaslAbilityService {
       }[];
     }[],
   ) {
-    const { can, build } = new AbilityBuilder(this.Ability);
+    const { can, cannot, build } = new AbilityBuilder(this.Ability);
 
     // const actionMap: Record<string, string[]> = {
     //   manage: ['create', 'read', 'update', 'delete'],

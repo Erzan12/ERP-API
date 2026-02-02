@@ -14,6 +14,7 @@ import {
 } from 'src/components/decorators/can.decorator';
 import { ACTION_MAP, VALID_ACTIONS } from 'src/components/constants/action-map';
 import { IS_PUBLIC_KEY } from 'src/components/decorators/public.decorator';
+import { AuditService } from 'src/modules/administrator/audit/audit.service';
 
 //revamped version clean up and simplified
 @Injectable()
@@ -23,9 +24,10 @@ export class PermissionsGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly caslAbilityService: CaslAbilityService,
+    private readonly auditService: AuditService
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -46,7 +48,8 @@ export class PermissionsGuard implements CanActivate {
     );
 
     if (!permission) {
-      throw new ForbiddenException('Access denied: no permission metadata.');
+      // throw new ForbiddenException('Access denied: no permission metadata.');
+      return true;
     }
 
     const action = permission.action.toLowerCase().trim();
@@ -76,11 +79,20 @@ export class PermissionsGuard implements CanActivate {
     const canAccess = ability.can(action, subject);
 
     if (!canAccess) {
+
+      //log permission denial -> audit
+      await this.auditService.logPermissionDenied(
+        user,
+        action,
+        subject,
+        request.ip,
+        request.url,
+      );
+
       throw new ForbiddenException(
         `You do not have permission to ${action} ${subject}.`,
       );
     }
-
     return true;
   }
 }

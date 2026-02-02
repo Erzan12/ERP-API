@@ -17,6 +17,8 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { EmploymentStatusController } from '../master/employment_status/employment_status.controller';
 import { EmploymentStatusService } from '../master/employment_status/employment_status.service';
 import { JwtStrategy } from 'src/auth/jwt/jwt.strategy';
+import { AuditController } from './audit/audit.controller';
+import { AuditService } from './audit/audit.service';
 
 @Module({
   imports: [AuthModule],
@@ -28,6 +30,7 @@ import { JwtStrategy } from 'src/auth/jwt/jwt.strategy';
     EmploymentStatusController,
     SecurityClearanceController,
     DashboardController,
+    AuditController,
   ],
   providers: [
     JwtStrategy,
@@ -41,6 +44,7 @@ import { JwtStrategy } from 'src/auth/jwt/jwt.strategy';
     EmploymentStatusService,
     SecurityClearanceService,
     DashboardService,
+    AuditService,
   ],
   exports: [AdministratorModule],
 })
