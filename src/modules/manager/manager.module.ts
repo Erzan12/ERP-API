@@ -9,6 +9,7 @@ import { PermissionTemplateService } from './permission_template/permission_temp
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { JwtStrategy } from 'src/auth/jwt/jwt.strategy';
+import { AuditService } from '../administrator/audit/audit.service';
 
 @Module({
   imports: [AuthModule],
@@ -21,6 +22,7 @@ import { JwtStrategy } from 'src/auth/jwt/jwt.strategy';
     JwtService,
     MailService,
     PermissionTemplateService,
+    AuditService
   ],
   exports: [AuthService, UserService],
 })

@@ -35,6 +35,7 @@ import { PermissionsGuard } from './auth/guards/permission.guard';
 import { JwtStrategy } from './auth/jwt/jwt.strategy';
 import { CaslAbilityService } from './auth/casl/casl.service';
 import { CaslModule } from './auth/casl/casl.module';
+import { AuditService } from './modules/administrator/audit/audit.service';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { CaslModule } from './auth/casl/casl.module';
       provide: APP_GUARD,
       useClass: SecurityClearanceGuard,
     },
+    AuditService,
     MailService,
     // PersonService,
     EmployeeService,

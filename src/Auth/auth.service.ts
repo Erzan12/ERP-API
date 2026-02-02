@@ -10,16 +10,19 @@ import * as bcrypt from 'bcryptjs';
 import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { AuditService } from 'src/modules/administrator/audit/audit.service';
+import { RequestUser } from 'src/components/types/request-user.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly auditService: AuditService
   ) {}
 
   //For first time log in password reset with token from user or person registration/creation
-  async resetPasswordWithToken(dto: ResetPasswordWithTokenDto, token: string) {
+  async resetPasswordWithToken(dto: ResetPasswordWithTokenDto, token: string, ipAddress?: string, userAgent?: string) {
     const { newPassword } = dto;
 
     if (!token) {
@@ -145,33 +148,67 @@ export class AuthService {
     return user;
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, ipAddress?: string, userAgent?: string) {
     const { username, password } = loginDto;
 
-    const user = await this.validateUser(username, password);
+    const userAudit = await this.prisma.user.findUnique({
+      where: { username },
+      include: {
+          user_roles: {
+          include: {
+              role: true,
+              user_permissions: {
+              include: {
+                  role_permission: {
+                  include: {
+                      sub_module: true,
+                  },
+                  },
+              },
+              },
+          },
+          },
+      },
+    });
 
-    if (user.require_reset === 1) {
-      return {
-        status: 'password_require_reset',
-        message: 'You must reset your password first for first time login!',
-        userId: user.id,
-      };
+    if (!userAudit || !(await bcrypt.compare(password, userAudit.password))) {
+        //log failed login attempt
+        await this.auditService.logAuth(
+            'LOGIN_FAILED',
+            undefined,
+            ipAddress,
+            userAgent,
+            false,
+            `Failed login attempt for username: ${username}`,
+        );
+
+        throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (user.stat !== 1) {
+    const userValidate = await this.validateUser(username, password);
+
+    if (userValidate.require_reset === 1) {
+        return {
+            status: 'password_require_reset',
+            message: 'You must reset your password first for first time login!',
+            userId: userValidate.id,
+        };
+    }
+
+    if (userValidate.stat !== 1) {
       throw new BadRequestException('Your account was deactivated.');
     }
 
     // Reset any pending password reset token
-    if (user.password_reset && user.password_reset !== '') {
+    if (userValidate.password_reset && userValidate.password_reset !== '') {
       await this.prisma.user.update({
-        where: { id: user.id },
+        where: { id: userValidate.id },
         data: { password_reset: '' },
       });
     }
 
     const resetToken = await this.prisma.passwordResetToken.findFirst({
-      where: { user_id: user.id },
+      where: { user_id: userValidate.id },
     });
 
     if (!resetToken) {
@@ -181,8 +218,8 @@ export class AuthService {
     const issuedAt = Math.floor(Date.now() / 1000);
 
     const payload = {
-      sub: user.id,
-      name: user.username,
+      sub: userValidate.id,
+      name: userValidate.username,
       iat: issuedAt,
     };
 
@@ -194,16 +231,45 @@ export class AuthService {
 
     // Update last login
     await this.prisma.user.update({
-      where: { id: user.id },
+      where: { id: userValidate.id },
       data: {
         last_login: new Date(), // set to current timestamp
       },
     });
 
+    const requestUser: RequestUser = {
+        id: userAudit.id,
+        email: userAudit.email,
+        security_clearance_level: userAudit.security_clearance_level ?? 0,
+        roles: userAudit.user_roles.map((ur) => ({
+            id: ur.role?.id ?? 0,
+            name: ur.role?.name ?? 'Unknown Role',
+            // module: {
+            //   id: ur.role.module?.id,
+            //   name: ur.role.module?.name,
+            // },
+            permissions: ur.user_permissions.map((up) => ({
+            action: up.role_permission?.action ?? 'unknown',
+            // status: true, // if you have a field for it, use it
+            permission: {
+                name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+            },
+            })),
+        })),
+    };
+
+    await this.auditService.logAuth(
+        'LOGIN',
+        requestUser,
+        ipAddress,
+        userAgent,
+        true,
+    );
+
     const isNewAccount =
       password === 'avegabros' ||
-      user.password_reset ||
-      user.require_reset === 1;
+      userValidate.password_reset ||
+      userValidate.require_reset === 1;
 
     return {
       status: 1,
@@ -212,5 +278,17 @@ export class AuthService {
       payload,
       ...(isNewAccount && { new_account: 1 }),
     };
+  }
+
+  async logout(user: RequestUser, ipAddress?: string, userAgent?: string) {
+    await this.auditService.logAuth(
+      'LOGOUT',
+      user,
+      ipAddress,
+      userAgent,
+      true,
+    );
+
+    return { message: 'User logout successfully' };
   }
 }

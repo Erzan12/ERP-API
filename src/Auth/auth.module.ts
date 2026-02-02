@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { MailService } from 'src/jobs/mail/mail.service';
+import { AuditService } from 'src/modules/administrator/audit/audit.service';
 
 @Module({
   imports: [],
@@ -17,6 +18,7 @@ import { MailService } from 'src/jobs/mail/mail.service';
     JwtService,
     MailService,
     ConfigService,
+    AuditService
   ],
   exports: [AuthModule, JwtStrategy],
 })
