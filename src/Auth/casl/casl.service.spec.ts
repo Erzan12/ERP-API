@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CaslService } from './casl.service';
+import { CaslAbilityService } from './casl.service';
 
-describe('CaslService', () => {
-  let service: CaslService;
+describe('CaslAbilityService', () => {
+  let service: CaslAbilityService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CaslService],
+      providers: [CaslAbilityService],
     }).compile();
 
-    service = module.get<CaslService>(CaslService);
+    service = module.get<CaslAbilityService>(CaslAbilityService);
   });
 
   it('should be defined', () => {

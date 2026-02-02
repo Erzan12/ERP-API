@@ -7,13 +7,13 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { CaslAbilityService } from '../casl/casl.service';
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import { RequestUser } from 'src/components/types/request-user.interface';
 import {
   PERMISSIONS_KEY,
   PermissionMetadata,
-} from '../decorators/can.decorator';
-import { RequestUser } from '../types/request-user.interface';
-import { ACTION_MAP, VALID_ACTIONS } from '../constants/action-map';
+} from 'src/components/decorators/can.decorator';
+import { ACTION_MAP, VALID_ACTIONS } from 'src/components/constants/action-map';
+import { IS_PUBLIC_KEY } from 'src/components/decorators/public.decorator';
 
 //revamped version clean up and simplified
 @Injectable()
@@ -54,14 +54,14 @@ export class PermissionsGuard implements CanActivate {
 
     if (!VALID_ACTIONS.includes(action)) {
       throw new ForbiddenException(
-        `Invalid action "${action}" used in @Can().`
+        `Invalid action "${action}" used in @Can().`,
       );
     }
 
     const ability = this.caslAbilityService.defineAbilitiesFor(user.roles);
 
     this.logger.debug(
-      'User roles structure: ' + JSON.stringify(user.roles, null, 2)
+      'User roles structure: ' + JSON.stringify(user.roles, null, 2),
     );
 
     // // Debug all granted permissions
@@ -77,11 +77,10 @@ export class PermissionsGuard implements CanActivate {
 
     if (!canAccess) {
       throw new ForbiddenException(
-        `You do not have permission to ${action} ${subject}.`
+        `You do not have permission to ${action} ${subject}.`,
       );
     }
 
     return true;
   }
 }
-
