@@ -1,15 +1,19 @@
-import { Injectable, UnauthorizedException, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ExecutionContext,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { TokenExpiredError } from 'jsonwebtoken';
-import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import { IS_PUBLIC_KEY } from '../../components/decorators/public.decorator';
 
 @Injectable()
 export class CustomJwtAuthGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {
     super();
   }
-    
+
   canActivate(context: ExecutionContext) {
     //added public decorator in authcustom guard for @Public Routes ->decorators->public.decorator.ts
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [

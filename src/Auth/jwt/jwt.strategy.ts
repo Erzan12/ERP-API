@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { RequestUser } from '../types/request-user.interface';
-import { PrismaService } from 'src/Prisma/prisma.service';
+import { RequestUser } from 'src/components/types/request-user.interface';
+import { PrismaService } from 'src/config/prisma/prisma.service';
 
 // @Injectable()
 // export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,7 +16,7 @@ import { PrismaService } from 'src/Prisma/prisma.service';
 //   }
 
 //   async validate(req: Request, payload: any) {
-    
+
 //     console.log('Correct payload:', payload);         // Should now show { sub: 3, ... }
 //     console.log('payload.sub:', payload.sub);         // Should now show 3
 
@@ -187,10 +187,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           },
         })),
       })),
-      
     };
 
     return requestUser; // 🚀 This becomes `request.user` in controllers and guards
   }
 }
-
