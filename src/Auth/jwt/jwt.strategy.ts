@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { permission } from 'process';
 import { RequestUser } from 'src/components/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
@@ -162,33 +163,49 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       },
     });
 
-    if (!user) {
+    if (!user || user.stat !== 1) {
       // You can throw an Unauthorized or NotFound exception
       throw new UnauthorizedException('User not found or invalid token');
     }
 
-    // 🔧 Transform into the expected RequestUser structure
-    const requestUser: RequestUser = {
+    // move to auth service for login check
+    // const requestUser: RequestUser = {
+    //   id: user.id,
+    //   email: user.email,
+    //   security_clearance_level: user.security_clearance_level ?? 0,
+    //   roles: user.user_roles.map((ur) => ({
+    //     id: ur.role?.id ?? 0,
+    //     name: ur.role?.name ?? 'Unkown Role',
+    //     // module: {
+    //     //   id: ur.role.module?.id,
+    //     //   name: ur.role.module?.name,
+    //     // },
+    //     permissions: ur.user_permissions.map((up) => ({
+    //       action: up.role_permission?.action ?? 'unknown',
+    //       // status: true, // if you have a field for it, use it
+    //       permission: {
+    //         name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+    //       },
+    //     })),
+    //   })),
+    // };
+
+    // return requestUser; // This becomes `request.user` in controllers and guards
+
+    return {
       id: user.id,
       email: user.email,
       security_clearance_level: user.security_clearance_level ?? 0,
       roles: user.user_roles.map((ur) => ({
         id: ur.role?.id ?? 0,
-        name: ur.role?.name ?? 'Unkown Role',
-        // module: {
-        //   id: ur.role.module?.id,
-        //   name: ur.role.module?.name,
-        // },
+        name: ur.role?.name ?? 'Unknown Role',
         permissions: ur.user_permissions.map((up) => ({
           action: up.role_permission?.action ?? 'unknown',
-          // status: true, // if you have a field for it, use it
           permission: {
-            name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+            name: up.role_permission?.sub_module?.name ?? 'unknown',
           },
         })),
       })),
     };
-
-    return requestUser; // 🚀 This becomes `request.user` in controllers and guards
   }
 }

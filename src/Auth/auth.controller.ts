@@ -5,6 +5,7 @@ import {
   Query,
   ValidationPipe,
   Res,
+  Req,
   UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -16,6 +17,10 @@ import {
 import { LoginDto } from './dto/login.dto';
 import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 import { Public } from 'src/components/decorators/public.decorator';
+import { Can } from 'src/components/decorators/can.decorator';
+import { RequestUser } from 'src/components/types/request-user.interface';
+import { Request } from 'express';
+import { SessionUser } from 'src/components/decorators/session-user.decorator';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Authentication')
@@ -28,8 +33,28 @@ export class AuthController {
   @ApiLoginResponse('User login successful')
   @Public()
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  async login(
+    @Body() loginDto: LoginDto, 
+    @Req() req: Request
+  ) {
+    const ipAddress = req.ip || req.socket.remoteAddress;
+    const userAgent = req.headers['user-agent'];
+
+    return this.authService.login(loginDto, ipAddress, userAgent);
+  }
+
+  @Post('logout')
+  @ApiOperation({ summary: 'User will logout'})
+  @ApiPostResponse('User logout successfully')
+  @UsePipes(new ValidationPipe({ whitelist: true}))
+  async logout(
+    @SessionUser() user: RequestUser,
+    @Req() req: Request
+  ) {
+    const ipAddress = req.ip || req.socket.remoteAddress;
+    const userAgent = req.headers['user-agent'];
+
+    return this.authService.logout(user, ipAddress, userAgent)
   }
 
   @Post('reset-password')
@@ -40,10 +65,16 @@ export class AuthController {
   async passwordResetWithToken(
     @Query('token') token: string,
     @Body() resetPasswordWithTokenDto: ResetPasswordWithTokenDto,
+    @Req() req: Request
   ) {
+    const ipAddress = req.ip || req.socket.remoteAddress;
+    const userAgent = req.headers['user-agent'];
+
     return this.authService.resetPasswordWithToken(
       resetPasswordWithTokenDto,
       token,
+      ipAddress,
+      userAgent
     );
   }
 
