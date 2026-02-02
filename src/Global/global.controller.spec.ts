@@ -1,15 +1,31 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GlobalController } from './global.controller';
+import { HomeController, ProfileController } from './global.controller';
 
-describe('GlobalController', () => {
-  let controller: GlobalController;
+describe('HomeController', () => {
+  let controller: HomeController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [GlobalController],
+      controllers: [HomeController],
     }).compile();
 
-    controller = module.get<GlobalController>(GlobalController);
+    controller = module.get<HomeController>(HomeController);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+});
+
+describe('ProfileController', () => {
+  let controller: ProfileController;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [ProfileController],
+    }).compile();
+
+    controller = module.get<ProfileController>(ProfileController);
   });
 
   it('should be defined', () => {
