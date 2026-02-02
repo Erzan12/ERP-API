@@ -2931,7 +2931,7 @@
           "position_id": {
             "type": "number",
             "example": 1,
-            "description": "ID of the Department"
+            "description": "ID of the Position"
           }
         },
         "required": [
@@ -2944,7 +2944,25 @@
       },
       "UpdateRolePermissionsDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "role_id": {
+            "type": "number",
+            "example": "1",
+            "description": "The ID of the Role you want to update or add new permission"
+          },
+          "action_updates": {
+            "example": "[\"read\", \"update\", \"delete\", \"create\"]",
+            "description": "User can add or update new permission for a current role",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "role_id",
+          "action_updates"
+        ]
       },
       "CreateEmployeeStatusDto": {
         "type": "object",
