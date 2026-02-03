@@ -22,7 +22,7 @@ export class SubModuleController {
 
   //get list of submodules
   @Get('submodules')
-  @ApiOperation({ summary: 'Get modules' })
+  @ApiOperation({ summary: 'Get Submodules' })
   @ApiGetResponse('Here are all the Sub modules available')
   @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   async getSubmodules(@SessionUser() user: RequestUser) {
