@@ -3,7 +3,7 @@ import { AuditService } from './audit.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RequestUser } from 'src/components/types/request-user.interface';
 import { Can } from 'src/components/decorators/can.decorator';
-import { SecurityClearance } from 'src/auth/security_clearance/security-clearance.decorator';
+import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { SessionUser } from 'src/components/decorators/session-user.decorator';
 import { ACTION_READ, AUDIT_TRAIL, SEC_LVL_8 } from 'src/components/constants/ability.constant';
 

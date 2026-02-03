@@ -8,7 +8,7 @@ import {
   USER_ACCOUNT,
   SEC_LVL_9,
 } from 'src/components/constants/ability.constant';
-import { SecurityClearance } from 'src/auth/security_clearance/security-clearance.decorator';
+import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { ApiSecurityClearance } from 'src/components/helpers/swagger-response.helper';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 
