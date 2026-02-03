@@ -42,30 +42,18 @@ async function bootstrap() {
       description: 'Required security clearance level (documentational only).',
     })
     .addTag('Authentication', 'Endpoint for user authorization.') // change or add more tags based on your modules
+    .addTag('Administrator', 'Endppoint for managing the system') // change or add more tags based on your modules
+    .addTag('System Management', 'Administer modules, submodules, and role permissions',)
     .addTag('Manager', 'Enpoint for Manager managing users account, tokens.') // change or add more tags based on your modules
     .addTag('Human Resources', 'Endpoint for managing employees.') // change or add more tags based on your modules
-    .addTag(
-      'Mastertables',
-      'Endpoint for managing positions, departments and etc.',
-    ) // change or add more tags based on your modules
-    .addTag('Administrator', 'Endppoint for managing the system') // change or add more tags based on your modules
-    // .addTag('Module', 'Endpoint for core modules') // change or add more tags based on your modules
-    // .addTag('SubModule', 'Endpoint for core modules') // change or add more tags based on your modules
-    // .addTag('Role', 'Endpoint for core modules') // change or add more tags based on your modules
-    .addTag(
-      'System Management',
-      'Administer modules, submodules, and role permissions',
-    )
-    // .addTag('Employment Status', 'Endpoint for employement status crud') // change or add more tags based on your modules
-    // .addTag('Employee', 'Endpoint for employee') // change or add more tags based on your modules
-    // .addTag('Person', 'Endpoint for person') // change or add more tags based on your modules
+    .addTag('Mastertables', 'Endpoint for managing positions, departments and etc.',) // change or add more tags based on your modules
     .addTag('Home') // change or add more tags based on your modules
     .addTag('Profile') // change or add more tags based on your modules
     .addTag('Protected') // change or add more tags based on your modules
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document); // Swagger at http://localhost:3000/api/documentation
+  SwaggerModule.setup('api', app, document); // Swagger at http://localhost:3000/api
 
   //export the OpenAPI spec to a file
   writeFileSync(
@@ -73,7 +61,10 @@ async function bootstrap() {
     JSON.stringify(document, null, 2),
   );
 
-  await app.listen(3000);
+  await app.listen(3000, () => {
+    console.log('Server is running at http://localhost:3000')
+    console.log('Swagger API is running at http://localhost:3000/api')
+  });
 
   //appliead jwt auth guard and role permission guard globally
   const reflector = app.get(Reflector);

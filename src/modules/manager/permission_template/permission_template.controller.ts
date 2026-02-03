@@ -67,8 +67,7 @@ export class PermissionTemplateController {
   @ApiGetResponse('Here are the list of permission templates available')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
   async getUserPermissionTemplate(
-    @Param('userPermissionTemplateId', ParseIntPipe)
-    userPermissionTemplateId: number,
+    @Param('userPermissionTemplateId', ParseIntPipe) userPermissionTemplateId: number,
     @SessionUser() user: RequestUser,
   ) {
     return this.permissionTemplateService.getUserPermissionTemplate(
