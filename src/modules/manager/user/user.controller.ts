@@ -30,7 +30,7 @@ import {
   SEC_LVL_5,
   USER_TOKEN_KEY,
 } from 'src/components/constants/ability.constant';
-import { SecurityClearance } from 'src/auth/security_clearance/security-clearance.decorator';
+import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { Can } from 'src/components/decorators/can.decorator';
 import { SessionUser } from 'src/components/decorators/session-user.decorator';
 
