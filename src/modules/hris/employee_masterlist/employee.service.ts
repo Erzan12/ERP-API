@@ -203,12 +203,23 @@ export class EmployeeService {
   async getEmployeeMasterlist(user: RequestUser) {
     // const hrViewEmployee = [ 'Human Resources' ].includes(user.role.name);
 
-    const hrViewEmployee = user.roles.some(
-      (role) => role.name === 'Human Resources',
-    );
+    // const hrViewEmployee = user.roles.some(
+    //   (role) => role.name === 'Human Resources',
+    // );
+
+    const canView = await this.prisma.userRole.findFirst({
+      where: {
+        user_id: user.id,
+        role_id: { in: [3, 6]}
+       },
+    });
+
+    if(!canView) {
+      throw new BadRequestException('You are not allowed to view this sub module')
+    }
 
     const viewEmployee = await this.prisma.employee.findMany({
-      where: hrViewEmployee ? {} : { id: user.id },
+      // where: hrViewEmployee ? {} : { id: user.id },
       select: {
         id: true,
         employee_id: true,
@@ -243,7 +254,7 @@ export class EmployeeService {
 
     return {
       status: 'success',
-      message: hrViewEmployee ? 'Employee Masterlists' : 'Employees',
+      message: 'List of Employees',
       data: {
         employee_masterlist: viewEmployee,
       },
