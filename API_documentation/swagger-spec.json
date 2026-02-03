@@ -2630,6 +2630,14 @@
       "description": "Endpoint for user authorization."
     },
     {
+      "name": "Administrator",
+      "description": "Endppoint for managing the system"
+    },
+    {
+      "name": "System Management",
+      "description": "Administer modules, submodules, and role permissions"
+    },
+    {
       "name": "Manager",
       "description": "Enpoint for Manager managing users account, tokens."
     },
@@ -2640,14 +2648,6 @@
     {
       "name": "Mastertables",
       "description": "Endpoint for managing positions, departments and etc."
-    },
-    {
-      "name": "Administrator",
-      "description": "Endppoint for managing the system"
-    },
-    {
-      "name": "System Management",
-      "description": "Administer modules, submodules, and role permissions"
     },
     {
       "name": "Home",
