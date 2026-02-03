@@ -16,7 +16,7 @@ import { DashboardController } from './dashboard/dashboard.controller';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { EmploymentStatusController } from '../master/employment_status/employment_status.controller';
 import { EmploymentStatusService } from '../master/employment_status/employment_status.service';
-import { JwtStrategy } from 'src/auth/jwt/jwt.strategy';
+import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
 import { AuditController } from './audit/audit.controller';
 import { AuditService } from './audit/audit.service';
 

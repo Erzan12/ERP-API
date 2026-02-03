@@ -8,7 +8,7 @@ import { PermissionTemplateController } from './permission_template/permission_t
 import { PermissionTemplateService } from './permission_template/permission_template.service';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
-import { JwtStrategy } from 'src/auth/jwt/jwt.strategy';
+import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
 import { AuditService } from '../administrator/audit/audit.service';
 
 @Module({

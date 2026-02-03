@@ -5,10 +5,10 @@ import { MailService } from './jobs/mail/mail.service';
 import { ConfigModule } from '@nestjs/config';
 import { AdministratorModule } from 'src/modules/administrator/administrator.module';
 import { APP_GUARD } from '@nestjs/core';
-import { CustomJwtAuthGuard } from './auth/jwt/jwt.auth.guard';
+import { CustomJwtAuthGuard } from './middleware/jwt/jwt.auth.guard';
 import { AuthController } from './auth/auth.controller';
 import { HomeController, ProfileController } from './global/global.controller';
-import { SecurityClearanceGuard } from './auth/security_clearance/security-clearance.guard';
+import { SecurityClearanceGuard } from './middleware/security_clearance/security-clearance.guard';
 import { UserService } from './modules/manager/user/user.service';
 import { UserController } from './modules/manager/user/user.controller';
 import { PrismaModule } from './config/prisma/prisma.module';
@@ -31,11 +31,11 @@ import { PositionService } from './modules/master/position/position.service';
 import { MasterController } from './modules/master/master.controller';
 import { EmployeeController } from './modules/hris/employee_masterlist/employee.controller';
 import { EmployeeService } from './modules/hris/employee_masterlist/employee.service';
-import { PermissionsGuard } from './auth/guards/permission.guard';
-import { JwtStrategy } from './auth/jwt/jwt.strategy';
-import { CaslAbilityService } from './auth/casl/casl.service';
-import { CaslModule } from './auth/casl/casl.module';
+import { JwtStrategy } from './middleware/jwt/jwt.strategy';
+import { CaslAbilityService } from './middleware/casl/casl.service';
+import { CaslModule } from './middleware/casl/casl.module';
 import { AuditService } from './modules/administrator/audit/audit.service';
+import { PermissionsGuard } from './middleware/guards/permission.guard';
 
 @Module({
   imports: [
