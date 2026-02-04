@@ -31,7 +31,7 @@ export class UserLocationController {
   @ApiOperation({ summary: 'Get all user locations' })
   @ApiGetResponse('List of user locations available')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check is jwt strategy
-  async getAllUserLocations(@SessionUser() user: RequestUser) {
+  getUserLocations(@SessionUser() user: RequestUser) {
     return this.userLocationService.getAllUserLocations(user);
   }
 }

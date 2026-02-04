@@ -25,7 +25,7 @@ export class SubModuleController {
   @ApiOperation({ summary: 'Get Submodules' })
   @ApiGetResponse('Here are all the Sub modules available')
   @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getSubmodules(@SessionUser() user: RequestUser) {
+  getSubmodules(@SessionUser() user: RequestUser) {
     return this.subModuleService.listSubModule(user);
   }
 
@@ -38,7 +38,7 @@ export class SubModuleController {
   @ApiOperation({ summary: 'Create a new Submodule' })
   @ApiPostResponse('Submodule created successfully')
   @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async createSubModule(
+  createSubModule(
     @Body() createSubModuleDto: CreateSubModuleDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -54,7 +54,7 @@ export class SubModuleController {
   @ApiOperation({ summary: 'Assign a new permission for submodule' })
   @ApiPostResponse('Permission assigned to a submodule successfully')
   @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async createSubModulePermission(
+  createSubModulePermission(
     @Body() assignSubModulePermissionDto: AssignSubModulePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -75,7 +75,7 @@ export class SubModuleController {
   @ApiOperation({ summary: 'Create a new permission for submodule' })
   @ApiPostResponse('Permission created successfully')
   @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async createPermission(
+  createPermission(
     @Body() addSubModuleDto: AddSubModulePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -92,7 +92,7 @@ export class SubModuleController {
   @ApiOperation({ summary: 'Update a current sub module permission' })
   @ApiPatchResponse('Sub module permission updated successfully')
   @Can({ action: 'update', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async updatePermission(
+  updatePermission(
     @Body() updateSubModulePermisisonDto: UpdateSubModulePermisisonDto,
     @SessionUser() user: RequestUser,
     @Param('id') id: number,

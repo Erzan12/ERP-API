@@ -37,7 +37,7 @@ export class PositionController {
   @ApiOperation({ summary: 'Get all positions' })
   @ApiGetResponse('List of positions retrieve')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async getAllPositions(@SessionUser() user: RequestUser) {
+  getPositions(@SessionUser() user: RequestUser) {
     return this.positionService.getAllPositions(user);
   }
 
@@ -46,7 +46,7 @@ export class PositionController {
   @ApiOperation({ summary: 'Get a position.' })
   @ApiGetResponse('Here is the position.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  async getPosition(
+  getPosition(
     @Param('positionId', ParseIntPipe) positionId: number,
     @SessionUser() user: RequestUser,
   ) {
@@ -61,7 +61,7 @@ export class PositionController {
   @ApiOperation({ summary: 'Create a new position' })
   @ApiPostResponse('Position created successfully')
   @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async createPosition(
+  createPosition(
     @Body() createPositionDto: CreatePositionDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -78,7 +78,7 @@ export class PositionController {
   @ApiOperation({ summary: 'Update a current position information' })
   @ApiPatchResponse('Position updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async updatePositionInfo(
+  updatePosition(
     @Param('positionId', ParseIntPipe) positionId: number,
     @Body() updatePositionDto: UpdatePositionDto,
     @SessionUser() user: RequestUser,

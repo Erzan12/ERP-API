@@ -36,7 +36,7 @@ export class DepartmentController {
   @ApiOperation({ summary: 'Get all departments' })
   @ApiGetResponse('List of departments available')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getAllDepartments(@SessionUser() user: RequestUser) {
+  getDepartments(@SessionUser() user: RequestUser) {
     return this.departmentService.getAllDepartments(user);
   }
 
@@ -44,7 +44,7 @@ export class DepartmentController {
   @ApiOperation({ summary: 'Get a department' })
   @ApiGetResponse('Here is the department')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  async getDepartment(
+  getDepartment(
     @Param('departmentId', ParseIntPipe) departmentId: number,
     @SessionUser() user: RequestUser,
   ) {
@@ -59,7 +59,7 @@ export class DepartmentController {
   @ApiOperation({ summary: 'Create a new department' })
   @ApiPostResponse('Department created successfully')
   @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async createDepartment(
+  createDepartment(
     @Body() createDepartmentDto: CreateDepartmentDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -74,7 +74,7 @@ export class DepartmentController {
   @ApiOperation({ summary: 'Update a current department information' })
   @ApiPatchResponse('Department updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async updateDept(
+  updateDepartment(
     @Param('departmentId', ParseIntPipe) departmentId: number,
     @Body() updateDeptDto: UpdateDepartmentDto,
     @SessionUser() user: RequestUser,

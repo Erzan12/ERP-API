@@ -45,7 +45,7 @@ export class RoleController {
   @ApiOperation({ summary: 'Get all Roles' })
   @ApiGetResponse('Here are the list of Roles')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async getAllRole(@SessionUser() user: RequestUser) {
+  getAllRole(@SessionUser() user: RequestUser) {
     return this.roleService.getAllRole(user);
   }
 
@@ -54,7 +54,7 @@ export class RoleController {
   @ApiOperation({ summary: 'Create new role' })
   @ApiPostResponse('Role created successfully')
   @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async createRole(
+  createRole(
     @Body() createRoleDto: CreateRoleDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -66,7 +66,7 @@ export class RoleController {
   @ApiOperation({ summary: 'Adding permission to role' })
   @ApiPostResponse('Permissions added to role')
   @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async createRolePermission(
+  createRolePermission(
     @Body() createRolePermissionDto: CreateRolePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -81,7 +81,7 @@ export class RoleController {
   @ApiOperation({ summary: 'Updating current permission to role' })
   @ApiPatchResponse('Permissions updated to role')
   @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async updateRolePermissions(
+  updateRolePermissions(
     @Body() updateRolePermissionsDto: UpdateRolePermissionsDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -108,14 +108,14 @@ export class RoleController {
 
   //filter/show active or inactive roles permission for a submodule
   @Get(':subModulePermissionId/permissions')
-  async getPermissions(
+  getPermissions(
     @Param('subModuleId', ParseIntPipe) subModuleId: number,
     @Query('status') status?: string, // optional query param
   ) {
     const isActive =
       status === 'true' ? true : status === 'false' ? false : undefined;
 
-    return await this.prisma.rolePermission.findMany({
+    return this.prisma.rolePermission.findMany({
       where: {
         sub_module_permission_id: subModuleId,
         ...(isActive !== undefined && { status: isActive }), // conditionally add `status`

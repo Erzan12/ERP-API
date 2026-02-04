@@ -36,7 +36,7 @@ export class EmploymentStatusController {
   @ApiOperation({ summary: 'Get all employment status' })
   @ApiGetResponse('Here are the list of available employment status')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  async getEmpStat(@SessionUser() user: RequestUser) {
+  getEmployeeStats(@SessionUser() user: RequestUser) {
     return this.employmentStatusService.getEmpStat(user);
   }
 
@@ -45,7 +45,7 @@ export class EmploymentStatusController {
   @ApiOperation({ summary: 'Get an employment status.' })
   @ApiGetResponse('Here is the employment status.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  async getEmpStatus(
+  getEmployeeStat(
     @Param('employmentStatusId', ParseIntPipe) employmentStatusId: number,
     @SessionUser() user: RequestUser,
   ) {
@@ -61,7 +61,7 @@ export class EmploymentStatusController {
   @ApiOperation({ summary: 'Create new employee status.' })
   @ApiPostResponse('Employee status created successfully.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  async createEmpStat(
+  createEmployeeStatus(
     @Body() createEmpStat: CreateEmployeeStatusDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -72,7 +72,7 @@ export class EmploymentStatusController {
   @ApiOperation({ summary: 'Updating employee status details.' })
   @ApiPatchResponse('Employee status details updated successfully.')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
-  async(
+  updateEmployeeStatus(
     @Param('employmentStatusId', ParseIntPipe) employmentStatusId: number,
     @Body() updateEmpStatusDto: UpdateEmpStatusDto,
     @SessionUser() user: RequestUser,

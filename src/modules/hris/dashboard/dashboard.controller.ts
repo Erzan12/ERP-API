@@ -20,7 +20,7 @@ export class DashboardController {
   @ApiOperation({ summary: 'Summary of the employees' })
   @ApiGetResponse('Dashboard')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-  async getHrDashboard(@SessionUser() user: RequestUser) {
+  getHrDashboard(@SessionUser() user: RequestUser) {
     return this.dashboardService.getHRDashboard(user);
   }
 }

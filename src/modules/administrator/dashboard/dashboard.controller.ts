@@ -21,7 +21,7 @@ export class DashboardController {
   @ApiOperation({ summary: 'Summary of Users' })
   @ApiGetResponse('Adminstrator Dashboard')
   @Can({ action: ACTION_READ, subject: DASHBOARD })
-  async getAdminDashboard(@SessionUser() user: RequestUser) {
+  getAdminDashboard(@SessionUser() user: RequestUser) {
     return this.dashboardService.getAdminDashboardStats(user);
   }
 }

@@ -31,7 +31,7 @@ export class ModuleController {
   @ApiOperation({ summary: 'Get modules' })
   @ApiGetResponse('Here are all the Modules available')
   @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getModules(@SessionUser() user: RequestUser) {
+  getModules(@SessionUser() user: RequestUser) {
     return this.moduleService.listModule(user);
   }
 
@@ -39,7 +39,7 @@ export class ModuleController {
   @ApiOperation({ summary: 'Create a new Module' })
   @ApiPostResponse('Module created successfully')
   @Can({ action: 'create', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async createModule(
+  createModule(
     @Body() createModuleDto: CreateModuleDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -50,7 +50,7 @@ export class ModuleController {
   @ApiOperation({ summary: 'Get module by ID' })
   @ApiGetResponse('Details of the module with submodules')
   @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getModule(
+  getModule(
     @SessionUser() user: RequestUser,
     @Param('id') id: number, // 👈 this gets the `:id` from the URL
   ) {
@@ -65,7 +65,7 @@ export class ModuleController {
   @ApiOperation({ summary: 'Update current module' })
   @ApiPatchResponse('Module updated successfully')
   @Can({ action: 'update', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async updateModule(
+  updateModule(
     @Body() updateModuleDto: UpdateModuleDto,
     @SessionUser() user: RequestUser,
     @Param('id') id: number, //can be number can be string depends on the defined prisma value if int or string

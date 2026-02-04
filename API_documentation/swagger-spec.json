@@ -674,7 +674,7 @@
     },
     "/mastertables/user_locations": {
       "get": {
-        "operationId": "UserLocationController_getAllUserLocations",
+        "operationId": "UserLocationController_getUserLocations",
         "parameters": [],
         "responses": {
           "200": {
@@ -1278,7 +1278,7 @@
     },
     "/mastertables/employment_status": {
       "get": {
-        "operationId": "EmploymentStatusController_getEmpStat",
+        "operationId": "EmploymentStatusController_getEmployeeStats",
         "parameters": [],
         "responses": {
           "200": {
@@ -1308,7 +1308,7 @@
         ]
       },
       "post": {
-        "operationId": "EmploymentStatusController_createEmpStat",
+        "operationId": "EmploymentStatusController_createEmployeeStatus",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1351,7 +1351,7 @@
     },
     "/mastertables/employment_status/{employmentStatusId}": {
       "get": {
-        "operationId": "EmploymentStatusController_getEmpStatus",
+        "operationId": "EmploymentStatusController_getEmployeeStat",
         "parameters": [
           {
             "name": "employmentStatusId",
@@ -1392,7 +1392,7 @@
     },
     "/mastertables/employment_status/update/{employmentStatusId}": {
       "patch": {
-        "operationId": "EmploymentStatusController_async",
+        "operationId": "EmploymentStatusController_updateEmployeeStatus",
         "parameters": [
           {
             "name": "employmentStatusId",
@@ -1703,7 +1703,7 @@
     },
     "/mastertables/positions": {
       "get": {
-        "operationId": "PositionController_getAllPositions",
+        "operationId": "PositionController_getPositions",
         "parameters": [],
         "responses": {
           "200": {
@@ -1815,7 +1815,7 @@
         ]
       },
       "patch": {
-        "operationId": "PositionController_updatePositionInfo",
+        "operationId": "PositionController_updatePosition",
         "parameters": [
           {
             "name": "positionId",
@@ -1867,7 +1867,7 @@
     },
     "/mastertables/departments": {
       "get": {
-        "operationId": "DepartmentController_getAllDepartments",
+        "operationId": "DepartmentController_getDepartments",
         "parameters": [],
         "responses": {
           "200": {
@@ -1979,7 +1979,7 @@
         ]
       },
       "patch": {
-        "operationId": "DepartmentController_updateDept",
+        "operationId": "DepartmentController_updateDepartment",
         "parameters": [
           {
             "name": "departmentId",
@@ -2031,7 +2031,7 @@
     },
     "/mastertables/companies": {
       "get": {
-        "operationId": "CompanyController_getAllCompany",
+        "operationId": "CompanyController_getCompanies",
         "parameters": [],
         "responses": {
           "200": {
@@ -2195,7 +2195,7 @@
     },
     "/mastertables/divisions": {
       "get": {
-        "operationId": "DivisionController_getAllDivisions",
+        "operationId": "DivisionController_getDivisions",
         "parameters": [],
         "responses": {
           "200": {

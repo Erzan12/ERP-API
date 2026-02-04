@@ -42,7 +42,7 @@ export class PermissionTemplateController {
   @ApiOperation({ summary: 'Get permission templates' })
   @ApiGetResponse('Here are all the permission templates available')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
-  async getAllPermissionTemplate(@SessionUser() user: RequestUser) {
+  getAllPermissionTemplate(@SessionUser() user: RequestUser) {
     return this.permissionTemplateService.getAllPermissionTemplate(user);
   }
 
@@ -51,7 +51,7 @@ export class PermissionTemplateController {
   @ApiOperation({ summary: 'Get a permission template' })
   @ApiGetResponse('Here is the permission template')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
-  async getPermissionTemplate(
+  getPermissionTemplate(
     @Param('permissionTemplateId', ParseIntPipe) permissionTemplateId: number,
     @SessionUser() user: RequestUser,
   ) {
@@ -66,7 +66,7 @@ export class PermissionTemplateController {
   @ApiOperation({ summary: 'Get available permission templates to user' })
   @ApiGetResponse('Here are the list of permission templates available')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
-  async getUserPermissionTemplate(
+  getUserPermissionTemplate(
     @Param('userPermissionTemplateId', ParseIntPipe) userPermissionTemplateId: number,
     @SessionUser() user: RequestUser,
   ) {
@@ -85,7 +85,7 @@ export class PermissionTemplateController {
   @ApiOperation({ summary: 'Get available permissin templates to user' })
   @ApiPatchResponse('Permissin Template has been updated.')
   @Can({ action: ACTION_UPDATE, subject: PERMISSION_TEMPLATE })
-  async updatePermissionTemplate(
+  updatePermissionTemplate(
     @Body() dto: UpdatePermissionTemplateDto,
     @Param('permissionTemplateId', ParseIntPipe) permissionTemplateId: number,
     @SessionUser() user: RequestUser,
@@ -106,7 +106,7 @@ export class PermissionTemplateController {
   @ApiOperation({ summary: 'Create new permission template' })
   @ApiPostResponse('Permission template created successfully')
   @Can({ action: ACTION_CREATE, subject: PERMISSION_TEMPLATE })
-  async createPermissionTemplate(
+  createPermissionTemplate(
     @Body() dto: CreatePermissionTemplateDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -122,7 +122,7 @@ export class PermissionTemplateController {
   @ApiOperation({ summary: 'Assign Permission template to user' })
   @ApiPostResponse('Permission Template assigned to user successfully')
   @Can({ action: ACTION_CREATE, subject: PERMISSION_TEMPLATE })
-  async assignPermTemplate(
+  assignPermTemplate(
     @Body() dto: AssignTemplateDto,
     @SessionUser() user: RequestUser,
     @Param('id', ParseIntPipe) id: number,

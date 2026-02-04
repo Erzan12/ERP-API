@@ -37,7 +37,7 @@ export class CompanyController {
   @ApiOperation({ summary: 'Get all companies' })
   @ApiGetResponse('List of companies retrieved')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getAllCompany(@SessionUser() user: RequestUser) {
+  getCompanies(@SessionUser() user: RequestUser) {
     return this.companyService.getAllCompany(user);
   }
 
@@ -46,7 +46,7 @@ export class CompanyController {
   @ApiOperation({ summary: 'Get a company' })
   @ApiGetResponse('Here is the company')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  async getCompany(
+  getCompany(
     @Param('companyId', ParseIntPipe) companyId: number,
     @SessionUser() user: RequestUser,
   ) {
@@ -58,7 +58,7 @@ export class CompanyController {
   @ApiOperation({ summary: 'Create a new company' })
   @ApiPostResponse('Company created successfully')
   @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async createCompany(
+  createCompany(
     @Body() createCompanyDto: CreateCompanyDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -72,7 +72,7 @@ export class CompanyController {
   @ApiOperation({ summary: 'Update a current company information' })
   @ApiPatchResponse('Company updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async updateCompany(
+  updateCompany(
     @Param('companyId', ParseIntPipe) companyId: number,
     @Body() updateCompanyDto: UpdateCompanyDto,
     @SessionUser() user: RequestUser,

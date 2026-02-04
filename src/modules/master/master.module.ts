@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { MasterController } from './master.controller';
 import { PositionService } from './position/position.service';
 import { CreatePositionDto } from './position/dto/create-position.dto';
 import { DepartmentService } from './department/department.service';
@@ -34,7 +33,6 @@ import { UserLocationService } from './user_location/user_location.service';
     UserLocationService,
   ],
   controllers: [
-    MasterController,
     PositionController,
     DepartmentController,
     CompanyController,

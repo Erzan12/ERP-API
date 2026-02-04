@@ -23,7 +23,7 @@ export class SecurityClearanceController {
   @ApiSecurityClearance(SEC_LVL_9)
   @SecurityClearance(SEC_LVL_9) // admin must be 9+ to update others
   @Can({ action: ACTION_UPDATE, subject: USER_ACCOUNT })
-  async updateClearance(
+  updateClearance(
     @Param('id') targetId: number,
     @Body() dto: UpdateSecurityClearanceDto,
     @SessionUser() admin,

@@ -37,7 +37,7 @@ export class DivisionController {
   @ApiOperation({ summary: 'Get all divisions' })
   @ApiGetResponse('List of divisions retrieved')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getAllDivisions(@SessionUser() user: RequestUser) {
+  getDivisions(@SessionUser() user: RequestUser) {
     return this.divisionService.getAllDivisions(user);
   }
 
@@ -46,7 +46,7 @@ export class DivisionController {
   @ApiOperation({ summary: 'Get a division' })
   @ApiGetResponse('Here is the division')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  async getDivision(
+  getDivision(
     @Param('divisionId', ParseIntPipe) divisionId: number,
     @SessionUser() user: RequestUser,
   ) {
@@ -61,7 +61,7 @@ export class DivisionController {
   @ApiOperation({ summary: 'Create a new division' })
   @ApiPostResponse('Division created successfully')
   @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async createDivision(
+  createDivision(
     @Body() createDivisionDto: CreateDivisionDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -78,7 +78,7 @@ export class DivisionController {
   @ApiOperation({ summary: 'Update a current division information' })
   @ApiPatchResponse('Division updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async updateDivision(
+  updateDivision(
     @Param('divisionId', ParseIntPipe) divisionId: number,
     @Body() updateDivisiionDto: UpdateDivisionDto,
     @SessionUser() user: RequestUser,

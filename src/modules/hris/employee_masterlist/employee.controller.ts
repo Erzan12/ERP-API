@@ -39,7 +39,7 @@ export class EmployeeController {
   @ApiOperation({ summary: 'List of all employees' })
   @ApiGetResponse('List of employees')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-  async getEmployees(
+  getEmployees(
     @SessionUser() user: RequestUser
   ) {
     return this.employeeService.getEmployeeMasterlist(user)
@@ -50,7 +50,7 @@ export class EmployeeController {
   @ApiOperation({ summary: 'View employee profile' })
   @ApiGetResponse('Employees information')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-  async getEmployee(
+  getEmployee(
     @Param('employeeId', ParseIntPipe) employeeId: number,
     @SessionUser() user: RequestUser,
   ) {
@@ -66,7 +66,7 @@ export class EmployeeController {
   @ApiOperation({ summary: 'Update a current Employee' })
   @ApiPatchResponse('Employee information updated successfully')
   @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
-  async updateEmployee(
+  updateEmployee(
     @Param('employeeId', ParseIntPipe) employeeId: number,
     @Body() updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
@@ -86,7 +86,7 @@ export class EmployeeController {
   @ApiOperation({ summary: 'Create a new Employee' })
   @ApiPostResponse('Employee created successfully')
   @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
-  async createEmployee(
+  createEmployee(
     @Body() createDto: CreateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {

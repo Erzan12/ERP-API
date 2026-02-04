@@ -17,7 +17,7 @@ export class AuditController {
     @ApiOperation({ summary: 'Get audit logs with filters' })
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
-    async getAuditLogs(
+    getAuditLogs(
         @Query('user_id') userId?: number,
         @Query('resource') resource?: string,
         @Query('action') action?: string,
