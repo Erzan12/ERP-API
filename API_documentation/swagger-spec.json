@@ -1,20 +1,92 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/hr/employees_masterlist/{employeeId}": {
+    "/hr/employees": {
       "get": {
-        "operationId": "EmployeeController_getEmployee",
+        "operationId": "EmployeeController_getEmployees",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of employees"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List of all employees",
+        "tags": [
+          "Human Resources"
+        ]
+      },
+      "post": {
+        "operationId": "EmployeeController_createEmployee",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Payload to create a new employee",
           "content": {
             "application/json": {
               "schema": {
-                "type": "number"
+                "$ref": "#/components/schemas/CreateEmployeeWithDetailsDto"
               }
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "Employee created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new Employee",
+        "tags": [
+          "Human Resources"
+        ]
+      }
+    },
+    "/hr/employees/{employeeId}": {
+      "get": {
+        "operationId": "EmployeeController_getEmployee",
+        "parameters": [
+          {
+            "name": "employeeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Employees information"
@@ -88,49 +160,6 @@
           }
         ],
         "summary": "Update a current Employee",
-        "tags": [
-          "Human Resources"
-        ]
-      }
-    },
-    "/hr/employees_masterlist": {
-      "post": {
-        "operationId": "EmployeeController_createEmployee",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to create a new employee",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEmployeeWithDetailsDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Employee created successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Create a new Employee",
         "tags": [
           "Human Resources"
         ]
