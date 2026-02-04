@@ -35,20 +35,30 @@ import { SessionUser } from 'src/components/decorators/session-user.decorator';
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
+  @Get('employees')
+  @ApiOperation({ summary: 'List of all employees' })
+  @ApiGetResponse('List of employees')
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  async getEmployees(
+    @SessionUser() user: RequestUser
+  ) {
+    return this.employeeService.getEmployeeMasterlist(user)
+  }
+
   //get a single employee profile or view
-  @Get('employees_masterlist/:employeeId')
+  @Get('employees/:employeeId')
   @ApiOperation({ summary: 'View employee profile' })
   @ApiGetResponse('Employees information')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   async getEmployee(
-    @Body() employeeId: number,
+    @Param('employeeId', ParseIntPipe) employeeId: number,
     @SessionUser() user: RequestUser,
   ) {
     return this.employeeService.getEmployee(employeeId, user);
   }
 
   //can edit employee profile
-  @Patch('employees_masterlist/:employeeId')
+  @Patch('employees/:employeeId')
   @ApiBody({
     type: UpdateEmployeeWithDetailsDto,
     description: 'Payload to update a current employee',
@@ -68,7 +78,7 @@ export class EmployeeController {
     );
   }
 
-  @Post('employees_masterlist')
+  @Post('employees')
   @ApiBody({
     type: CreateEmployeeWithDetailsDto,
     description: 'Payload to create a new employee',
