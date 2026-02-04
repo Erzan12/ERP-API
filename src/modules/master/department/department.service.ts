@@ -14,7 +14,7 @@ export class DepartmentService {
   constructor(private prisma: PrismaService) {}
 
   //query all available departments
-  async getAllDepartments(user: RequestUser) {
+  async getDepartments(user: RequestUser) {
     const department = await this.prisma.department.findMany({
       include: {
         division: true,
@@ -33,9 +33,9 @@ export class DepartmentService {
   }
 
   //to add single query of department
-  async getDepartment(departmentId: number, user: RequestUser) {
+  async getDepartment(id: number, user: RequestUser) {
     const department = await this.prisma.department.findUnique({
-      where: { id: departmentId },
+      where: { id },
     });
 
     if (!department) {
@@ -118,15 +118,12 @@ export class DepartmentService {
     };
   }
 
-  async updateDept(
-    departmentId: number,
-    updateDepartmentDto: UpdateDepartmentDto,
-    user,
+  async updateDepartment(id: number, updateDepartmentDto: UpdateDepartmentDto, user,
   ) {
     const { department_name, sorting, division_id, stat } = updateDepartmentDto;
 
     const department = await this.prisma.department.findUnique({
-      where: { id: departmentId },
+      where: { id },
       select: {
         name: true,
         stat: true,
@@ -144,7 +141,7 @@ export class DepartmentService {
     }
 
     const updateDept = await this.prisma.department.update({
-      where: { id: departmentId },
+      where: { id },
       data: {
         name: department_name, // assuming you want to change the name
         sorting,

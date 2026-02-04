@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Post,
-  Patch,
+  Put,
   Get,
   Param,
   ParseIntPipe,
@@ -37,18 +37,18 @@ export class DepartmentController {
   @ApiGetResponse('List of departments available')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getDepartments(@SessionUser() user: RequestUser) {
-    return this.departmentService.getAllDepartments(user);
+    return this.departmentService.getDepartments(user);
   }
 
-  @Get('departments/:departmentId')
+  @Get('departments/:id')
   @ApiOperation({ summary: 'Get a department' })
   @ApiGetResponse('Here is the department')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDepartment(
-    @Param('departmentId', ParseIntPipe) departmentId: number,
+    @Param('id', ParseIntPipe) id: number,
     @SessionUser() user: RequestUser,
   ) {
-    return this.departmentService.getDepartment(departmentId, user);
+    return this.departmentService.getDepartment(id, user);
   }
 
   @Post('departments')
@@ -66,7 +66,7 @@ export class DepartmentController {
     return this.departmentService.createDepartment(createDepartmentDto, user);
   }
 
-  @Patch('departments/:departmentId')
+  @Put('departments/:id')
   @ApiBody({
     type: UpdateDepartmentDto,
     description: 'Payload to update department',
@@ -75,10 +75,10 @@ export class DepartmentController {
   @ApiPatchResponse('Department updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateDepartment(
-    @Param('departmentId', ParseIntPipe) departmentId: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateDeptDto: UpdateDepartmentDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.departmentService.updateDept(departmentId, updateDeptDto, user);
+    return this.departmentService.updateDepartment(id, updateDeptDto, user);
   }
 }

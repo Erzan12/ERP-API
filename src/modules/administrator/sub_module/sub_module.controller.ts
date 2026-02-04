@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch, Param, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Put, ParseIntPipe } from '@nestjs/common';
 import { Can } from '../../../components/decorators/can.decorator';
 import { CreateSubModuleDto } from './dto/create-sub-module.dto';
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
@@ -13,6 +13,7 @@ import {
   ApiGetResponse,
 } from 'src/components/helpers/swagger-response.helper';
 import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
+import { ACTION_READ, SYSTEM_MANAGEMENT } from 'src/components/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
 @ApiTags('System Management')
@@ -24,9 +25,20 @@ export class SubModuleController {
   @Get('submodules')
   @ApiOperation({ summary: 'Get Submodules' })
   @ApiGetResponse('Here are all the Sub modules available')
-  @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getSubmodules(@SessionUser() user: RequestUser) {
-    return this.subModuleService.listSubModule(user);
+    return this.subModuleService.getSubModules(user);
+  }
+
+  @Get('submodules/:id')
+  @ApiOperation({ summary: 'Get a Submodule' })
+  @ApiGetResponse('status: Success!')
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  getSubmodule(
+    @Param('id', ParseIntPipe) id: number,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.subModuleService.getSubmodule(id, user);
   }
 
   //create submodule
@@ -84,7 +96,7 @@ export class SubModuleController {
   }
 
   //update the submodule permissions
-  @Patch('submodule/permissions/edit/:id')
+  @Put('submodule/:id')
   @ApiBody({
     type: UpdateSubModulePermisisonDto,
     description: 'Payload to update the current sub module permission',
@@ -95,7 +107,7 @@ export class SubModuleController {
   updatePermission(
     @Body() updateSubModulePermisisonDto: UpdateSubModulePermisisonDto,
     @SessionUser() user: RequestUser,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
   ) {
     return this.subModuleService.updateSubModulePerm(
       updateSubModulePermisisonDto,

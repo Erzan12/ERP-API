@@ -2,11 +2,9 @@ import {
   Controller,
   Post,
   Body,
-  Put,
-  Delete,
   Get,
+  Put,
   Param,
-  Patch,
 } from '@nestjs/common';
 import { ModuleService } from './module.service';
 import { Can } from '../../../components/decorators/can.decorator';
@@ -32,7 +30,18 @@ export class ModuleController {
   @ApiGetResponse('Here are all the Modules available')
   @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModules(@SessionUser() user: RequestUser) {
-    return this.moduleService.listModule(user);
+    return this.moduleService.getModules(user);
+  }
+
+  @Get('module/:id')
+  @ApiOperation({ summary: 'Get module by ID' })
+  @ApiGetResponse('Details of the module with submodules')
+  @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+  getModule(
+    @SessionUser() user: RequestUser,
+    @Param('id') id: number,
+  ) {
+    return this.moduleService.getModule(user, id); // 👈 pass the id to your service
   }
 
   @Post('module')
@@ -46,18 +55,7 @@ export class ModuleController {
     return this.moduleService.createModule(createModuleDto, user);
   }
 
-  @Get('module/view/:id')
-  @ApiOperation({ summary: 'Get module by ID' })
-  @ApiGetResponse('Details of the module with submodules')
-  @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  getModule(
-    @SessionUser() user: RequestUser,
-    @Param('id') id: number, // 👈 this gets the `:id` from the URL
-  ) {
-    return this.moduleService.viewModule(user, id); // 👈 pass the id to your service
-  }
-
-  @Patch('module/view/edit/:id')
+  @Put('module/:id')
   @ApiBody({
     type: UpdateModuleDto,
     description: 'Payload to update the module info',

@@ -16,11 +16,12 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 export class SubModuleService {
   constructor(private prisma: PrismaService) {}
 
-  async listSubModule(user: RequestUser) {
+  async getSubModules(user: RequestUser) {
     const existingSubModules = await this.prisma.subModule.findMany({
       where: { stat: 1 },
       include: {
         module: true,
+        sub_module_permissions: true,
       },
     });
 
@@ -33,6 +34,29 @@ export class SubModuleService {
       message: 'Here are the list of Sub Modules',
       data: {
         existingSubModules,
+      },
+    };
+  }
+
+  async getSubmodule(id: number, user: RequestUser) {
+    const subModule = await this.prisma.subModule.findUnique({
+      where: { id },
+      include: {
+        module: true,
+        role_permission: true,
+        sub_module_permissions: true,
+      },
+    });
+
+    if(!subModule) {
+      throw new NotFoundException('Submodule not found')
+    }
+
+    return {
+      status: 'success',
+      message: 'Here is the Submodule',
+      data: {
+        subModule,
       },
     };
   }

@@ -4,7 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
+  Put,
   Post,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -38,19 +38,19 @@ export class DivisionController {
   @ApiGetResponse('List of divisions retrieved')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getDivisions(@SessionUser() user: RequestUser) {
-    return this.divisionService.getAllDivisions(user);
+    return this.divisionService.getDivisions(user);
   }
 
   //get selected division
-  @Get('divisions/:divisionId')
+  @Get('divisions/:id')
   @ApiOperation({ summary: 'Get a division' })
   @ApiGetResponse('Here is the division')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDivision(
-    @Param('divisionId', ParseIntPipe) divisionId: number,
+    @Param('id', ParseIntPipe) id: number,
     @SessionUser() user: RequestUser,
   ) {
-    return this.divisionService.getDivision(divisionId, user);
+    return this.divisionService.getDivision(id, user);
   }
 
   @Post('divisions')
@@ -70,7 +70,7 @@ export class DivisionController {
     return this.divisionService.createDivision(createDivisionDto, user);
   }
 
-  @Patch('divisions/:divisionId')
+  @Put('divisions/:divisionId')
   @ApiBody({
     type: UpdateDivisionDto,
     description: 'Payload to update division',

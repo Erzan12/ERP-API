@@ -3,7 +3,7 @@ import {
   Post,
   Body,
   Get,
-  Patch,
+  Put,
   Param,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -37,19 +37,19 @@ export class EmploymentStatusController {
   @ApiGetResponse('Here are the list of available employment status')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getEmployeeStats(@SessionUser() user: RequestUser) {
-    return this.employmentStatusService.getEmpStat(user);
+    return this.employmentStatusService.getEmployeeStats(user);
   }
 
   //get only one employment_status
-  @Get('employment_status/:employmentStatusId')
+  @Get('employment_status/:id')
   @ApiOperation({ summary: 'Get an employment status.' })
   @ApiGetResponse('Here is the employment status.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getEmployeeStat(
-    @Param('employmentStatusId', ParseIntPipe) employmentStatusId: number,
+    @Param('id', ParseIntPipe) id: number,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employmentStatusService.getEmpStatus(employmentStatusId, user);
+    return this.employmentStatusService.getEmployeeStat(id, user);
   }
 
   //created new employee status
@@ -65,20 +65,20 @@ export class EmploymentStatusController {
     @Body() createEmpStat: CreateEmployeeStatusDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employmentStatusService.createEmpStat(createEmpStat, user);
+    return this.employmentStatusService.createEmployeeStatus(createEmpStat, user);
   }
 
-  @Patch('employment_status/update/:employmentStatusId')
+  @Put('employment_status/:id')
   @ApiOperation({ summary: 'Updating employee status details.' })
   @ApiPatchResponse('Employee status details updated successfully.')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateEmployeeStatus(
-    @Param('employmentStatusId', ParseIntPipe) employmentStatusId: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateEmpStatusDto: UpdateEmpStatusDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employmentStatusService.updateEmpStat(
-      employmentStatusId,
+    return this.employmentStatusService.updateEmployeeStatus(
+      id,
       updateEmpStatusDto,
       user,
     );

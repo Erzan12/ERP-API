@@ -15,9 +15,9 @@ export class CompanyService {
   constructor(private prisma: PrismaService) {}
 
   //query single company
-  async getCompany(companyId: number, user: RequestUser) {
+  async getCompany(id: number, user: RequestUser) {
     const company = await this.prisma.company.findUnique({
-      where: { id: companyId },
+      where: { id },
     });
 
     if (!company) {
@@ -34,7 +34,7 @@ export class CompanyService {
   }
 
   //query all company available
-  async getAllCompany(user: RequestUser) {
+  async getCompanies(user: RequestUser) {
     const company = await this.prisma.company.findMany();
 
     if (!company) {
@@ -108,7 +108,7 @@ export class CompanyService {
   }
 
   async updateCompany(
-    companyId: number,
+    id: number,
     updateCompanyDto: UpdateCompanyDto,
     user: RequestUser,
   ) {
@@ -124,7 +124,7 @@ export class CompanyService {
     } = updateCompanyDto;
 
     const company = await this.prisma.company.findUnique({
-      where: { id: companyId },
+      where: { id },
       select: {
         name: true,
         stat: true,
@@ -136,7 +136,7 @@ export class CompanyService {
     }
 
     const updateCompany = await this.prisma.company.update({
-      where: { id: companyId },
+      where: { id },
       data: {
         name,
         address,

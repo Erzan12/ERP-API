@@ -74,12 +74,12 @@
         ]
       }
     },
-    "/hr/employees/{employeeId}": {
+    "/hr/employees/{id}": {
       "get": {
         "operationId": "EmployeeController_getEmployee",
         "parameters": [
           {
-            "name": "employeeId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -114,11 +114,11 @@
           "Human Resources"
         ]
       },
-      "patch": {
+      "put": {
         "operationId": "EmployeeController_updateEmployee",
         "parameters": [
           {
-            "name": "employeeId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -554,7 +554,7 @@
       }
     },
     "/user/deactivate": {
-      "patch": {
+      "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_deactivateUser",
         "parameters": [],
@@ -597,7 +597,7 @@
       }
     },
     "/user/reactivate": {
-      "patch": {
+      "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_reactivateUser",
         "parameters": [],
@@ -672,7 +672,7 @@
         ]
       }
     },
-    "/mastertables/user_locations": {
+    "/mastertables/user-locations": {
       "get": {
         "operationId": "UserLocationController_getUserLocations",
         "parameters": [],
@@ -699,6 +699,47 @@
           }
         ],
         "summary": "Get all user locations",
+        "tags": [
+          "Mastertables"
+        ]
+      }
+    },
+    "/mastertables/user-locations/{id}": {
+      "get": {
+        "operationId": "UserLocationController_getUserLocation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the user location"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a user locations",
         "tags": [
           "Mastertables"
         ]
@@ -731,6 +772,47 @@
           }
         ],
         "summary": "Get Submodules",
+        "tags": [
+          "System Management"
+        ]
+      }
+    },
+    "/administrator/submodules/{id}": {
+      "get": {
+        "operationId": "SubModuleController_getSubmodule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "status: Success!"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a Submodule",
         "tags": [
           "System Management"
         ]
@@ -865,8 +947,8 @@
         ]
       }
     },
-    "/administrator/submodule/permissions/edit/{id}": {
-      "patch": {
+    "/administrator/submodule/{id}": {
+      "put": {
         "operationId": "SubModuleController_updatePermission",
         "parameters": [
           {
@@ -949,49 +1031,7 @@
         ]
       }
     },
-    "/administrator/module": {
-      "post": {
-        "operationId": "ModuleController_createModule",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateModuleDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Module created successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Create a new Module",
-        "tags": [
-          "System Management"
-        ]
-      }
-    },
-    "/administrator/module/view/{id}": {
+    "/administrator/module/{id}": {
       "get": {
         "operationId": "ModuleController_getModule",
         "parameters": [
@@ -1030,10 +1070,8 @@
         "tags": [
           "System Management"
         ]
-      }
-    },
-    "/administrator/module/view/edit/{id}": {
-      "patch": {
+      },
+      "put": {
         "operationId": "ModuleController_updateModule",
         "parameters": [
           {
@@ -1084,9 +1122,51 @@
         ]
       }
     },
+    "/administrator/module": {
+      "post": {
+        "operationId": "ModuleController_createModule",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateModuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Module created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new Module",
+        "tags": [
+          "System Management"
+        ]
+      }
+    },
     "/administrator/roles": {
       "get": {
-        "operationId": "RoleController_getAllRole",
+        "operationId": "RoleController_getRoles",
         "parameters": [],
         "responses": {
           "200": {
@@ -1114,9 +1194,7 @@
         "tags": [
           "System Management"
         ]
-      }
-    },
-    "/administrator/role": {
+      },
       "post": {
         "operationId": "RoleController_createRole",
         "parameters": [],
@@ -1153,6 +1231,47 @@
           }
         ],
         "summary": "Create new role",
+        "tags": [
+          "System Management"
+        ]
+      }
+    },
+    "/administrator/roles/{id}": {
+      "get": {
+        "operationId": "RoleController_getRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Role"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a role",
         "tags": [
           "System Management"
         ]
@@ -1198,10 +1317,21 @@
         "tags": [
           "System Management"
         ]
-      },
-      "patch": {
+      }
+    },
+    "/administrator/role_permission/{id}": {
+      "put": {
         "operationId": "RoleController_updateRolePermissions",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -1235,42 +1365,6 @@
           }
         ],
         "summary": "Updating current permission to role",
-        "tags": [
-          "System Management"
-        ]
-      }
-    },
-    "/administrator/{subModulePermissionId}/permissions": {
-      "get": {
-        "operationId": "RoleController_getPermissions",
-        "parameters": [
-          {
-            "name": "subModuleId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "name": "status",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "tags": [
           "System Management"
         ]
@@ -1349,12 +1443,12 @@
         ]
       }
     },
-    "/mastertables/employment_status/{employmentStatusId}": {
+    "/mastertables/employment_status/{id}": {
       "get": {
         "operationId": "EmploymentStatusController_getEmployeeStat",
         "parameters": [
           {
-            "name": "employmentStatusId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -1388,14 +1482,12 @@
         "tags": [
           "Mastertables"
         ]
-      }
-    },
-    "/mastertables/employment_status/update/{employmentStatusId}": {
-      "patch": {
+      },
+      "put": {
         "operationId": "EmploymentStatusController_updateEmployeeStatus",
         "parameters": [
           {
-            "name": "employmentStatusId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -1442,7 +1534,7 @@
       }
     },
     "/administrator/security_clearance/{id}": {
-      "patch": {
+      "put": {
         "description": "This endpoint requires a minimun security clearance of level 9.",
         "operationId": "SecurityClearanceController_updateClearance",
         "parameters": [
@@ -1774,12 +1866,12 @@
         ]
       }
     },
-    "/mastertables/positions/{positionId}": {
+    "/mastertables/positions/{id}": {
       "get": {
         "operationId": "PositionController_getPosition",
         "parameters": [
           {
-            "name": "positionId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -1814,11 +1906,11 @@
           "Mastertables"
         ]
       },
-      "patch": {
+      "put": {
         "operationId": "PositionController_updatePosition",
         "parameters": [
           {
-            "name": "positionId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -1938,12 +2030,12 @@
         ]
       }
     },
-    "/mastertables/departments/{departmentId}": {
+    "/mastertables/departments/{id}": {
       "get": {
         "operationId": "DepartmentController_getDepartment",
         "parameters": [
           {
-            "name": "departmentId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -1978,11 +2070,11 @@
           "Mastertables"
         ]
       },
-      "patch": {
+      "put": {
         "operationId": "DepartmentController_updateDepartment",
         "parameters": [
           {
-            "name": "departmentId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -2102,12 +2194,12 @@
         ]
       }
     },
-    "/mastertables/companies/{companyId}": {
+    "/mastertables/companies/{id}": {
       "get": {
         "operationId": "CompanyController_getCompany",
         "parameters": [
           {
-            "name": "companyId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -2142,11 +2234,11 @@
           "Mastertables"
         ]
       },
-      "patch": {
+      "put": {
         "operationId": "CompanyController_updateCompany",
         "parameters": [
           {
-            "name": "companyId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -2266,12 +2358,12 @@
         ]
       }
     },
-    "/mastertables/divisions/{divisionId}": {
+    "/mastertables/divisions/{id}": {
       "get": {
         "operationId": "DivisionController_getDivision",
         "parameters": [
           {
-            "name": "divisionId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -2305,8 +2397,10 @@
         "tags": [
           "Mastertables"
         ]
-      },
-      "patch": {
+      }
+    },
+    "/mastertables/divisions/{divisionId}": {
+      "put": {
         "operationId": "DivisionController_updateDivision",
         "parameters": [
           {
@@ -2391,7 +2485,7 @@
     },
     "/permission_template": {
       "get": {
-        "operationId": "PermissionTemplateController_getAllPermissionTemplate",
+        "operationId": "PermissionTemplateController_getPermissionTemplates",
         "parameters": [],
         "responses": {
           "200": {
@@ -2462,12 +2556,12 @@
         ]
       }
     },
-    "/permission_template/{permissionTemplateId}": {
+    "/permission_template/{id}": {
       "get": {
         "operationId": "PermissionTemplateController_getPermissionTemplate",
         "parameters": [
           {
-            "name": "permissionTemplateId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -2502,11 +2596,11 @@
           "Manager"
         ]
       },
-      "patch": {
+      "put": {
         "operationId": "PermissionTemplateController_updatePermissionTemplate",
         "parameters": [
           {
-            "name": "permissionTemplateId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
@@ -2710,50 +2804,6 @@
       }
     },
     "schemas": {
-      "UpdatePersonDto": {
-        "type": "object",
-        "properties": {
-          "civil_status": {
-            "type": "string",
-            "enum": [
-              "single",
-              "married",
-              "separated",
-              "widowed"
-            ],
-            "example": "single",
-            "description": "Civil Status of the employee"
-          },
-          "email": {
-            "type": "string",
-            "example": "sample@gmail.com",
-            "description": "Email of the employee"
-          }
-        },
-        "required": [
-          "civil_status",
-          "email"
-        ]
-      },
-      "UpdateEmployeeDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateEmployeeWithDetailsDto": {
-        "type": "object",
-        "properties": {
-          "person": {
-            "$ref": "#/components/schemas/UpdatePersonDto"
-          },
-          "employee": {
-            "$ref": "#/components/schemas/UpdateEmployeeDto"
-          }
-        },
-        "required": [
-          "person",
-          "employee"
-        ]
-      },
       "CreatePersonDto": {
         "type": "object",
         "properties": {
@@ -2900,6 +2950,50 @@
           },
           "employee": {
             "$ref": "#/components/schemas/CreateEmployeeDto"
+          }
+        },
+        "required": [
+          "person",
+          "employee"
+        ]
+      },
+      "UpdatePersonDto": {
+        "type": "object",
+        "properties": {
+          "civil_status": {
+            "type": "string",
+            "enum": [
+              "single",
+              "married",
+              "separated",
+              "widowed"
+            ],
+            "example": "single",
+            "description": "Civil Status of the employee"
+          },
+          "email": {
+            "type": "string",
+            "example": "sample@gmail.com",
+            "description": "Email of the employee"
+          }
+        },
+        "required": [
+          "civil_status",
+          "email"
+        ]
+      },
+      "UpdateEmployeeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateEmployeeWithDetailsDto": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/UpdatePersonDto"
+          },
+          "employee": {
+            "$ref": "#/components/schemas/UpdateEmployeeDto"
           }
         },
         "required": [
@@ -3152,11 +3246,6 @@
       "UpdateModuleDto": {
         "type": "object",
         "properties": {
-          "module_id": {
-            "type": "number",
-            "example": 1,
-            "description": "The id of the module to update"
-          },
           "name": {
             "type": "string",
             "example": "New module name",
@@ -3164,7 +3253,6 @@
           }
         },
         "required": [
-          "module_id",
           "name"
         ]
       },
@@ -3236,11 +3324,6 @@
       "UpdateRolePermissionsDto": {
         "type": "object",
         "properties": {
-          "role_id": {
-            "type": "number",
-            "example": "1",
-            "description": "The ID of the Role you want to update or add new permission"
-          },
           "action_updates": {
             "example": "[\"read\", \"update\", \"delete\", \"create\"]",
             "description": "User can add or update new permission for a current role",
@@ -3251,7 +3334,6 @@
           }
         },
         "required": [
-          "role_id",
           "action_updates"
         ]
       },
@@ -3372,11 +3454,6 @@
       "UpdateDepartmentDto": {
         "type": "object",
         "properties": {
-          "department_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the department you want to update"
-          },
           "department_name": {
             "type": "string",
             "example": "New Department name",
@@ -3399,7 +3476,6 @@
           }
         },
         "required": [
-          "department_id",
           "department_name",
           "sorting",
           "division",
@@ -3464,11 +3540,6 @@
       "UpdateCompanyDto": {
         "type": "object",
         "properties": {
-          "company_id": {
-            "type": "number",
-            "example": "1",
-            "description": "ID No. of the company"
-          },
           "name": {
             "type": "string",
             "example": "Avega Bros. Integrated Shipping Corp",
@@ -3511,7 +3582,6 @@
           }
         },
         "required": [
-          "company_id",
           "name",
           "address",
           "telephone_no",
@@ -3572,43 +3642,6 @@
           "status"
         ]
       },
-      "UpdatePermissionTemplateDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Accounting Clerk Template"
-          },
-          "department_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the department for this permission template"
-          },
-          "position_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the position for this permission template"
-          },
-          "role_permission_ids": {
-            "example": [
-              1,
-              2,
-              3
-            ],
-            "description": "List of role_permission IDs to associate with the template",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "name",
-          "department_id",
-          "position_id",
-          "role_permission_ids"
-        ]
-      },
       "CreatePermissionTemplateDto": {
         "type": "object",
         "properties": {
@@ -3663,6 +3696,43 @@
         "required": [
           "user_id",
           "template_id"
+        ]
+      },
+      "UpdatePermissionTemplateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Accounting Clerk Template"
+          },
+          "department_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the department for this permission template"
+          },
+          "position_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the position for this permission template"
+          },
+          "role_permission_ids": {
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "description": "List of role_permission IDs to associate with the template",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "department_id",
+          "position_id",
+          "role_permission_ids"
         ]
       }
     }

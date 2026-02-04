@@ -5,7 +5,7 @@ import {
   Body,
   Param,
   ParseIntPipe,
-  Patch,
+  Put
 } from '@nestjs/common';
 import { PermissionTemplateService } from './permission_template.service';
 import { Can } from 'src/components/decorators/can.decorator';
@@ -38,26 +38,24 @@ export class PermissionTemplateController {
   ) {}
 
   //get permission templates
-  @Get('')
+  @Get()
   @ApiOperation({ summary: 'Get permission templates' })
   @ApiGetResponse('Here are all the permission templates available')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
-  getAllPermissionTemplate(@SessionUser() user: RequestUser) {
-    return this.permissionTemplateService.getAllPermissionTemplate(user);
+  getPermissionTemplates(@SessionUser() user: RequestUser) {
+    return this.permissionTemplateService.getPermissionTemplates(user);
   }
 
   //get a permission template
-  @Get('/:permissionTemplateId')
+  @Get('/:id')
   @ApiOperation({ summary: 'Get a permission template' })
   @ApiGetResponse('Here is the permission template')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
   getPermissionTemplate(
-    @Param('permissionTemplateId', ParseIntPipe) permissionTemplateId: number,
+    @Param('id', ParseIntPipe) id: number,
     @SessionUser() user: RequestUser,
   ) {
-    return this.permissionTemplateService.getPermissionTemplate(
-      permissionTemplateId,
-      user,
+    return this.permissionTemplateService.getPermissionTemplate(id, user,
     );
   }
 
@@ -72,27 +70,6 @@ export class PermissionTemplateController {
   ) {
     return this.permissionTemplateService.getUserPermissionTemplate(
       userPermissionTemplateId,
-      user,
-    );
-  }
-
-  //update existing permission template information
-  @Patch('/:permissionTemplateId')
-  @ApiBody({
-    type: UpdatePermissionTemplateDto,
-    description: 'Payload to update Permission Template',
-  })
-  @ApiOperation({ summary: 'Get available permissin templates to user' })
-  @ApiPatchResponse('Permissin Template has been updated.')
-  @Can({ action: ACTION_UPDATE, subject: PERMISSION_TEMPLATE })
-  updatePermissionTemplate(
-    @Body() dto: UpdatePermissionTemplateDto,
-    @Param('permissionTemplateId', ParseIntPipe) permissionTemplateId: number,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.permissionTemplateService.updatePermissionTemplate(
-      permissionTemplateId,
-      dto,
       user,
     );
   }
@@ -128,5 +105,23 @@ export class PermissionTemplateController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.permissionTemplateService.assignTemplateToUser(dto, user);
+  }
+
+  //update existing permission template information
+  @Put('/:id')
+  @ApiBody({
+    type: UpdatePermissionTemplateDto,
+    description: 'Payload to update Permission Template',
+  })
+  @ApiOperation({ summary: 'Get available permissin templates to user' })
+  @ApiPatchResponse('Permissin Template has been updated.')
+  @Can({ action: ACTION_UPDATE, subject: PERMISSION_TEMPLATE })
+  updatePermissionTemplate(
+    @Body() dto: UpdatePermissionTemplateDto,
+    @Param('id', ParseIntPipe) id: number,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.permissionTemplateService.updatePermissionTemplate(id, dto, user,
+    );
   }
 }

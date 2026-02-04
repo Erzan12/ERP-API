@@ -4,7 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
+  Put,
   Post,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -38,19 +38,19 @@ export class PositionController {
   @ApiGetResponse('List of positions retrieve')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   getPositions(@SessionUser() user: RequestUser) {
-    return this.positionService.getAllPositions(user);
+    return this.positionService.getPositions(user);
   }
 
   //get single position
-  @Get('positions/:positionId')
+  @Get('positions/:id')
   @ApiOperation({ summary: 'Get a position.' })
   @ApiGetResponse('Here is the position.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getPosition(
-    @Param('positionId', ParseIntPipe) positionId: number,
+    @Param('id', ParseIntPipe) id: number,
     @SessionUser() user: RequestUser,
   ) {
-    return this.positionService.getPosition(positionId, user);
+    return this.positionService.getPosition(id, user);
   }
 
   @Post('positions')
@@ -65,12 +65,10 @@ export class PositionController {
     @Body() createPositionDto: CreatePositionDto,
     @SessionUser() user: RequestUser,
   ) {
-    console.log('createPositionDto:', createPositionDto);
-    console.log('stat:', createPositionDto.stat);
     return this.positionService.createPosition(createPositionDto, user);
   }
 
-  @Patch('positions/:positionId')
+  @Put('positions/:id')
   @ApiBody({
     type: UpdatePositionDto,
     description: 'Payload to update Position information',
@@ -79,12 +77,12 @@ export class PositionController {
   @ApiPatchResponse('Position updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updatePosition(
-    @Param('positionId', ParseIntPipe) positionId: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updatePositionDto: UpdatePositionDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.positionService.updatePosition(
-      positionId,
+      id,
       updatePositionDto,
       user,
     );

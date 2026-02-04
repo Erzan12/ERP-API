@@ -43,7 +43,7 @@ export class AuditController {
     @ApiOperation({ summary: 'Get audit history fo ra specific resource' })
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL})
-    async getResourceHistory(
+    getResourceHistory(
         @Param('resource') resource: string,
         @Param('id', ParseIntPipe) id: number,
     ) {
@@ -54,7 +54,7 @@ export class AuditController {
     @ApiOperation({ summary: 'Get user activity report' })
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
-    async getUserActivity(
+    getUserActivity(
         @Param('id', ParseIntPipe) userId: number,
         @Query('days') days?: number,
     ) {
@@ -63,7 +63,7 @@ export class AuditController {
 
     @Get('my-activity')
     @ApiOperation({ summary: 'Get own activity report' })
-    async getMyActivity(
+    getMyActivity(
         @SessionUser() user: RequestUser,
         @Query('days') days?: number,
     ) {

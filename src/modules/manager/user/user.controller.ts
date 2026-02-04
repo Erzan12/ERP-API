@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Get, Patch } from '@nestjs/common';
+import { Controller, Body, Post, Get, Put } from '@nestjs/common';
 import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-permission.dto';
 import { UserService } from './user.service';
 import { RequestUser } from 'src/components/types/request-user.interface';
@@ -136,7 +136,7 @@ export class UserController {
     return this.userService.createUserAccount(createUserWithTemplateDto, user);
   }
 
-  @Patch('deactivate')
+  @Put('deactivate')
   @ApiOperation({ summary: 'Deactivate the user account' })
   @ApiDeactivateResponse('User account deactivated successfully')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -151,7 +151,7 @@ export class UserController {
     );
   }
 
-  @Patch('reactivate')
+  @Put('reactivate')
   @ApiOperation({ summary: 'Reactivate the user account' })
   @ApiActivateResponse('User account reactivated successfully')
   @ApiSecurityClearance(SEC_LVL_5)

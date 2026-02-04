@@ -1,4 +1,4 @@
-import { Body, Param, Patch, Controller } from '@nestjs/common';
+import { Body, Param, Put, Controller } from '@nestjs/common';
 import { UpdateSecurityClearanceDto } from './dto/update-security-clearance.dto';
 import { Can } from 'src/components/decorators/can.decorator';
 import { SecurityClearanceService } from './security-clearance.service';
@@ -18,7 +18,7 @@ import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 export class SecurityClearanceController {
   constructor(private clearanceService: SecurityClearanceService) {}
 
-  @Patch('/security_clearance/:id')
+  @Put('/security_clearance/:id')
   @ApiOperation({ summary: 'Assign the security clearance level for user' })
   @ApiSecurityClearance(SEC_LVL_9)
   @SecurityClearance(SEC_LVL_9) // admin must be 9+ to update others
