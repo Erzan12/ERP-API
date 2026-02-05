@@ -745,6 +745,20 @@
         ]
       }
     },
+    "/": {
+      "get": {
+        "operationId": "LandingController_renderLanding",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Landing"
+        ]
+      }
+    },
     "/administrator/system-management": {
       "get": {
         "operationId": "SubModuleController_getSubmodules",
@@ -2763,18 +2777,6 @@
     {
       "name": "Human Resources",
       "description": "Managing lifecycle of employees"
-    },
-    {
-      "name": "Home",
-      "description": ""
-    },
-    {
-      "name": "Profile",
-      "description": ""
-    },
-    {
-      "name": "Protected",
-      "description": ""
     }
   ],
   "servers": [],

@@ -1,0 +1,95 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+header {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+/* .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+} */
+
+/* Center everything and create 3 columns */
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  gap: 2rem; /* space between cards */
+  max-width: 1200px; /* limit width */
+  margin: 3rem auto; /* center horizontally with top margin */
+  padding: 0 1rem; /* small side padding for mobile */
+}
+
+.card {
+  background: #1e293b;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  /* border-color: #38bdf8; */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+.card-icon {
+  width: 40px;       /* adjust as needed */
+  height: 40px;      /* adjust as needed */
+  margin-bottom: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Small hint under the card */
+.click-hint {
+  font-size: 0.8rem;
+  color: #a5b4fc;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+.click-link {
+  font-size: 0.8rem;
+  color: #a5b4fc;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+footer {
+  text-align: center;
+  padding: 2rem;
+}
+
+
+/* Make it responsive: 2 columns on medium screens */
+@media (max-width: 992px) {
+  .container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Make it 1 column on small screens */
+@media (max-width: 600px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+}
