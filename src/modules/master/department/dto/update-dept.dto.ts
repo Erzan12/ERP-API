@@ -4,14 +4,6 @@ import { Expose, Transform } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsString, IsDefined } from 'class-validator';
 
 export class UpdateDepartmentDto {
-  @IsInt()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 1,
-    description: 'ID of the department you want to update',
-  })
-  department_id: number;
-
   @IsString()
   @ApiProperty({
     example: 'New Department name',

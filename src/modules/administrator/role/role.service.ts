@@ -2,6 +2,8 @@ import {
   Injectable,
   BadRequestException,
   ForbiddenException,
+  ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -17,7 +19,7 @@ export class RoleService {
   constructor(private prisma: PrismaService) {}
 
   //Add Get Role -> to query the roles available
-  async getAllRole(user: RequestUser) {
+  async getRoles(user: RequestUser) {
     const existingRoles = await this.prisma.role.findMany({
       where: { stat: 1 },
       include: {
@@ -34,6 +36,27 @@ export class RoleService {
       message: 'Here are the list of Roles',
       data: {
         existingRoles,
+      },
+    };
+  }
+
+  async getRole(id: number, user: RequestUser) {
+    const role = await this.prisma.role.findUnique({
+      where: { id },
+      include: {
+        role_permissions: true,
+      },
+    });
+
+    if (!role) {
+      throw new NotFoundException('Role does not exist')
+    };
+
+    return {
+      status: 'success',
+      message: 'Here is the Role',
+      data: {
+        role,
       },
     };
   }
@@ -187,13 +210,14 @@ export class RoleService {
   }
 
   async updateRolePermissions(
+    id: number,
     updateRolePermissionsDto: UpdateRolePermissionsDto,
     user,
   ) {
-    const { role_id, action_updates = [] } = updateRolePermissionsDto;
+    const { action_updates = [] } = updateRolePermissionsDto;
 
     const existingRole = await this.prisma.role.findUnique({
-      where: { id: role_id },
+      where: { id },
       include: {
         role_permissions: true,
       },

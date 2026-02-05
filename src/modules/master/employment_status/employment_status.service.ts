@@ -8,10 +8,23 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 export class EmploymentStatusService {
   constructor(private prisma: PrismaService) {}
 
+  //get all employee_status
+  async getEmployeeStats(user: RequestUser) {
+    const existingEmpStat = await this.prisma.employmentStatus.findMany();
+
+    const formattedEmpStat = existingEmpStat.map((employmentStatus) => ({
+      emp_stat_id: employmentStatus.id,
+      code: employmentStatus.code,
+      label: employmentStatus.label,
+    }));
+
+    return formattedEmpStat;
+  }
+
   //get a single employee_status
-  async getEmpStatus(employeeStatusId: number, user: RequestUser) {
+  async getEmployeeStat(id: number, user: RequestUser) {
     const employeeStatus = await this.prisma.employmentStatus.findUnique({
-      where: { id: employeeStatusId },
+      where: { id },
     });
 
     if (!employeeStatus) {
@@ -27,20 +40,9 @@ export class EmploymentStatusService {
     };
   }
 
-  //get all employee_status
-  async getEmpStat(user: RequestUser) {
-    const existingEmpStat = await this.prisma.employmentStatus.findMany();
 
-    const formattedEmpStat = existingEmpStat.map((employmentStatus) => ({
-      emp_stat_id: employmentStatus.id,
-      code: employmentStatus.code,
-      label: employmentStatus.label,
-    }));
 
-    return formattedEmpStat;
-  }
-
-  async createEmpStat(
+  async createEmployeeStatus(
     empStatusDto: CreateEmployeeStatusDto,
     user: RequestUser,
   ) {
@@ -70,15 +72,15 @@ export class EmploymentStatusService {
     };
   }
 
-  async updateEmpStat(
-    employmentStatusId: number,
+  async updateEmployeeStatus(
+    id: number,
     updateEmpStatusDto: UpdateEmpStatusDto,
     user: RequestUser,
   ) {
     const { code, label } = updateEmpStatusDto;
 
     const employment_status = await this.prisma.employmentStatus.findUnique({
-      where: { id: employmentStatusId },
+      where: { id },
     });
 
     if (!employment_status) {
@@ -86,7 +88,7 @@ export class EmploymentStatusService {
     }
 
     const updateEmpStat = await this.prisma.employmentStatus.update({
-      where: { id: employmentStatusId },
+      where: { id },
       data: {
         code,
         label,

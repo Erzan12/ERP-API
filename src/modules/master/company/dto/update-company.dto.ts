@@ -10,14 +10,6 @@ import {
 } from 'class-validator';
 
 export class UpdateCompanyDto {
-  @IsInt()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: '1',
-    description: 'ID No. of the company',
-  })
-  company_id: number;
-
   @IsString()
   @IsNotEmpty()
   @ApiProperty({

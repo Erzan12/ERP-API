@@ -1,21 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
-  IsInt,
   IsNotEmpty,
   IsArray,
   ArrayNotEmpty,
 } from 'class-validator';
 
 export class UpdateRolePermissionsDto {
-  @IsInt()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: '1',
-    description: 'The ID of the Role you want to update or add new permission',
-  })
-  role_id: number;
-
   @IsString({ each: true })
   @IsNotEmpty()
   @IsArray()

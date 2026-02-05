@@ -10,9 +10,8 @@ export class PermissionTemplateService {
   constructor(private prisma: PrismaService) {}
 
   //get permission template
-  async getAllPermissionTemplate(user: RequestUser) {
-    const existingPermTemplate =
-      await this.prisma.permissionTemplate.findMany();
+  async getPermissionTemplates(user: RequestUser) {
+    const existingPermTemplate = await this.prisma.permissionTemplate.findMany();
 
     if (existingPermTemplate.length === 0) {
       throw new BadRequestException(
@@ -30,9 +29,9 @@ export class PermissionTemplateService {
   }
 
   //get a permission template
-  async getPermissionTemplate(permissionTemplateId: number, user: RequestUser) {
+  async getPermissionTemplate(id: number, user: RequestUser) {
     const permissionTemplate = await this.prisma.permissionTemplate.findUnique({
-      where: { id: permissionTemplateId },
+      where: { id },
     });
 
     if (!permissionTemplate) {
@@ -106,16 +105,13 @@ export class PermissionTemplateService {
   }
 
   //update existing permission template
-  async updatePermissionTemplate(
-    permissionTemplateId: number,
-    dto: UpdatePermissionTemplateDto,
-    user: RequestUser,
+  async updatePermissionTemplate(id: number, dto: UpdatePermissionTemplateDto, user: RequestUser,
   ) {
     return this.prisma.$transaction(async (tx) => {
       const { name, department_id, position_id, role_permission_ids } = dto;
 
       const existing = await tx.permissionTemplate.findUnique({
-        where: { id: permissionTemplateId },
+        where: { id },
         include: {
           departments: true,
           role_permissions: true,
@@ -129,7 +125,7 @@ export class PermissionTemplateService {
       // Prevent duplicate names
       if (name && name !== existing.name) {
         const duplicate = await tx.permissionTemplate.findFirst({
-          where: { name, NOT: { id: permissionTemplateId } },
+          where: { name, NOT: { id } },
         });
 
         if (duplicate) {
@@ -141,7 +137,7 @@ export class PermissionTemplateService {
 
       // 1. Update template base info
       const updatedTemplate = await tx.permissionTemplate.update({
-        where: { id: permissionTemplateId },
+        where: { id },
         data: {
           name,
           department_id,
@@ -151,7 +147,7 @@ export class PermissionTemplateService {
       // 2. Handle department/position record
       // Remove old dept/position associations
       await tx.permissionTemplateDepartment.deleteMany({
-        where: { permission_template_id: permissionTemplateId },
+        where: { permission_template_id: id},
       });
 
       //default the existing values of posId and deptId
@@ -163,7 +159,7 @@ export class PermissionTemplateService {
 
       const ptDept = await tx.permissionTemplateDepartment.create({
         data: {
-          permission_template_id: permissionTemplateId,
+          permission_template_id: id,
           department_id: departmentIdToUse,
           position_id: positionIdToUse,
           user_id: user.id,
@@ -173,7 +169,7 @@ export class PermissionTemplateService {
       // 3. Remove old role-permission relations
       await tx.permissionTemplateRolePermission.deleteMany({
         where: {
-          permission_template_id: permissionTemplateId,
+          permission_template_id: id,
         },
       });
 
@@ -190,7 +186,7 @@ export class PermissionTemplateService {
       for (const rp of rolePermissions) {
         await tx.permissionTemplateRolePermission.create({
           data: {
-            permission_template_id: permissionTemplateId,
+            permission_template_id: id,
             role_permission_id: rp.id,
             permission_template_department_id: ptDept.id,
           },

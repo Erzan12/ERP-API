@@ -14,9 +14,9 @@ export class DivisionService {
   constructor(private prisma: PrismaService) {}
 
   //query single division
-  async getDivision(divisionId: number, user: RequestUser) {
+  async getDivision(id: number, user: RequestUser) {
     const division = await this.prisma.division.findUnique({
-      where: { id: divisionId },
+      where: { id },
     });
 
     if (!division) {
@@ -33,7 +33,7 @@ export class DivisionService {
   }
 
   //query all available divisions
-  async getAllDivisions(user: RequestUser) {
+  async getDivisions(user: RequestUser) {
     const division = await this.prisma.department.findMany();
 
     if (!division) {
