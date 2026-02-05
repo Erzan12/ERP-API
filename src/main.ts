@@ -22,7 +22,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('ABAS v3 API')
-    .setDescription('API documentation for ABAS v3 project')
+    .setDescription('Enterprise Resource Planning API for ABAS v3 project')
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -41,12 +41,12 @@ async function bootstrap() {
       in: 'header',
       description: 'Required security clearance level (documentational only).',
     })
-    .addTag('Authentication', 'Endpoint for user authorization.') // change or add more tags based on your modules
-    .addTag('Administrator', 'Endppoint for managing the system') // change or add more tags based on your modules
-    .addTag('System Management', 'Administer modules, submodules, and role permissions',)
-    .addTag('Manager', 'Enpoint for Manager managing users account, tokens.') // change or add more tags based on your modules
-    .addTag('Human Resources', 'Endpoint for managing employees.') // change or add more tags based on your modules
-    .addTag('Mastertables', 'Endpoint for managing positions, departments and etc.',) // change or add more tags based on your modules
+    .addTag('Authentication', 'Manage user auth and login') // change or add more tags based on your modules
+    .addTag('Admin - Security & Audit', 'Manage audit trails and security clearance level') // change or add more tags based on your modules
+    .addTag('Admin - System Management', 'Administer modules, submodules, and role permissions',)
+    .addTag('Admin - Mastertables', 'Manage organization structure such as companies, departments and etc.',) // change or add more tags based on your modules
+    .addTag('Manager', 'Manager managing users account, tokens etc.') // change or add more tags based on your modules
+    .addTag('Human Resources', 'Managing lifecycle of employees') // change or add more tags based on your modules
     .addTag('Home') // change or add more tags based on your modules
     .addTag('Profile') // change or add more tags based on your modules
     .addTag('Protected') // change or add more tags based on your modules

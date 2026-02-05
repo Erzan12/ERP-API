@@ -22,8 +22,8 @@ import {
 import { ApiGetResponse } from 'src/components/helpers/swagger-response.helper';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Mastertables')
-@Controller('mastertables')
+@ApiTags('Admin - Mastertables')
+@Controller('administrator/mastertables')
 export class UserLocationController {
   constructor(private userLocationService: UserLocationService) {}
 

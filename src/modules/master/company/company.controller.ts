@@ -27,8 +27,8 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Mastertables')
-@Controller('mastertables')
+@ApiTags('Admin - Mastertables')
+@Controller('administrator/mastertables')
 export class CompanyController {
   constructor(private companyService: CompanyService) {}
 

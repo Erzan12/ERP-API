@@ -32,8 +32,8 @@ import {
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @ApiBearerAuth('access-token')
-@ApiTags('System Management')
-@Controller('administrator')
+@ApiTags('Admin - System Management')
+@Controller('administrator/')
 export class RoleController {
   constructor(
     private roleService: RoleService,
@@ -73,7 +73,7 @@ export class RoleController {
   }
 
   //add role permisison -> combining created role with submodule embedded permissions -> and this role permission can be assigned to a user
-  @Post('role_permission')
+  @Put('roles/role_permission')
   @ApiOperation({ summary: 'Adding permission to role' })
   @ApiPostResponse('Permissions added to role')
   @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
@@ -88,7 +88,7 @@ export class RoleController {
   }
 
   //update role permission
-  @Put('role_permission/:id')
+  @Put('roles/role_permission/:id')
   @ApiOperation({ summary: 'Updating current permission to role' })
   @ApiPatchResponse('Permissions updated to role')
   @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc

@@ -672,7 +672,7 @@
         ]
       }
     },
-    "/mastertables/user-locations": {
+    "/administrator/mastertables/user-locations": {
       "get": {
         "operationId": "UserLocationController_getUserLocations",
         "parameters": [],
@@ -700,11 +700,11 @@
         ],
         "summary": "Get all user locations",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/mastertables/user-locations/{id}": {
+    "/administrator/mastertables/user-locations/{id}": {
       "get": {
         "operationId": "UserLocationController_getUserLocation",
         "parameters": [
@@ -741,11 +741,11 @@
         ],
         "summary": "Get a user locations",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/administrator/submodules": {
+    "/administrator/system-management": {
       "get": {
         "operationId": "SubModuleController_getSubmodules",
         "parameters": [],
@@ -773,52 +773,9 @@
         ],
         "summary": "Get Submodules",
         "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
-      }
-    },
-    "/administrator/submodules/{id}": {
-      "get": {
-        "operationId": "SubModuleController_getSubmodule",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "status: Success!"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Get a Submodule",
-        "tags": [
-          "System Management"
-        ]
-      }
-    },
-    "/administrator/submodule": {
+      },
       "post": {
         "operationId": "SubModuleController_createSubModule",
         "parameters": [],
@@ -857,28 +814,26 @@
         ],
         "summary": "Create a new Submodule",
         "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
       }
     },
-    "/administrator/submodule/permission": {
-      "post": {
-        "operationId": "SubModuleController_createSubModulePermission",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to assign permissions for submodule",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AssignSubModulePermissionDto"
-              }
+    "/administrator/system-management/{id}": {
+      "get": {
+        "operationId": "SubModuleController_getSubmodule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
-            "description": "Permission assigned to a submodule successfully"
+            "description": "status: Success!"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -889,8 +844,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           }
         },
         "security": [
@@ -898,56 +853,11 @@
             "access-token": []
           }
         ],
-        "summary": "Assign a new permission for submodule",
+        "summary": "Get a Submodule",
         "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
-      }
-    },
-    "/administrator/submodule/permissions": {
-      "post": {
-        "operationId": "SubModuleController_createPermission",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to create permissions for submodule",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddSubModulePermissionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Permission created successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Create a new permission for submodule",
-        "tags": [
-          "System Management"
-        ]
-      }
-    },
-    "/administrator/submodule/{id}": {
+      },
       "put": {
         "operationId": "SubModuleController_updatePermission",
         "parameters": [
@@ -995,11 +905,95 @@
         ],
         "summary": "Update a current sub module permission",
         "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
       }
     },
-    "/administrator/modules": {
+    "/administrator/system-management/permissions": {
+      "post": {
+        "operationId": "SubModuleController_createPermission",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create permissions for submodule",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSubModulePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permission created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new permission for submodule",
+        "tags": [
+          "Admin - System Management"
+        ]
+      },
+      "put": {
+        "operationId": "SubModuleController_createSubModulePermission",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to assign permissions for submodule",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignSubModulePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permission assigned to a submodule successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Assign a new permission for submodule",
+        "tags": [
+          "Admin - System Management"
+        ]
+      }
+    },
+    "/administrator/system-management/modules": {
       "get": {
         "operationId": "ModuleController_getModules",
         "parameters": [],
@@ -1027,11 +1021,51 @@
         ],
         "summary": "Get modules",
         "tags": [
-          "System Management"
+          "Admin - System Management"
+        ]
+      },
+      "post": {
+        "operationId": "ModuleController_createModule",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateModuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Module created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new Module",
+        "tags": [
+          "Admin - System Management"
         ]
       }
     },
-    "/administrator/module/{id}": {
+    "/administrator/system-management/modules/{id}": {
       "get": {
         "operationId": "ModuleController_getModule",
         "parameters": [
@@ -1068,7 +1102,7 @@
         ],
         "summary": "Get module by ID",
         "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
       },
       "put": {
@@ -1118,49 +1152,7 @@
         ],
         "summary": "Update current module",
         "tags": [
-          "System Management"
-        ]
-      }
-    },
-    "/administrator/module": {
-      "post": {
-        "operationId": "ModuleController_createModule",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateModuleDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Module created successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Create a new Module",
-        "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
       }
     },
@@ -1192,7 +1184,7 @@
         ],
         "summary": "Get all Roles",
         "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
       },
       "post": {
@@ -1232,7 +1224,7 @@
         ],
         "summary": "Create new role",
         "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
       }
     },
@@ -1273,12 +1265,12 @@
         ],
         "summary": "Get a role",
         "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
       }
     },
-    "/administrator/role_permission": {
-      "post": {
+    "/administrator/roles/role_permission": {
+      "put": {
         "operationId": "RoleController_createRolePermission",
         "parameters": [],
         "requestBody": {
@@ -1315,11 +1307,11 @@
         ],
         "summary": "Adding permission to role",
         "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
       }
     },
-    "/administrator/role_permission/{id}": {
+    "/administrator/roles/role_permission/{id}": {
       "put": {
         "operationId": "RoleController_updateRolePermissions",
         "parameters": [
@@ -1366,11 +1358,11 @@
         ],
         "summary": "Updating current permission to role",
         "tags": [
-          "System Management"
+          "Admin - System Management"
         ]
       }
     },
-    "/mastertables/employment_status": {
+    "/administrator/mastertables/employment_status": {
       "get": {
         "operationId": "EmploymentStatusController_getEmployeeStats",
         "parameters": [],
@@ -1398,7 +1390,7 @@
         ],
         "summary": "Get all employment status",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       },
       "post": {
@@ -1439,11 +1431,11 @@
         ],
         "summary": "Create new employee status.",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/mastertables/employment_status/{id}": {
+    "/administrator/mastertables/employment_status/{id}": {
       "get": {
         "operationId": "EmploymentStatusController_getEmployeeStat",
         "parameters": [
@@ -1480,7 +1472,7 @@
         ],
         "summary": "Get an employment status.",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       },
       "put": {
@@ -1529,11 +1521,11 @@
         ],
         "summary": "Updating employee status details.",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/administrator/security_clearance/{id}": {
+    "/administrator/security-audit/security_clearance/{id}": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 9.",
         "operationId": "SecurityClearanceController_updateClearance",
@@ -1569,11 +1561,11 @@
         ],
         "summary": "Assign the security clearance level for user",
         "tags": [
-          "Administrator"
+          "Admin - Security & Audit"
         ]
       }
     },
-    "/mastertables/dashboard": {
+    "/administrator/security-audit/dashboard": {
       "get": {
         "operationId": "DashboardController_getAdminDashboard",
         "parameters": [],
@@ -1601,11 +1593,11 @@
         ],
         "summary": "Summary of Users",
         "tags": [
-          "Mastertables"
+          "Admin - Security & Audit"
         ]
       }
     },
-    "/audit": {
+    "/administrator/security-audit/audit": {
       "get": {
         "operationId": "AuditController_getAuditLogs",
         "parameters": [
@@ -1686,11 +1678,11 @@
         ],
         "summary": "Get audit logs with filters",
         "tags": [
-          "Administrator"
+          "Admin - Security & Audit"
         ]
       }
     },
-    "/audit/resource/{resource}/{id}": {
+    "/administrator/security-audit/audit/resource/{resource}/{id}": {
       "get": {
         "operationId": "AuditController_getResourceHistory",
         "parameters": [
@@ -1723,11 +1715,11 @@
         ],
         "summary": "Get audit history fo ra specific resource",
         "tags": [
-          "Administrator"
+          "Admin - Security & Audit"
         ]
       }
     },
-    "/audit/user/{id}/activity": {
+    "/administrator/security-audit/audit/user/{id}/activity": {
       "get": {
         "operationId": "AuditController_getUserActivity",
         "parameters": [
@@ -1760,11 +1752,11 @@
         ],
         "summary": "Get user activity report",
         "tags": [
-          "Administrator"
+          "Admin - Security & Audit"
         ]
       }
     },
-    "/audit/my-activity": {
+    "/administrator/security-audit/audit/my-activity": {
       "get": {
         "operationId": "AuditController_getMyActivity",
         "parameters": [
@@ -1789,11 +1781,11 @@
         ],
         "summary": "Get own activity report",
         "tags": [
-          "Administrator"
+          "Admin - Security & Audit"
         ]
       }
     },
-    "/mastertables/positions": {
+    "/administrator/mastertables/positions": {
       "get": {
         "operationId": "PositionController_getPositions",
         "parameters": [],
@@ -1821,7 +1813,7 @@
         ],
         "summary": "Get all positions",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       },
       "post": {
@@ -1862,11 +1854,11 @@
         ],
         "summary": "Create a new position",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/mastertables/positions/{id}": {
+    "/administrator/mastertables/positions/{id}": {
       "get": {
         "operationId": "PositionController_getPosition",
         "parameters": [
@@ -1903,7 +1895,7 @@
         ],
         "summary": "Get a position.",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       },
       "put": {
@@ -1953,11 +1945,11 @@
         ],
         "summary": "Update a current position information",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/mastertables/departments": {
+    "/administrator/mastertables/departments": {
       "get": {
         "operationId": "DepartmentController_getDepartments",
         "parameters": [],
@@ -1985,7 +1977,7 @@
         ],
         "summary": "Get all departments",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       },
       "post": {
@@ -2026,11 +2018,11 @@
         ],
         "summary": "Create a new department",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/mastertables/departments/{id}": {
+    "/administrator/mastertables/departments/{id}": {
       "get": {
         "operationId": "DepartmentController_getDepartment",
         "parameters": [
@@ -2067,7 +2059,7 @@
         ],
         "summary": "Get a department",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       },
       "put": {
@@ -2117,11 +2109,11 @@
         ],
         "summary": "Update a current department information",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/mastertables/companies": {
+    "/administrator/mastertables/companies": {
       "get": {
         "operationId": "CompanyController_getCompanies",
         "parameters": [],
@@ -2149,7 +2141,7 @@
         ],
         "summary": "Get all companies",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       },
       "post": {
@@ -2190,11 +2182,11 @@
         ],
         "summary": "Create a new company",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/mastertables/companies/{id}": {
+    "/administrator/mastertables/companies/{id}": {
       "get": {
         "operationId": "CompanyController_getCompany",
         "parameters": [
@@ -2231,7 +2223,7 @@
         ],
         "summary": "Get a company",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       },
       "put": {
@@ -2281,11 +2273,11 @@
         ],
         "summary": "Update a current company information",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/mastertables/divisions": {
+    "/administrator/mastertables/divisions": {
       "get": {
         "operationId": "DivisionController_getDivisions",
         "parameters": [],
@@ -2313,7 +2305,7 @@
         ],
         "summary": "Get all divisions",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       },
       "post": {
@@ -2354,11 +2346,11 @@
         ],
         "summary": "Create a new division",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/mastertables/divisions/{id}": {
+    "/administrator/mastertables/divisions/{id}": {
       "get": {
         "operationId": "DivisionController_getDivision",
         "parameters": [
@@ -2395,11 +2387,11 @@
         ],
         "summary": "Get a division",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
-    "/mastertables/divisions/{divisionId}": {
+    "/administrator/mastertables/divisions/{divisionId}": {
       "put": {
         "operationId": "DivisionController_updateDivision",
         "parameters": [
@@ -2447,7 +2439,7 @@
         ],
         "summary": "Update a current division information",
         "tags": [
-          "Mastertables"
+          "Admin - Mastertables"
         ]
       }
     },
@@ -2743,34 +2735,34 @@
   },
   "info": {
     "title": "ABAS v3 API",
-    "description": "API documentation for ABAS v3 project",
+    "description": "Enterprise Resource Planning API for ABAS v3 project",
     "version": "1.0",
     "contact": {}
   },
   "tags": [
     {
       "name": "Authentication",
-      "description": "Endpoint for user authorization."
+      "description": "Manage user auth and login"
     },
     {
-      "name": "Administrator",
-      "description": "Endppoint for managing the system"
+      "name": "Admin - Security & Audit",
+      "description": "Manage audit trails and security clearance level"
     },
     {
-      "name": "System Management",
+      "name": "Admin - System Management",
       "description": "Administer modules, submodules, and role permissions"
     },
     {
+      "name": "Admin - Mastertables",
+      "description": "Manage organization structure such as companies, departments and etc."
+    },
+    {
       "name": "Manager",
-      "description": "Enpoint for Manager managing users account, tokens."
+      "description": "Manager managing users account, tokens etc."
     },
     {
       "name": "Human Resources",
-      "description": "Endpoint for managing employees."
-    },
-    {
-      "name": "Mastertables",
-      "description": "Endpoint for managing positions, departments and etc."
+      "description": "Managing lifecycle of employees"
     },
     {
       "name": "Home",
@@ -3161,28 +3153,6 @@
           "module_id"
         ]
       },
-      "AssignSubModulePermissionDto": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
-            "description": "Assign permissions to sub module, also can add multiple permissions at once",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "sub_module_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the Sub Module"
-          }
-        },
-        "required": [
-          "action",
-          "sub_module_id"
-        ]
-      },
       "AddSubModulePermissionDto": {
         "type": "object",
         "properties": {
@@ -3203,6 +3173,28 @@
         "required": [
           "action",
           "status"
+        ]
+      },
+      "AssignSubModulePermissionDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
+            "description": "Assign permissions to sub module, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sub_module_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the Sub Module"
+          }
+        },
+        "required": [
+          "action",
+          "sub_module_id"
         ]
       },
       "UpdateSubModulePermisisonDto": {

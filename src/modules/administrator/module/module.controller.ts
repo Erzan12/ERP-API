@@ -20,8 +20,8 @@ import {
 import { UpdateModuleDto } from './dto/update-module.dto';
 
 @ApiBearerAuth('access-token')
-@ApiTags('System Management')
-@Controller('administrator')
+@ApiTags('Admin - System Management')
+@Controller('administrator/system-management')
 export class ModuleController {
   constructor(private moduleService: ModuleService) {}
 
@@ -33,7 +33,7 @@ export class ModuleController {
     return this.moduleService.getModules(user);
   }
 
-  @Get('module/:id')
+  @Get('modules/:id')
   @ApiOperation({ summary: 'Get module by ID' })
   @ApiGetResponse('Details of the module with submodules')
   @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
@@ -44,7 +44,7 @@ export class ModuleController {
     return this.moduleService.getModule(user, id); // 👈 pass the id to your service
   }
 
-  @Post('module')
+  @Post('modules')
   @ApiOperation({ summary: 'Create a new Module' })
   @ApiPostResponse('Module created successfully')
   @Can({ action: 'create', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
@@ -55,7 +55,7 @@ export class ModuleController {
     return this.moduleService.createModule(createModuleDto, user);
   }
 
-  @Put('module/:id')
+  @Put('modules/:id')
   @ApiBody({
     type: UpdateModuleDto,
     description: 'Payload to update the module info',
@@ -70,9 +70,4 @@ export class ModuleController {
   ) {
     return this.moduleService.updateMod(updateModuleDto, user, id);
   }
-
-  // @Put()
-  // async updateModule({
-
-  // })
 }

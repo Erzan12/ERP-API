@@ -27,8 +27,8 @@ import {
 } from 'src/components/constants/ability.constant';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Mastertables')
-@Controller('mastertables')
+@ApiTags('Admin - Mastertables')
+@Controller('administrator/mastertables')
 export class DepartmentController {
   constructor(private departmentService: DepartmentService) {}
 

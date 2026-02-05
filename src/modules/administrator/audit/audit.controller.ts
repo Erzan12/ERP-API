@@ -8,12 +8,12 @@ import { SessionUser } from 'src/components/decorators/session-user.decorator';
 import { ACTION_READ, AUDIT_TRAIL, SEC_LVL_8 } from 'src/components/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Administrator')
-@Controller('audit')
+@ApiTags('Admin - Security & Audit')
+@Controller('administrator/security-audit')
 export class AuditController {
     constructor(private auditService: AuditService) {}
 
-    @Get()
+    @Get('audit')
     @ApiOperation({ summary: 'Get audit logs with filters' })
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
@@ -39,7 +39,7 @@ export class AuditController {
         });
     }
 
-    @Get('resource/:resource/:id')
+    @Get('audit/resource/:resource/:id')
     @ApiOperation({ summary: 'Get audit history fo ra specific resource' })
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL})
@@ -50,7 +50,7 @@ export class AuditController {
         return this.auditService.getResourceHistory(resource, id);
     }
 
-    @Get('user/:id/activity')
+    @Get('audit/user/:id/activity')
     @ApiOperation({ summary: 'Get user activity report' })
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
@@ -61,7 +61,7 @@ export class AuditController {
         return this.auditService.getUserActivity(userId, days);
     }
 
-    @Get('my-activity')
+    @Get('audit/my-activity')
     @ApiOperation({ summary: 'Get own activity report' })
     getMyActivity(
         @SessionUser() user: RequestUser,

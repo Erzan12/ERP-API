@@ -11,8 +11,8 @@ import {
 import { ApiGetResponse } from 'src/components/helpers/swagger-response.helper';
 
 @ApiBearerAuth('access-token') //matches the name used in .addBearerAuth()
-@ApiTags('Mastertables')
-@Controller('mastertables')
+@ApiTags('Admin - Security & Audit')
+@Controller('administrator/security-audit')
 export class DashboardController {
   constructor(private dashboardService: DashboardService) {}
 
