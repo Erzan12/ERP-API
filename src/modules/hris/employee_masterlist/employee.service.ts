@@ -200,7 +200,7 @@ export class EmployeeService {
   }
 
   //view employee masterlist
-  async getEmployeeMasterlist(user: RequestUser) {
+  async getEmployees(user: RequestUser) {
     // const hrViewEmployee = [ 'Human Resources' ].includes(user.role.name);
 
     // const hrViewEmployee = user.roles.some(
@@ -276,10 +276,10 @@ export class EmployeeService {
   //         }
   //     })
   // }
-  async getEmployee(employeeId: number, user: RequestUser) {
+  async getEmployee(id: number, user: RequestUser) {
     // 1. Find the employee
     const employee = await this.prisma.employee.findUnique({
-      where: { id: employeeId },
+      where: { id },
       include: {
         person: true, // fetch person details automatically
       },
@@ -311,14 +311,14 @@ export class EmployeeService {
   }
 
   async updateEmployee(
-    employeeId: number,
+    id: number,
     updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
     user: RequestUser,
   ) {
     return await this.prisma.$transaction(async (prisma) => {
       //1. check employee existence
       const employee = await prisma.employee.findUnique({
-        where: { id: employeeId },
+        where: { id },
         include: { person: true },
       });
 
@@ -355,7 +355,7 @@ export class EmployeeService {
       //4. update employee table
       const updatedEmployee = UpdateEmployeeDto
         ? await prisma.employee.update({
-            where: { id: employeeId },
+            where: { id },
             data: { ...UpdateEmployeeDto },
           })
         : null;

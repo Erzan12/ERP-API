@@ -28,7 +28,6 @@ import { CreatePositionDto } from './modules/master/position/dto/create-position
 import { DepartmentService } from './modules/master/department/department.service';
 import { MasterModule } from './modules/master/master.module';
 import { PositionService } from './modules/master/position/position.service';
-import { MasterController } from './modules/master/master.controller';
 import { EmployeeController } from './modules/hris/employee_masterlist/employee.controller';
 import { EmployeeService } from './modules/hris/employee_masterlist/employee.service';
 import { JwtStrategy } from './middleware/jwt/jwt.strategy';
@@ -93,7 +92,6 @@ import { PermissionsGuard } from './middleware/guards/permission.guard';
   ],
   controllers: [
     EmployeeController,
-    MasterController,
     HomeController,
     ProfileController,
     AuthController,

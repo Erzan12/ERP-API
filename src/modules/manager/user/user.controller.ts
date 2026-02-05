@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Get, Patch } from '@nestjs/common';
+import { Controller, Body, Post, Get, Put } from '@nestjs/common';
 import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-permission.dto';
 import { UserService } from './user.service';
 import { RequestUser } from 'src/components/types/request-user.interface';
@@ -48,7 +48,7 @@ export class UserController {
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
-  async viewUsers(@SessionUser() user: RequestUser) {
+  viewUsers(@SessionUser() user: RequestUser) {
     return this.userService.viewUserAccount(user);
   }
 
@@ -58,7 +58,7 @@ export class UserController {
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
-  async getMyPermissions(@SessionUser() user: RequestUser) {
+  getMyPermissions(@SessionUser() user: RequestUser) {
     return this.userService.getUserPermissions(user.id);
   }
 
@@ -73,7 +73,7 @@ export class UserController {
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
-  async createUser(
+  createUser(
     @Body() createUserWithRolePermissionDto: CreateUserWithRolePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -90,7 +90,7 @@ export class UserController {
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
-  async addRolePermission(
+  addRolePermission(
     @Body() addUserRolePermissionsDto: AddUserRolePermissionsDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -112,7 +112,7 @@ export class UserController {
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_CREATE, subject: USER_TOKEN_KEY })
-  async newResetToken(
+  newResetToken(
     @Body() userEmailResetTokenDto: UserEmailResetTokenDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -129,19 +129,19 @@ export class UserController {
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: USER_TOKEN_KEY })
-  async viewUserKeys(
+  viewUserKeys(
     @Body() createUserWithTemplateDto: CreateUserWithRolePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.userService.createUserAccount(createUserWithTemplateDto, user);
   }
 
-  @Patch('deactivate')
+  @Put('deactivate')
   @ApiOperation({ summary: 'Deactivate the user account' })
   @ApiDeactivateResponse('User account deactivated successfully')
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
-  async deactivateUser(
+  deactivateUser(
     @Body() deactivateUserAccountDto: DeactivateUserAccountDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -151,12 +151,12 @@ export class UserController {
     );
   }
 
-  @Patch('reactivate')
+  @Put('reactivate')
   @ApiOperation({ summary: 'Reactivate the user account' })
   @ApiActivateResponse('User account reactivated successfully')
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
-  async reactivateUser(
+  reactivateUser(
     @Body() reactivateUserAccountDto: ReactivateUserAccountDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -171,7 +171,7 @@ export class UserController {
   @ApiGetResponse('Here are the list of new employees without user accounts')
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
-  async viewNewEmployees(@SessionUser() user: RequestUser) {
+  viewNewEmployees(@SessionUser() user: RequestUser) {
     return this.userService.viewNewEmployeeWithoutUserAccount(user);
   }
 

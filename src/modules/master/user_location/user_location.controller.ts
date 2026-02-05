@@ -3,7 +3,7 @@ import {
   Controller,
   Param,
   ParseIntPipe,
-  Patch,
+  Put,
   Post,
   Get,
 } from '@nestjs/common';
@@ -22,16 +22,27 @@ import {
 import { ApiGetResponse } from 'src/components/helpers/swagger-response.helper';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Mastertables')
-@Controller('mastertables')
+@ApiTags('Admin - Mastertables')
+@Controller('administrator/mastertables')
 export class UserLocationController {
   constructor(private userLocationService: UserLocationService) {}
 
-  @Get('user_locations')
+  @Get('user-locations')
   @ApiOperation({ summary: 'Get all user locations' })
   @ApiGetResponse('List of user locations available')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check is jwt strategy
-  async getAllUserLocations(@SessionUser() user: RequestUser) {
-    return this.userLocationService.getAllUserLocations(user);
+  getUserLocations(@SessionUser() user: RequestUser) {
+    return this.userLocationService.getUserLocations(user);
   }
+
+  @Get('user-locations/:id')
+  @ApiOperation({ summary: 'Get a user locations' })
+  @ApiGetResponse('Here is the user location')
+  @Can({ action: ACTION_READ, subject: MASTERTABLES })
+  getUserLocation(
+    @Param('id', ParseIntPipe) id: number,
+    @SessionUser() user: RequestUser,
+) {
+  return this.userLocationService.getUserLocation(id,user)
+}
 }

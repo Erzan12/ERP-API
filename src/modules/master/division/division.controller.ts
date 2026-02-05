@@ -4,7 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
+  Put,
   Post,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -27,8 +27,8 @@ import { CreateDivisionDto } from './dto/create-division.dto';
 import { UpdateDivisionDto } from './dto/update-division.dto.';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Mastertables')
-@Controller('mastertables')
+@ApiTags('Admin - Mastertables')
+@Controller('administrator/mastertables')
 export class DivisionController {
   constructor(private divisionService: DivisionService) {}
 
@@ -37,20 +37,20 @@ export class DivisionController {
   @ApiOperation({ summary: 'Get all divisions' })
   @ApiGetResponse('List of divisions retrieved')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getAllDivisions(@SessionUser() user: RequestUser) {
-    return this.divisionService.getAllDivisions(user);
+  getDivisions(@SessionUser() user: RequestUser) {
+    return this.divisionService.getDivisions(user);
   }
 
   //get selected division
-  @Get('divisions/:divisionId')
+  @Get('divisions/:id')
   @ApiOperation({ summary: 'Get a division' })
   @ApiGetResponse('Here is the division')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  async getDivision(
-    @Param('divisionId', ParseIntPipe) divisionId: number,
+  getDivision(
+    @Param('id', ParseIntPipe) id: number,
     @SessionUser() user: RequestUser,
   ) {
-    return this.divisionService.getDivision(divisionId, user);
+    return this.divisionService.getDivision(id, user);
   }
 
   @Post('divisions')
@@ -61,7 +61,7 @@ export class DivisionController {
   @ApiOperation({ summary: 'Create a new division' })
   @ApiPostResponse('Division created successfully')
   @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async createDivision(
+  createDivision(
     @Body() createDivisionDto: CreateDivisionDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -70,7 +70,7 @@ export class DivisionController {
     return this.divisionService.createDivision(createDivisionDto, user);
   }
 
-  @Patch('divisions/:divisionId')
+  @Put('divisions/:divisionId')
   @ApiBody({
     type: UpdateDivisionDto,
     description: 'Payload to update division',
@@ -78,7 +78,7 @@ export class DivisionController {
   @ApiOperation({ summary: 'Update a current division information' })
   @ApiPatchResponse('Division updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async updateDivision(
+  updateDivision(
     @Param('divisionId', ParseIntPipe) divisionId: number,
     @Body() updateDivisiionDto: UpdateDivisionDto,
     @SessionUser() user: RequestUser,

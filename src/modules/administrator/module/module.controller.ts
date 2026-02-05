@@ -2,11 +2,9 @@ import {
   Controller,
   Post,
   Body,
-  Put,
-  Delete,
   Get,
+  Put,
   Param,
-  Patch,
 } from '@nestjs/common';
 import { ModuleService } from './module.service';
 import { Can } from '../../../components/decorators/can.decorator';
@@ -22,8 +20,8 @@ import {
 import { UpdateModuleDto } from './dto/update-module.dto';
 
 @ApiBearerAuth('access-token')
-@ApiTags('System Management')
-@Controller('administrator')
+@ApiTags('Admin - System Management')
+@Controller('administrator/system-management')
 export class ModuleController {
   constructor(private moduleService: ModuleService) {}
 
@@ -31,33 +29,33 @@ export class ModuleController {
   @ApiOperation({ summary: 'Get modules' })
   @ApiGetResponse('Here are all the Modules available')
   @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getModules(@SessionUser() user: RequestUser) {
-    return this.moduleService.listModule(user);
+  getModules(@SessionUser() user: RequestUser) {
+    return this.moduleService.getModules(user);
   }
 
-  @Post('module')
+  @Get('modules/:id')
+  @ApiOperation({ summary: 'Get module by ID' })
+  @ApiGetResponse('Details of the module with submodules')
+  @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+  getModule(
+    @SessionUser() user: RequestUser,
+    @Param('id') id: number,
+  ) {
+    return this.moduleService.getModule(user, id); // 👈 pass the id to your service
+  }
+
+  @Post('modules')
   @ApiOperation({ summary: 'Create a new Module' })
   @ApiPostResponse('Module created successfully')
   @Can({ action: 'create', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async createModule(
+  createModule(
     @Body() createModuleDto: CreateModuleDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.moduleService.createModule(createModuleDto, user);
   }
 
-  @Get('module/view/:id')
-  @ApiOperation({ summary: 'Get module by ID' })
-  @ApiGetResponse('Details of the module with submodules')
-  @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getModule(
-    @SessionUser() user: RequestUser,
-    @Param('id') id: number, // 👈 this gets the `:id` from the URL
-  ) {
-    return this.moduleService.viewModule(user, id); // 👈 pass the id to your service
-  }
-
-  @Patch('module/view/edit/:id')
+  @Put('modules/:id')
   @ApiBody({
     type: UpdateModuleDto,
     description: 'Payload to update the module info',
@@ -65,16 +63,11 @@ export class ModuleController {
   @ApiOperation({ summary: 'Update current module' })
   @ApiPatchResponse('Module updated successfully')
   @Can({ action: 'update', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async updateModule(
+  updateModule(
     @Body() updateModuleDto: UpdateModuleDto,
     @SessionUser() user: RequestUser,
     @Param('id') id: number, //can be number can be string depends on the defined prisma value if int or string
   ) {
     return this.moduleService.updateMod(updateModuleDto, user, id);
   }
-
-  // @Put()
-  // async updateModule({
-
-  // })
 }

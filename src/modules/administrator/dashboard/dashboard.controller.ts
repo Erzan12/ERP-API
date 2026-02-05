@@ -11,8 +11,8 @@ import {
 import { ApiGetResponse } from 'src/components/helpers/swagger-response.helper';
 
 @ApiBearerAuth('access-token') //matches the name used in .addBearerAuth()
-@ApiTags('Mastertables')
-@Controller('mastertables')
+@ApiTags('Admin - Security & Audit')
+@Controller('administrator/security-audit')
 export class DashboardController {
   constructor(private dashboardService: DashboardService) {}
 
@@ -21,7 +21,7 @@ export class DashboardController {
   @ApiOperation({ summary: 'Summary of Users' })
   @ApiGetResponse('Adminstrator Dashboard')
   @Can({ action: ACTION_READ, subject: DASHBOARD })
-  async getAdminDashboard(@SessionUser() user: RequestUser) {
+  getAdminDashboard(@SessionUser() user: RequestUser) {
     return this.dashboardService.getAdminDashboardStats(user);
   }
 }

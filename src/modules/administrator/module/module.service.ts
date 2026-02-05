@@ -64,7 +64,7 @@ export class ModuleService {
     };
   }
 
-  async viewModule(user: RequestUser, id) {
+  async getModule(user: RequestUser, id: number) {
     const availableSubModules = await this.prisma.subModule.findMany();
 
     if (!availableSubModules) {
@@ -93,7 +93,7 @@ export class ModuleService {
   }
 
   // async list of all the modules
-  async listModule(user: RequestUser) {
+  async getModules(user: RequestUser) {
     const modules = await this.prisma.module.findMany();
 
     if (!modules) {
@@ -109,9 +109,9 @@ export class ModuleService {
     };
   }
 
-  async updateMod(updateModuleDto: UpdateModuleDto, user: RequestUser, id) {
+  async updateMod(updateModuleDto: UpdateModuleDto, user: RequestUser, id: number) {
     const existingModule = await this.prisma.module.findUnique({
-      where: { id: updateModuleDto.module_id },
+      where: { id },
       select: {
         name: true,
         //to add stat for status
@@ -125,7 +125,7 @@ export class ModuleService {
     }
 
     const updateModule = await this.prisma.module.update({
-      where: { id: updateModuleDto.module_id },
+      where: { id },
       data: {
         name: updateModuleDto.name,
         //stat: to add stat field in the future,

@@ -3,9 +3,7 @@ import {
   Post,
   Body,
   Get,
-  ValidationPipe,
-  UsePipes,
-  Patch,
+  Put,
   ParseIntPipe,
   Param,
 } from '@nestjs/common';
@@ -39,45 +37,24 @@ export class EmployeeController {
   @ApiOperation({ summary: 'List of all employees' })
   @ApiGetResponse('List of employees')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-  async getEmployees(
+  getEmployees(
     @SessionUser() user: RequestUser
   ) {
-    return this.employeeService.getEmployeeMasterlist(user)
+    return this.employeeService.getEmployees(user)
   }
 
   //get a single employee profile or view
-  @Get('employees/:employeeId')
+  @Get('employees/:id')
   @ApiOperation({ summary: 'View employee profile' })
   @ApiGetResponse('Employees information')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-  async getEmployee(
-    @Param('employeeId', ParseIntPipe) employeeId: number,
+  getEmployee(
+    @Param('id', ParseIntPipe) id: number,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employeeService.getEmployee(employeeId, user);
+    return this.employeeService.getEmployee(id, user);
   }
-
-  //can edit employee profile
-  @Patch('employees/:employeeId')
-  @ApiBody({
-    type: UpdateEmployeeWithDetailsDto,
-    description: 'Payload to update a current employee',
-  })
-  @ApiOperation({ summary: 'Update a current Employee' })
-  @ApiPatchResponse('Employee information updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
-  async updateEmployee(
-    @Param('employeeId', ParseIntPipe) employeeId: number,
-    @Body() updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.employeeService.updateEmployee(
-      employeeId,
-      updateEmployeeWithDetailsDto,
-      user,
-    );
-  }
-
+  
   @Post('employees')
   @ApiBody({
     type: CreateEmployeeWithDetailsDto,
@@ -86,10 +63,31 @@ export class EmployeeController {
   @ApiOperation({ summary: 'Create a new Employee' })
   @ApiPostResponse('Employee created successfully')
   @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
-  async createEmployee(
+  createEmployee(
     @Body() createDto: CreateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.employeeService.createEmployee(createDto, user);
+  }
+
+  //can edit employee profile
+  @Put('employees/:id')
+  @ApiBody({
+    type: UpdateEmployeeWithDetailsDto,
+    description: 'Payload to update a current employee',
+  })
+  @ApiOperation({ summary: 'Update a current Employee' })
+  @ApiPatchResponse('Employee information updated successfully')
+  @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+  updateEmployee(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.employeeService.updateEmployee(
+      id,
+      updateEmployeeWithDetailsDto,
+      user,
+    );
   }
 }

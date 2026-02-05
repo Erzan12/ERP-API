@@ -4,7 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
+  Put,
   Post,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -27,8 +27,8 @@ import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Mastertables')
-@Controller('mastertables')
+@ApiTags('Admin - Mastertables')
+@Controller('administrator/mastertables')
 export class PositionController {
   constructor(private positionService: PositionService) {}
 
@@ -37,20 +37,20 @@ export class PositionController {
   @ApiOperation({ summary: 'Get all positions' })
   @ApiGetResponse('List of positions retrieve')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async getAllPositions(@SessionUser() user: RequestUser) {
-    return this.positionService.getAllPositions(user);
+  getPositions(@SessionUser() user: RequestUser) {
+    return this.positionService.getPositions(user);
   }
 
   //get single position
-  @Get('positions/:positionId')
+  @Get('positions/:id')
   @ApiOperation({ summary: 'Get a position.' })
   @ApiGetResponse('Here is the position.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  async getPosition(
-    @Param('positionId', ParseIntPipe) positionId: number,
+  getPosition(
+    @Param('id', ParseIntPipe) id: number,
     @SessionUser() user: RequestUser,
   ) {
-    return this.positionService.getPosition(positionId, user);
+    return this.positionService.getPosition(id, user);
   }
 
   @Post('positions')
@@ -61,16 +61,14 @@ export class PositionController {
   @ApiOperation({ summary: 'Create a new position' })
   @ApiPostResponse('Position created successfully')
   @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async createPosition(
+  createPosition(
     @Body() createPositionDto: CreatePositionDto,
     @SessionUser() user: RequestUser,
   ) {
-    console.log('createPositionDto:', createPositionDto);
-    console.log('stat:', createPositionDto.stat);
     return this.positionService.createPosition(createPositionDto, user);
   }
 
-  @Patch('positions/:positionId')
+  @Put('positions/:id')
   @ApiBody({
     type: UpdatePositionDto,
     description: 'Payload to update Position information',
@@ -78,13 +76,13 @@ export class PositionController {
   @ApiOperation({ summary: 'Update a current position information' })
   @ApiPatchResponse('Position updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async updatePositionInfo(
-    @Param('positionId', ParseIntPipe) positionId: number,
+  updatePosition(
+    @Param('id', ParseIntPipe) id: number,
     @Body() updatePositionDto: UpdatePositionDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.positionService.updatePosition(
-      positionId,
+      id,
       updatePositionDto,
       user,
     );

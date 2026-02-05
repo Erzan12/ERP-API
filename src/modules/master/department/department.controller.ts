@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Post,
-  Patch,
+  Put,
   Get,
   Param,
   ParseIntPipe,
@@ -27,8 +27,8 @@ import {
 } from 'src/components/constants/ability.constant';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Mastertables')
-@Controller('mastertables')
+@ApiTags('Admin - Mastertables')
+@Controller('administrator/mastertables')
 export class DepartmentController {
   constructor(private departmentService: DepartmentService) {}
 
@@ -36,19 +36,19 @@ export class DepartmentController {
   @ApiOperation({ summary: 'Get all departments' })
   @ApiGetResponse('List of departments available')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getAllDepartments(@SessionUser() user: RequestUser) {
-    return this.departmentService.getAllDepartments(user);
+  getDepartments(@SessionUser() user: RequestUser) {
+    return this.departmentService.getDepartments(user);
   }
 
-  @Get('departments/:departmentId')
+  @Get('departments/:id')
   @ApiOperation({ summary: 'Get a department' })
   @ApiGetResponse('Here is the department')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  async getDepartment(
-    @Param('departmentId', ParseIntPipe) departmentId: number,
+  getDepartment(
+    @Param('id', ParseIntPipe) id: number,
     @SessionUser() user: RequestUser,
   ) {
-    return this.departmentService.getDepartment(departmentId, user);
+    return this.departmentService.getDepartment(id, user);
   }
 
   @Post('departments')
@@ -59,14 +59,14 @@ export class DepartmentController {
   @ApiOperation({ summary: 'Create a new department' })
   @ApiPostResponse('Department created successfully')
   @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async createDepartment(
+  createDepartment(
     @Body() createDepartmentDto: CreateDepartmentDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.departmentService.createDepartment(createDepartmentDto, user);
   }
 
-  @Patch('departments/:departmentId')
+  @Put('departments/:id')
   @ApiBody({
     type: UpdateDepartmentDto,
     description: 'Payload to update department',
@@ -74,11 +74,11 @@ export class DepartmentController {
   @ApiOperation({ summary: 'Update a current department information' })
   @ApiPatchResponse('Department updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async updateDept(
-    @Param('departmentId', ParseIntPipe) departmentId: number,
+  updateDepartment(
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateDeptDto: UpdateDepartmentDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.departmentService.updateDept(departmentId, updateDeptDto, user);
+    return this.departmentService.updateDepartment(id, updateDeptDto, user);
   }
 }

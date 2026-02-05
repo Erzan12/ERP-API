@@ -8,16 +8,16 @@ import { SessionUser } from 'src/components/decorators/session-user.decorator';
 import { ACTION_READ, AUDIT_TRAIL, SEC_LVL_8 } from 'src/components/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Administrator')
-@Controller('audit')
+@ApiTags('Admin - Security & Audit')
+@Controller('administrator/security-audit')
 export class AuditController {
     constructor(private auditService: AuditService) {}
 
-    @Get()
+    @Get('audit')
     @ApiOperation({ summary: 'Get audit logs with filters' })
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
-    async getAuditLogs(
+    getAuditLogs(
         @Query('user_id') userId?: number,
         @Query('resource') resource?: string,
         @Query('action') action?: string,
@@ -39,31 +39,31 @@ export class AuditController {
         });
     }
 
-    @Get('resource/:resource/:id')
+    @Get('audit/resource/:resource/:id')
     @ApiOperation({ summary: 'Get audit history fo ra specific resource' })
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL})
-    async getResourceHistory(
+    getResourceHistory(
         @Param('resource') resource: string,
         @Param('id', ParseIntPipe) id: number,
     ) {
         return this.auditService.getResourceHistory(resource, id);
     }
 
-    @Get('user/:id/activity')
+    @Get('audit/user/:id/activity')
     @ApiOperation({ summary: 'Get user activity report' })
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
-    async getUserActivity(
+    getUserActivity(
         @Param('id', ParseIntPipe) userId: number,
         @Query('days') days?: number,
     ) {
         return this.auditService.getUserActivity(userId, days);
     }
 
-    @Get('my-activity')
+    @Get('audit/my-activity')
     @ApiOperation({ summary: 'Get own activity report' })
-    async getMyActivity(
+    getMyActivity(
         @SessionUser() user: RequestUser,
         @Query('days') days?: number,
     ) {

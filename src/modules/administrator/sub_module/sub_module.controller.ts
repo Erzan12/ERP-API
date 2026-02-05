@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch, Param, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Put, ParseIntPipe } from '@nestjs/common';
 import { Can } from '../../../components/decorators/can.decorator';
 import { CreateSubModuleDto } from './dto/create-sub-module.dto';
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
@@ -13,24 +13,36 @@ import {
   ApiGetResponse,
 } from 'src/components/helpers/swagger-response.helper';
 import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
+import { ACTION_READ, SYSTEM_MANAGEMENT } from 'src/components/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
-@ApiTags('System Management')
-@Controller('administrator')
+@ApiTags('Admin - System Management')
+@Controller('administrator/system-management')
 export class SubModuleController {
   constructor(private subModuleService: SubModuleService) {}
 
   //get list of submodules
-  @Get('submodules')
+  @Get()
   @ApiOperation({ summary: 'Get Submodules' })
   @ApiGetResponse('Here are all the Sub modules available')
-  @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  async getSubmodules(@SessionUser() user: RequestUser) {
-    return this.subModuleService.listSubModule(user);
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+  getSubmodules(@SessionUser() user: RequestUser) {
+    return this.subModuleService.getSubModules(user);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a Submodule' })
+  @ApiGetResponse('status: Success!')
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  getSubmodule(
+    @Param('id', ParseIntPipe) id: number,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.subModuleService.getSubmodule(id, user);
   }
 
   //create submodule
-  @Post('submodule')
+  @Post()
   @ApiBody({
     type: CreateSubModuleDto,
     description: 'Payload to create Submodule',
@@ -38,15 +50,31 @@ export class SubModuleController {
   @ApiOperation({ summary: 'Create a new Submodule' })
   @ApiPostResponse('Submodule created successfully')
   @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async createSubModule(
+  createSubModule(
     @Body() createSubModuleDto: CreateSubModuleDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.subModuleService.createSubModule(createSubModuleDto, user);
   }
 
+  @Post('permissions')
+  @ApiBody({
+    type: AddSubModulePermissionDto,
+    description: 'Payload to create permissions for submodule',
+  })
+  @ApiOperation({ summary: 'Create a new permission for submodule' })
+  @ApiPostResponse('Permission created successfully')
+  @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  createPermission(
+    @Body() addSubModuleDto: AddSubModulePermissionDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    console.log('createSubModuleDto:', AddSubModulePermissionDto);
+    return this.subModuleService.addSubModulePerm(addSubModuleDto, user);
+  }
+
   //add permissions to submodules
-  @Post('submodule/permission')
+  @Put('permissions')
   @ApiBody({
     type: AssignSubModulePermissionDto,
     description: 'Payload to assign permissions for submodule',
@@ -54,7 +82,7 @@ export class SubModuleController {
   @ApiOperation({ summary: 'Assign a new permission for submodule' })
   @ApiPostResponse('Permission assigned to a submodule successfully')
   @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async createSubModulePermission(
+  createSubModulePermission(
     @Body() assignSubModulePermissionDto: AssignSubModulePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -64,27 +92,8 @@ export class SubModuleController {
     );
   }
 
-  //get list of submodule permissions added
-
-  //inventory of submodule permissions
-  @Post('submodule/permissions')
-  @ApiBody({
-    type: AddSubModulePermissionDto,
-    description: 'Payload to create permissions for submodule',
-  })
-  @ApiOperation({ summary: 'Create a new permission for submodule' })
-  @ApiPostResponse('Permission created successfully')
-  @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async createPermission(
-    @Body() addSubModuleDto: AddSubModulePermissionDto,
-    @SessionUser() user: RequestUser,
-  ) {
-    console.log('createSubModuleDto:', AddSubModulePermissionDto);
-    return this.subModuleService.addSubModulePerm(addSubModuleDto, user);
-  }
-
   //update the submodule permissions
-  @Patch('submodule/permissions/edit/:id')
+  @Put(':id')
   @ApiBody({
     type: UpdateSubModulePermisisonDto,
     description: 'Payload to update the current sub module permission',
@@ -92,10 +101,10 @@ export class SubModuleController {
   @ApiOperation({ summary: 'Update a current sub module permission' })
   @ApiPatchResponse('Sub module permission updated successfully')
   @Can({ action: 'update', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  async updatePermission(
+  updatePermission(
     @Body() updateSubModulePermisisonDto: UpdateSubModulePermisisonDto,
     @SessionUser() user: RequestUser,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
   ) {
     return this.subModuleService.updateSubModulePerm(
       updateSubModulePermisisonDto,
