@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ABAS v3 API</title>
+    <link rel="icon" href="/public/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+    <header>
+        <h1>ABAS v3 API Gateway</h1>
+        <p>Select a module to explore available endpoint</p>
+    </header>
+    <main class="container">
+        {{#each modules}}
+            <a href="{{swaggerLink}}" target="_blank" class="card-link">
+                <div class="card">
+                    {{#if icon}}
+                        <img src="{{icon}}" alt="{{title}} icon" class="card-icon"/>
+                    {{/if}}
+                    <h2>{{title}}</h2>
+                    <p>{{description}}</p>
+                    <span class="click-hint">View in Swagger →</span>
+                </div>
+            </a>
+        {{/each}}
+    </main>
+
+    <footer>
+        <a href="/api" target="_blank">Open Swagger UI →</a>
+    </footer>
+
+    <script src="/public/app.js"></script>
+</body>
+</html>

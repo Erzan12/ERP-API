@@ -18,7 +18,6 @@ import { HrModule } from './modules/hris/hr.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { UserLocationService } from './modules/master/user_location/user_location.service';
 import { UserLocationController } from './modules/master/user_location/user_location.controller';
-import { EmploymentStatusController } from './modules/master/employment_status/employment_status.controller';
 import { EmploymentStatusService } from './modules/master/employment_status/employment_status.service';
 import { CompanyService } from './modules/master/company/company.service';
 import { CreateCompanyDto } from './modules/master/company/dto/create-company.dto';
@@ -35,6 +34,8 @@ import { CaslAbilityService } from './middleware/casl/casl.service';
 import { CaslModule } from './middleware/casl/casl.module';
 import { AuditService } from './modules/administrator/audit/audit.service';
 import { PermissionsGuard } from './middleware/guards/permission.guard';
+// import { AppController } from './app.controller';
+import { LandingModule } from './landing/landing.module';
 
 @Module({
   imports: [
@@ -43,10 +44,9 @@ import { PermissionsGuard } from './middleware/guards/permission.guard';
       isGlobal: true, // makes config available app-wide
       envFilePath: '.env', // optional: default is .env
     }),
+    LandingModule,
     AuthModule,
     JwtModule,
-    // ManagerModule,
-    // PersonModule,
     AdministratorModule,
     MasterModule,
     CaslModule,
@@ -55,7 +55,6 @@ import { PermissionsGuard } from './middleware/guards/permission.guard';
     PrismaModule,
   ],
   providers: [
-    // ManagerService,
     UserService,
     PrismaService,
     {
@@ -75,7 +74,6 @@ import { PermissionsGuard } from './middleware/guards/permission.guard';
     },
     AuditService,
     MailService,
-    // PersonService,
     EmployeeService,
     UserService,
     PositionService,
@@ -97,6 +95,7 @@ import { PermissionsGuard } from './middleware/guards/permission.guard';
     AuthController,
     UserController,
     UserLocationController,
+    // AppController,
   ],
 })
 export class AppModule {}

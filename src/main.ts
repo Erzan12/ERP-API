@@ -5,11 +5,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
 import { PrismaService } from './config/prisma/prisma.service';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 class JwtAuthGuard extends AuthGuard('jwt') {}
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   //enable validation pipe globally -> This ensures the DTOs and decorators (@ValidateNested, @IsDateString, etc.) work properly and transform inputs like date strings into Date objects where necessary.
   app.useGlobalPipes(
@@ -47,19 +49,36 @@ async function bootstrap() {
     .addTag('Admin - Mastertables', 'Manage organization structure such as companies, departments and etc.',) // change or add more tags based on your modules
     .addTag('Manager', 'Manager managing users account, tokens etc.') // change or add more tags based on your modules
     .addTag('Human Resources', 'Managing lifecycle of employees') // change or add more tags based on your modules
-    .addTag('Home') // change or add more tags based on your modules
-    .addTag('Profile') // change or add more tags based on your modules
-    .addTag('Protected') // change or add more tags based on your modules
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document); // Swagger at http://localhost:3000/api
+  SwaggerModule.setup('api', app, document, {
+    customCss: `
+      .swagger-ui .topbar { display: none }
+    `,
+    swaggerOptions: {
+      docExpansion: 'none', // collapse everything
+      filter: true,   //add search bar
+      persistAuthorization: true,  //keeps jwt after refresh or selecting new api endpoint in landing page
+    }
+  }); // Swagger at http://localhost:3000/api
 
   //export the OpenAPI spec to a file
   writeFileSync(
     './API_documentation/swagger-spec.json',
     JSON.stringify(document, null, 2),
   );
+
+  //serve static files
+  app.useStaticAssets(join(process.cwd(), 'public'), {
+    prefix: '/public',
+  });
+
+  //views directory
+  app.setBaseViewsDir(join(process.cwd(), 'views'));
+  app.setViewEngine('hbs');
+
+  // app.setGlobalPrefix('api/v2')
 
   await app.listen(3000, () => {
     console.log('Server is running at http://localhost:3000')
