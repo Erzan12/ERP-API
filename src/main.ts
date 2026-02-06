@@ -67,12 +67,12 @@ async function bootstrap() {
   });
 
   //appliead jwt auth guard and role permission guard globally
-  const reflector = app.get(Reflector);
-  const prisma = app.get(PrismaService);
+  // const reflector = app.get(Reflector);
+  // const prisma = app.get(PrismaService);
 
-  app.useGlobalGuards(
-    new JwtAuthGuard(),
-    // new RolesPermissionsGuard(reflector, prisma),
-  );
+  // app.useGlobalGuards(
+  //   new JwtAuthGuard(),
+  //   // new RolesPermissionsGuard(reflector, prisma),
+  // );
 }
 bootstrap();
