@@ -22,7 +22,7 @@ import { RequestUser } from 'src/components/types/request-user.interface';
 import { Request } from 'express';
 import { SessionUser } from 'src/components/decorators/session-user.decorator';
 
-@ApiBearerAuth('access-token')
+// @ApiBearerAuth('access-token')
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -31,7 +31,7 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'User authorized login' })
   @ApiLoginResponse('User login successful')
-  @Public()
+  
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async login(
     @Body() loginDto: LoginDto, 
@@ -60,7 +60,6 @@ export class AuthController {
   @Post('reset-password')
   @ApiOperation({ summary: 'User reset password' })
   @ApiPostResponse('User reset password successfully')
-  @Public()
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async passwordResetWithToken(
     @Query('token') token: string,
