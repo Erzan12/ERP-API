@@ -66,7 +66,7 @@ async function main() {
   const hrDept = await prisma.department.create({
     data: {
       name: 'hr department',
-      division_id: corpServices.id,
+      division_id: corpServices.,
       department_head_id: 0,
     },
   });

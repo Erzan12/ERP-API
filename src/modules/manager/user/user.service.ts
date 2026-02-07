@@ -312,16 +312,31 @@ export class UserService {
           if (!userRole) {
             userRole = await tx.userRole.create({
               data: {
-                user_id: user.id,
-                role_id: rp.role_id,
+                // user_id: user.id,
+                // role_id: rp.role_id,
+                user: {
+                  connect: { id: user.id },
+                },
+                role: {
+                  connect: { id: rp.role_id },
+                },
                 role_name: rp.role_name ?? null,
                 // role_permission_id: rp.id,
                 created_at: new Date(),
               },
               include: {
-                role: true, // ⬅️ ensure we include the actual Role model
+                role: true, // ensure we include the actual Role model
               },
             });
+
+            await tx.user.update({
+              where: { id: user.id },
+              data: {
+                roles: {
+                  connect: { id: rp.role_id },
+                }
+              }
+            })
           }
 
           userRolesMap.set(key, userRole);
