@@ -101,4 +101,8 @@
     "url": "https://gitea.avegabros.net/erzan/ABAS-API-V2.git"
   },
   "keywords": []
+  ,
+  "prisma": {
+    "seed": "ts-node prisma/seeds.ts"
+  }
 }
