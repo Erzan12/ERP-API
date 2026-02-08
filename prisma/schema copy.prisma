@@ -10,6 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 ////////////////////////////////////////
@@ -17,8 +18,7 @@ datasource db {
 ////////////////////////////////////////
 
 model Person {
-  id                        Int            @id @default(autoincrement())
-  uuid                      String?        @unique @db.Uuid
+  uuid_id                   String         @id @default(uuid()) @db.Uuid // New UUID field
   first_name                String
   last_name                 String
   middle_name               String?
@@ -48,25 +48,23 @@ model Person {
 }
 
 model EmailAddress {
-  id            Int      @id @default(autoincrement())
-  uuid          String?  @unique @db.Uuid
-  person_id     Int
+  uuid_id       String   @id @default(uuid()) @db.Uuid // New UUID field
+  person_uuid   String
   email_address String
   email_type    String
   is_primary    Boolean
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
-  person        Person   @relation(fields: [person_id], references: [id], onDelete:Cascade)
+  person        Person   @relation(fields: [person_uuid], references: [uuid_id], onDelete:Cascade)
 
-  @@index([person_id])
+  @@index([person_uuid])
 }
 
 model User {
-  id                       Int                  @id @default(autoincrement())
-  uuid                     String?              @unique @db.Uuid
-  employee_id              Int                  @unique
-  person_id                Int
+  uuid_id                  String               @id @default(uuid()) @db.Uuid // New UUID field
+  employee_uuid            String               @unique
+  person_uuid              String
   username                 String               @unique
   password                 String
   email                    String               @unique
@@ -89,18 +87,15 @@ model User {
   PermissionTemplateDepartment PermissionTemplateDepartment[]
   audit_logs                   AuditLog[]
 
-  employee                     Employee             @relation(fields: [employee_id], references: [id], onDelete: Cascade)
-  person                       Person               @relation(fields: [person_id], references: [id], onDelete: Cascade)
-  
-  // Implicit many-to-many relation with Role              
+  employee                     Employee             @relation(fields: [employee_uuid], references: [uuid_id], onDelete: Cascade)
+  person                       Person               @relation(fields: [person_uuid], references: [uuid_id], onDelete: Cascade)
 
-  @@index([person_id])
-  @@index([employee_id])
+  @@index([person_uuid])
+  @@index([employee_uuid])
 }
 
 model UserLocation {
-  id              Int      @id @default(autoincrement())
-  uuid            String?  @unique @db.Uuid
+  uuid_id         String   @id @default(uuid()) @db.Uuid // New UUID field
   location_name   String
   address         String
   stat            Int      @default(1)
@@ -112,30 +107,28 @@ model UserLocation {
 }
 
 model UserToken {
-  id         Int      @id @default(autoincrement())
-  uuid       String?  @unique @db.Uuid
-  user_id    Int
+  uuid_id    String   @id @default(uuid()) @db.Uuid // New UUID field
+  user_uuid  String
   user_token String   @unique
   status     Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [user_uuid], references: [uuid_id], onDelete: Cascade)
 
-  @@index([user_id])
+  @@index([user_uuid])
 }
 
 model PasswordResetToken {
-  id             Int      @id @default(autoincrement())
-  uuid           String?  @unique @db.Uuid
-  user_id        Int
+  uuid_id        String   @id @default(uuid()) @db.Uuid // New UUID field
+  user_uuid      String
   expires_at     DateTime
   password_token String   @unique
   is_used        Boolean  @default(false)
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
-  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [user_uuid], references: [uuid_id], onDelete: Cascade)
 
-  @@index([user_id])
+  @@index([user_uuid])
 }
 
 ////////////////////////////////////////
@@ -143,8 +136,7 @@ model PasswordResetToken {
 ////////////////////////////////////////
 
 model Company {
-  id           Int        @id @default(autoincrement())
-  uuid         String?    @unique @db.Uuid
+  uuid_id      String     @id @default(uuid()) @db.Uuid // New UUID field
   name         String
   address      String?
   telephone_no String?
@@ -162,10 +154,9 @@ model Company {
 }
 
 model Division {
-  id               Int          @id @default(autoincrement())
-  uuid             String?      @unique @db.Uuid
+  uuid_id          String       @id @default(uuid()) @db.Uuid // New UUID field
   name             String
-  division_head_id Int?
+  division_head_uuid String?
   stat             Int          @default(1)
   created_at       DateTime     @default(now())
   updated_at       DateTime     @updatedAt
@@ -173,83 +164,79 @@ model Division {
   departments      Department[]
 
   @@index([name])
-  @@index([division_head_id])
+  @@index([division_head_uuid])
 }
 
 model Department {
-  id                 Int          @id @default(autoincrement())
-  uuid               String?      @unique @db.Uuid
+  uuid_id            String       @id @default(uuid()) @db.Uuid // New UUID field
   name               String
-  division_id        Int
+  division_uuid      String
   sorting            Int?
   stat               Int          @default(1)
-  department_head_id Int?
+  department_head_uuid String?
   created_at         DateTime     @default(now())
   updated_at         DateTime     @updatedAt
 
-  division           Division     @relation(fields: [division_id], references: [id])
+  division           Division     @relation(fields: [division_uuid], references: [uuid_id])
   employees          Employee[]
   positions          Position[]
   role_permissions   RolePermission[]
   permission_templates PermissionTemplate[]
   permission_template_departments PermissionTemplateDepartment[]
 
-  @@index([division_id])
+  @@index([division_uuid])
 }
 
 model Position {
-  id                           Int                            @id @default(autoincrement())
-  uuid                         String?                        @unique @db.Uuid
+  uuid_id                      String                         @id @default(uuid()) @db.Uuid // New UUID field
   name                         String                         @db.VarChar(255)
   sorting                      Int?
-  department_id                Int
+  department_uuid              String
   stat                         Int                            @default(1)
   created_at                   DateTime                       @default(now())
   updated_at                   DateTime                       @updatedAt
   
   employee                     Employee[]
-  department                   Department                     @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  department                   Department                     @relation(fields: [department_uuid], references: [uuid_id], onDelete: Cascade)
   RolePermission               RolePermission[]
   PermissionTemplateDepartment PermissionTemplateDepartment[]
 
-  @@index([department_id])
+  @@index([department_uuid])
 }
 
 model Employee {
-  id                        Int              @id @default(autoincrement())
-  uuid                      String?          @unique @db.Uuid
-  company_id                Int
-  person_id                 Int              @unique
-  employee_id               String           @unique
-  department_id             Int
-  position_id               Int
-  division_id               Int?
+  uuid_id                   String           @id @default(uuid()) @db.Uuid // New UUID field
+  company_uuid              String
+  person_uuid               String           @unique
+  employee_uuid             String           @unique
+  department_uuid           String
+  position_uuid             String
+  division_uuid             String
   hire_date                 DateTime
   salary                    Decimal
   pay_frequency             String
-  employment_status_id      Int
+  employment_status_uuid    String
   monthly_equivalent_salary Decimal
   created_at                DateTime         @default(now())
   updated_at                DateTime         @updatedAt
   archive_date              DateTime?
   other_employee_data       Json?
-  corporate_rank_id         Int?
+  corporate_rank_uuid       String?
 
-  employment_status         EmploymentStatus @relation(fields: [employment_status_id], references: [id])
-  company                   Company          @relation(fields: [company_id], references: [id])
-  department                Department       @relation(fields: [department_id], references: [id])
-  person                    Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
-  position                  Position         @relation(fields: [position_id], references: [id])
-  division                  Division?        @relation(fields: [division_id], references: [id])
+  employment_status         EmploymentStatus @relation(fields: [employment_status_uuid], references: [uuid_id])
+  company                   Company          @relation(fields: [company_uuid], references: [uuid_id])
+  department                Department       @relation(fields: [department_uuid], references: [uuid_id])
+  person                    Person           @relation("PersonEmployee", fields: [person_uuid], references: [uuid_id], onDelete: Cascade)
+  position                  Position         @relation(fields: [position_uuid], references: [uuid_id])
+  division                  Division         @relation(fields: [division_uuid], references: [uuid_id])
   user                      User?
 
-  @@index([department_id])
-  @@index([company_id])
+  @@index([department_uuid])
+  @@index([company_uuid])
 }
 
 model EmploymentStatus {
-  id         Int        @id @default(autoincrement())
-  uuid       String?    @unique @db.Uuid
+  uuid_id    String     @id @default(uuid()) @db.Uuid // New UUID field
   code       String     @unique
   label      String
   created_at DateTime   @default(now())
@@ -262,8 +249,7 @@ model EmploymentStatus {
 ////////////////////////////////////////
 
 model Role {
-  id                  Int                  @id @default(autoincrement())
-  uuid                String?              @unique @db.Uuid
+  uuid_id             String               @id @default(uuid()) @db.Uuid // New UUID field
   name                String               @unique
   description         String
   stat                Int                  @default(1)
@@ -276,66 +262,63 @@ model Role {
 }
 
 model UserRole {
-  id               Int              @id @default(autoincrement())
-  uuid             String?          @unique @db.Uuid
-  user_id          Int
-  role_id          Int
+  uuid_id          String           @id @default(uuid()) @db.Uuid // New UUID field
+  user_uuid        String
+  role_uuid        String
   role_name        String
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
 
   user_permissions UserPermission[]
-  role             Role             @relation(fields: [role_id], references: [id], onDelete: Cascade)
-  user             User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  role             Role             @relation(fields: [role_uuid], references: [uuid_id], onDelete: Cascade)
+  user             User             @relation(fields: [user_uuid], references: [uuid_id], onDelete: Cascade)
 
-  @@unique([user_id, role_id])
-  @@index([user_id])
+  @@unique([user_uuid, role_uuid])
+  @@index([user_uuid])
 }
 
 model RolePermission {
-  id                       Int            @id @default(autoincrement())
-  uuid                     String?        @unique @db.Uuid
-  role_id                  Int
+  uuid_id                  String         @id @default(uuid()) @db.Uuid // New UUID field
+  role_uuid                String
   role_name                String
   action                   String
-  sub_module_permission_id Int
-  sub_module_id            Int
-  department_id            Int
-  position_id              Int?
+  sub_module_permission_uuid String
+  sub_module_uuid            String
+  department_uuid            String
+  position_uuid              String?
   stat                     Int            @default(1)
   created_at               DateTime       @default(now())
   updated_at               DateTime       @updatedAt
 
-  department               Department     @relation(fields: [department_id], references: [id])
-  position                 Position?      @relation(fields: [position_id], references: [id])
-  role                     Role           @relation(fields: [role_id], references: [id], onDelete: Cascade)
-  sub_module_permission    SubModulePermission @relation(fields: [sub_module_permission_id], references: [id], onDelete: Cascade)
-  sub_module               SubModule      @relation(fields: [sub_module_id], references: [id])
+  department               Department     @relation(fields: [department_uuid], references: [uuid_id])
+  position                 Position?      @relation(fields: [position_uuid], references: [uuid_id])
+  role                     Role           @relation(fields: [role_uuid], references: [uuid_id], onDelete: Cascade)
+  sub_module_permission    SubModulePermission @relation(fields: [sub_module_permission_uuid], references: [uuid_id], onDelete: Cascade)
+  sub_module               SubModule      @relation(fields: [sub_module_uuid], references: [uuid_id])
 
   permission_template_links PermissionTemplateRolePermission[]
   user_permission           UserPermission[]
 
-  @@unique([role_id, sub_module_permission_id, action], map: "unique_role_permission")
-  @@index([role_id])
-  @@index([department_id])
+  @@unique([role_uuid, sub_module_permission_uuid, action], map: "unique_role_permission")
+  @@index([role_uuid])
+  @@index([department_uuid])
 }
 
 model UserPermission {
-  id                 Int            @id @default(autoincrement())
-  uuid               String?        @unique @db.Uuid
+  uuid_id            String         @id @default(uuid()) @db.Uuid // New UUID field
   action             String
-  user_id            Int
-  user_role_id       Int
-  role_permission_id Int
+  user_uuid          String
+  user_role_uuid       String
+  role_permission_uuid String
   created_at         DateTime       @default(now())
   updated_at         DateTime       @updatedAt
 
-  role_permission    RolePermission? @relation(fields: [role_permission_id], references: [id], onDelete: Cascade)
-  user               User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_role          UserRole        @relation(fields: [user_role_id], references: [id], onDelete: Cascade)
+  role_permission    RolePermission? @relation(fields: [role_permission_uuid], references: [uuid_id], onDelete: Cascade)
+  user               User            @relation(fields: [user_uuid], references: [uuid_id], onDelete: Cascade)
+  user_role          UserRole        @relation(fields: [user_role_uuid], references: [uuid_id], onDelete: Cascade)
 
-  @@unique([user_role_id, role_permission_id])
-  @@index([user_id])
+  @@unique([user_role_uuid, role_permission_uuid])
+  @@index([user_uuid])
 }
 
 ////////////////////////////////////////
@@ -343,18 +326,17 @@ model UserPermission {
 ////////////////////////////////////////'
 
 model AuditLog {
-  id            Int     @id @default(autoincrement())
-  uuid          String? @unique @db.Uuid
+  uuid_id       String  @id @default(uuid()) @db.Uuid // New UUID field
   //who performed the action
-  user_id       Int?
+  user_uuid     String?
   user_email    String?
-  employee_id   Int?    //link to employee for better tracking
-  user          User?   @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  employee_uuid String?    //link to employee for better tracking
+  user          User?   @relation(fields: [user_uuid], references: [uuid_id], onDelete: SetNull)
 
   //what action was performed
   action        String  //'CREATE','READ','UPDATE','DELETE','LOGIN','LOGOUT', 'PERMISSION_DENIED', etc.
   resource      String  //'user_account','employee','salary','role_permisison', etc.
-  resource_id   Int?    //ID of the affected record (if applicable)
+  resource_uuid String?    //ID of the affected record (if applicable)
 
   //details of the change
   old_values    Json?   //previos state (for UPDATE/DELETE)
@@ -373,7 +355,7 @@ model AuditLog {
   error_message String? @db.Text //use text for longer error messages
 
   //metadata
-  department_id Int?    //track which department the action relates to
+  department_uuid String?    //track which department the action relates to
   session_id    String? //track user sessions
   request_id    String? //for correlating related operations
 
@@ -385,12 +367,12 @@ model AuditLog {
   created_at    DateTime  @default(now())
 
   //indexes for performance
-  @@index([user_id])
-  @@index([employee_id])
-  @@index([resource, resource_id])
+  @@index([user_uuid])
+  @@index([employee_uuid])
+  @@index([resource, resource_uuid])
   @@index([created_at])
   @@index([action])
-  @@index([department_id])
+  @@index([department_uuid])
   @@index([session_id])
   @@index([success])
   @@map("audit_logs")  
@@ -401,8 +383,7 @@ model AuditLog {
 ////////////////////////////////////////
 
 model Module {
-  id         Int         @id @default(autoincrement())
-  uuid       String?     @unique @db.Uuid
+  uuid_id    String      @id @default(uuid()) @db.Uuid // New UUID field
   name       String
   stat       Int         @default(1)
   created_at DateTime    @default(now())
@@ -413,24 +394,22 @@ model Module {
 }
 
 model SubModule {
-  id                     Int                   @id @default(autoincrement())
-  uuid                   String?               @unique @db.Uuid
+  uuid_id                String                @id @default(uuid()) @db.Uuid // New UUID field
   name                   String
-  module_id              Int
+  module_uuid            String
   stat                   Int                   @default(1)
   created_at             DateTime              @default(now())
   updated_at             DateTime              @updatedAt
   
-  module                 Module                @relation(fields: [module_id], references: [id], onDelete: Cascade)
+  module                 Module                @relation(fields: [module_uuid], references: [uuid_id], onDelete: Cascade)
   role_permission        RolePermission[]
   sub_module_permissions SubModulePermission[]
 
-  @@index([module_id ])
+  @@index([module_uuid])
 }
 
 model SubModuleAction {
-  id                    Int                   @id @default(autoincrement())
-  uuid                  String?               @unique @db.Uuid
+  uuid_id               String                @id @default(uuid()) @db.Uuid // New UUID field
   action                String
   created_at            DateTime              @default(now())
   updated_at            DateTime              @updatedAt
@@ -439,19 +418,18 @@ model SubModuleAction {
 }
 
 model SubModulePermission {
-  id                   Int              @id @default(autoincrement())
-  uuid                 String?          @unique @db.Uuid
-  action               String
-  sub_module_action_id Int
-  sub_module_id        Int
+  uuid_id              String           @id @default(uuid()) @db.Uuid // New UUID field
+  action                 String
+  sub_module_action_uuid String
+  sub_module_uuid        String
   created_at           DateTime         @default(now())
   updated_at           DateTime         @updatedAt
   
   role_permissions     RolePermission[]
-  sub_module           SubModule        @relation(fields: [sub_module_id], references: [id], onDelete: Cascade)
-  sub_module_action    SubModuleAction  @relation(fields: [sub_module_action_id], references: [id], onDelete: Cascade)
+  sub_module           SubModule        @relation(fields: [sub_module_uuid], references: [uuid_id], onDelete: Cascade)
+  sub_module_action    SubModuleAction  @relation(fields: [sub_module_action_uuid], references: [uuid_id], onDelete: Cascade)
 
-  @@index([sub_module_id])
+  @@index([sub_module_uuid])
 }
 
 ////////////////////////////////////////
@@ -459,15 +437,14 @@ model SubModulePermission {
 ////////////////////////////////////////
 
 model PermissionTemplate {
-  id            Int      @id @default(autoincrement())
-  uuid          String?  @unique @db.Uuid
-  name          String
-  department_id Int
+  uuid_id         String   @id @default(uuid()) @db.Uuid // New UUID field
+  name            String
+  department_uuid String
   stat          Int      @default(1)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
-  department Department @relation(fields: [department_id], references: [id])
+  department Department @relation(fields: [department_uuid], references: [uuid_id])
 
   departments      PermissionTemplateDepartment[] // includes user + department scope
   role_permissions PermissionTemplateRolePermission[]
@@ -477,38 +454,36 @@ model PermissionTemplate {
 }
 
 model PermissionTemplateDepartment {
-  id                     Int                @id @default(autoincrement())
-  uuid                   String?            @unique @db.Uuid
-  permission_template_id Int
-  user_id                Int
-  department_id          Int
-  position_id            Int?
-  position               Position?          @relation(fields: [position_id], references: [id])
-  department             Department         @relation(fields: [department_id], references: [id], onDelete: Cascade)
-  permission_template    PermissionTemplate @relation(fields: [permission_template_id], references: [id])
-  user                   User               @relation(fields: [user_id], references: [id])
+  uuid_id                  String           @id @default(uuid()) @db.Uuid // New UUID field
+  permission_template_uuid String
+  user_uuid                String
+  department_uuid          String
+  position_uuid            String?
+  position               Position?          @relation(fields: [position_uuid], references: [uuid_id])
+  department             Department         @relation(fields: [department_uuid], references: [uuid_id], onDelete: Cascade)
+  permission_template    PermissionTemplate @relation(fields: [permission_template_uuid], references: [uuid_id])
+  user                   User               @relation(fields: [user_uuid], references: [uuid_id])
 
   permission_template_role_permissions PermissionTemplateRolePermission[]
 
-  @@unique([permission_template_id, department_id])
-  @@index([permission_template_id])
-  @@index([position_id])
-  @@index([user_id])
+  @@unique([permission_template_uuid, department_uuid])
+  @@index([permission_template_uuid])
+  @@index([position_uuid])
+  @@index([user_uuid])
 }
 
 model PermissionTemplateRolePermission {
-  id                                Int @id @default(autoincrement())
-  uuid                              String?        @unique @db.Uuid
-  permission_template_id            Int
-  role_permission_id                Int
-  permission_template_department_id Int
+  uuid_id                           String                    @id @default(uuid()) @db.Uuid // New UUID field
+  permission_template_uuid          String
+  role_permission_uuid              String
+  permission_template_department_uuid String
 
-  permission_template            PermissionTemplate           @relation(fields: [permission_template_id], references: [id], onDelete: Cascade)
-  role_permissions               RolePermission               @relation(fields: [role_permission_id], references: [id])
-  permission_template_department PermissionTemplateDepartment @relation(fields: [permission_template_department_id], references: [id], onDelete: Cascade)
+  permission_template            PermissionTemplate           @relation(fields: [permission_template_uuid], references: [uuid_id], onDelete: Cascade)
+  role_permissions               RolePermission               @relation(fields: [role_permission_uuid], references: [uuid_id])
+  permission_template_department PermissionTemplateDepartment @relation(fields: [permission_template_department_uuid], references: [uuid_id], onDelete: Cascade)
 
-  @@unique([permission_template_id, role_permission_id, permission_template_department_id])
-  @@index([permission_template_id])
-  @@index([permission_template_department_id])
-  @@index([role_permission_id])
+  @@unique([permission_template_uuid, role_permission_uuid, permission_template_department_uuid])
+  @@index([permission_template_uuid])
+  @@index([permission_template_department_uuid])
+  @@index([role_permission_uuid])
 }

@@ -23,6 +23,7 @@ import { Request } from 'express';
 import { SessionUser } from 'src/components/decorators/session-user.decorator';
 
 // @ApiBearerAuth('access-token')
+@Public()
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {

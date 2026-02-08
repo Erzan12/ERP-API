@@ -16,7 +16,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false,
+    "noFallthroughCasesInSwitch": false
   },
   "watchOptions": {
     "watchFile": "priorityPollingInterval",
@@ -25,6 +25,5 @@
     "synchronousWatchDirectory": true,
     "excludeDirectories": ["**/node_modules", "dist"]
   },
-    //TypeScript will know that request.user exists and conforms to your RequestUser type — no more ts(2339) errors.
   "include": ["src/**/*", "src/types/express.ts", "prisma/ValidateAdminAccess.ts", "public"] 
 }

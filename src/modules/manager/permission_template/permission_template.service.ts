@@ -214,7 +214,7 @@ export class PermissionTemplateService {
             },
           },
           PermissionTemplateDepartment: true,
-          roles: true,
+          user_roles: true,
         },
       });
 

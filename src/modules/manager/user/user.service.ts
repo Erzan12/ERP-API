@@ -35,9 +35,9 @@ export class UserService {
       select: {
         id: true,
         username: true,
-        roles: {
+        user_roles: {
           select: {
-            name: true,
+            role_name: true,
           },
         },
         stat: true,
@@ -135,7 +135,7 @@ export class UserService {
         },
         include: {
           employee: true,
-          roles: true,
+          user_roles: true,
         },
       });
 
@@ -241,7 +241,7 @@ export class UserService {
 
       return {
         status: 'success',
-        message: `User ${newUser.username} with Employee ID ${newUser.employee.employee_id} created with temporary password.`,
+        message: `User ${newUser.username} with Employee ID ${newUser.employee?.employee_id} created with temporary password.`,
         created_by: {
           id: creatorUser.id,
           name: admin,
@@ -332,7 +332,7 @@ export class UserService {
             await tx.user.update({
               where: { id: user.id },
               data: {
-                roles: {
+                user_roles: {
                   connect: { id: rp.role_id },
                 }
               }
