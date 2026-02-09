@@ -1,9 +1,9 @@
-import { Controller, Post, Body, Param, Get, Put, ParseIntPipe } from '@nestjs/common';
-import { Can } from '../../../components/decorators/can.decorator';
+import { Controller, Post, Body, Param, Get, Put, ParseIntPipe, ParseUUIDPipe } from '@nestjs/common';
+import { Can } from '../../../utils/decorators/can.decorator';
 import { CreateSubModuleDto } from './dto/create-sub-module.dto';
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
-import { SessionUser } from '../../../components/decorators/session-user.decorator';
-import { RequestUser } from '../../../components/types/request-user.interface';
+import { SessionUser } from '../../../utils/decorators/session-user.decorator';
+import { RequestUser } from '../../../utils/types/request-user.interface';
 import { SubModuleService } from './sub_module.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
@@ -11,9 +11,9 @@ import {
   ApiPatchResponse,
   ApiPostResponse,
   ApiGetResponse,
-} from 'src/components/helpers/swagger-response.helper';
+} from 'src/utils/helpers/swagger-response.helper';
 import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
-import { ACTION_READ, SYSTEM_MANAGEMENT } from 'src/components/constants/ability.constant';
+import { ACTION_READ, SYSTEM_MANAGEMENT } from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Admin - System Management')
@@ -35,7 +35,7 @@ export class SubModuleController {
   @ApiGetResponse('status: Success!')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getSubmodule(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.subModuleService.getSubmodule(id, user);
@@ -102,12 +102,12 @@ export class SubModuleController {
   @ApiPatchResponse('Sub module permission updated successfully')
   @Can({ action: 'update', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   updatePermission(
-    @Body() updateSubModulePermisisonDto: UpdateSubModulePermisisonDto,
+    @Body() dto: UpdateSubModulePermisisonDto,
     @SessionUser() user: RequestUser,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
   ) {
     return this.subModuleService.updateSubModulePerm(
-      updateSubModulePermisisonDto,
+      dto,
       user,
       id,
     );

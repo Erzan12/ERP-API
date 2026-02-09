@@ -1,6 +1,6 @@
 import { AbilityBuilder, AbilityClass, PureAbility } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
-import { ACTION_MAP, VALID_ACTIONS } from 'src/components/constants/action-map';
+import { ACTION_MAP, VALID_ACTIONS } from 'src/utils/constants/action-map';
 
 @Injectable()
 export class CaslAbilityService {
@@ -13,7 +13,7 @@ export class CaslAbilityService {
   //revamped version simplified
   defineAbilitiesFor(
     roles: {
-      id: number;
+      id: string;
       name: string;
       permissions: {
         action: string;

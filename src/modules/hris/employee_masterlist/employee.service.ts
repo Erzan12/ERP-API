@@ -5,12 +5,12 @@ import {
 } from '@nestjs/common';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreatePersonDto } from './dto/create-person.dto';
-import { RequestUser } from '../../../components/types/request-user.interface';
+import { RequestUser } from '../../../utils/types/request-user.interface';
 import { GetEmployeeDto } from './dto/get-employee.dto';
 import {
   CivilStatus,
   Gender,
-} from '../../../components/decorators/global.enums.decorator';
+} from '../../../utils/decorators/global.enums.decorator';
 import { CreateEmployeeWithDetailsDto } from './dto/create-employee-with-details.dto';
 import { UpdateEmployeeWithDetailsDto } from './dto/update-employee-with-details.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
@@ -22,7 +22,7 @@ export class EmployeeService {
 
   async createEmployee(
     createEmployeeWithDetails: CreateEmployeeWithDetailsDto,
-    user,
+    user: RequestUser,
   ) {
     return await this.prisma.$transaction(async (prisma) => {
       const { gender, civil_status } = createEmployeeWithDetails.person;
@@ -161,7 +161,7 @@ export class EmployeeService {
   }
 
   async createUniqueEmpID(
-    company_id: number,
+    company_id: string,
     hire_date: Date,
   ): Promise<string> {
     //fetch company abbreviation
@@ -210,7 +210,7 @@ export class EmployeeService {
     const canView = await this.prisma.userRole.findFirst({
       where: {
         user_id: user.id,
-        role_id: { in: [3, 6]}
+        role_id: { in: ["ee650664-5ce7-4b5d-9564-b7d05061e5da", "24e74f3c-c24f-4e82-b89d-bb5dc0251f37"]}
        },
     });
 
@@ -276,7 +276,7 @@ export class EmployeeService {
   //         }
   //     })
   // }
-  async getEmployee(id: number, user: RequestUser) {
+  async getEmployee(id: string, user: RequestUser) {
     // 1. Find the employee
     const employee = await this.prisma.employee.findUnique({
       where: { id },
@@ -311,7 +311,7 @@ export class EmployeeService {
   }
 
   async updateEmployee(
-    id: number,
+    id: string,
     updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
     user: RequestUser,
   ) {

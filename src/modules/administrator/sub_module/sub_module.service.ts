@@ -7,7 +7,7 @@ import {
 import { CreateSubModuleDto } from './dto/create-sub-module.dto';
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
 import { UnassignSubmodulePermissionsDto } from './dto/unassign-submodule.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
 import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
@@ -38,7 +38,7 @@ export class SubModuleService {
     };
   }
 
-  async getSubmodule(id: number, user: RequestUser) {
+  async getSubmodule(id: string, user: RequestUser) {
     const subModule = await this.prisma.subModule.findUnique({
       where: { id },
       include: {
@@ -167,16 +167,16 @@ export class SubModuleService {
   }
 
   async updateSubModulePerm(
-    updateSubModulePermissionDto: UpdateSubModulePermisisonDto,
+    dto: UpdateSubModulePermisisonDto,
     user: RequestUser,
-    id,
+    id: string
   ) {
     const { sub_module_permission_id, action, stat } =
-      updateSubModulePermissionDto;
+      dto;
 
     const existingSubModulePermission =
       await this.prisma.subModuleAction.findFirst({
-        where: { id: updateSubModulePermissionDto.sub_module_permission_id },
+        where: { id: sub_module_permission_id },
       });
 
     if (!existingSubModulePermission) {
@@ -188,7 +188,7 @@ export class SubModuleService {
     // }
 
     const updateSubModulePermission = await this.prisma.subModuleAction.update({
-      where: { id: updateSubModulePermissionDto.sub_module_permission_id },
+      where: { id: sub_module_permission_id },
       data: {
         id: existingSubModulePermission.id,
         action,
@@ -231,10 +231,10 @@ export class SubModuleService {
 
   // }
   async assignSubModulePermissions(
-    assignSubModPermsDto: AssignSubModulePermissionDto,
+    dto: AssignSubModulePermissionDto,
     user,
   ) {
-    const { action, sub_module_id } = assignSubModPermsDto;
+    const { action, sub_module_id } = dto;
 
     const subModule = await this.prisma.subModule.findFirst({
       where: { id: sub_module_id },

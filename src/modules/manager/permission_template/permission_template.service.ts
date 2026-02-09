@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreatePermissionTemplateDto } from 'src/modules/manager/permission_template/dto/create-permission-template.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AssignTemplateDto } from './dto/assign-template.dto';
 import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
@@ -29,7 +29,7 @@ export class PermissionTemplateService {
   }
 
   //get a permission template
-  async getPermissionTemplate(id: number, user: RequestUser) {
+  async getPermissionTemplate(id: string, user: RequestUser) {
     const permissionTemplate = await this.prisma.permissionTemplate.findUnique({
       where: { id },
     });
@@ -105,7 +105,7 @@ export class PermissionTemplateService {
   }
 
   //update existing permission template
-  async updatePermissionTemplate(id: number, dto: UpdatePermissionTemplateDto, user: RequestUser,
+  async updatePermissionTemplate(id: string, dto: UpdatePermissionTemplateDto, user: RequestUser,
   ) {
     return this.prisma.$transaction(async (tx) => {
       const { name, department_id, position_id, role_permission_ids } = dto;
@@ -302,7 +302,7 @@ export class PermissionTemplateService {
   }
 
   async getUserPermissionTemplate(
-    userPermissionTemplateId: number,
+    userPermissionTemplateId: string,
     user: RequestUser,
   ) {
     const userWithEmployee = await this.prisma.user.findUnique({

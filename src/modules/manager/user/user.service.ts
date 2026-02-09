@@ -13,7 +13,7 @@ import {
   DeactivateUserAccountDto,
   ReactivateUserAccountDto,
 } from './dto/user-account-status.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
@@ -258,8 +258,8 @@ export class UserService {
 
   //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
   async addUserRolePermissions(
-    userId: number,
-    rolePermissionIds: number[],
+    userId: string,
+    rolePermissionIds: string[],
     user: RequestUser,
   ) {
     return this.prisma.$transaction(async (tx) => {
@@ -374,7 +374,7 @@ export class UserService {
   }
 
   //for querying user info
-  async getUserPermissions(userId: number) {
+  async getUserPermissions(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {

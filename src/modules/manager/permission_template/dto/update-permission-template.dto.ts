@@ -21,7 +21,7 @@ export class UpdatePermissionTemplateDto {
     example: 1,
     description: 'ID of the department for this permission template',
   })
-  department_id: number;
+  department_id: string;
 
   @IsInt({ each: true })
   @IsOptional()
@@ -29,7 +29,7 @@ export class UpdatePermissionTemplateDto {
     example: 1,
     description: 'ID of the position for this permission template',
   })
-  position_id?: number;
+  position_id?: string;
 
   @IsArray()
   @ArrayNotEmpty()
@@ -38,5 +38,5 @@ export class UpdatePermissionTemplateDto {
     example: [1, 2, 3],
     description: 'List of role_permission IDs to associate with the template',
   })
-  role_permission_ids?: number[];
+  role_permission_ids?: string[];
 }

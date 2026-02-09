@@ -23,5 +23,5 @@ export class CreateUserWithRolePermissionDto {
     example: [1],
     description: 'The role permission IDs to assign to the user',
   })
-  role_permission_ids?: number[];
+  role_permission_ids?: string[];
 }

@@ -1,6 +1,6 @@
 // src/landing/landing.controller.ts
 import { Controller, Get, Render } from '@nestjs/common';
-import { Public } from 'src/components/decorators/public.decorator';
+import { Public } from 'src/utils/decorators/public.decorator';
 
 @Controller()
 export class LandingController {

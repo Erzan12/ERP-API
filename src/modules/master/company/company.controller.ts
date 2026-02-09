@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Put,
   Post,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -13,15 +14,15 @@ import {
   ACTION_READ,
   ACTION_UPDATE,
   MASTERTABLES,
-} from 'src/components/constants/ability.constant';
-import { Can } from 'src/components/decorators/can.decorator';
-import { SessionUser } from 'src/components/decorators/session-user.decorator';
+} from 'src/utils/constants/ability.constant';
+import { Can } from 'src/utils/decorators/can.decorator';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
-} from 'src/components/helpers/swagger-response.helper';
-import { RequestUser } from 'src/components/types/request-user.interface';
+} from 'src/utils/helpers/swagger-response.helper';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
@@ -47,7 +48,7 @@ export class CompanyController {
   @ApiGetResponse('Here is the company')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getCompany(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.companyService.getCompany(id, user);
@@ -71,7 +72,7 @@ export class CompanyController {
   @ApiPatchResponse('Company updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateCompany(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
     @SessionUser() user: RequestUser,
   ) {

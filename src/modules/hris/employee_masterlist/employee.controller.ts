@@ -6,26 +6,27 @@ import {
   Put,
   ParseIntPipe,
   Param,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { EmployeeService } from './employee.service';
 import { CreateEmployeeWithDetailsDto } from './dto/create-employee-with-details.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ApiBearerAuth, ApiTags, ApiBody, ApiOperation } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
-} from 'src/components/helpers/swagger-response.helper';
+} from 'src/utils/helpers/swagger-response.helper';
 import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
   EMPLOYEE_MASTERLIST,
-} from 'src/components/constants/ability.constant';
+} from 'src/utils/constants/ability.constant';
 import { UpdateEmployeeWithDetailsDto } from './dto/update-employee-with-details.dto';
 import { GetEmployeeDto } from './dto/get-employee.dto';
-import { Can } from 'src/components/decorators/can.decorator';
-import { SessionUser } from 'src/components/decorators/session-user.decorator';
+import { Can } from 'src/utils/decorators/can.decorator';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';;
 
 @ApiBearerAuth('access-token')
 @ApiTags('Human Resources')
@@ -49,7 +50,7 @@ export class EmployeeController {
   @ApiGetResponse('Employees information')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   getEmployee(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.employeeService.getEmployee(id, user);
@@ -80,7 +81,7 @@ export class EmployeeController {
   @ApiPatchResponse('Employee information updated successfully')
   @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
   updateEmployee(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @Body() updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {

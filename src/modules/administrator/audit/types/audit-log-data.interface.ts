@@ -1,4 +1,4 @@
-import { RequestUser } from "src/components/types/request-user.interface";
+import { RequestUser } from "src/utils/types/request-user.interface";
 
 export interface AuditLogData{
     user?: RequestUser;
@@ -15,7 +15,7 @@ export interface AuditLogData{
     status_code?: number;
     success?: boolean;
     error_message?: string;
-    department_id?: number; //new: department tracking
+    department_id?: string; //new: department tracking
     session_id?: string;
     request_id?: string; //new: correlate operations
     severity?: 'INFO' | 'WARNING' | 'CRITICAL'; //new: severity levels

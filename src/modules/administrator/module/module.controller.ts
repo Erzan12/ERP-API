@@ -5,18 +5,19 @@ import {
   Get,
   Put,
   Param,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ModuleService } from './module.service';
-import { Can } from '../../../components/decorators/can.decorator';
-import { SessionUser } from '../../../components/decorators/session-user.decorator';
-import { RequestUser } from '../../../components/types/request-user.interface';
+import { Can } from '../../../utils/decorators/can.decorator';
+import { SessionUser } from '../../../utils/decorators/session-user.decorator';
+import { RequestUser } from '../../../utils/types/request-user.interface';
 import { CreateModuleDto } from './dto/create-module.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
-} from 'src/components/helpers/swagger-response.helper';
+} from 'src/utils/helpers/swagger-response.helper';
 import { UpdateModuleDto } from './dto/update-module.dto';
 
 @ApiBearerAuth('access-token')
@@ -39,7 +40,7 @@ export class ModuleController {
   @Can({ action: 'read', subject: 'System Management' }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModule(
     @SessionUser() user: RequestUser,
-    @Param('id') id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
   ) {
     return this.moduleService.getModule(user, id); // 👈 pass the id to your service
   }
@@ -66,7 +67,7 @@ export class ModuleController {
   updateModule(
     @Body() updateModuleDto: UpdateModuleDto,
     @SessionUser() user: RequestUser,
-    @Param('id') id: number, //can be number can be string depends on the defined prisma value if int or string
+    @Param('id', new ParseUUIDPipe) id: string, //can be number can be string depends on the defined prisma value if int or string
   ) {
     return this.moduleService.updateMod(updateModuleDto, user, id);
   }

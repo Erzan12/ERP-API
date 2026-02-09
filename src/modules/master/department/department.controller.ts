@@ -6,25 +6,26 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dto/create-dept.dto';
 import { UpdateDepartmentDto } from './dto/update-dept.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
-import { SessionUser } from 'src/components/decorators/session-user.decorator';
-import { Can } from 'src/components/decorators/can.decorator';
+import { RequestUser } from 'src/utils/types/request-user.interface';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+import { Can } from 'src/utils/decorators/can.decorator';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
-} from 'src/components/helpers/swagger-response.helper';
+} from 'src/utils/helpers/swagger-response.helper';
 import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
   MASTERTABLES,
-} from 'src/components/constants/ability.constant';
+} from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Admin - Mastertables')
@@ -45,7 +46,7 @@ export class DepartmentController {
   @ApiGetResponse('Here is the department')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDepartment(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.departmentService.getDepartment(id, user);
@@ -75,7 +76,7 @@ export class DepartmentController {
   @ApiPatchResponse('Department updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateDepartment(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @Body() updateDeptDto: UpdateDepartmentDto,
     @SessionUser() user: RequestUser,
   ) {

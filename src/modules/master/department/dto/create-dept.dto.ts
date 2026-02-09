@@ -29,15 +29,15 @@ export class CreateDepartmentDto {
   })
   @Transform(({ value }) => {
     console.log('Transforming status:', value);
-    if (value === 'corporate services') return 1;
-    if (value === 'asset management') return 2;
-    if (value === 'marketing and operations') return 3;
-    if (value === 'cebu air inc') return 4;
+    if (value === 'corporate services') return "233098f7-9f12-4faf-8131-2c3feb81698c";
+    if (value === 'asset management') return "274a1a571-ed6b-4426-b2ee-893d3165e994";
+    if (value === 'marketing and operations') return "3";
+    if (value === 'cebu air inc') return "4";
     throw new BadRequestException(
       `Invalid division value: ${value}. Allowed values are "corporate services", "asset management", "marketing and operations", "cebu air inc".`,
     );
   })
-  division_id?: number;
+  division_id?: string;
 
   // @ApiProperty({ name: 'status', example: 'active', description: 'active = 1', })
   // @Expose({ name: 'status' }) // maps "status" input field to this property

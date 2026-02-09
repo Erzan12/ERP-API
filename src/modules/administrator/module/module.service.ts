@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateModuleDto } from './dto/create-module.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { UpdateModuleDto } from './dto/update-module.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
@@ -64,7 +64,7 @@ export class ModuleService {
     };
   }
 
-  async getModule(user: RequestUser, id: number) {
+  async getModule(user: RequestUser, id: string) {
     const availableSubModules = await this.prisma.subModule.findMany();
 
     if (!availableSubModules) {
@@ -109,7 +109,7 @@ export class ModuleService {
     };
   }
 
-  async updateMod(updateModuleDto: UpdateModuleDto, user: RequestUser, id: number) {
+  async updateMod(updateModuleDto: UpdateModuleDto, user: RequestUser, id: string) {
     const existingModule = await this.prisma.module.findUnique({
       where: { id },
       select: {

@@ -83,7 +83,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -122,7 +122,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -698,7 +698,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -826,7 +826,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -865,7 +865,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -1073,7 +1073,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -1112,7 +1112,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -1236,7 +1236,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -1319,7 +1319,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -1443,7 +1443,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -1482,7 +1482,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -1534,7 +1534,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -1605,7 +1605,7 @@
             "required": true,
             "in": "query",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           },
           {
@@ -1727,7 +1727,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           },
           {
@@ -1866,7 +1866,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -1905,7 +1905,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2030,7 +2030,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2069,7 +2069,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2194,7 +2194,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2233,7 +2233,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2358,7 +2358,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2388,18 +2388,16 @@
         "tags": [
           "Admin - Mastertables"
         ]
-      }
-    },
-    "/administrator/mastertables/divisions/{divisionId}": {
+      },
       "put": {
         "operationId": "DivisionController_updateDivision",
         "parameters": [
           {
-            "name": "divisionId",
+            "name": "id",
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2556,7 +2554,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2595,7 +2593,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2647,7 +2645,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2846,22 +2844,22 @@
         "type": "object",
         "properties": {
           "company": {
-            "type": "number",
+            "type": "string",
             "example": "abmci, svsc, lmvc, abisc ",
             "description": "Company of the employee"
           },
           "department": {
-            "type": "number",
+            "type": "string",
             "example": "it department, hr department",
             "description": "Department of the employee"
           },
           "position": {
-            "type": "number",
+            "type": "string",
             "example": "it manager, administrator, it staff, hr manager, hr clerk",
             "description": "Position of the employee"
           },
           "division": {
-            "type": "number",
+            "type": "string",
             "example": "Asset Management, Corporate Services",
             "description": "Division of the employee"
           },
@@ -2881,7 +2879,7 @@
             "description": "Pay frequency of the employee salary"
           },
           "employment_status": {
-            "type": "number",
+            "type": "string",
             "example": "regular, on Leave, terminated, resigned, probationary",
             "description": "The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated"
           },
@@ -3069,7 +3067,7 @@
         "type": "object",
         "properties": {
           "userId": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "The id of the user to add role permission"
           },
@@ -3099,7 +3097,7 @@
         "type": "object",
         "properties": {
           "user_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "The id number of the user you want to deactivate"
           }
@@ -3112,7 +3110,7 @@
         "type": "object",
         "properties": {
           "user_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "The id number of the user you want to reactivate"
           }
@@ -3130,7 +3128,7 @@
             "description": "The name of the sub module"
           },
           "module_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "Module ID of the submodule "
           }
@@ -3174,8 +3172,8 @@
             }
           },
           "sub_module_id": {
-            "type": "number",
-            "example": 1,
+            "type": "string",
+            "example": "UUID",
             "description": "ID of the Sub Module"
           }
         },
@@ -3188,8 +3186,8 @@
         "type": "object",
         "properties": {
           "sub_module_permission_id": {
-            "type": "number",
-            "example": 1,
+            "type": "string",
+            "example": "UUID",
             "description": "ID of the sub module permission you want to update"
           },
           "action": {
@@ -3272,22 +3270,22 @@
             }
           },
           "sub_module_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "ID of the Sub Module"
           },
           "role_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "ID of the Role"
           },
           "department_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "ID of the Department"
           },
           "position_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "ID of the Position"
           }
@@ -3351,7 +3349,7 @@
             "description": "Sorting number of the position"
           },
           "department": {
-            "type": "number",
+            "type": "string",
             "example": "human resources = 1, information technology = 2, accounting = 6",
             "description": "The Department where the position is available"
           },
@@ -3382,7 +3380,7 @@
             "description": "Sorting number of the position"
           },
           "department": {
-            "type": "number",
+            "type": "string",
             "example": "human resources, information technology, accounting",
             "description": "The Department where the position is available"
           },
@@ -3413,7 +3411,7 @@
             "description": "Sorting number of the department"
           },
           "division": {
-            "type": "number",
+            "type": "string",
             "example": "corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 4",
             "description": "The Division where the department belongs to"
           },
@@ -3444,7 +3442,7 @@
             "description": "Sorting number of the department"
           },
           "division": {
-            "type": "number",
+            "type": "string",
             "example": "corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 3",
             "description": "The Division where the department belongs to"
           },
@@ -3580,8 +3578,8 @@
             "description": "The name of the division"
           },
           "division_head_id": {
-            "type": "number",
-            "example": 3,
+            "type": "string",
+            "example": "Division UUID",
             "description": "ID number of the division head it belongs to"
           },
           "status": {
@@ -3629,20 +3627,20 @@
             "example": "Accounting Clerk Template"
           },
           "department_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "ID of the department for this permission template"
           },
           "position_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "ID of the position for this permission template"
           },
           "role_permission_ids": {
             "example": [
-              1,
-              2,
-              3
+              "UUID1",
+              "UUID2",
+              "UUID3"
             ],
             "description": "List of role_permission IDs to associate with the template",
             "type": "array",
@@ -3662,14 +3660,14 @@
         "type": "object",
         "properties": {
           "user_id": {
-            "type": "number",
-            "example": "1",
-            "description": "The user id of the user"
+            "type": "string",
+            "example": "UUID",
+            "description": "The user uuid of the user"
           },
           "template_id": {
-            "type": "number",
-            "example": "1",
-            "description": "The permission template id to be assigned to user"
+            "type": "string",
+            "example": "UUID",
+            "description": "The permission template uuid to be assigned to user"
           }
         },
         "required": [
@@ -3685,12 +3683,12 @@
             "example": "Accounting Clerk Template"
           },
           "department_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "ID of the department for this permission template"
           },
           "position_id": {
-            "type": "number",
+            "type": "string",
             "example": 1,
             "description": "ID of the position for this permission template"
           },

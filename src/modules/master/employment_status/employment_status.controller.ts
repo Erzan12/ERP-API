@@ -6,24 +6,25 @@ import {
   Put,
   Param,
   ParseIntPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { EmploymentStatusService } from './employment_status.service';
-import { Can } from '../../../components/decorators/can.decorator';
-import { SessionUser } from '../../../components/decorators/session-user.decorator';
+import { Can } from '../../../utils/decorators/can.decorator';
+import { SessionUser } from '../../../utils/decorators/session-user.decorator';
 import { CreateEmployeeStatusDto } from './dto/create-emp-stat.dto';
-import { RequestUser } from '../../../components/types/request-user.interface';
+import { RequestUser } from '../../../utils/types/request-user.interface';
 import { UpdateEmpStatusDto } from './dto/update-emp-stat.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
-} from 'src/components/helpers/swagger-response.helper';
+} from 'src/utils/helpers/swagger-response.helper';
 import {
   ACTION_READ,
   ACTION_UPDATE,
   MASTERTABLES,
-} from 'src/components/constants/ability.constant';
+} from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Admin - Mastertables')
@@ -46,7 +47,7 @@ export class EmploymentStatusController {
   @ApiGetResponse('Here is the employment status.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getEmployeeStat(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.employmentStatusService.getEmployeeStat(id, user);
@@ -73,7 +74,7 @@ export class EmploymentStatusController {
   @ApiPatchResponse('Employee status details updated successfully.')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateEmployeeStatus(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @Body() updateEmpStatusDto: UpdateEmpStatusDto,
     @SessionUser() user: RequestUser,
   ) {
