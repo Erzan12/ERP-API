@@ -17,7 +17,7 @@ export class SubModuleService {
   constructor(private prisma: PrismaService) {}
 
   async getSubModules(user: RequestUser) {
-    const existingSubModules = await this.prisma.subModule.findMany({
+    const subModules = await this.prisma.subModule.findMany({
       where: { stat: 1 },
       include: {
         module: true,
@@ -25,7 +25,7 @@ export class SubModuleService {
       },
     });
 
-    if (existingSubModules.length === 0) {
+    if (subModules.length === 0) {
       throw new BadRequestException('No available or active sub module exist!');
     }
 
@@ -33,7 +33,7 @@ export class SubModuleService {
       status: 'success',
       message: 'Here are the list of Sub Modules',
       data: {
-        existingSubModules,
+        subModules,
       },
     };
   }

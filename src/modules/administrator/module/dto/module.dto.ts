@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsString, IsNotEmpty } from 'class-validator';
 ApiProperty
 
@@ -11,3 +11,5 @@ export class CreateModuleDto {
   })
   name: string;
 }
+
+export class UpdateModuleDto extends PartialType(CreateModuleDto) {}

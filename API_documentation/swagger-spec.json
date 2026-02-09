@@ -1099,7 +1099,7 @@
             "access-token": []
           }
         ],
-        "summary": "Get module by ID",
+        "summary": "Get a module",
         "tags": [
           "Admin - System Management"
         ]

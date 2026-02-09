@@ -38,7 +38,6 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 export class RoleController {
   constructor(
     private roleService: RoleService,
-    private prisma: PrismaService,
   ) {}
 
   //get all available roles
