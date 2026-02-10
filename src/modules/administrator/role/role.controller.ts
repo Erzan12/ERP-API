@@ -33,8 +33,8 @@ import {
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Admin - System Management')
-@Controller('administrator/')
+@ApiTags('Admin')
+@Controller('administrator')
 export class RoleController {
   constructor(
     private roleService: RoleService,

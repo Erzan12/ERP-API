@@ -30,7 +30,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';;
 
 @ApiBearerAuth('access-token')
 @ApiTags('Human Resources')
-@Controller('hr')
+@Controller('hris')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 

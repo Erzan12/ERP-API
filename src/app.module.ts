@@ -7,7 +7,6 @@ import { AdministratorModule } from 'src/modules/administrator/administrator.mod
 import { APP_GUARD } from '@nestjs/core';
 import { CustomJwtAuthGuard } from './middleware/jwt/jwt.auth.guard';
 import { AuthController } from './auth/auth.controller';
-import { HomeController, ProfileController } from './global/global.controller';
 import { SecurityClearanceGuard } from './middleware/security_clearance/security-clearance.guard';
 import { UserService } from './modules/manager/user/user.service';
 import { UserController } from './modules/manager/user/user.controller';
@@ -90,8 +89,6 @@ import { LandingModule } from './landing/landing.module';
   ],
   controllers: [
     EmployeeController,
-    HomeController,
-    ProfileController,
     AuthController,
     UserController,
     UserLocationController,

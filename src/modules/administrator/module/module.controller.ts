@@ -22,8 +22,8 @@ import { UpdateModuleDto } from './dto/update-module.dto';
 import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, SYSTEM_MANAGEMENT } from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Admin - System Management')
-@Controller('administrator/system-management')
+@ApiTags('Admin')
+@Controller('system-management')
 export class ModuleController {
   constructor(private moduleService: ModuleService) {}
 
