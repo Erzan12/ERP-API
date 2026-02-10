@@ -4,14 +4,14 @@ import { IsNotEmpty, IsInt } from 'class-validator';
 export class AssignTemplateDto {
   @IsInt()
   @IsNotEmpty()
-  @ApiProperty({ example: '1', description: 'The user id of the user' })
-  user_id: number;
+  @ApiProperty({ example: 'UUID', description: 'The user uuid of the user' })
+  user_id: string;
 
   @IsInt()
   @IsNotEmpty()
   @ApiProperty({
-    example: '1',
-    description: 'The permission template id to be assigned to user',
+    example: 'UUID',
+    description: 'The permission template uuid to be assigned to user',
   })
-  template_id: number;
+  template_id: string;
 }

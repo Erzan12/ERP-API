@@ -42,9 +42,13 @@ services:
       - .:/app
     command: npx prisma studio
     ports:
-      - "5555:5555"
+      - "51212:51212"
     depends_on:
       - postgres
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/abas_v2
 
   pgadmin:
     image: dpage/pgadmin4:7.6      #pin to stable version

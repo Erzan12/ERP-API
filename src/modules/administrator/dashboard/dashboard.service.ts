@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @Injectable()
@@ -14,14 +14,14 @@ export class DashboardService {
     const roles = await this.prisma.role.findMany({
       include: {
         _count: {
-          select: { users: true },
+          select: { user_roles: true },
         },
       },
     });
 
     const rolesSummary = roles.map((role) => ({
       role: role.name,
-      total_users: role._count.users,
+      total_users: role._count.user_roles,
     }));
 
     const onlineUsers = await this.prisma.user.findMany({

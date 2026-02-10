@@ -13,5 +13,5 @@ export class CreateSubModuleDto {
   @IsInt()
   @IsNotEmpty()
   @ApiProperty({ example: 1, description: 'Module ID of the submodule ' })
-  module_id: number;
+  module_id: string;
 }

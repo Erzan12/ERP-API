@@ -12,7 +12,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   CivilStatus,
   Gender,
-} from '../../../../components/decorators/global.enums.decorator';
+} from '../../../../utils/decorators/global.enums.decorator';
 
 export class CreatePersonDto {
   @IsString()

@@ -24,7 +24,7 @@ export class CreateRolePermissionDto {
   @IsInt()
   @IsNotEmpty()
   @ApiProperty({ example: 1, description: 'ID of the Sub Module' })
-  sub_module_id: number;
+  sub_module_id: string;
 
   // @IsInt()
   // @IsOptional()
@@ -34,16 +34,16 @@ export class CreateRolePermissionDto {
   @IsInt()
   @IsNotEmpty()
   @ApiProperty({ example: 1, description: 'ID of the Role' })
-  role_id: number;
+  role_id: string;
 
   @IsInt()
   @IsNotEmpty()
   @ApiProperty({ example: 1, description: 'ID of the Department' })
-  department_id: number;
+  department_id: string;
 
   @IsInt()
   @IsNotEmpty()
   @IsOptional()
   @ApiProperty({ example: 1, description: 'ID of the Position' })
-  position_id?: number;
+  position_id?: string;
 }

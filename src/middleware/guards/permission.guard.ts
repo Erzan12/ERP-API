@@ -7,13 +7,13 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { CaslAbilityService } from '../casl/casl.service';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
   PERMISSIONS_KEY,
   PermissionMetadata,
-} from 'src/components/decorators/can.decorator';
-import { ACTION_MAP, VALID_ACTIONS } from 'src/components/constants/action-map';
-import { IS_PUBLIC_KEY } from 'src/components/decorators/public.decorator';
+} from 'src/utils/decorators/can.decorator';
+import { ACTION_MAP, VALID_ACTIONS } from 'src/utils/constants/action-map';
+import { IS_PUBLIC_KEY } from 'src/utils/decorators/public.decorator';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 
 //revamped version clean up and simplified

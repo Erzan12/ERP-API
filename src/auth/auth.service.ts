@@ -11,7 +11,7 @@ import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @Injectable()
 export class AuthService {

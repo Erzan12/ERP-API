@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
-import { RequestUser } from '../../../components/types/request-user.interface';
+import { RequestUser } from '../../../utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class PositionService {
   constructor(private prisma: PrismaService) {}
 
   //get a single position
-  async getPosition(id: number, user: RequestUser) {
+  async getPosition(id: string, user: RequestUser) {
     const position = await this.prisma.position.findUnique({
       where: { id },
     });
@@ -131,7 +131,7 @@ export class PositionService {
   }
 
   async updatePosition(
-    id: number,
+    id: string,
     updatePositionDto: UpdatePositionDto,
     user: RequestUser,
   ) {

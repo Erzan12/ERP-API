@@ -3,8 +3,8 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateModuleDto } from './dto/create-module.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { CreateModuleDto } from './dto/module.dto';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { UpdateModuleDto } from './dto/update-module.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
@@ -64,52 +64,84 @@ export class ModuleService {
     };
   }
 
-  async getModule(user: RequestUser, id: number) {
-    const availableSubModules = await this.prisma.subModule.findMany();
+  async getModule(user: RequestUser, id: string) {
+    const subModules = await this.prisma.subModule.findMany();
 
-    if (!availableSubModules) {
-      throw new BadRequestException('No available submodules for this module');
+    if(subModules.length === 0) {
+      throw new NotFoundException('No available submodules for this module')
     }
 
     const module = await this.prisma.module.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+      include: {
+        sub_module: true,
+      }
+    })
 
-    if (!module) {
-      throw new NotFoundException(`Module with ID ${id} not found`);
+    if(!module) {
+      throw new NotFoundException('Module does not exist')
     }
 
     return {
       status: 'success',
-      message: `List of Sub Modules added to '${module.name}' Module`,
+      message: 'Here is the module with its submodule',
       data: {
-        availableSubModules,
-      },
-    };
+        module
+      }
+    }
   }
+
+  // async getSubModulePerModule(user: RequestUser, id: string) {
+  //   const availableSubModules = await this.prisma.subModule.findMany();
+
+  //   if (!availableSubModules) {
+  //     throw new BadRequestException('No available submodules for this module');
+  //   }
+
+  //   const module = await this.prisma.module.findUnique({
+  //     where: { id },
+  //     select: {
+  //       id: true,
+  //       name: true,
+  //     },
+  //   });
+
+  //   if (!module) {
+  //     throw new NotFoundException(`Module with ID ${id} not found`);
+  //   }
+
+  //   return {
+  //     status: 'success',
+  //     message: `List of Sub Modules added to '${module.name}' Module`,
+  //     data: {
+  //       availableSubModules,
+  //     },
+  //   };
+  // }
 
   // async list of all the modules
   async getModules(user: RequestUser) {
-    const modules = await this.prisma.module.findMany();
+    const modules = await this.prisma.module.findMany({
+      where: { stat: 1 },
+      include: {
+        sub_module: true,
+      }
+    });
 
-    if (!modules) {
+    if (modules.length === 0) {
       throw new NotFoundException('No available modules found!');
     }
 
     return {
       status: 'success',
-      message: 'List of all the modules added!',
+      message: 'Here are the list of Sub Modules',
       data: {
         modules,
       },
     };
   }
 
-  async updateMod(updateModuleDto: UpdateModuleDto, user: RequestUser, id: number) {
+  async updateModude(updateModuleDto: UpdateModuleDto, user: RequestUser, id: string) {
     const existingModule = await this.prisma.module.findUnique({
       where: { id },
       select: {
@@ -153,7 +185,7 @@ export class ModuleService {
 
     return {
       status: 'success',
-      message: `${updateModule.name} Module has been updated successfully!`,
+      message: `Module has been updated successfully!`,
       updated_by: {
         id: requestUser.id,
         name: userName,

@@ -10,7 +10,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 ////////////////////////////////////////
@@ -18,7 +17,7 @@ datasource db {
 ////////////////////////////////////////
 
 model Person {
-  id                        Int            @id @default(autoincrement())
+  id                        String         @id @default(uuid()) @db.Uuid
   first_name                String
   last_name                 String
   middle_name               String?
@@ -48,8 +47,8 @@ model Person {
 }
 
 model EmailAddress {
-  id            Int      @id @default(autoincrement())
-  person_id     Int
+  id            String   @id @default(uuid()) @db.Uuid
+  person_id     String   @db.Uuid
   email_address String
   email_type    String
   is_primary    Boolean
@@ -62,9 +61,9 @@ model EmailAddress {
 }
 
 model User {
-  id                       Int                  @id @default(autoincrement())
-  employee_id              Int                  @unique
-  person_id                Int
+  id                       String               @id @default(uuid()) @db.Uuid
+  employee_id              String               @unique @db.Uuid
+  person_id                String               @db.Uuid
   username                 String               @unique
   password                 String
   email                    String               @unique
@@ -90,15 +89,14 @@ model User {
   employee                     Employee             @relation(fields: [employee_id], references: [id], onDelete: Cascade)
   person                       Person               @relation(fields: [person_id], references: [id], onDelete: Cascade)
   
-  // Implicit many-to-many relation with Role
-  roles                        Role[]               
+  // Implicit many-to-many relation with Role              
 
   @@index([person_id])
   @@index([employee_id])
 }
 
 model UserLocation {
-  id              Int      @id @default(autoincrement())
+  id              String      @id @default(uuid()) @db.Uuid
   location_name   String
   address         String
   stat            Int      @default(1)
@@ -110,8 +108,8 @@ model UserLocation {
 }
 
 model UserToken {
-  id         Int      @id @default(autoincrement())
-  user_id    Int
+  id         String   @id @default(uuid()) @db.Uuid
+  user_id    String   @db.Uuid
   user_token String   @unique
   status     Boolean  @default(false)
   created_at DateTime @default(now())
@@ -122,8 +120,8 @@ model UserToken {
 }
 
 model PasswordResetToken {
-  id             Int      @id @default(autoincrement())
-  user_id        Int
+  id             String   @id @default(uuid()) @db.Uuid
+  user_id        String   @db.Uuid
   expires_at     DateTime
   password_token String   @unique
   is_used        Boolean  @default(false)
@@ -139,7 +137,7 @@ model PasswordResetToken {
 ////////////////////////////////////////
 
 model Company {
-  id           Int        @id @default(autoincrement())
+  id           String     @id @default(uuid()) @db.Uuid
   name         String
   address      String?
   telephone_no String?
@@ -157,9 +155,9 @@ model Company {
 }
 
 model Division {
-  id               Int          @id @default(autoincrement())
+  id               String     @id @default(uuid()) @db.Uuid
   name             String
-  division_head_id Int?
+  division_head_id String?
   stat             Int          @default(1)
   created_at       DateTime     @default(now())
   updated_at       DateTime     @updatedAt
@@ -171,12 +169,12 @@ model Division {
 }
 
 model Department {
-  id                 Int          @id @default(autoincrement())
+  id                 String       @id @default(uuid()) @db.Uuid
   name               String
-  division_id        Int
+  division_id        String       @db.Uuid
   sorting            Int?
   stat               Int          @default(1)
-  department_head_id Int?
+  department_head_id String?
   created_at         DateTime     @default(now())
   updated_at         DateTime     @updatedAt
 
@@ -191,10 +189,10 @@ model Department {
 }
 
 model Position {
-  id                           Int                            @id @default(autoincrement())
+  id                           String                         @id @default(uuid()) @db.Uuid
   name                         String                         @db.VarChar(255)
   sorting                      Int?
-  department_id                Int
+  department_id                String                         @db.Uuid
   stat                         Int                            @default(1)
   created_at                   DateTime                       @default(now())
   updated_at                   DateTime                       @updatedAt
@@ -208,17 +206,17 @@ model Position {
 }
 
 model Employee {
-  id                        Int              @id @default(autoincrement())
-  company_id                Int
-  person_id                 Int              @unique
+  id                        String           @id @default(uuid()) @db.Uuid
+  company_id                String           @db.Uuid
+  person_id                 String           @unique @db.Uuid
   employee_id               String           @unique
-  department_id             Int
-  position_id               Int
-  division_id               Int?
+  department_id             String           @db.Uuid
+  position_id               String           @db.Uuid
+  division_id               String           @db.Uuid
   hire_date                 DateTime
   salary                    Decimal
   pay_frequency             String
-  employment_status_id      Int
+  employment_status_id      String           @db.Uuid
   monthly_equivalent_salary Decimal
   created_at                DateTime         @default(now())
   updated_at                DateTime         @updatedAt
@@ -231,7 +229,7 @@ model Employee {
   department                Department       @relation(fields: [department_id], references: [id])
   person                    Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
   position                  Position         @relation(fields: [position_id], references: [id])
-  division                  Division?        @relation(fields: [division_id], references: [id])
+  division                  Division        @relation(fields: [division_id], references: [id])
   user                      User?
 
   @@index([department_id])
@@ -239,7 +237,7 @@ model Employee {
 }
 
 model EmploymentStatus {
-  id         Int        @id @default(autoincrement())
+  id         String     @id @default(uuid()) @db.Uuid
   code       String     @unique
   label      String
   created_at DateTime   @default(now())
@@ -252,7 +250,7 @@ model EmploymentStatus {
 ////////////////////////////////////////
 
 model Role {
-  id                  Int                  @id @default(autoincrement())
+  id                  String               @id @default(uuid()) @db.Uuid
   name                String               @unique
   description         String
   stat                Int                  @default(1)
@@ -262,13 +260,12 @@ model Role {
   role_permissions    RolePermission[]
   user_roles          UserRole[]
   permission_template PermissionTemplate[]
-  users               User[]
 }
 
 model UserRole {
-  id               Int              @id @default(autoincrement())
-  user_id          Int
-  role_id          Int
+  id               String           @id @default(uuid()) @db.Uuid
+  user_id          String           @db.Uuid
+  role_id          String           @db.Uuid
   role_name        String
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
@@ -282,14 +279,14 @@ model UserRole {
 }
 
 model RolePermission {
-  id                       Int            @id @default(autoincrement())
-  role_id                  Int
+  id                       String         @id @default(uuid()) @db.Uuid
+  role_id                  String         @db.Uuid
   role_name                String
-  action                   String
-  sub_module_permission_id Int
-  sub_module_id            Int
-  department_id            Int
-  position_id              Int?
+  action                   String   
+  sub_module_permission_id String         @db.Uuid
+  sub_module_id            String         @db.Uuid
+  department_id            String         @db.Uuid
+  position_id              String?        @db.Uuid
   stat                     Int            @default(1)
   created_at               DateTime       @default(now())
   updated_at               DateTime       @updatedAt
@@ -309,11 +306,11 @@ model RolePermission {
 }
 
 model UserPermission {
-  id                 Int            @id @default(autoincrement())
+  id                 String         @id @default(uuid()) @db.Uuid
   action             String
-  user_id            Int
-  user_role_id       Int
-  role_permission_id Int
+  user_id            String         @db.Uuid
+  user_role_id       String         @db.Uuid
+  role_permission_id String         @db.Uuid
   created_at         DateTime       @default(now())
   updated_at         DateTime       @updatedAt
 
@@ -330,12 +327,11 @@ model UserPermission {
 ////////////////////////////////////////'
 
 model AuditLog {
-  id            Int     @id @default(autoincrement())
-
+  id            String         @id @default(uuid()) @db.Uuid
   //who performed the action
-  user_id       Int?
+  user_id       String?        @db.Uuid
   user_email    String?
-  employee_id   Int?    //link to employee for better tracking
+  employee_id   String?    //link to employee for better tracking
   user          User?   @relation(fields: [user_id], references: [id], onDelete: SetNull)
 
   //what action was performed
@@ -360,7 +356,7 @@ model AuditLog {
   error_message String? @db.Text //use text for longer error messages
 
   //metadata
-  department_id Int?    //track which department the action relates to
+  department_id String?    @db.Uuid   //track which department the action relates to
   session_id    String? //track user sessions
   request_id    String? //for correlating related operations
 
@@ -388,7 +384,7 @@ model AuditLog {
 ////////////////////////////////////////
 
 model Module {
-  id         Int         @id @default(autoincrement())
+  id         String      @id @default(uuid()) @db.Uuid
   name       String
   stat       Int         @default(1)
   created_at DateTime    @default(now())
@@ -399,9 +395,9 @@ model Module {
 }
 
 model SubModule {
-  id                     Int                   @id @default(autoincrement())
+  id                     String                @id @default(uuid()) @db.Uuid
   name                   String
-  module_id              Int
+  module_id              String                @db.Uuid
   stat                   Int                   @default(1)
   created_at             DateTime              @default(now())
   updated_at             DateTime              @updatedAt
@@ -414,7 +410,7 @@ model SubModule {
 }
 
 model SubModuleAction {
-  id                    Int                   @id @default(autoincrement())
+  id                    String                @id @default(uuid()) @db.Uuid
   action                String
   created_at            DateTime              @default(now())
   updated_at            DateTime              @updatedAt
@@ -423,10 +419,10 @@ model SubModuleAction {
 }
 
 model SubModulePermission {
-  id                   Int              @id @default(autoincrement())
+  id                   String           @id @default(uuid()) @db.Uuid
   action               String
-  sub_module_action_id Int
-  sub_module_id        Int
+  sub_module_action_id String           @db.Uuid
+  sub_module_id        String           @db.Uuid
   created_at           DateTime         @default(now())
   updated_at           DateTime         @updatedAt
   
@@ -442,9 +438,9 @@ model SubModulePermission {
 ////////////////////////////////////////
 
 model PermissionTemplate {
-  id            Int      @id @default(autoincrement())
+  id            String   @id @default(uuid()) @db.Uuid
   name          String
-  department_id Int
+  department_id String   @db.Uuid
   stat          Int      @default(1)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
@@ -459,11 +455,11 @@ model PermissionTemplate {
 }
 
 model PermissionTemplateDepartment {
-  id                     Int                @id @default(autoincrement())
-  permission_template_id Int
-  user_id                Int
-  department_id          Int
-  position_id            Int?
+  id                     String             @id @default(uuid()) @db.Uuid
+  permission_template_id String             @db.Uuid
+  user_id                String             @db.Uuid
+  department_id          String             @db.Uuid
+  position_id            String?            @db.Uuid
   position               Position?          @relation(fields: [position_id], references: [id])
   department             Department         @relation(fields: [department_id], references: [id], onDelete: Cascade)
   permission_template    PermissionTemplate @relation(fields: [permission_template_id], references: [id])
@@ -478,10 +474,10 @@ model PermissionTemplateDepartment {
 }
 
 model PermissionTemplateRolePermission {
-  id                                Int @id @default(autoincrement())
-  permission_template_id            Int
-  role_permission_id                Int
-  permission_template_department_id Int
+  id                                String                    @id @default(uuid()) @db.Uuid
+  permission_template_id            String                    @db.Uuid
+  role_permission_id                String                    @db.Uuid
+  permission_template_department_id String                    @db.Uuid
 
   permission_template            PermissionTemplate           @relation(fields: [permission_template_id], references: [id], onDelete: Cascade)
   role_permissions               RolePermission               @relation(fields: [role_permission_id], references: [id])

@@ -6,20 +6,21 @@ import {
   Put,
   Post,
   Get,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { UserLocationService } from './user_location.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateUserLocationDto } from './dto/create-user-location.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
-import { SessionUser } from 'src/components/decorators/session-user.decorator';
-import { Can } from 'src/components/decorators/can.decorator';
+import { RequestUser } from 'src/utils/types/request-user.interface';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+import { Can } from 'src/utils/decorators/can.decorator';
 import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
   MASTERTABLES,
-} from 'src/components/constants/ability.constant';
-import { ApiGetResponse } from 'src/components/helpers/swagger-response.helper';
+} from 'src/utils/constants/ability.constant';
+import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Admin - Mastertables')
@@ -40,7 +41,7 @@ export class UserLocationController {
   @ApiGetResponse('Here is the user location')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getUserLocation(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
 ) {
   return this.userLocationService.getUserLocation(id,user)

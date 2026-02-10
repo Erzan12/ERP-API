@@ -5,7 +5,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
@@ -15,7 +15,7 @@ export class CompanyService {
   constructor(private prisma: PrismaService) {}
 
   //query single company
-  async getCompany(id: number, user: RequestUser) {
+  async getCompany(id: string, user: RequestUser) {
     const company = await this.prisma.company.findUnique({
       where: { id },
     });
@@ -108,7 +108,7 @@ export class CompanyService {
   }
 
   async updateCompany(
-    id: number,
+    id: string,
     updateCompanyDto: UpdateCompanyDto,
     user: RequestUser,
   ) {

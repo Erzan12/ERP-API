@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
-import { IsString, IsInt, IsDefined } from 'class-validator';
+import { IsString, IsInt, IsDefined, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateDivisionDto {
   @IsString()
@@ -12,13 +12,14 @@ export class CreateDivisionDto {
   })
   name: string;
 
-  @IsInt()
+  @IsOptional()
+  @IsUUID()
   @Expose()
   @ApiProperty({
-    example: 3,
+    example: "Division UUID",
     description: 'ID number of the division head it belongs to',
   })
-  division_head_id?: number;
+  division_head_id?: string;
 
   @IsInt()
   @IsDefined()

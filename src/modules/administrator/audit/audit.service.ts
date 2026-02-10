@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AuditLogData } from './types/audit-log-data.interface';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @Injectable()
@@ -62,7 +62,7 @@ export class AuditService {
     }
 
     //get employee_id from user_id
-    private async getEmployeeId(userId?: number): Promise<number | null> {
+    private async getEmployeeId(userId?: string): Promise<string | null> {
         if (!userId) return null;
 
         try {
@@ -190,9 +190,9 @@ export class AuditService {
 
     // query audit logs with filters
     async findLogs(filters: {
-        user_id?: number;
-        employee_id?: number;
-        department_id?: number;
+        user_id?: string;
+        employee_id?: string;
+        department_id?: string;
         resource?: string;
         action?: string;
         start_date?: Date;
@@ -273,7 +273,7 @@ export class AuditService {
     }
 
     // get user activity report
-    async getUserActivity(user_id: number, days: number = 30) {
+    async getUserActivity(user_id: string, days: number = 30) {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - days);
 
@@ -291,7 +291,7 @@ export class AuditService {
     }
 
     // get department activity report
-    async getDepartmentActivity(department_id: number, days: number = 30) {
+    async getDepartmentActivity(department_id: string, days: number = 30) {
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - days);
 

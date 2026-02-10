@@ -1,8 +1,8 @@
 export interface RequestUser {
-  id: number;
+  id: string;
   email: string;
   roles: {
-    id: number;
+    id: string;
     name: string;
     // module: {
     //   id: number;

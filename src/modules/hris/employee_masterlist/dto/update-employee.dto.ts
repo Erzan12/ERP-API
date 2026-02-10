@@ -12,20 +12,20 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   CivilStatus,
   Gender,
-} from 'src/components/decorators/global.enums.decorator';
+} from 'src/utils/decorators/global.enums.decorator';
 
 export class UpdateEmployeeDto {
   @IsOptional()
   @IsInt()
-  company_id: number;
+  company_id: string;
 
   @IsOptional()
   @IsInt()
-  department_id?: number;
+  department_id?: string;
 
   @IsOptional()
   @IsInt()
-  position_id?: number;
+  position_id?: string;
 
   @IsOptional()
   salary?: number;
@@ -40,7 +40,7 @@ export class UpdateEmployeeDto {
 
   @IsInt()
   @IsOptional()
-  employment_status_id: number;
+  employment_status_id: string;
 
   @IsInt()
   @IsOptional()

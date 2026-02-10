@@ -7,7 +7,7 @@ export class AddUserRolePermissionsDto {
     example: 1,
     description: 'The id of the user to add role permission',
   })
-  userId: number;
+  userId: string;
 
   @IsArray()
   @ArrayNotEmpty()
@@ -17,5 +17,5 @@ export class AddUserRolePermissionsDto {
     description:
       'The role permission id that will be assign or added to the user it is array because you can add multiple role permission',
   })
-  rolePermissionIds: number[];
+  rolePermissionIds: string[];
 }

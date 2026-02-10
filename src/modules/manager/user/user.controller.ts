@@ -1,7 +1,7 @@
 import { Controller, Body, Post, Get, Put } from '@nestjs/common';
 import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-permission.dto';
 import { UserService } from './user.service';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
   DeactivateUserAccountDto,
   ReactivateUserAccountDto,
@@ -20,7 +20,7 @@ import {
   ApiSecurityClearance,
   ApiDeactivateResponse,
   ApiActivateResponse,
-} from 'src/components/helpers/swagger-response.helper';
+} from 'src/utils/helpers/swagger-response.helper';
 import { AddUserRolePermissionsDto } from './dto/add-user-role-permissions.dto';
 import {
   ACTION_READ,
@@ -29,10 +29,10 @@ import {
   ACTION_APPROVE,
   SEC_LVL_5,
   USER_TOKEN_KEY,
-} from 'src/components/constants/ability.constant';
+} from 'src/utils/constants/ability.constant';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
-import { Can } from 'src/components/decorators/can.decorator';
-import { SessionUser } from 'src/components/decorators/session-user.decorator';
+import { Can } from 'src/utils/decorators/can.decorator';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Manager')
