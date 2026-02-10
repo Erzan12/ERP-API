@@ -12,7 +12,7 @@ import {
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Human Resources')
-@Controller('hr')
+@Controller('hris')
 export class DashboardController {
   constructor(private dashboardService: DashboardService) {}
 

@@ -12,73 +12,34 @@ export class LandingController {
 
     return {
       modules: [
-          {
-            title: 'Authentication',
-            description: 'Login, logout, password reset',
-            tag: 'Authentication',
-            swaggerLink: '/api#/Authentication',
-            icon: '/public/icons/insurance.png'
-            // endpoints: [
-            //   {
-            //     method: 'POST',
-            //     path: '/auth/login',
-            //     summary: 'User authorized login',
-            //     public: true,
-            //   },
-            //   {
-            //     method: 'POST',
-            //     path: '/auth/logout',
-            //     summary: 'User logout',
-            //     public: false,
-            //   },
-            //   {
-            //     method: 'POST',
-            //     path: '/auth/reset-password?token=',
-            //     summary: 'Reset password with token',
-            //     public: true,
-            //   },
-            // ],
-        },
         {
-          title: 'Admin - Security & Audit',
-          description: 'Manage audit trails and security clearance level',
-          slug: 'admin-security',
-          swaggerLink: '/api#/Admin%20-%20Security%20%26%20Audit',
+          title: 'Administrator',
+          description: 'Manages audit trails, security clearance level and overall system management',
+          slug: 'Admin',
+          swaggerLink: '/api/docs/admin',
           icon: '/public/icons/user.png'
         },
         {
-          title: 'Admin - System Management',
-          description: 'Administer modules, submodules, and role permissions',
-          slug: 'admin-system-management',
-          swaggerLink: '/api#/Admin%20-%20System%20Management',
-          icon: '/public/icons/user.png'
-        },
-        {
-          title: 'Admin - Mastertables',
-          description: 'Manage organization structure such as companies, departments and etc',
-          slug: 'admin-mastertables',
-          swaggerLink: '/api#/Admin%20-%20Mastertables',
-          icon: '/public/icons/user.png'
+          title: 'Masterstable',
+          description: 'Manages overall organization structure of the company',
+          slug: 'masterstable',
+          swaggerLink: '/api/docs/masterstable',
+          icon: '/public/icons/masterstable.png'
         },
         {
           title: 'Manager',
-          description: 'Manager managing users account, tokens etc.',
+          description: 'Manager acts as the department head and controls overall workflow in a department',
           slug: 'manager',
-          swaggerLink: '/api#/Manager',
+          swaggerLink: '/api/docs/manager',
           icon: '/public/icons/manager.png'
         },
         {
           title: 'Human Resources',
-          description: 'Managing lifecycle of employees',
-          slug: 'hr',
-          swaggerLink: '/api#/Human%20Resources',
+          description: 'Manages lifecycle of all employees',
+          slug: 'hris',
+          swaggerLink: '/api/docs/hris',
           icon: '/public/icons/hr-manager.png'
         },
-        // {
-        //   title: 'Profile',
-        //   description: 'User profile operations',
-        //   slug: 'profile',
-        // },
       ],
     };
   }

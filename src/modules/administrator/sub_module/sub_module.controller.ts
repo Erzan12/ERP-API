@@ -16,8 +16,8 @@ import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison
 import { ACTION_READ, SYSTEM_MANAGEMENT } from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Admin - System Management')
-@Controller('administrator/system-management')
+@ApiTags('Admin')
+@Controller('system-management')
 export class SubModuleController {
   constructor(private subModuleService: SubModuleService) {}
 

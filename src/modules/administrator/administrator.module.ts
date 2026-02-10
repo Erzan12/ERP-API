@@ -26,8 +26,6 @@ import { AuditService } from './audit/audit.service';
     SubModuleController,
     ModuleController,
     RoleController,
-    EmploymentStatusController,
-    EmploymentStatusController,
     SecurityClearanceController,
     DashboardController,
     AuditController,
