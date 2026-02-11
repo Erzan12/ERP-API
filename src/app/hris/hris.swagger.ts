@@ -21,7 +21,8 @@ function hrSwagger(app: INestApplication, prefix = 'api'):void {
         .setDescription('API for employee life cycle')
         .setVersion('1.0')
         .addTag('Authentication')
-        .addTag('Human Resources')
+        .addTag('Human Resources - Dashboard')
+        .addTag('Human Resources - Employees')
         .build();
 
     const document = SwaggerModule.createDocument(app, options, {

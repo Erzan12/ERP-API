@@ -30,8 +30,8 @@ import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dt
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Manager')
-@Controller('permission_template')
+@ApiTags('Manager - Permission Template')
+@Controller('manager')
 export class PermissionTemplateController {
   constructor(
     private permissionTemplateService: PermissionTemplateService,
@@ -39,7 +39,7 @@ export class PermissionTemplateController {
   ) {}
 
   //get permission templates
-  @Get()
+  @Get('permission-template')
   @ApiOperation({ summary: 'Get permission templates' })
   @ApiGetResponse('Here are all the permission templates available')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
@@ -48,7 +48,7 @@ export class PermissionTemplateController {
   }
 
   //get a permission template
-  @Get('/:id')
+  @Get('permission-template/:id')
   @ApiOperation({ summary: 'Get a permission template' })
   @ApiGetResponse('Here is the permission template')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
@@ -61,7 +61,7 @@ export class PermissionTemplateController {
   }
 
   //get user permission templates
-  @Get('/user/:userPermissionTemplateId')
+  @Get('permission-template/user/:userPermissionTemplateId')
   @ApiOperation({ summary: 'Get available permission templates to user' })
   @ApiGetResponse('Here are the list of permission templates available')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
@@ -76,7 +76,7 @@ export class PermissionTemplateController {
   }
 
   //create new permission template
-  @Post('')
+  @Post('permission-template')
   @ApiBody({
     type: CreatePermissionTemplateDto,
     description: 'Payload to create Permission Template',
@@ -92,7 +92,7 @@ export class PermissionTemplateController {
   }
 
   //assign permission template to user
-  @Post('/user/:id')
+  @Post('permission-template/user/:id')
   @ApiBody({
     type: AssignTemplateDto,
     description: 'Payload to assign permission template to user',
@@ -109,7 +109,7 @@ export class PermissionTemplateController {
   }
 
   //update existing permission template information
-  @Put('/:id')
+  @Put('permission-template/:id')
   @ApiBody({
     type: UpdatePermissionTemplateDto,
     description: 'Payload to update Permission Template',

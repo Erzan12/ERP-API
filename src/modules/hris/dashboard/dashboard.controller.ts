@@ -11,7 +11,7 @@ import {
 } from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Human Resources')
+@ApiTags('Human Resources - Dashboard')
 @Controller('hris')
 export class DashboardController {
   constructor(private dashboardService: DashboardService) {}

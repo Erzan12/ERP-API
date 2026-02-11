@@ -35,14 +35,14 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Manager')
+@ApiTags('Manager - User Account')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   //view user accounts
   //to set up viewuser accounts in service
-  @Get()
+  @Get('user')
   @ApiOperation({ summary: 'Get User Accounts' })
   @ApiGetResponse('Here are all the User Accounts available')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -52,7 +52,7 @@ export class UserController {
     return this.userService.viewUserAccount(user);
   }
 
-  @Get('me/permissions')
+  @Get('user/me/permissions')
   @ApiOperation({ summary: 'My User Account' })
   @ApiGetResponse('My user account')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -63,7 +63,7 @@ export class UserController {
   }
 
   //create user account
-  @Post()
+  @Post('user')
   @ApiBody({
     type: CreateUserWithRolePermissionDto,
     description: 'Payload to create User Account',
@@ -84,7 +84,7 @@ export class UserController {
   }
 
   //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
-  @Post('role_permission')
+  @Post('user/role_permission')
   @ApiOperation({ summary: 'Add Role permissions to user' })
   @ApiPostResponse('Role permission added to user successfully')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -102,7 +102,7 @@ export class UserController {
   }
 
   //for expired first time login reset token key
-  @Post('new_reset_token')
+  @Post('user/new_reset_token')
   @ApiBody({
     type: UserEmailResetTokenDto,
     description: 'Payload for new user reset token',
@@ -123,7 +123,7 @@ export class UserController {
 
   // view user tokens
   // to set up view user token keys in service
-  @Get('token_keys')
+  @Get('user/token_keys')
   @ApiOperation({ summary: 'Get the token keys for this user' })
   @ApiGetResponse('Here are all the token keys available for this user')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -136,7 +136,7 @@ export class UserController {
     return this.userService.createUserAccount(createUserWithTemplateDto, user);
   }
 
-  @Put('deactivate')
+  @Put('user/deactivate')
   @ApiOperation({ summary: 'Deactivate the user account' })
   @ApiDeactivateResponse('User account deactivated successfully')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -151,7 +151,7 @@ export class UserController {
     );
   }
 
-  @Put('reactivate')
+  @Put('user/reactivate')
   @ApiOperation({ summary: 'Reactivate the user account' })
   @ApiActivateResponse('User account reactivated successfully')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -166,7 +166,7 @@ export class UserController {
     );
   }
 
-  @Get('new_employees')
+  @Get('user/new_employees')
   @ApiOperation({ summary: 'Get the new employees without user accounts' })
   @ApiGetResponse('Here are the list of new employees without user accounts')
   @ApiSecurityClearance(SEC_LVL_5)

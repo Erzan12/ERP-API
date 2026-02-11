@@ -22,8 +22,8 @@ import { UpdateModuleDto } from './dto/update-module.dto';
 import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, SYSTEM_MANAGEMENT } from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Admin')
-@Controller('system-management')
+@ApiTags('Administrator - Module')
+@Controller('administrator')
 export class ModuleController {
   constructor(private moduleService: ModuleService) {}
 
@@ -45,17 +45,6 @@ export class ModuleController {
   ) {
     return this.moduleService.getModule(user, id); // 👈 pass the id to your service
   }
-
-  // @Get('modules/:id/submodules')
-  // @ApiOperation({ summary: 'Get the submodule of module' })
-  // @ApiGetResponse('Details of the module with submodules')
-  // @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  // getSubmoduleByModules(
-  //   @SessionUser() user: RequestUser,
-  //   @Param('id', new ParseUUIDPipe) id: string,
-  // ) {
-  //   return this.moduleService.getSubModulePerModule(user, id); // 👈 pass the id to your service
-  // }
 
   @Post('modules')
   @ApiOperation({ summary: 'Create a new Module' })

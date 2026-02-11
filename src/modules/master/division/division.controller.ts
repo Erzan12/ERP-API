@@ -28,7 +28,7 @@ import { CreateDivisionDto } from './dto/create-division.dto';
 import { UpdateDivisionDto } from './dto/update-division.dto.';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Masterstable')
+@ApiTags('Masterstable - Division')
 @Controller('masterstable')
 export class DivisionController {
   constructor(private divisionService: DivisionService) {}

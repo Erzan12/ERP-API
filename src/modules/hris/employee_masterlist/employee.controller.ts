@@ -29,7 +29,7 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';;
 
 @ApiBearerAuth('access-token')
-@ApiTags('Human Resources')
+@ApiTags('Human Resources - Employees')
 @Controller('hris')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}

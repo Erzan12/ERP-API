@@ -21,7 +21,12 @@ function adminSwagger(app: INestApplication, prefix = 'api'):void {
         .setDescription('API for System Management.')
         .setVersion('1.0')
         .addTag('Authentication')
-        .addTag('Admin')
+        .addTag('Administrator - Dashboard')
+        .addTag('Administrator - Module')
+        .addTag('Administrator - Role')
+        .addTag('Administrator - Submodule')
+        .addTag('Administrator - Security Clearance')
+        .addTag('Administrator - Audit')
         .build();
 
     const document = SwaggerModule.createDocument(app, options, {
