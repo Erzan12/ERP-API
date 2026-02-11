@@ -716,6 +716,29 @@
         ]
       }
     },
+    "/api/{slug}": {
+      "get": {
+        "operationId": "LandingController_stayTuned",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Landing"
+        ]
+      }
+    },
     "/api/administrator/sub-modules": {
       "get": {
         "operationId": "SubModuleController_getSubmodules",

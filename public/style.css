@@ -1,5 +1,6 @@
 body {
   font-family: system-ui, sans-serif;
+  font-size: small;
   margin: 0;
   background: #0f172a;
   color: #e5e7eb;
@@ -10,34 +11,65 @@ header {
   padding: 3rem 1rem;
 }
 
-/* .grid {
+/* Center everything and create 34 columns */
+.grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, 145px);
   gap: 1.5rem;
-  padding: 2rem;
-} */
 
-/* Center everything and create 3 columns */
-.container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
-  gap: 2rem; /* space between cards */
-  max-width: 1200px; /* limit width */
-  margin: 3rem auto; /* center horizontally with top margin */
-  padding: 0 1rem; /* small side padding for mobile */
+  justify-content: center;   /* centers the whole grid */
+  
+  margin: 1rem auto;
+  padding: 0 1rem;
 }
 
-.card {
-  background: #1e293b;
+.card-link {
+  background: rgb(125,158,142);
+  display: flex;              /* helps center content */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 150px;               /* fixed width */
+  height: inherit;            /* fixed height */
+
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
   border-radius: 8px;
-  padding: 1rem;
+
+  padding: 20px;              /* simplified padding */
+  box-sizing: border-box;     /* prevents padding from increasing size */
+
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.card-link {
+.coming-soon-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.back-btn {
+  margin-top: 20px;
   text-decoration: none;
-  color: inherit;
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border-radius: 6px;
+}
+
+.open-btn {
+  margin-top: 20px;
+  text-decoration: none;
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border-radius: 6px;
 }
 
 .card:hover {
