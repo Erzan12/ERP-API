@@ -11,23 +11,24 @@
         <h1>ABAS v3 API Gateway</h1>
         <p>Select a module to explore available endpoint</p>
     </header>
-    <main class="container">
+    <div class="grid-container">
         {{#each modules}}
-            <a href="{{swaggerLink}}" target="_blank" class="card-link">
-                <div class="card">
+            <a href="{{swaggerLink}}" class="card-link">
+                <div class="icon">
                     {{#if icon}}
                         <img src="{{icon}}" alt="{{title}} icon" class="card-icon"/>
                     {{/if}}
-                    <h2>{{title}}</h2>
-                    <p>{{description}}</p>
-                    <span class="click-hint">View in Swagger →</span>
+                </div>
+                <div class="title">
+                    <h3>{{title}}</h3>
+                    {{!-- <p>{{description}}</p>
+                    <span class="click-hint">View in Swagger →</span> --}}
                 </div>
             </a>
         {{/each}}
-    </main>
-
+    </div>
     <footer>
-        <a href="/api/docs" target="_blank">Open Swagger UI →</a>
+        <a href="/api/docs" class="open-btn" target="_blank">Open Swagger UI →</a>
     </footer>
 
     <script src="/public/app.js"></script>
