@@ -1,14 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DashboardService } from './dashboard.service';
-import { ApiGetResponse } from 'src/components/helpers/swagger-response.helper';
-import { Can } from 'src/components/decorators/can.decorator';
-import { SessionUser } from 'src/components/decorators/session-user.decorator';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
+import { Can } from 'src/utils/decorators/can.decorator';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
   ACTION_READ,
   EMPLOYEE_MASTERLIST,
-} from 'src/components/constants/ability.constant';
+} from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Human Resources')

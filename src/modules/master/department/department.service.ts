@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-dept.dto';
 import { UpdateDepartmentDto } from './dto/update-dept.dto';
-import { RequestUser } from '../../../components/types/request-user.interface';
+import { RequestUser } from '../../../utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class DepartmentService {
   }
 
   //to add single query of department
-  async getDepartment(id: number, user: RequestUser) {
+  async getDepartment(id: string, user: RequestUser) {
     const department = await this.prisma.department.findUnique({
       where: { id },
     });
@@ -83,7 +83,7 @@ export class DepartmentService {
     }
 
     const isAdmin = requestUser.user_roles.some(
-      (role) => role.role_id === 3 && role.role_name === 'Administrator',
+      (role) => role.role_id === "b1118e05-6377-4e64-a677-14f9b9226fdd" && role.role_name === 'Administrator',
     );
 
     if (!isAdmin) {
@@ -118,7 +118,7 @@ export class DepartmentService {
     };
   }
 
-  async updateDepartment(id: number, updateDepartmentDto: UpdateDepartmentDto, user,
+  async updateDepartment(id: string, updateDepartmentDto: UpdateDepartmentDto, user,
   ) {
     const { department_name, sorting, division_id, stat } = updateDepartmentDto;
 

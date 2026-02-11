@@ -8,7 +8,7 @@ export class DeactivateUserAccountDto {
     example: 1,
     description: 'The id number of the user you want to deactivate'
   })
-  user_id: number;
+  user_id: string;
 }
 
 export class ReactivateUserAccountDto {
@@ -18,5 +18,5 @@ export class ReactivateUserAccountDto {
     example: 1,
     description: 'The id number of the user you want to reactivate'
   })
-  user_id: number;
+  user_id: string;
 }

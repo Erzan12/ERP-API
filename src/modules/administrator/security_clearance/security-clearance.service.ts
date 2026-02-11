@@ -11,8 +11,8 @@ export class SecurityClearanceService {
   constructor(private prisma: PrismaService) {}
 
   async updateUserClearance(
-    adminId: number,
-    targetUserId: number,
+    adminId: string,
+    targetUserId: string,
     newClearanceLevel: number,
     adminClearanceLevel: number,
   ) {

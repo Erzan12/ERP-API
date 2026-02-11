@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEmployeeStatusDto } from './dto/create-emp-stat.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { UpdateEmpStatusDto } from './dto/update-emp-stat.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
@@ -22,7 +22,7 @@ export class EmploymentStatusService {
   }
 
   //get a single employee_status
-  async getEmployeeStat(id: number, user: RequestUser) {
+  async getEmployeeStat(id: string, user: RequestUser) {
     const employeeStatus = await this.prisma.employmentStatus.findUnique({
       where: { id },
     });
@@ -73,7 +73,7 @@ export class EmploymentStatusService {
   }
 
   async updateEmployeeStatus(
-    id: number,
+    id: string,
     updateEmpStatusDto: UpdateEmpStatusDto,
     user: RequestUser,
   ) {

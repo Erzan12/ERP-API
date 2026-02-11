@@ -11,7 +11,7 @@ import {
 import {
   CivilStatus,
   Gender,
-} from 'src/components/decorators/global.enums.decorator';
+} from 'src/utils/decorators/global.enums.decorator';
 
 export class UpdatePersonDto {
   @IsOptional()

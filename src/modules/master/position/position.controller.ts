@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Put,
   Post,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PositionService } from './position.service';
@@ -13,16 +14,16 @@ import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
-} from 'src/components/helpers/swagger-response.helper';
-import { Can } from 'src/components/decorators/can.decorator';
-import { RequestUser } from 'src/components/types/request-user.interface';
+} from 'src/utils/helpers/swagger-response.helper';
+import { Can } from 'src/utils/decorators/can.decorator';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
   MASTERTABLES,
-} from 'src/components/constants/ability.constant';
-import { SessionUser } from 'src/components/decorators/session-user.decorator';
+} from 'src/utils/constants/ability.constant';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 
@@ -47,7 +48,7 @@ export class PositionController {
   @ApiGetResponse('Here is the position.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getPosition(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.positionService.getPosition(id, user);
@@ -77,7 +78,7 @@ export class PositionController {
   @ApiPatchResponse('Position updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updatePosition(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @Body() updatePositionDto: UpdatePositionDto,
     @SessionUser() user: RequestUser,
   ) {

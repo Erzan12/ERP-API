@@ -1,11 +1,11 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Query } from '@nestjs/common';
 import { AuditService } from './audit.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { RequestUser } from 'src/components/types/request-user.interface';
-import { Can } from 'src/components/decorators/can.decorator';
+import { RequestUser } from 'src/utils/types/request-user.interface';
+import { Can } from 'src/utils/decorators/can.decorator';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
-import { SessionUser } from 'src/components/decorators/session-user.decorator';
-import { ACTION_READ, AUDIT_TRAIL, SEC_LVL_8 } from 'src/components/constants/ability.constant';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+import { ACTION_READ, AUDIT_TRAIL, SEC_LVL_8 } from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Admin - Security & Audit')
@@ -18,7 +18,7 @@ export class AuditController {
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
     getAuditLogs(
-        @Query('user_id') userId?: number,
+        @Query('user_id') userId?: string,
         @Query('resource') resource?: string,
         @Query('action') action?: string,
         @Query('start_date') startDate?: string,
@@ -55,7 +55,7 @@ export class AuditController {
     @SecurityClearance(SEC_LVL_8)
     @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
     getUserActivity(
-        @Param('id', ParseIntPipe) userId: number,
+        @Param('id', new ParseUUIDPipe) userId: string,
         @Query('days') days?: number,
     ) {
         return this.auditService.getUserActivity(userId, days);

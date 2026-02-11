@@ -13,16 +13,17 @@ import { ApiOperation, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
   ApiLoginResponse,
   ApiPostResponse,
-} from 'src/components/helpers/swagger-response.helper';
+} from 'src/utils/helpers/swagger-response.helper';
 import { LoginDto } from './dto/login.dto';
 import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
-import { Public } from 'src/components/decorators/public.decorator';
-import { Can } from 'src/components/decorators/can.decorator';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { Public } from 'src/utils/decorators/public.decorator';
+import { Can } from 'src/utils/decorators/can.decorator';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
-import { SessionUser } from 'src/components/decorators/session-user.decorator';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 
 // @ApiBearerAuth('access-token')
+@Public()
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {

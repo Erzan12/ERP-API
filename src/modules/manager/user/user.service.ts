@@ -13,7 +13,7 @@ import {
   DeactivateUserAccountDto,
   ReactivateUserAccountDto,
 } from './dto/user-account-status.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
@@ -35,9 +35,9 @@ export class UserService {
       select: {
         id: true,
         username: true,
-        roles: {
+        user_roles: {
           select: {
-            name: true,
+            role_name: true,
           },
         },
         stat: true,
@@ -135,7 +135,7 @@ export class UserService {
         },
         include: {
           employee: true,
-          roles: true,
+          user_roles: true,
         },
       });
 
@@ -241,7 +241,7 @@ export class UserService {
 
       return {
         status: 'success',
-        message: `User ${newUser.username} with Employee ID ${newUser.employee.employee_id} created with temporary password.`,
+        message: `User ${newUser.username} with Employee ID ${newUser.employee?.employee_id} created with temporary password.`,
         created_by: {
           id: creatorUser.id,
           name: admin,
@@ -258,8 +258,8 @@ export class UserService {
 
   //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
   async addUserRolePermissions(
-    userId: number,
-    rolePermissionIds: number[],
+    userId: string,
+    rolePermissionIds: string[],
     user: RequestUser,
   ) {
     return this.prisma.$transaction(async (tx) => {
@@ -312,16 +312,31 @@ export class UserService {
           if (!userRole) {
             userRole = await tx.userRole.create({
               data: {
-                user_id: user.id,
-                role_id: rp.role_id,
+                // user_id: user.id,
+                // role_id: rp.role_id,
+                user: {
+                  connect: { id: user.id },
+                },
+                role: {
+                  connect: { id: rp.role_id },
+                },
                 role_name: rp.role_name ?? null,
                 // role_permission_id: rp.id,
                 created_at: new Date(),
               },
               include: {
-                role: true, // ⬅️ ensure we include the actual Role model
+                role: true, // ensure we include the actual Role model
               },
             });
+
+            await tx.user.update({
+              where: { id: user.id },
+              data: {
+                user_roles: {
+                  connect: { id: rp.role_id },
+                }
+              }
+            })
           }
 
           userRolesMap.set(key, userRole);
@@ -359,7 +374,7 @@ export class UserService {
   }
 
   //for querying user info
-  async getUserPermissions(userId: number) {
+  async getUserPermissions(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {

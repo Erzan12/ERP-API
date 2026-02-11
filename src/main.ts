@@ -83,6 +83,7 @@ async function bootstrap() {
   await app.listen(3000, () => {
     console.log('Server is running at http://localhost:3000')
     console.log('Swagger API is running at http://localhost:3000/api')
+    console.log('Prisma Studio is running at http://localhost:51212')
   });
 
   //appliead jwt auth guard and role permission guard globally

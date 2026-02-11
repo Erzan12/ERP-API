@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { CreateDivisionDto } from './dto/create-division.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { UpdateDivisionDto } from './dto/update-division.dto.';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
@@ -14,7 +14,7 @@ export class DivisionService {
   constructor(private prisma: PrismaService) {}
 
   //query single division
-  async getDivision(id: number, user: RequestUser) {
+  async getDivision(id: string, user: RequestUser) {
     const division = await this.prisma.division.findUnique({
       where: { id },
     });
@@ -107,14 +107,14 @@ export class DivisionService {
   }
 
   async updateDivision(
-    divisionId: number,
+    id: string,
     updateDivisionDto: UpdateDivisionDto,
     user: RequestUser,
   ) {
     const { division_name, stat } = updateDivisionDto;
 
     const division = await this.prisma.division.findUnique({
-      where: { id: divisionId },
+      where: { id },
       select: {
         name: true,
         stat: true,
@@ -132,7 +132,7 @@ export class DivisionService {
     }
 
     const updateDivision = await this.prisma.division.update({
-      where: { id: divisionId },
+      where: { id },
       data: {
         name: division_name,
         stat,

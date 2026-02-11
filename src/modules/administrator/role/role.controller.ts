@@ -7,11 +7,12 @@ import {
   Param,
   Query,
   ParseIntPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
-import { Can } from '../../../components/decorators/can.decorator';
-import { SessionUser } from '../../../components/decorators/session-user.decorator';
-import { RequestUser } from '../../../components/types/request-user.interface';
+import { Can } from '../../../utils/decorators/can.decorator';
+import { SessionUser } from '../../../utils/decorators/session-user.decorator';
+import { RequestUser } from '../../../utils/types/request-user.interface';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
@@ -22,13 +23,13 @@ import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
-} from 'src/components/helpers/swagger-response.helper';
+} from 'src/utils/helpers/swagger-response.helper';
 import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
   SYSTEM_MANAGEMENT,
-} from 'src/components/constants/ability.constant';
+} from 'src/utils/constants/ability.constant';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @ApiBearerAuth('access-token')
@@ -37,7 +38,6 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 export class RoleController {
   constructor(
     private roleService: RoleService,
-    private prisma: PrismaService,
   ) {}
 
   //get all available roles
@@ -54,7 +54,7 @@ export class RoleController {
   @ApiGetResponse('Here is the Role')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getRole(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser
   ) {
     return this.roleService.getRole(id,user);
@@ -93,7 +93,7 @@ export class RoleController {
   @ApiPatchResponse('Permissions updated to role')
   @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   updateRolePermissions(
-    @Param('id') id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @Body() updateRolePermissionsDto: UpdateRolePermissionsDto,
     @SessionUser() user: RequestUser,
   ) {

@@ -3,8 +3,13 @@ import { PrismaClient, Prisma } from '@prisma/client';
 // import type { Prisma } from '@prisma/client';
 // import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { PrismaPg } from '@prisma/adapter-pg';
 
-const prisma = new PrismaClient();
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+
+const prisma = new PrismaClient({adapter});
 
 async function main() {
   const now = new Date();
@@ -55,11 +60,11 @@ async function main() {
 
   // 3. Create Divisions
   const assetMgmt = await prisma.division.create({
-    data: { name: 'Asset Management', division_head_id: 0 },
+    data: { name: 'Asset Management'},
   });
 
   const corpServices = await prisma.division.create({
-    data: { name: 'Corporate Services', division_head_id: 0 },
+    data: { name: 'Corporate Services'},
   });
 
   // 4. Create Departments
@@ -67,7 +72,6 @@ async function main() {
     data: {
       name: 'hr department',
       division_id: corpServices.id,
-      department_head_id: 0,
     },
   });
 
@@ -75,7 +79,6 @@ async function main() {
     data: {
       name: 'it department',
       division_id: assetMgmt.id,
-      department_head_id: 0,
     },
   });
 
@@ -83,7 +86,6 @@ async function main() {
     data: {
       name: 'accounting department',
       division_id: assetMgmt.id,
-      department_head_id: 0,
     },
   });
 
@@ -91,7 +93,6 @@ async function main() {
     data: {
       name: 'purchasing department',
       division_id: assetMgmt.id,
-      department_head_id: 0,
     },
   });
 
@@ -99,7 +100,6 @@ async function main() {
     data: {
       name: 'warehouse department',
       division_id: assetMgmt.id,
-      department_head_id: 0,
     },
   });
 
@@ -334,6 +334,7 @@ async function main() {
       department_id: hrDept.id,
       hire_date: new Date('2023-01-01'),
       position_id: hrManager.id,
+      division_id: corpServices.id,
       salary: 30000,
       pay_frequency: 'Monthly',
       employment_status_id: activeStatus.id,
@@ -350,6 +351,7 @@ async function main() {
       department_id: itDept.id,
       hire_date: new Date('2022-01-01'),
       position_id: itManager.id,
+      division_id: assetMgmt.id,
       salary: 60000,
       pay_frequency: 'Monthly',
       employment_status_id: activeStatus.id,
@@ -366,6 +368,7 @@ async function main() {
       department_id: itDept.id,
       hire_date: new Date('2025-05-12'),
       position_id: itStaff.id,
+      division_id: assetMgmt.id,
       salary: 20000,
       pay_frequency: 'Monthly',
       employment_status_id: activeStatus.id,
@@ -450,7 +453,7 @@ async function main() {
       const subModulePermissionId = subModulePermissionMap.get(`${sub.id}-${action}`);
       if (!subModulePermissionId) continue; // skip if permission not found
 
-      const DEFAULT_DEPARTMENT_ID = 2;
+      // const department_id_uuid = uuidv4();
 
       rolePermissionPayload.push({
         action,
@@ -458,7 +461,7 @@ async function main() {
         role_id: adminRole.id,
         role_name: adminRole.name,
         sub_module_permission_id: subModulePermissionId,
-        department_id: DEFAULT_DEPARTMENT_ID,
+        department_id:  itDept.id
       });
     }
   }
@@ -473,7 +476,7 @@ async function main() {
   // i also want to add role permission for the admin user the role permission is a role like Administrator and assigned to a existing submodulepermission
 
   // Assuming you have:
-  const userId = 1; // your user ID
+  const userId = adminUser.id; // your user ID
   const roleId = adminRole.id; // admin role ID
 
   // Create UserRole linking user to role

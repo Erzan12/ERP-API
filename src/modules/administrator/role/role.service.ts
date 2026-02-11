@@ -11,7 +11,7 @@ import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { CreatePermissionTemplateDto } from '../../manager/permission_template/dto/create-permission-template.dto';
 import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
 import { UnassignRolePermissionDto } from './dto/unassign-role-permission.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @Injectable()
@@ -40,7 +40,7 @@ export class RoleService {
     };
   }
 
-  async getRole(id: number, user: RequestUser) {
+  async getRole(id: string, user: RequestUser) {
     const role = await this.prisma.role.findUnique({
       where: { id },
       include: {
@@ -210,7 +210,7 @@ export class RoleService {
   }
 
   async updateRolePermissions(
-    id: number,
+    id: string,
     updateRolePermissionsDto: UpdateRolePermissionsDto,
     user,
   ) {

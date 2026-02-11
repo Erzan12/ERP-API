@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Put,
   Post,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DivisionService } from './division.service';
@@ -13,16 +14,16 @@ import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
-} from 'src/components/helpers/swagger-response.helper';
-import { Can } from 'src/components/decorators/can.decorator';
+} from 'src/utils/helpers/swagger-response.helper';
+import { Can } from 'src/utils/decorators/can.decorator';
 import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
   MASTERTABLES,
-} from 'src/components/constants/ability.constant';
-import { SessionUser } from 'src/components/decorators/session-user.decorator';
-import { RequestUser } from 'src/components/types/request-user.interface';
+} from 'src/utils/constants/ability.constant';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateDivisionDto } from './dto/create-division.dto';
 import { UpdateDivisionDto } from './dto/update-division.dto.';
 
@@ -47,7 +48,7 @@ export class DivisionController {
   @ApiGetResponse('Here is the division')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDivision(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', new ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.divisionService.getDivision(id, user);
@@ -70,7 +71,7 @@ export class DivisionController {
     return this.divisionService.createDivision(createDivisionDto, user);
   }
 
-  @Put('divisions/:divisionId')
+  @Put('divisions/:id')
   @ApiBody({
     type: UpdateDivisionDto,
     description: 'Payload to update division',
@@ -79,12 +80,12 @@ export class DivisionController {
   @ApiPatchResponse('Division updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateDivision(
-    @Param('divisionId', ParseIntPipe) divisionId: number,
+    @Param('id', ParseIntPipe) id: string,
     @Body() updateDivisiionDto: UpdateDivisionDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.divisionService.updateDivision(
-      divisionId,
+      id,
       updateDivisiionDto,
       user,
     );

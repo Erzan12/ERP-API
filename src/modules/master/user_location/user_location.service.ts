@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { CreateUserLocationDto } from './dto/create-user-location.dto';
-import { RequestUser } from 'src/components/types/request-user.interface';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { UpdateUserLocationDto } from './dto/update-user-location.dto';
 
@@ -29,7 +29,7 @@ export class UserLocationService {
   }
 
   //query a user location
-  async getUserLocation(id: number, user: RequestUser) {
+  async getUserLocation(id: string, user: RequestUser) {
     const user_location = await this.prisma.userLocation.findUnique({
       where: { id }
     });
@@ -76,7 +76,7 @@ export class UserLocationService {
     }
 
     const isAdmin = requestUser.user_roles.some(
-      (role) => role.role_id === 3 && role.role_name === 'Administrator',
+      (role) => role.role_id === "b1118e05-6377-4e64-a677-14f9b9226fdd" && role.role_name === 'Administrator',
     );
 
     if (!isAdmin) {
