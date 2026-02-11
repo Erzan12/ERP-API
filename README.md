@@ -47,7 +47,7 @@ $ npm install
 ```
 4. Next, build and start the containers of docker in bash terminal:
 ```bash
-$ docker-compose build  --no-cache
+$ docker-compose build --no-cache
 ```
 5. Then
 ```bash

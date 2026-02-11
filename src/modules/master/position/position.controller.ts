@@ -28,8 +28,8 @@ import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Admin - Mastertables')
-@Controller('administrator/mastertables')
+@ApiTags('Masterstable - Position')
+@Controller('masterstable')
 export class PositionController {
   constructor(private positionService: PositionService) {}
 

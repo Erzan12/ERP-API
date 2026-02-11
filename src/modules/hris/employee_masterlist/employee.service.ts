@@ -210,7 +210,7 @@ export class EmployeeService {
     const canView = await this.prisma.userRole.findFirst({
       where: {
         user_id: user.id,
-        role_id: { in: ["ee650664-5ce7-4b5d-9564-b7d05061e5da", "24e74f3c-c24f-4e82-b89d-bb5dc0251f37"]}
+        role_id: { in: ["ee650664-5ce7-4b5d-9564-b7d05061e5da", "24e74f3c-c24f-4e82-b89d-bb5dc0251f37", "b1118e05-6377-4e64-a677-14f9b9226fdd"]}
        },
     });
 
@@ -256,7 +256,7 @@ export class EmployeeService {
       status: 'success',
       message: 'List of Employees',
       data: {
-        employee_masterlist: viewEmployee,
+        viewEmployee
       },
     };
   }

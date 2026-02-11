@@ -16,9 +16,10 @@ import { EmploymentStatusController } from './employment_status/employment_statu
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { UserLocationController } from './user_location/user_location.controller';
 import { UserLocationService } from './user_location/user_location.service';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [],
+  imports: [AuthModule],
   providers: [
     PrismaService,
     PositionService,

@@ -16,13 +16,13 @@ import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison
 import { ACTION_READ, SYSTEM_MANAGEMENT } from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Admin - System Management')
-@Controller('administrator/system-management')
+@ApiTags('Administrator - Submodule')
+@Controller('administrator')
 export class SubModuleController {
   constructor(private subModuleService: SubModuleService) {}
 
   //get list of submodules
-  @Get()
+  @Get('sub-modules')
   @ApiOperation({ summary: 'Get Submodules' })
   @ApiGetResponse('Here are all the Sub modules available')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
@@ -30,7 +30,7 @@ export class SubModuleController {
     return this.subModuleService.getSubModules(user);
   }
 
-  @Get(':id')
+  @Get('sub-modules/:id')
   @ApiOperation({ summary: 'Get a Submodule' })
   @ApiGetResponse('status: Success!')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
@@ -42,7 +42,7 @@ export class SubModuleController {
   }
 
   //create submodule
-  @Post()
+  @Post('sub-modules')
   @ApiBody({
     type: CreateSubModuleDto,
     description: 'Payload to create Submodule',
@@ -57,7 +57,7 @@ export class SubModuleController {
     return this.subModuleService.createSubModule(createSubModuleDto, user);
   }
 
-  @Post('permissions')
+  @Post('sub-modules/permissions')
   @ApiBody({
     type: AddSubModulePermissionDto,
     description: 'Payload to create permissions for submodule',
@@ -74,7 +74,7 @@ export class SubModuleController {
   }
 
   //add permissions to submodules
-  @Put('permissions')
+  @Put('sub-modules/permissions')
   @ApiBody({
     type: AssignSubModulePermissionDto,
     description: 'Payload to assign permissions for submodule',
@@ -93,7 +93,7 @@ export class SubModuleController {
   }
 
   //update the submodule permissions
-  @Put(':id')
+  @Put('sub-module/permissions/:id')
   @ApiBody({
     type: UpdateSubModulePermisisonDto,
     description: 'Payload to update the current sub module permission',

@@ -11,13 +11,13 @@ import {
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 
 @ApiBearerAuth('access-token') //matches the name used in .addBearerAuth()
-@ApiTags('Admin - Security & Audit')
-@Controller('administrator/security-audit')
+@ApiTags('Administrator - Dashboard')
+@Controller('administrator')
 export class DashboardController {
   constructor(private dashboardService: DashboardService) {}
 
   //load dashboard
-  @Get('dashboard')
+  @Get()
   @ApiOperation({ summary: 'Summary of Users' })
   @ApiGetResponse('Adminstrator Dashboard')
   @Can({ action: ACTION_READ, subject: DASHBOARD })

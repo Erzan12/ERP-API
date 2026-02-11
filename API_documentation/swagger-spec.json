@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/hr/employees": {
+    "/api/hris/employees": {
       "get": {
         "operationId": "EmployeeController_getEmployees",
         "parameters": [],
@@ -29,7 +29,7 @@
         ],
         "summary": "List of all employees",
         "tags": [
-          "Human Resources"
+          "Human Resources - Employees"
         ]
       },
       "post": {
@@ -70,11 +70,11 @@
         ],
         "summary": "Create a new Employee",
         "tags": [
-          "Human Resources"
+          "Human Resources - Employees"
         ]
       }
     },
-    "/hr/employees/{id}": {
+    "/api/hris/employees/{id}": {
       "get": {
         "operationId": "EmployeeController_getEmployee",
         "parameters": [
@@ -111,7 +111,7 @@
         ],
         "summary": "View employee profile",
         "tags": [
-          "Human Resources"
+          "Human Resources - Employees"
         ]
       },
       "put": {
@@ -161,39 +161,11 @@
         ],
         "summary": "Update a current Employee",
         "tags": [
-          "Human Resources"
+          "Human Resources - Employees"
         ]
       }
     },
-    "/user-home": {
-      "get": {
-        "operationId": "HomeController_getUserData",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Home"
-        ]
-      }
-    },
-    "/user-profile": {
-      "get": {
-        "operationId": "ProfileController_getUserData",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "Profile"
-        ]
-      }
-    },
-    "/auth/login": {
+    "/api/auth/login": {
       "post": {
         "operationId": "AuthController_login",
         "parameters": [],
@@ -227,7 +199,7 @@
         ]
       }
     },
-    "/auth/logout": {
+    "/api/auth/logout": {
       "post": {
         "operationId": "AuthController_logout",
         "parameters": [],
@@ -254,7 +226,7 @@
         ]
       }
     },
-    "/auth/reset-password": {
+    "/api/auth/reset-password": {
       "post": {
         "operationId": "AuthController_passwordResetWithToken",
         "parameters": [
@@ -300,7 +272,7 @@
         ]
       }
     },
-    "/user": {
+    "/api/user/user": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_viewUsers",
@@ -329,7 +301,7 @@
         ],
         "summary": "Get User Accounts",
         "tags": [
-          "Manager"
+          "Manager - User Account"
         ]
       },
       "post": {
@@ -371,11 +343,11 @@
         ],
         "summary": "Create a new user account",
         "tags": [
-          "Manager"
+          "Manager - User Account"
         ]
       }
     },
-    "/user/me/permissions": {
+    "/api/user/user/me/permissions": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_getMyPermissions",
@@ -404,11 +376,11 @@
         ],
         "summary": "My User Account",
         "tags": [
-          "Manager"
+          "Manager - User Account"
         ]
       }
     },
-    "/user/role_permission": {
+    "/api/user/user/role_permission": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_addRolePermission",
@@ -447,11 +419,11 @@
         ],
         "summary": "Add Role permissions to user",
         "tags": [
-          "Manager"
+          "Manager - User Account"
         ]
       }
     },
-    "/user/new_reset_token": {
+    "/api/user/user/new_reset_token": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_newResetToken",
@@ -491,11 +463,11 @@
         ],
         "summary": "Reset token for first time log in",
         "tags": [
-          "Manager"
+          "Manager - User Account"
         ]
       }
     },
-    "/user/token_keys": {
+    "/api/user/user/token_keys": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_viewUserKeys",
@@ -534,11 +506,11 @@
         ],
         "summary": "Get the token keys for this user",
         "tags": [
-          "Manager"
+          "Manager - User Account"
         ]
       }
     },
-    "/user/deactivate": {
+    "/api/user/user/deactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_deactivateUser",
@@ -577,11 +549,11 @@
         ],
         "summary": "Deactivate the user account",
         "tags": [
-          "Manager"
+          "Manager - User Account"
         ]
       }
     },
-    "/user/reactivate": {
+    "/api/user/user/reactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_reactivateUser",
@@ -620,11 +592,11 @@
         ],
         "summary": "Reactivate the user account",
         "tags": [
-          "Manager"
+          "Manager - User Account"
         ]
       }
     },
-    "/user/new_employees": {
+    "/api/user/user/new_employees": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserController_viewNewEmployees",
@@ -653,11 +625,11 @@
         ],
         "summary": "Get the new employees without user accounts",
         "tags": [
-          "Manager"
+          "Manager - User Account"
         ]
       }
     },
-    "/administrator/mastertables/user-locations": {
+    "/api/masterstable/user-locations": {
       "get": {
         "operationId": "UserLocationController_getUserLocations",
         "parameters": [],
@@ -685,11 +657,11 @@
         ],
         "summary": "Get all user locations",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - User Location"
         ]
       }
     },
-    "/administrator/mastertables/user-locations/{id}": {
+    "/api/masterstable/user-locations/{id}": {
       "get": {
         "operationId": "UserLocationController_getUserLocation",
         "parameters": [
@@ -726,11 +698,11 @@
         ],
         "summary": "Get a user locations",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - User Location"
         ]
       }
     },
-    "/": {
+    "/api": {
       "get": {
         "operationId": "LandingController_renderLanding",
         "parameters": [],
@@ -744,7 +716,7 @@
         ]
       }
     },
-    "/administrator/system-management": {
+    "/api/administrator/sub-modules": {
       "get": {
         "operationId": "SubModuleController_getSubmodules",
         "parameters": [],
@@ -772,7 +744,7 @@
         ],
         "summary": "Get Submodules",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Submodule"
         ]
       },
       "post": {
@@ -813,11 +785,11 @@
         ],
         "summary": "Create a new Submodule",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Submodule"
         ]
       }
     },
-    "/administrator/system-management/{id}": {
+    "/api/administrator/sub-modules/{id}": {
       "get": {
         "operationId": "SubModuleController_getSubmodule",
         "parameters": [
@@ -854,9 +826,95 @@
         ],
         "summary": "Get a Submodule",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/api/administrator/sub-modules/permissions": {
+      "post": {
+        "operationId": "SubModuleController_createPermission",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create permissions for submodule",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSubModulePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permission created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new permission for submodule",
+        "tags": [
+          "Administrator - Submodule"
         ]
       },
+      "put": {
+        "operationId": "SubModuleController_createSubModulePermission",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to assign permissions for submodule",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignSubModulePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permission assigned to a submodule successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Assign a new permission for submodule",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/api/administrator/sub-module/permissions/{id}": {
       "put": {
         "operationId": "SubModuleController_updatePermission",
         "parameters": [
@@ -904,95 +962,11 @@
         ],
         "summary": "Update a current sub module permission",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Submodule"
         ]
       }
     },
-    "/administrator/system-management/permissions": {
-      "post": {
-        "operationId": "SubModuleController_createPermission",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to create permissions for submodule",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddSubModulePermissionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Permission created successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Create a new permission for submodule",
-        "tags": [
-          "Admin - System Management"
-        ]
-      },
-      "put": {
-        "operationId": "SubModuleController_createSubModulePermission",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to assign permissions for submodule",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AssignSubModulePermissionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Permission assigned to a submodule successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Assign a new permission for submodule",
-        "tags": [
-          "Admin - System Management"
-        ]
-      }
-    },
-    "/administrator/system-management/modules": {
+    "/api/administrator/modules": {
       "get": {
         "operationId": "ModuleController_getModules",
         "parameters": [],
@@ -1020,7 +994,7 @@
         ],
         "summary": "Get modules",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Module"
         ]
       },
       "post": {
@@ -1060,11 +1034,11 @@
         ],
         "summary": "Create a new Module",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Module"
         ]
       }
     },
-    "/administrator/system-management/modules/{id}": {
+    "/api/administrator/modules/{id}": {
       "get": {
         "operationId": "ModuleController_getModule",
         "parameters": [
@@ -1101,7 +1075,7 @@
         ],
         "summary": "Get a module",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Module"
         ]
       },
       "put": {
@@ -1151,11 +1125,11 @@
         ],
         "summary": "Update current module",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Module"
         ]
       }
     },
-    "/administrator/roles": {
+    "/api/administrator/roles": {
       "get": {
         "operationId": "RoleController_getRoles",
         "parameters": [],
@@ -1183,7 +1157,7 @@
         ],
         "summary": "Get all Roles",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Role"
         ]
       },
       "post": {
@@ -1223,11 +1197,11 @@
         ],
         "summary": "Create new role",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Role"
         ]
       }
     },
-    "/administrator/roles/{id}": {
+    "/api/administrator/roles/{id}": {
       "get": {
         "operationId": "RoleController_getRole",
         "parameters": [
@@ -1264,11 +1238,11 @@
         ],
         "summary": "Get a role",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Role"
         ]
       }
     },
-    "/administrator/roles/role_permission": {
+    "/api/administrator/roles/role_permission": {
       "put": {
         "operationId": "RoleController_createRolePermission",
         "parameters": [],
@@ -1306,11 +1280,11 @@
         ],
         "summary": "Adding permission to role",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Role"
         ]
       }
     },
-    "/administrator/roles/role_permission/{id}": {
+    "/api/administrator/roles/role_permission/{id}": {
       "put": {
         "operationId": "RoleController_updateRolePermissions",
         "parameters": [
@@ -1357,174 +1331,11 @@
         ],
         "summary": "Updating current permission to role",
         "tags": [
-          "Admin - System Management"
+          "Administrator - Role"
         ]
       }
     },
-    "/administrator/mastertables/employment_status": {
-      "get": {
-        "operationId": "EmploymentStatusController_getEmployeeStats",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Here are the list of available employment status"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Get all employment status",
-        "tags": [
-          "Admin - Mastertables"
-        ]
-      },
-      "post": {
-        "operationId": "EmploymentStatusController_createEmployeeStatus",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to create employee status.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEmployeeStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Employee status created successfully."
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Create new employee status.",
-        "tags": [
-          "Admin - Mastertables"
-        ]
-      }
-    },
-    "/administrator/mastertables/employment_status/{id}": {
-      "get": {
-        "operationId": "EmploymentStatusController_getEmployeeStat",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Here is the employment status."
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Get an employment status.",
-        "tags": [
-          "Admin - Mastertables"
-        ]
-      },
-      "put": {
-        "operationId": "EmploymentStatusController_updateEmployeeStatus",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEmpStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Employee status details updated successfully."
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Updating employee status details.",
-        "tags": [
-          "Admin - Mastertables"
-        ]
-      }
-    },
-    "/administrator/security-audit/security_clearance/{id}": {
+    "/api/administrator/security_clearance/{id}": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 9.",
         "operationId": "SecurityClearanceController_updateClearance",
@@ -1560,11 +1371,11 @@
         ],
         "summary": "Assign the security clearance level for user",
         "tags": [
-          "Admin - Security & Audit"
+          "Administrator - Security Clearance"
         ]
       }
     },
-    "/administrator/security-audit/dashboard": {
+    "/api/administrator": {
       "get": {
         "operationId": "DashboardController_getAdminDashboard",
         "parameters": [],
@@ -1592,11 +1403,11 @@
         ],
         "summary": "Summary of Users",
         "tags": [
-          "Admin - Security & Audit"
+          "Administrator - Dashboard"
         ]
       }
     },
-    "/administrator/security-audit/audit": {
+    "/api/administrator/audit": {
       "get": {
         "operationId": "AuditController_getAuditLogs",
         "parameters": [
@@ -1677,11 +1488,11 @@
         ],
         "summary": "Get audit logs with filters",
         "tags": [
-          "Admin - Security & Audit"
+          "Administrator - Audit"
         ]
       }
     },
-    "/administrator/security-audit/audit/resource/{resource}/{id}": {
+    "/api/administrator/audit/resource/{resource}/{id}": {
       "get": {
         "operationId": "AuditController_getResourceHistory",
         "parameters": [
@@ -1714,11 +1525,11 @@
         ],
         "summary": "Get audit history fo ra specific resource",
         "tags": [
-          "Admin - Security & Audit"
+          "Administrator - Audit"
         ]
       }
     },
-    "/administrator/security-audit/audit/user/{id}/activity": {
+    "/api/administrator/audit/user/{id}/activity": {
       "get": {
         "operationId": "AuditController_getUserActivity",
         "parameters": [
@@ -1751,11 +1562,11 @@
         ],
         "summary": "Get user activity report",
         "tags": [
-          "Admin - Security & Audit"
+          "Administrator - Audit"
         ]
       }
     },
-    "/administrator/security-audit/audit/my-activity": {
+    "/api/administrator/audit/my-activity": {
       "get": {
         "operationId": "AuditController_getMyActivity",
         "parameters": [
@@ -1780,11 +1591,11 @@
         ],
         "summary": "Get own activity report",
         "tags": [
-          "Admin - Security & Audit"
+          "Administrator - Audit"
         ]
       }
     },
-    "/administrator/mastertables/positions": {
+    "/api/masterstable/positions": {
       "get": {
         "operationId": "PositionController_getPositions",
         "parameters": [],
@@ -1812,7 +1623,7 @@
         ],
         "summary": "Get all positions",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Position"
         ]
       },
       "post": {
@@ -1853,11 +1664,11 @@
         ],
         "summary": "Create a new position",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Position"
         ]
       }
     },
-    "/administrator/mastertables/positions/{id}": {
+    "/api/masterstable/positions/{id}": {
       "get": {
         "operationId": "PositionController_getPosition",
         "parameters": [
@@ -1894,7 +1705,7 @@
         ],
         "summary": "Get a position.",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Position"
         ]
       },
       "put": {
@@ -1944,11 +1755,11 @@
         ],
         "summary": "Update a current position information",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Position"
         ]
       }
     },
-    "/administrator/mastertables/departments": {
+    "/api/masterstable/departments": {
       "get": {
         "operationId": "DepartmentController_getDepartments",
         "parameters": [],
@@ -1976,7 +1787,7 @@
         ],
         "summary": "Get all departments",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Department"
         ]
       },
       "post": {
@@ -2017,11 +1828,11 @@
         ],
         "summary": "Create a new department",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Department"
         ]
       }
     },
-    "/administrator/mastertables/departments/{id}": {
+    "/api/masterstable/departments/{id}": {
       "get": {
         "operationId": "DepartmentController_getDepartment",
         "parameters": [
@@ -2058,7 +1869,7 @@
         ],
         "summary": "Get a department",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Department"
         ]
       },
       "put": {
@@ -2108,11 +1919,11 @@
         ],
         "summary": "Update a current department information",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Department"
         ]
       }
     },
-    "/administrator/mastertables/companies": {
+    "/api/masterstable/companies": {
       "get": {
         "operationId": "CompanyController_getCompanies",
         "parameters": [],
@@ -2140,7 +1951,7 @@
         ],
         "summary": "Get all companies",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Company"
         ]
       },
       "post": {
@@ -2181,11 +1992,11 @@
         ],
         "summary": "Create a new company",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Company"
         ]
       }
     },
-    "/administrator/mastertables/companies/{id}": {
+    "/api/masterstable/companies/{id}": {
       "get": {
         "operationId": "CompanyController_getCompany",
         "parameters": [
@@ -2222,7 +2033,7 @@
         ],
         "summary": "Get a company",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Company"
         ]
       },
       "put": {
@@ -2272,11 +2083,11 @@
         ],
         "summary": "Update a current company information",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Company"
         ]
       }
     },
-    "/administrator/mastertables/divisions": {
+    "/api/masterstable/divisions": {
       "get": {
         "operationId": "DivisionController_getDivisions",
         "parameters": [],
@@ -2304,7 +2115,7 @@
         ],
         "summary": "Get all divisions",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Division"
         ]
       },
       "post": {
@@ -2345,11 +2156,11 @@
         ],
         "summary": "Create a new division",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Division"
         ]
       }
     },
-    "/administrator/mastertables/divisions/{id}": {
+    "/api/masterstable/divisions/{id}": {
       "get": {
         "operationId": "DivisionController_getDivision",
         "parameters": [
@@ -2386,7 +2197,7 @@
         ],
         "summary": "Get a division",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Division"
         ]
       },
       "put": {
@@ -2436,11 +2247,174 @@
         ],
         "summary": "Update a current division information",
         "tags": [
-          "Admin - Mastertables"
+          "Masterstable - Division"
         ]
       }
     },
-    "/hr": {
+    "/api/masterstable/employment_status": {
+      "get": {
+        "operationId": "EmploymentStatusController_getEmployeeStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of available employment status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all employment status",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      },
+      "post": {
+        "operationId": "EmploymentStatusController_createEmployeeStatus",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create employee status.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employee status created successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create new employee status.",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      }
+    },
+    "/api/masterstable/employment_status/{id}": {
+      "get": {
+        "operationId": "EmploymentStatusController_getEmployeeStat",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the employment status."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get an employment status.",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      },
+      "put": {
+        "operationId": "EmploymentStatusController_updateEmployeeStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmpStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employee status details updated successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Updating employee status details.",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      }
+    },
+    "/api/hris": {
       "get": {
         "operationId": "DashboardController_getHrDashboard",
         "parameters": [],
@@ -2468,11 +2442,11 @@
         ],
         "summary": "Summary of the employees",
         "tags": [
-          "Human Resources"
+          "Human Resources - Dashboard"
         ]
       }
     },
-    "/permission_template": {
+    "/api/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateController_getPermissionTemplates",
         "parameters": [],
@@ -2500,7 +2474,7 @@
         ],
         "summary": "Get permission templates",
         "tags": [
-          "Manager"
+          "Manager - Permission Template"
         ]
       },
       "post": {
@@ -2541,11 +2515,11 @@
         ],
         "summary": "Create new permission template",
         "tags": [
-          "Manager"
+          "Manager - Permission Template"
         ]
       }
     },
-    "/permission_template/{id}": {
+    "/api/manager/permission-template/{id}": {
       "get": {
         "operationId": "PermissionTemplateController_getPermissionTemplate",
         "parameters": [
@@ -2582,7 +2556,7 @@
         ],
         "summary": "Get a permission template",
         "tags": [
-          "Manager"
+          "Manager - Permission Template"
         ]
       },
       "put": {
@@ -2632,11 +2606,11 @@
         ],
         "summary": "Get available permissin templates to user",
         "tags": [
-          "Manager"
+          "Manager - Permission Template"
         ]
       }
     },
-    "/permission_template/user/{userPermissionTemplateId}": {
+    "/api/manager/permission-template/user/{userPermissionTemplateId}": {
       "get": {
         "operationId": "PermissionTemplateController_getUserPermissionTemplate",
         "parameters": [
@@ -2673,11 +2647,11 @@
         ],
         "summary": "Get available permission templates to user",
         "tags": [
-          "Manager"
+          "Manager - Permission Template"
         ]
       }
     },
-    "/permission_template/user/{id}": {
+    "/api/manager/permission-template/user/{id}": {
       "post": {
         "operationId": "PermissionTemplateController_assignPermTemplate",
         "parameters": [
@@ -2725,61 +2699,20 @@
         ],
         "summary": "Assign Permission template to user",
         "tags": [
-          "Manager"
+          "Manager - Permission Template"
         ]
       }
     }
   },
   "info": {
     "title": "ABAS v3 API",
-    "description": "Enterprise Resource Planning API for ABAS v3 project",
+    "description": "",
     "version": "1.0",
     "contact": {}
   },
-  "tags": [
-    {
-      "name": "Authentication",
-      "description": "Manage user auth and login"
-    },
-    {
-      "name": "Admin - Security & Audit",
-      "description": "Manage audit trails and security clearance level"
-    },
-    {
-      "name": "Admin - System Management",
-      "description": "Administer modules, submodules, and role permissions"
-    },
-    {
-      "name": "Admin - Mastertables",
-      "description": "Manage organization structure such as companies, departments and etc."
-    },
-    {
-      "name": "Manager",
-      "description": "Manager managing users account, tokens etc."
-    },
-    {
-      "name": "Human Resources",
-      "description": "Managing lifecycle of employees"
-    }
-  ],
+  "tags": [],
   "servers": [],
   "components": {
-    "securitySchemes": {
-      "access-token": {
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "type": "http",
-        "name": "Authorization",
-        "description": "Enter JWT token",
-        "in": "header"
-      },
-      "security_clearance": {
-        "type": "apiKey",
-        "name": "Security-Clearance",
-        "in": "header",
-        "description": "Required security clearance level (documentational only)."
-      }
-    },
     "schemas": {
       "CreatePersonDto": {
         "type": "object",
@@ -3314,14 +3247,6 @@
           "action_updates"
         ]
       },
-      "CreateEmployeeStatusDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateEmpStatusDto": {
-        "type": "object",
-        "properties": {}
-      },
       "UpdateSecurityClearanceDto": {
         "type": "object",
         "properties": {
@@ -3618,6 +3543,14 @@
           "division_name",
           "status"
         ]
+      },
+      "CreateEmployeeStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateEmpStatusDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreatePermissionTemplateDto": {
         "type": "object",

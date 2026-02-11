@@ -28,8 +28,8 @@ import { CreateDivisionDto } from './dto/create-division.dto';
 import { UpdateDivisionDto } from './dto/update-division.dto.';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Admin - Mastertables')
-@Controller('administrator/mastertables')
+@ApiTags('Masterstable - Division')
+@Controller('masterstable')
 export class DivisionController {
   constructor(private divisionService: DivisionService) {}
 
