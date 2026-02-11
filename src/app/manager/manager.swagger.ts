@@ -21,7 +21,8 @@ function managerSwagger(app: INestApplication, prefix = 'api'): void {
         .setDescription('API for Managers')
         .setVersion('1.0')
         .addTag('Authentication')
-        .addTag('Manager')
+        .addTag('Manager - User Account')
+        .addTag('Manager - Permission Template')
         .build();
 
     const document = SwaggerModule.createDocument(app, options, {

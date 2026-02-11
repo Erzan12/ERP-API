@@ -8,8 +8,8 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { ACTION_READ, AUDIT_TRAIL, SEC_LVL_8 } from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Admin')
-@Controller('security-audit')
+@ApiTags('Administrator - Audit')
+@Controller('administrator')
 export class AuditController {
     constructor(private auditService: AuditService) {}
 

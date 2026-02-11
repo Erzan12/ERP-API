@@ -28,7 +28,7 @@ import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Masterstable')
+@ApiTags('Masterstable - Position')
 @Controller('masterstable')
 export class PositionController {
   constructor(private positionService: PositionService) {}

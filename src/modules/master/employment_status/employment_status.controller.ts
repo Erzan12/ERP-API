@@ -27,7 +27,7 @@ import {
 } from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Masterstable')
+@ApiTags('Masterstable - Employment Status')
 @Controller('masterstable')
 export class EmploymentStatusController {
   constructor(private employmentStatusService: EmploymentStatusService) {}

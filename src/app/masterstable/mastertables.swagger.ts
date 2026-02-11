@@ -21,7 +21,12 @@ function masterSwagger(app: INestApplication, prefix = 'api'):void {
         .setDescription('API for managing organization structure')
         .setVersion('1.0')
         .addTag('Authentication')
-        .addTag('Masterstable')
+        .addTag('Masterstable - Company')
+        .addTag('Masterstable - Division')
+        .addTag('Masterstable - Position')
+        .addTag('Masterstable - Department')
+        .addTag('Masterstable - Employment Status')
+        .addTag('Masterstable - User Location')
         .build();
 
     const document = SwaggerModule.createDocument(app, options, {

@@ -13,8 +13,8 @@ import { ApiSecurityClearance } from 'src/utils/helpers/swagger-response.helper'
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Admin')
-@Controller('security-audit')
+@ApiTags('Administrator - Security Clearance')
+@Controller('administrator')
 export class SecurityClearanceController {
   constructor(private clearanceService: SecurityClearanceService) {}
 
