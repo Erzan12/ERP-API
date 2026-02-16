@@ -1,38 +1,64 @@
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { INestApplication } from "@nestjs/common";
 
-import { AdministratorModule } from "src/modules/administrator/administrator.module";
+import { AdministratorV1Module } from "src/modules/administrator/administratorV1.module";
 import { AuthModule } from "src/auth/auth.module";
+import { AdministratorV2Module } from "src/modules/administrator/administratorV2.module";
 
-function adminSwagger(app: INestApplication, prefix = 'api'):void {
-    const options = new DocumentBuilder()
-        .addBearerAuth(
-            {
-                type: 'http',
-                scheme: 'bearer',
-                bearerFormat: 'JWT',
-                name: 'Authorization',
-                description: 'Enter JWT token',
-                in: 'header',
-            },
-            'access-token', // <-- Name of the security scheme
-        )
-        .setTitle('Administrators API')
-        .setDescription('API for System Management.')
-        .setVersion('1.0')
-        .addTag('Authentication')
-        .addTag('Administrator - Dashboard')
-        .addTag('Administrator - Module')
-        .addTag('Administrator - Role')
-        .addTag('Administrator - Submodule')
-        .addTag('Administrator - Security Clearance')
-        .addTag('Administrator - Audit')
-        .build();
+export function setupAdminSwagger(app: INestApplication): void {
 
-    const document = SwaggerModule.createDocument(app, options, {
-        include: [AdministratorModule, AuthModule]
-    });
-    SwaggerModule.setup(`${prefix}/docs/admin`, app, document);
+  // build document for V1
+  const optionsV1 = new DocumentBuilder()
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' }, 'access-token')
+    .setTitle('Administrators API (v1)')
+    .setDescription('API for System Management. CURRENTLY VIEWING API VERSION 1')
+    .setVersion('1.0')
+    .addTag('Authentication')
+    .addTag('Administrator - Dashboard')
+    .addTag('Administrator - Audit')
+    .addTag('Administrator - Module')
+    .addTag('Administrator - Submodule')
+    .addTag('Administrator - Role')
+    .addTag('Administrator - Security Clearance')
+    .build();
+
+  const documentV1 = SwaggerModule.createDocument(app, optionsV1, {
+    include: [AdministratorV1Module, AuthModule]
+  });
+
+  // build document for V2
+  const optionsV2 = new DocumentBuilder()
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' }, 'access-token')
+    .setTitle('Administrators API (v2)')
+    .setDescription('API for System Management. CURRENTLY VIEWING API VERSION 2')
+    .setVersion('2.0')
+    .addTag('Authentication')
+    .addTag('Administrator - Dashboard')
+    .addTag('Administrator - Audit')
+    .addTag('Administrator - Module')
+    .addTag('Administrator - Submodule')
+    .addTag('Administrator - Role')
+    .addTag('Administrator - Security Clearance')
+    .build();
+
+  const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
+    include: [AdministratorV2Module, AuthModule]
+  });
+
+  // mount individual endpoints (This automatically exposes /docs/admin/v1-json and v2-json)
+  SwaggerModule.setup('docs/admin/v1', app, documentV1);
+  SwaggerModule.setup('docs/admin/v2', app, documentV2);
+
+  // mount the Unified UI with the Dropdown
+  SwaggerModule.setup('docs/admin', app, documentV2, {
+    explorer: true, // enables the top bar
+    swaggerOptions: {
+      urls: [
+        { name: 'v2', url: '/docs/admin/v2-json' },
+        { name: 'v1', url: '/docs/admin/v1-json' }
+      ],
+      persistAuthorization: true,
+      filter: true,
+    }
+  });
 }
-
-export {adminSwagger};

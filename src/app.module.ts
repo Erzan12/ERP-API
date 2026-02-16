@@ -1,40 +1,45 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './config/prisma/prisma.module';
+import { CaslModule } from './middleware/casl/casl.module';
+import { LandingModule } from './landing/landing.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { MailService } from './jobs/mail/mail.service';
-import { ConfigModule } from '@nestjs/config';
-import { AdministratorModule } from 'src/modules/administrator/administrator.module';
-import { APP_GUARD } from '@nestjs/core';
+import { AdministratorV1Module } from 'src/modules/administrator/administratorV1.module';
+import { AdministratorV2Module } from './modules/administrator/administratorV2.module';
+import { HrV1Module } from './modules/hris/hrV1.module';
+import { HrV2Module } from './modules/hris/hrV2.module';
+import { ManagerV1Module } from './modules/manager/managerV1.module';
+import { ManagerV2Module } from './modules/manager/managerV2.module';
+import { MasterV1Module } from './modules/master/masterV1.module';
+import { MasterV2Module } from './modules/master/masterV2.module';
+
+import { PermissionsGuard } from './middleware/guards/permission.guard';
 import { CustomJwtAuthGuard } from './middleware/jwt/jwt.auth.guard';
-import { AuthController } from './auth/auth.controller';
 import { SecurityClearanceGuard } from './middleware/security_clearance/security-clearance.guard';
+import { APP_GUARD } from '@nestjs/core';
+
+import { AuthController } from './auth/auth.controller';
+// import { UserController } from './modules/manager/user/controllers/userv2.controller';
+// import { UserLocationController } from './modules/master/user_location/controller/user_locationV2.controller';
+
 import { UserService } from './modules/manager/user/user.service';
-import { UserController } from './modules/manager/user/user.controller';
-import { PrismaModule } from './config/prisma/prisma.module';
-import { PrismaService } from './config/prisma/prisma.service';
-import { DivisionService } from './modules/master/division/division.service';
-import { HrModule } from './modules/hris/hr.module';
-import { ManagerModule } from './modules/manager/manager.module';
-import { UserLocationService } from './modules/master/user_location/user_location.service';
-import { UserLocationController } from './modules/master/user_location/user_location.controller';
+import { AuditService } from './modules/administrator/audit/audit.service';
+import { PositionService } from './modules/master/position/position.service';
+import { EmployeeService } from './modules/hris/employee_masterlist/employee.service';
+import { CaslAbilityService } from './middleware/casl/casl.service';
+import { DepartmentService } from './modules/master/department/department.service';
 import { EmploymentStatusService } from './modules/master/employment_status/employment_status.service';
 import { CompanyService } from './modules/master/company/company.service';
+import { PrismaService } from './config/prisma/prisma.service';
+import { DivisionService } from './modules/master/division/division.service';
+import { MailService } from './jobs/mail/mail.service';
+import { UserLocationService } from './modules/master/user_location/user_location.service';
+
 import { CreateCompanyDto } from './modules/master/company/dto/create-company.dto';
 import { CreateDivisionDto } from './modules/master/division/dto/create-division.dto';
 import { CreateDepartmentDto } from './modules/master/department/dto/create-dept.dto';
 import { CreatePositionDto } from './modules/master/position/dto/create-position.dto';
-import { DepartmentService } from './modules/master/department/department.service';
-import { MasterModule } from './modules/master/master.module';
-import { PositionService } from './modules/master/position/position.service';
-import { EmployeeController } from './modules/hris/employee_masterlist/employee.controller';
-import { EmployeeService } from './modules/hris/employee_masterlist/employee.service';
-import { JwtStrategy } from './middleware/jwt/jwt.strategy';
-import { CaslAbilityService } from './middleware/casl/casl.service';
-import { CaslModule } from './middleware/casl/casl.module';
-import { AuditService } from './modules/administrator/audit/audit.service';
-import { PermissionsGuard } from './middleware/guards/permission.guard';
-// import { AppController } from './app.controller';
-import { LandingModule } from './landing/landing.module';
 
 @Module({
   imports: [
@@ -46,11 +51,15 @@ import { LandingModule } from './landing/landing.module';
     LandingModule,
     AuthModule,
     JwtModule,
-    AdministratorModule,
-    MasterModule,
+    AdministratorV1Module,
+    AdministratorV2Module,
+    MasterV1Module,
+    MasterV2Module,
     CaslModule,
-    HrModule,
-    ManagerModule,
+    HrV1Module,
+    HrV2Module,
+    ManagerV1Module,
+    ManagerV2Module,
     PrismaModule,
   ],
   providers: [
@@ -88,11 +97,10 @@ import { LandingModule } from './landing/landing.module';
     CreateCompanyDto,
   ],
   controllers: [
-    EmployeeController,
+    // EmployeeControllerV1,
     AuthController,
-    UserController,
-    UserLocationController,
-    // AppController,
+    // UserController,
+    // UserLocationController,
   ],
 })
 export class AppModule {}

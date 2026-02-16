@@ -1,39 +1,56 @@
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { INestApplication } from "@nestjs/common";
 
-import { HrModule } from "src/modules/hris/hr.module";
 import { AuthModule } from "src/auth/auth.module";
+import { HrV1Module } from "src/modules/hris/hrV1.module";
+import { HrV2Module } from "src/modules/hris/hrV2.module";
 
-function hrSwagger(app: INestApplication, prefix = 'api'):void {
-    const options = new DocumentBuilder()
-        .addBearerAuth(
-            {
-                type: 'http',
-                scheme: 'bearer',
-                bearerFormat: 'JWT',
-                name: 'Authorization',
-                description: 'Enter JWT token',
-                in: 'header',
-            },
-            'access-token', // <-- Name of the security scheme
-        )
-        .setTitle('HRIS API')
-        .setDescription('API for employee life cycle')
-        .setVersion('1.0')
-        .addTag('Authentication')
-        .addTag('Human Resources - Dashboard')
-        .addTag('Human Resources - Employees')
-        .build();
+export function setupHRISSwagger(app: INestApplication): void {
 
-    const document = SwaggerModule.createDocument(app, options, {
-        include: [HrModule, AuthModule]
-    });
-    SwaggerModule.setup(`${prefix}/docs/hris`, app, document, {
-        swaggerOptions: {
-            persistAuthorization: true, //keeps jwt after refresh or selecting new api endpoint in landing page
-            filter: true,   //add search bar
-        }
-    });
+  // build document for V1
+  const optionsV1 = new DocumentBuilder()
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' }, 'access-token')
+    .setTitle('HRIS API (v1)')
+    .setDescription('API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 1')
+    .setVersion('1.0')
+    .addTag('Authentication')
+    .addTag('Human Resources - Dashboard')
+    .addTag('Human Resources - Employees')
+    .build();
+
+  const documentV1 = SwaggerModule.createDocument(app, optionsV1, {
+    include: [HrV1Module, AuthModule]
+  });
+
+  // build document for V2
+  const optionsV2 = new DocumentBuilder()
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' }, 'access-token')
+    .setTitle('HRIS API (v2)')
+    .setDescription('API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 2')
+    .setVersion('2.0')
+    .addTag('Authentication')
+    .addTag('Human Resources - Dashboard')
+    .addTag('Human Resources - Employees')
+    .build();
+
+  const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
+    include: [HrV2Module, AuthModule]
+  });
+
+  // mount individual endpoints (This automatically exposes /docs/admin/v1-json and v2-json)
+  SwaggerModule.setup('docs/hris/v1', app, documentV1);
+  SwaggerModule.setup('docs/hris/v2', app, documentV2);
+
+  // mount the Unified UI with the Dropdown
+  SwaggerModule.setup('docs/hris', app, documentV2, {
+    explorer: true, // enables the top bar
+    swaggerOptions: {
+      urls: [
+        { name: 'v2', url: '/docs/hris/v2-json' },
+        { name: 'v1', url: '/docs/hris/v1-json' }
+      ],
+      persistAuthorization: true,
+      filter: true,
+    }
+  });
 }
-
-export {hrSwagger};

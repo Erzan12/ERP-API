@@ -15,100 +15,134 @@ export class LandingController {
       modules: [
         {
           title: 'Administrator',
-          slug: 'Admin',
-          swaggerLink: '/api/docs/admin',
-          icon: '/public/icons/user.png'
+          slug: 'admin',
+          swaggerLink: '/docs/admin',
+          icon: '/public/icons/user.png',
+          status: 'New'
         },
         {
           title: 'Masterstable',
           slug: 'masterstable',
-          swaggerLink: '/api/docs/masterstable',
-          icon: '/public/icons/masterstable.png'
+          swaggerLink: '/docs/masterstable',
+          icon: '/public/icons/masterstable.png',
+          status: 'New'
         },
         {
           title: 'Managers Access',
           slug: 'manager',
-          swaggerLink: '/api/docs/manager',
-          icon: '/public/icons/manager.png'
+          swaggerLink: '/docs/manager',
+          icon: '/public/icons/manager.png',
+          status: 'Internal'
         },
         {
           title: 'Human Resources',
           slug: 'hris',
-          swaggerLink: '/api/docs/hris',
-          icon: '/public/icons/hr-manager.png'
+          swaggerLink: '/docs/hris',
+          icon: '/public/icons/hr-manager.png',
+          status: 'Beta'
+        },
+        {
+          title: 'DB Query',
+          slug: 'db-query',
+          swaggerLink: '/api/db-query',
+          icon: '/public/icons/database.png',
+          comingSoon: true,
+          status: 'Deprecated'
         },
         {
           title: 'Accounting',
           slug: 'accounting',
-          swaggerLink: '/api/Accouting',
-          icon: '/public/icons/accounting.png'
+          swaggerLink: '/api/accounting',
+          icon: '/public/icons/accounting.png',
+          comingSoon: true, // put true value to disable target="blank"
+          status: 'Coming Soon',
         },
         {
           title: 'Purchasing',
           slug: 'purchasing',
-          swaggerLink: '/api/Purchasing',
-          icon: '/public/icons/purchasing.png'
+          swaggerLink: '/api/purchasing',
+          icon: '/public/icons/purchasing.png',
+          comingSoon: true,
+          status: 'Coming Soon'
         },
         {
           title: 'Inventory',
           slug: 'inventory',
-          swaggerLink: '/api/Inventory',
-          icon: '/public/icons/inventory.png'
+          swaggerLink: '/api/docs/inventory',
+          icon: '/public/icons/inventory.png',
+          comingSoon: true,
+          status: 'Coming Soon'
         },
         {
           title: 'Marketing & Operations',
           slug: 'operations',
-          swaggerLink: '/api/MarketingOps',
-          icon: '/public/icons/operations.png'
+          swaggerLink: 'marketingOps',
+          icon: '/public/icons/operations.png',
+          comingSoon: true,
+          status: 'Coming Soon'
         },
         {
           title: 'Finance',
           slug: 'finance',
-          swaggerLink: '/api/Finance',
-          icon: '/public/icons/finance.png'
+          swaggerLink: '/api/finance',
+          icon: '/public/icons/finance.png',
+          comingSoon: true,
+          status: 'Coming Soon'
         },
         {
           title: 'Stars',
           slug: 'stars',
-          swaggerLink: '/api/STARS',
-          icon: '/public/icons/satelite.png'
+          swaggerLink: '/api/stars',
+          icon: '/public/icons/satelite.png',
+          comingSoon: true,
+          status: 'Coming Soon'
         },
         {
           title: 'Biometric',
-          slug: 'Biometric',
-          swaggerLink: '/api/Biometric',
-          icon: '/public/icons/biometric.png'
+          slug: 'biometric',
+          swaggerLink: '/api/biometric',
+          icon: '/public/icons/biometric.png',
+          comingSoon: true,
+          status: 'Coming Soon'
         },
         {
           title: 'Payroll',
           slug: 'payroll',
-          swaggerLink: '/api/Payroll',
-          icon: '/public/icons/payroll.png'
+          swaggerLink: '/api/payroll',
+          icon: '/public/icons/payroll.png',
+          comingSoon: true,
+          status: 'Coming Soon'
         },
         {
           title: 'Corporate Services',
           slug: 'corporate',
-          swaggerLink: '/api/Corporate-Services',
-          icon: '/public/icons/corporate.png'
+          swaggerLink: '/api/corporate-services',
+          icon: '/public/icons/corporate.png',
+          comingSoon: true,
+          status: 'Coming Soon'
         },
         {
           title: 'IT Helpdesk',
           slug: 'helpdesk',
-          swaggerLink: '/api/IT-helpdesk',
-          icon: '/public/icons/helpdesk.png'
+          swaggerLink: '/api/it-helpdesk',
+          icon: '/public/icons/helpdesk.png',
+          comingSoon: true,
+          status: 'Coming Soon'
         },
         {
           title: 'Compliance',
           slug: 'compliance',
-          swaggerLink: '/api/Compliance',
-          icon: '/public/icons/compliance.png'
+          swaggerLink: '/api/compliance',
+          icon: '/public/icons/compliance.png',
+          comingSoon: true,
+          status: 'Coming Soon'
         },
       ],
     };
   }
 
   @Public()
-  @Get(':slug')
+  @Get('docs/:slug')
   @Render('stay-tuned')
   stayTuned(@Param('slug') slug: string) {
 

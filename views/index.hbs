@@ -13,22 +13,30 @@
     </header>
     <div class="grid-container">
         {{#each modules}}
-            <a href="{{swaggerLink}}" class="card-link">
-                <div class="icon">
-                    {{#if icon}}
-                        <img src="{{icon}}" alt="{{title}} icon" class="card-icon"/>
+            {{!-- <a href="{{#if comingSoon}}/{{slug}}{{else}}{{swaggerLink}}{{/if}}" --}}
+            <a href="{{#if comingSoon}}{{slug}}{{else}}{{swaggerLink}}{{/if}}"
+                class="card-link"
+                {{#unless comingSoon}}target="_blank"{{/unless}}>
+                    {{#if status}}
+                        <div class="ribbon">
+                            <span data-status="{{status}}">{{status}}</span>
+                        </div>
                     {{/if}}
-                </div>
-                <div class="title">
-                    <h3>{{title}}</h3>
-                    {{!-- <p>{{description}}</p>
-                    <span class="click-hint">View in Swagger →</span> --}}
-                </div>
+
+                    <div class="icon">
+                        {{#if icon}}
+                            <img src="{{icon}}" alt="{{title}} icon" class="card-icon"/>
+                        {{/if}}
+                    </div>
+
+                    <div class="title">
+                        <h3>{{title}}</h3>
+                    </div>
             </a>
         {{/each}}
     </div>
     <footer>
-        <a href="/api/docs" class="open-btn" target="_blank">Open Swagger UI →</a>
+        <a href="/docs" class="open-btn" target="_blank">Open Swagger UI →</a>
     </footer>
 
     <script src="/public/app.js"></script>
