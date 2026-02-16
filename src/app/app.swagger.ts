@@ -2,12 +2,12 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { INestApplication } from "@nestjs/common";
 import { writeFileSync } from "fs";
 
-import { adminSwagger } from "./admin/admin.swagger";
-import { hrSwagger } from "./hris/hris.swagger";
-import { managerSwagger } from "./manager/manager.swagger";
-import { masterSwagger } from "./masterstable/mastertables.swagger";
+import { setupAdminSwagger } from "./admin/admin.swagger";
+import { setupHRISSwagger } from "./hris/hris.swagger";
+import { setupManagerSwagger } from "./manager/manager.swagger";
+import { setupMasterSwagger } from "./masterstable/mastertables.swagger";
 
-function appSwagger(app: INestApplication, prefix = 'api'): void {
+function setupAppSwagger(app: INestApplication): void {
     // All APIs docs
     const options = new DocumentBuilder()
     .setTitle('ABAS v3 API')
@@ -15,7 +15,11 @@ function appSwagger(app: INestApplication, prefix = 'api'): void {
     .build();
 
     const document = SwaggerModule.createDocument(app, options);
-    SwaggerModule.setup(`${prefix}/docs`, app, document);
+    SwaggerModule.setup(`docs`, app, document, {
+        swaggerOptions: {
+            persistAuthorization: true,
+        }
+    });
 
     writeFileSync(
         './API_documentation/swagger-spec.json',
@@ -23,10 +27,10 @@ function appSwagger(app: INestApplication, prefix = 'api'): void {
     );
 
     // API specific docs
-    adminSwagger(app, prefix);
-    hrSwagger(app, prefix);
-    managerSwagger(app, prefix);
-    masterSwagger(app, prefix);
+    setupAdminSwagger(app);
+    setupHRISSwagger(app);
+    setupManagerSwagger(app);
+    setupMasterSwagger(app);
 }
 
-export {appSwagger};
+export {setupAppSwagger}
