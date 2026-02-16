@@ -218,9 +218,9 @@ export class AuthService {
     const issuedAt = Math.floor(Date.now() / 1000);
 
     const payload = {
-      sub: userValidate.id,
+      userUuid: userValidate.id,
       name: userValidate.username,
-      iat: issuedAt,
+      issuedAt: issuedAt,
     };
 
     //JWT service token is JWT Secret Key in .env with Payload from user name role id and permissions, the logic handling is in jwt.strategy.ts

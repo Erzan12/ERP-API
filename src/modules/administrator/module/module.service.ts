@@ -3,9 +3,8 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateModuleDto } from './dto/module.dto';
+import { CreateModuleDto, UpdateModuleDto } from './dto/module.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { UpdateModuleDto } from './dto/update-module.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @Injectable()
