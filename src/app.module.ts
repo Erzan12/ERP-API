@@ -40,6 +40,10 @@ import { CreateCompanyDto } from './modules/master/company/dto/create-company.dt
 import { CreateDivisionDto } from './modules/master/division/dto/create-division.dto';
 import { CreateDepartmentDto } from './modules/master/department/dto/create-dept.dto';
 import { CreatePositionDto } from './modules/master/position/dto/create-position.dto';
+// import { HealthCheckController } from './health-check/health-check.controller';
+// import { HealthCheckService } from './health-check/health-check.service';
+// import { HealthCheckModule } from './health-check/health-check.module';
+// import { HealthModule } from './modules/administrator/health/health.module';
 
 @Module({
   imports: [
@@ -61,6 +65,8 @@ import { CreatePositionDto } from './modules/master/position/dto/create-position
     ManagerV1Module,
     ManagerV2Module,
     PrismaModule,
+    // HealthCheckModule,
+    // HealthModule,
   ],
   providers: [
     UserService,
@@ -95,10 +101,12 @@ import { CreatePositionDto } from './modules/master/position/dto/create-position
     CreatePositionDto,
     CreateDivisionDto,
     CreateCompanyDto,
+    // HealthCheckService,
   ],
   controllers: [
     // EmployeeControllerV1,
     AuthController,
+    // HealthCheckController,
     // UserController,
     // UserLocationController,
   ],
