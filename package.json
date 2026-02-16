@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@casl/ability": "^6.7.3",
+    "@nestjs/axios": "^4.0.1",
     "@nestjs/common": "^11.1.3",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -28,7 +29,9 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.6",
     "@nestjs/swagger": "^11.2.0",
+    "@nestjs/terminus": "^11.0.0",
     "@prisma/adapter-pg": "^7.3.0",
+    "axios": "^1.13.5",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
@@ -100,8 +103,7 @@
     "type": "git",
     "url": "https://gitea.avegabros.net/erzan/ABAS-API-V2.git"
   },
-  "keywords": []
-  ,
+  "keywords": [],
   "prisma": {
     "seed": "ts-node prisma/seeds.ts"
   }

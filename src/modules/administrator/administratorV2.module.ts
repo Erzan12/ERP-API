@@ -18,9 +18,11 @@ import { AuditControllerV2 } from './audit/controllers/auditV2.controller';
 import { AuditService } from './audit/audit.service';
 import { DashboardControllerv2 } from './dashboard/controllers/dashboardV2.controller';
 import { DashboardService } from './dashboard/dashboard.service';
+import { HealthController } from './health/health.controller';
+import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, TerminusModule],
   controllers: [
     SubModuleControllerV2,
     ModuleControllerV2,
@@ -28,6 +30,7 @@ import { DashboardService } from './dashboard/dashboard.service';
     SecurityClearanceControllerV2,
     DashboardControllerv2,
     AuditControllerV2,
+    HealthController
   ],
   providers: [
     JwtStrategy,
