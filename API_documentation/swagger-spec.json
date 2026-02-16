@@ -2248,6 +2248,20 @@
         ]
       }
     },
+    "/v2/administrator/health/env": {
+      "get": {
+        "operationId": "HealthController_envCheck_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator - Health Check"
+        ]
+      }
+    },
     "/v1/masterstable/positions": {
       "get": {
         "operationId": "PositionControllerV1_getPositions_v1",
