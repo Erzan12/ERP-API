@@ -14,7 +14,7 @@
     <div class="grid-container">
         {{#each modules}}
             {{!-- <a href="{{#if comingSoon}}/{{slug}}{{else}}{{swaggerLink}}{{/if}}" --}}
-            <a href="{{#if comingSoon}}{{slug}}{{else}}{{swaggerLink}}{{/if}}"
+            <a href="{{#if comingSoon}}/docs/{{slug}}{{else}}{{swaggerLink}}{{/if}}"
                 class="card-link"
                 {{#unless comingSoon}}target="_blank"{{/unless}}>
                     {{#if status}}
