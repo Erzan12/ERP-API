@@ -44,7 +44,7 @@ export class LandingController {
         {
           title: 'DB Query',
           slug: 'db-query',
-          swaggerLink: '/api/db-query',
+          swaggerLink: '/docs/db-query',
           icon: '/public/icons/database.png',
           comingSoon: true,
           status: 'Deprecated'
