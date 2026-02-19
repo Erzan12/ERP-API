@@ -1,0 +1,54 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up OS Tools
+        run: |
+          rm -f /etc/apt/sources.list.d/github_git-lfs.list
+          apt-get update -o Acquire::Retries=3 || true
+          apt-get install -y sshpass rsync          
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'node'
+
+      - name: Install dependencies and Build NestJS
+        run: npm ci && npm run build
+
+      - name: Upload to Staging Server
+        env:
+          STG_HOST: ${{ secrets.SSH_HOST }}
+          STG_USER: ${{ secrets.SSH_USER }}
+          STG_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          STG_PATH: /home/avegabrosnet/public_html/abas-api-v2/
+        run: |
+           sshpass -p "$STG_PASSWORD" rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no" \
+            --exclude='.git' \
+            --exclude='.gitea' \
+            --exclude='src' \
+            --exclude='__test__' \
+            API_documentation views .dist node_modules public package.json package-lock.json \
+            $STG_USER@$STG_HOST:$STG_PATH           
+  
+      - name: Restart Phusion Passenger
+        env:
+          STG_HOST: ${{ secrets.SSH_HOST }}
+          STG_USER: ${{ secrets.SSH_USER }}
+          STG_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          STG_PATH: /home/avegabrosnet/public_html/abas-api-v2
+        run: |
+          sshpass -p "$STG_PASSWORD" ssh -o StrictHostKeyChecking=no $STG_USER@$STG_HOST "
+            mkdir -p $STG_PATH/tmp && touch $STG_PATH/tmp/restart.txt
+          "          

@@ -1,0 +1,37 @@
+name: Build & Validate (PR Check)
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'node'
+      
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Unit Tests
+        run: npm test -- --ci --env=jsdom --reporters=default --reporters=jest-junit
+
+      - name: Run Security Audit
+        run: |
+          npm audit --audit-level=high || true
+          echo "Security audit completed"
+
+      - name: Build NestJS
+        run: npm run build
