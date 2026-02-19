@@ -160,6 +160,7 @@ export class EmployeeService {
     });
   }
 
+  //UNIQUE COMPANY EMPLOYEE ID FORMAT - ABISC-250710-001
   async createUniqueEmpID(
     company_id: string,
     hire_date: Date,
