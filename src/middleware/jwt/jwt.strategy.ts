@@ -130,9 +130,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  //to validate the user token when accessing apis if the user token is expired, missing or mispelled
   async validate(payload: any): Promise<RequestUser> {
     const user = await this.prisma.user.findUnique({
-      where: { id: payload.sub },
+      where: { id: payload.userUUID },
       include: {
         user_roles: {
           include: {
