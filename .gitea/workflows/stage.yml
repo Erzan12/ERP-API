@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies and Build NestJS
         run: npm ci && npm run build
 
+      - name: Migrate Prisma
+        run: npx prisma generate
+
       - name: Upload to Staging Server
         env:
           STG_HOST: ${{ secrets.SSH_HOST }}
@@ -39,9 +42,9 @@ jobs:
             --exclude='.gitea' \
             --exclude='src' \
             --exclude='__test__' \
-            API_documentation views .dist node_modules public package.json package-lock.json \
-            $STG_USER@$STG_HOST:$STG_PATH           
-  
+            API_documentation views .dist node_modules public package.json package-lock.json app.js nest-cli.json prisma.config.ts tsconfig.json\
+            $STG_USER@$STG_HOST:$STG_PATH   
+
       - name: Restart Phusion Passenger
         env:
           STG_HOST: ${{ secrets.SSH_HOST }}
