@@ -6,6 +6,46 @@ on:
       - master
 
 jobs:
+  merge-to-staging-branch:
+    runs-on: ubuntu-latest
+    outputs:
+      staging-branch-exists: ${{ steps.check-staging.outputs.exists }}
+    steps:
+      - name: Checkout master branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set Git identity
+        run: |
+          git config --global user.email "gitea@avegabros.com"
+          git config --global user.name "Gitea"
+
+      - id: check-staging
+        name: Check if staging branch exists
+        run: |
+          if git show-ref --verify --quiet refs/remotes/origin/staging; then
+            echo "Staging branch already exists."
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Staging branch does not exist, creating now."
+            git checkout -b staging
+            git push origin staging
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Merge master into staging
+        if: steps.check-staging.outputs.exists == 'true'
+        run: |
+          git checkout staging
+          git fetch origin
+          git merge origin/master --no-ff || echo "Nothing to merge or conflicts."
+
+      - name: Push changes to staging branch
+        if: steps.check-staging.outputs.exists == 'true'
+        run: |
+          git push origin staging || echo "Nothing to push."
+
   build-validate:
     runs-on: ubuntu-latest
     steps:
@@ -18,7 +58,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'node'
-      
+
       - name: Install Dependencies
         run: npm ci
 
