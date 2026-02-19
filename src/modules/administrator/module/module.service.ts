@@ -119,24 +119,84 @@ export class ModuleService {
   // }
 
   // async list of all the modules
-  async getModules(user: RequestUser) {
-    const modules = await this.prisma.module.findMany({
-      where: { stat: 1 },
-      include: {
-        sub_module: true,
-      }
-    });
+  // async getModules(user: RequestUser) {
+  //   const modules = await this.prisma.module.findMany({
+  //     where: { stat: 1 },
+  //     include: {
+  //       sub_module: true,
+  //     }
+  //   });
 
-    if (modules.length === 0) {
+  //   if (modules.length === 0) {
+  //     throw new NotFoundException('No available modules found!');
+  //   }
+
+  //   return {
+  //     status: 'success',
+  //     message: 'Here are the list of Sub Modules',
+  //     data: {
+  //       modules,
+  //     },
+  //   };
+  // }
+
+  // with pagination
+  async getModules(
+    user: RequestUser, 
+    page = 1, 
+    perPage = 10, 
+    search?: string, 
+    sortBy: string = 'created_at', 
+    order: 'asc' | 'desc' = 'asc',
+  ) {
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: any = {
+      stat: 1,
+    };
+
+    //search query
+    if (search) {
+      whereCondition.name = {
+        contains: search,
+        mode: 'insensitive', //postgresql case-insensitive
+      };
+    }
+  //prevent sorting by invalied fields (very important)
+    const allowSortFeilds = ['name', 'created_at', 'updated_at'];
+    if (!allowSortFeilds.includes(sortBy)) {
+      sortBy = 'created_at';
+    }
+
+    const [total, modules] = await this.prisma.$transaction([
+      this.prisma.module.count({
+        where: whereCondition,
+      }),
+      this.prisma.module.findMany({
+        where: whereCondition,
+        include: {
+          sub_module: true,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [sortBy]: order,
+        },
+      }),
+    ]);
+    
+    if(modules.length === 0) {
       throw new NotFoundException('No available modules found!');
     }
 
     return {
       status: 'success',
       message: 'Here are the list of Sub Modules',
-      data: {
-        modules,
-      },
+      count: total,
+      page,
+      perPage,
+      // totalPages: Math.ceil( total / perPage),
+      data: modules,
     };
   }
 

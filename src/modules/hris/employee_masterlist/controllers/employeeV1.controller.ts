@@ -41,7 +41,7 @@ export class EmployeeControllerV1 {
   getEmployees(
     @SessionUser() user: RequestUser
   ) {
-    return this.employeeService.getEmployees(user)
+    // return this.employeeService.getEmployees(user)
   }
 
   //get a single employee profile or view
@@ -53,7 +53,7 @@ export class EmployeeControllerV1 {
     @Param('id', new ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employeeService.getEmployee(id, user);
+    // return this.employeeService.getEmployee(id, user);
   }
   
   @Post('employees')
@@ -68,7 +68,7 @@ export class EmployeeControllerV1 {
     @Body() createDto: CreateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employeeService.createEmployee(createDto, user);
+    // return this.employeeService.createEmployee(createDto, user);
   }
 
   //can edit employee profile
@@ -85,10 +85,10 @@ export class EmployeeControllerV1 {
     @Body() updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employeeService.updateEmployee(
-      id,
-      updateEmployeeWithDetailsDto,
-      user,
-    );
+    // return this.employeeService.updateEmployee(
+    //   id,
+    //   updateEmployeeWithDetailsDto,
+    //   user,
+    // );
   }
 }
