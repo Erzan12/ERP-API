@@ -323,7 +323,7 @@ model UserPermission {
 }
 
 ////////////////////////////////////////
-// AUDIT TRAIL
+// AUDIT TRAIL & DATABASE CONTROL
 ////////////////////////////////////////'
 
 model AuditLog {
@@ -377,6 +377,18 @@ model AuditLog {
   @@index([session_id])
   @@index([success])
   @@map("audit_logs")  
+}
+
+//important notice we will not be using this module for schema migration only for logging
+model AdminDBQueryLog {
+  id            String       @id @default(uuid()) @db.Uuid
+  adminId       String
+  sql           String
+  purpose       String
+  executedAt    DateTime @default(now())
+  executionMs   Int
+  success       Boolean
+  error_message String
 }
 
 ////////////////////////////////////////
