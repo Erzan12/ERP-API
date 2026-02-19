@@ -105,6 +105,6 @@
   },
   "keywords": [],
   "prisma": {
-    "seed": "ts-node prisma/seeds.ts"
+    "seed": "ts-node prisma/seed.ts"
   }
 }

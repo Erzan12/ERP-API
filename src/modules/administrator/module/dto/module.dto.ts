@@ -1,6 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsString, IsNotEmpty } from 'class-validator';
-ApiProperty
 
 export class CreateModuleDto {
   @IsString()
