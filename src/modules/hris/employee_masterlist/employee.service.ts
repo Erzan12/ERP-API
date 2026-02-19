@@ -211,7 +211,7 @@ export class EmployeeService {
     const canView = await this.prisma.userRole.findFirst({
       where: {
         user_id: user.id,
-        role_id: { in: ["ee650664-5ce7-4b5d-9564-b7d05061e5da", "24e74f3c-c24f-4e82-b89d-bb5dc0251f37", "b1118e05-6377-4e64-a677-14f9b9226fdd"]}
+        role_name: { in: ["Administrator", "Super Administrator", "HR Manager", "HR Clerk", "HR Staff"]}
        },
     });
 
@@ -249,16 +249,19 @@ export class EmployeeService {
             name: true,
           },
         },
-        employment_status: true,
+        // to only include label of employment status
+        employment_status: {
+          select: {
+            label: true,
+          }
+        },
       },
     });
 
     return {
       status: 'success',
       message: 'List of Employees',
-      data: {
-        viewEmployee
-      },
+      data: viewEmployee
     };
   }
 
