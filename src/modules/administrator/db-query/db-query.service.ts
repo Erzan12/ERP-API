@@ -6,10 +6,14 @@ import {
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { ExecuteDbQueryDto } from './dto/execute-db-query.dto';
+import { SlackService } from 'src/jobs/slack/slack.service';
 
 @Injectable()
 export class DbQueryService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly slackService: SlackService
+  ) {}
 
   private validateSql(sql: string) {
     const forbiddenKeywords = [
@@ -54,7 +58,7 @@ export class DbQueryService {
         adminId,
         sql: dto.sql,
         purpose: dto.purpose,
-        confirm: true,
+        // confirm: true,
         executionMs,
         success,
         error_message: errorMessage,
@@ -66,7 +70,12 @@ export class DbQueryService {
     }
 
     await this.slackService.notify(
-      `Admin ${adminId} executed manual SQL:\n${dto.purpose}`
+      // `Admin ${adminId} executed manual SQL:\n${dto.purpose}`
+      `🚨 Manual SQL executed
+      Admin: ${adminId}
+      Purpose: ${dto.purpose}
+      Success: ${success}
+      Time: ${executionMs}ms`
     );
 
     return {

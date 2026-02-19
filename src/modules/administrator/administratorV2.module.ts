@@ -22,9 +22,12 @@ import { HealthController } from './health/health.controller';
 import { TerminusModule } from '@nestjs/terminus';
 import { DbQueryControllerV2 } from './db-query/db-query.controller';
 import { DbQueryService } from './db-query/db-query.service';
+import { SlackModule } from 'src/jobs/slack/slack.module';
+import { HttpModule } from '@nestjs/axios';
+import { SlackService } from 'src/jobs/slack/slack.service';
 
 @Module({
-  imports: [AuthModule, TerminusModule],
+  imports: [AuthModule, TerminusModule, SlackModule, HttpModule],
   controllers: [
     SubModuleControllerV2,
     ModuleControllerV2,
@@ -49,6 +52,7 @@ import { DbQueryService } from './db-query/db-query.service';
     DashboardService,
     AuditService,
     DbQueryService, 
+    SlackService
   ],
   exports: [AdministratorV2Module],
 })

@@ -2262,6 +2262,85 @@
         ]
       }
     },
+    "/v2/administrator/db-query/execute": {
+      "post": {
+        "operationId": "DbQueryControllerV2_executeQuery_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteDbQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Execute manual SQL query (Super Admin Only)",
+        "tags": [
+          "Administrator - Database Manuel Query"
+        ]
+      }
+    },
+    "/v2/administrator/db-query/logs": {
+      "get": {
+        "operationId": "DbQueryControllerV2_getLogs_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get latest executed manual queries",
+        "tags": [
+          "Administrator - Database Manuel Query"
+        ]
+      }
+    },
+    "/v2/administrator/db-query/logs/{id}": {
+      "get": {
+        "operationId": "DbQueryControllerV2_getLog_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get specific manual query log",
+        "tags": [
+          "Administrator - Database Manuel Query"
+        ]
+      }
+    },
     "/v1/masterstable/positions": {
       "get": {
         "operationId": "PositionControllerV1_getPositions_v1",
@@ -5685,6 +5764,10 @@
         "required": [
           "new_level"
         ]
+      },
+      "ExecuteDbQueryDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreatePositionDto": {
         "type": "object",
