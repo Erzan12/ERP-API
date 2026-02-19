@@ -58,6 +58,14 @@ async function main() {
     },
   });
 
+  const superAdminPerson = await prisma.person.create({
+    data: {
+      first_name: 'Super Administrator',
+      last_name: 'IT',
+      date_of_birth: new Date('2000-05-12'),
+    },
+  });
+
   // 3. Create Divisions
   const assetMgmt = await prisma.division.create({
     data: { name: 'Asset Management'},
@@ -190,6 +198,14 @@ async function main() {
     //     department_id: itDept.id,
     //   },
     // }),
+
+    prisma.position.create({
+      data: {
+        name: 'it administrator',
+        department_id: itDept.id,
+      },
+    }),
+
     prisma.position.create({
       data: {
         name: 'it manager',
@@ -222,6 +238,7 @@ async function main() {
       { name: 'Dashboard', module_id: hrModule.id },
       { name: 'Employee Masterlist', module_id: hrModule.id },
       { name: 'User Account', module_id: managerModule.id },
+      { name: 'Permission Template', module_id: managerModule.id},
       { name: 'Dashboard', module_id: managerModule.id },
       { name: 'Inbox', module_id: managerModule.id },
       { name: 'Dashboard', module_id: adminModule.id },
@@ -229,6 +246,7 @@ async function main() {
       { name: 'Mastertables', module_id: adminModule.id },
       { name: 'User Token Keys', module_id: adminModule.id },
       { name: 'System Management', module_id: adminModule.id },
+      { name: 'DB Query', module_id: adminModule.id}
     ],
     skipDuplicates: true,
   });
@@ -267,6 +285,7 @@ async function main() {
   
   // 8. Create Roles
   const roleNames = [
+    'Super Administrator',
     'Administrator',
     'Supervisor',
     'Guest',
@@ -291,32 +310,31 @@ async function main() {
     )
   );
 
+  const superAdminRole = roleRecords.find((r) => r.name === 'Super Administrator')!;
   const adminRole = roleRecords.find((r) => r.name === 'Administrator')!;
   const hrRole = roleRecords.find((r) => r.name === 'HR Clerk')!;
   const itRole = roleRecords.find((r) => r.name === 'IT Staff')!;
   const manRole = roleRecords.find((r) => r.name === 'Manager')!;
 
-    // Create Employement Status
+  // Create Employement Status
   // async function main() {
-    // EmploymentStatus seed
-    const employmentStatuses = [
-      { code: 'REGULAR', label: 'Regular' },
-      { code: 'ON_LEAVE', label: 'On Leave' },
-      { code: 'TERMINATED', label: 'Terminated' },
-      { code: 'RESIGNED', label: 'Resigned' },
-      { code: 'PROBATIONARY', label: 'Probationary' },
-    ]
+  // EmploymentStatus seed
+  const employmentStatuses = [
+    { code: 'REGULAR', label: 'Regular' },
+    { code: 'ON_LEAVE', label: 'On Leave' },
+    { code: 'TERMINATED', label: 'Terminated' },
+    { code: 'RESIGNED', label: 'Resigned' },
+    { code: 'PROBATIONARY', label: 'Probationary' },
+  ]
 
-    for (const status of employmentStatuses) {
-      await prisma.employmentStatus.upsert({
-        where: { code: status.code },
-        update: {},
-        create: status,
-      })
-    }
-
-  //   console.log('✅ Seeded employment statuses')
-  // }
+  for (const status of employmentStatuses) {
+    await prisma.employmentStatus.upsert({
+      where: { code: status.code },
+      update: {},
+      create: status,
+    })
+    console.log('✅ Seeded employment statuses')
+  }
 
   // After upserting employment statuses
   const activeStatus = await prisma.employmentStatus.findUnique({ where: { code: 'REGULAR' } });
@@ -326,13 +344,31 @@ async function main() {
   }
 
   // 10. Create Employees
+
+  const superAdminEmployee = await prisma.employee.create({
+    data: {
+      person_id: superAdminPerson.id,
+      employee_id: 'ABISC-250710-001',
+      company_id: abisc.id,
+      department_id: itDept.id,
+      hire_date: new Date('2025-05-12'),
+      position_id: itStaff.id,
+      division_id: assetMgmt.id,
+      salary: 20000,
+      pay_frequency: 'Monthly',
+      employment_status_id: activeStatus.id,
+      monthly_equivalent_salary: 60000,
+      corporate_rank_id: 1,
+    },
+  });
+  
   const hrEmployee = await prisma.employee.create({
     data: {
       person_id: hrPerson.id,
       employee_id: 'EMP-HR-001',
       company_id: abisc.id,
       department_id: hrDept.id,
-      hire_date: new Date('2023-01-01'),
+      hire_date: new Date('ABISC-250710-002'),
       position_id: hrManager.id,
       division_id: corpServices.id,
       salary: 30000,
@@ -346,8 +382,8 @@ async function main() {
   const itEmployee = await prisma.employee.create({
     data: {
       person_id: itPerson.id,
-      employee_id: 'EMP-IT-001',
-      company_id: abmci.id,
+      employee_id: 'ABISC-250710-003',
+      company_id: abisc.id,
       department_id: itDept.id,
       hire_date: new Date('2022-01-01'),
       position_id: itManager.id,
@@ -363,8 +399,8 @@ async function main() {
   const adminEmployee = await prisma.employee.create({
     data: {
       person_id: adminPerson.id,
-      employee_id: 'EMP-IT-002',
-      company_id: lmvc.id,
+      employee_id: 'ABISC-250710-004',
+      company_id: abisc.id,
       department_id: itDept.id,
       hire_date: new Date('2025-05-12'),
       position_id: itStaff.id,
@@ -384,6 +420,18 @@ async function main() {
   await prisma.department.update({ where: { id: hrDept.id }, data: { department_head_id: hrEmployee.id } });
 
   // 12. Create Users
+  const superAdminUser = await prisma.user.create({
+    data: {
+      employee_id: superAdminEmployee.id,
+      username: 'superadmin',
+      email: 'superadmin@abas.com',
+      password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
+      person_id: superAdminPerson.id,
+      require_reset: 0,
+      security_clearance_level: 9
+    }
+  })
+
   const adminUser = await prisma.user.create({
     data: {
       employee_id: adminEmployee.id,
@@ -392,7 +440,7 @@ async function main() {
       password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
       person_id: adminPerson.id,
       require_reset: 0,
-      security_clearance_level: 9
+      security_clearance_level: 7
     },
   });
 
@@ -458,6 +506,15 @@ async function main() {
       rolePermissionPayload.push({
         action,
         sub_module_id: sub.id,
+        role_id: superAdminRole.id,
+        role_name: superAdminRole.name,
+        sub_module_permission_id: subModulePermissionId,
+        department_id:  itDept.id
+      });
+
+      rolePermissionPayload.push({
+        action,
+        sub_module_id: sub.id,
         role_id: adminRole.id,
         role_name: adminRole.name,
         sub_module_permission_id: subModulePermissionId,
@@ -472,12 +529,16 @@ async function main() {
       skipDuplicates: true,
     });
   }
-  console.log(`✅ Administrator role permissions created for ${rolePermissionPayload.length} actions.`);
+  console.log(`✅ Super Administrator and Administrator role permissions created for ${rolePermissionPayload.length} actions.`);
   // i also want to add role permission for the admin user the role permission is a role like Administrator and assigned to a existing submodulepermission
 
   // Assuming you have:
   const userId = adminUser.id; // your user ID
   const roleId = adminRole.id; // admin role ID
+
+  //for super admin
+  const superUserId = superAdminUser.id;
+  const superRoleId = superAdminRole.id;
 
   // Create UserRole linking user to role
   const userRole = await prisma.userRole.create({
@@ -488,12 +549,27 @@ async function main() {
     },
   });
 
+  const superUserRole = await prisma.userRole.create({
+    data: {
+      user_id: superUserId,
+      role_id: superRoleId,
+      role_name: 'Super Administrator',
+    }
+  })
+
   // Fetch all RolePermissions for the role
   const rolePermissions = await prisma.rolePermission.findMany({
     where: {
       role_id: roleId,
     },
   });
+
+  const superUserPermissionsData = rolePermissions.map((rp) => ({
+    action: rp.action,
+    user_id: superUserId,
+    user_role_id: superUserRole.id,
+    role_permission_id: rp.id,
+  }));
 
   // Create UserPermissions for this userRole
   const userPermissionsData = rolePermissions.map((rp) => ({
@@ -508,7 +584,13 @@ async function main() {
     skipDuplicates: true, // avoid duplicates on rerun
   });
 
+  await prisma.userPermission.createMany({
+    data: superUserPermissionsData,
+    skipDuplicates: true, // avoid duplicates on rerun
+  })
+
   console.log(`✅ Assigned ${userPermissionsData.length} permissions to user ${userId}`);
+  console.log(`✅ Assigned ${superUserPermissionsData.length} permissions to Super user ${userId}`);
 
   // 15. Seed Password Reset Tokens
   await prisma.passwordResetToken.createMany({
@@ -531,6 +613,12 @@ async function main() {
         expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
         is_used: false,
       },
+      {
+        password_token: uuidv4(),
+        user_id: superAdminUser.id,
+        expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
+        is_used: false,
+      },
     ],
   });
 
@@ -550,6 +638,11 @@ async function main() {
       {
         user_token: uuidv4(),
         user_id: adminUser.id,
+        status: false,
+      },
+      {
+        user_token: uuidv4(),
+        user_id: superAdminUser.id,
         status: false,
       },
     ],
