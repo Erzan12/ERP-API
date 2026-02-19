@@ -31,7 +31,7 @@ export class ModuleControllerV1 {
   @ApiGetResponse('Here are all the Modules available')
   @Can({ action: ACTION_READ , subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModules(@SessionUser() user: RequestUser) {
-    return this.moduleService.getModules(user);
+    // return this.moduleService.getModules(user);
   }
 
   @Get('modules/:id')
@@ -42,7 +42,7 @@ export class ModuleControllerV1 {
     @SessionUser() user: RequestUser,
     @Param('id', new ParseUUIDPipe) id: string,
   ) {
-    return this.moduleService.getModule(user, id); // 👈 pass the id to your service
+    // return this.moduleService.getModule(user, id); // 👈 pass the id to your service
   }
 
   @Post('modules')
@@ -53,7 +53,7 @@ export class ModuleControllerV1 {
     @Body() createModuleDto: CreateModuleDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.moduleService.createModule(createModuleDto, user);
+    // return this.moduleService.createModule(createModuleDto, user);
   }
 
   @Put('modules/:id')
@@ -69,6 +69,6 @@ export class ModuleControllerV1 {
     @SessionUser() user: RequestUser,
     @Param('id', new ParseUUIDPipe) id: string, //can be number can be string depends on the defined prisma value if int or string
   ) {
-    return this.moduleService.updateModude(updateModuleDto, user, id);
+    // return this.moduleService.updateModude(updateModuleDto, user, id);
   }
 }
