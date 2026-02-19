@@ -20,7 +20,7 @@ import { DashboardControllerv2 } from './dashboard/controllers/dashboardV2.contr
 import { DashboardService } from './dashboard/dashboard.service';
 import { HealthController } from './health/health.controller';
 import { TerminusModule } from '@nestjs/terminus';
-import { DbQueryController } from './db-query/db-query.controller';
+import { DbQueryControllerV2 } from './db-query/db-query.controller';
 import { DbQueryService } from './db-query/db-query.service';
 
 @Module({
@@ -33,7 +33,7 @@ import { DbQueryService } from './db-query/db-query.service';
     DashboardControllerv2,
     AuditControllerV2,
     HealthController,
-    DbQueryController,
+    DbQueryControllerV2,
   ],
   providers: [
     JwtStrategy,

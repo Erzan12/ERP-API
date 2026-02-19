@@ -388,7 +388,10 @@ model AdminDBQueryLog {
   executedAt    DateTime @default(now())
   executionMs   Int
   success       Boolean
-  error_message String
+  error_message String?
+
+  @@index([adminId])
+  @@index([executedAt])
 }
 
 ////////////////////////////////////////
