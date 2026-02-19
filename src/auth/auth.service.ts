@@ -105,7 +105,7 @@ export class AuthService {
     };
   }
 
-  //v3 log in with validateUser
+  //v3 log in with validateUser - to validate the user log in request if the user is a valid user and existed in the database if yes then jwt token will be generated
   async validateUser(username: string, password: string) {
     const user = await this.prisma.user.findUnique({
       where: { username },
