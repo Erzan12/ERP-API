@@ -218,7 +218,7 @@ export class AuthService {
     const issuedAt = Math.floor(Date.now() / 1000);
 
     const payload = {
-      userUuid: userValidate.id,
+      userUUID: userValidate.id,
       name: userValidate.username,
       issuedAt: issuedAt,
     };
