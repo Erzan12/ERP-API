@@ -43,7 +43,7 @@ async function validateAdminUserAccess() {
   ];
 
   const expectedPermissions: {
-    sub_module_id: number;
+    sub_module_id: string;
     action: string;
   }[] = [];
 
