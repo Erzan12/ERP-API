@@ -1,7 +1,7 @@
 'use strict';
 
 // Start NestJS app
-require('./dist/src/main');  // this already bootstraps your server
+require('./dist/main');  // this already bootstraps your server
 
 // Catch unhandled errors globally
 process.on('unhandledRejection', (reason, promise) => {
