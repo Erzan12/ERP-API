@@ -201,7 +201,79 @@ export class EmployeeService {
   }
 
   //view employee masterlist
-  async getEmployees(user: RequestUser) {
+  // async getEmployees(user: RequestUser) {
+  //   // const hrViewEmployee = [ 'Human Resources' ].includes(user.role.name);
+
+  //   // const hrViewEmployee = user.roles.some(
+  //   //   (role) => role.name === 'Human Resources',
+  //   // );
+
+  //   const canView = await this.prisma.userRole.findFirst({
+  //     where: {
+  //       user_id: user.id,
+  //       role_name: { in: ["Administrator", "Super Administrator", "HR Manager", "HR Clerk", "HR Staff"]}
+  //      },
+  //   });
+
+  //   if(!canView) {
+  //     throw new BadRequestException('You are not allowed to view this sub module')
+  //   }
+
+  //   const viewEmployee = await this.prisma.employee.findMany({
+  //     // where: hrViewEmployee ? {} : { id: user.id },
+  //     select: {
+  //       id: true,
+  //       employee_id: true,
+  //       person: {
+  //         select: {
+  //           first_name: true,
+  //           middle_name: true,
+  //           last_name: true,
+  //         },
+  //       },
+  //       company: {
+  //         select: {
+  //           name: true,
+  //         },
+  //       },
+  //       //to include designation in employee schema
+  //       //to include group in employee schema
+  //       department: {
+  //         select: {
+  //           name: true,
+  //         },
+  //       },
+  //       //to include division in employee schema
+  //       position: {
+  //         select: {
+  //           name: true,
+  //         },
+  //       },
+  //       // to only include label of employment status
+  //       employment_status: {
+  //         select: {
+  //           label: true,
+  //         }
+  //       },
+  //     },
+  //   });
+
+  //   return {
+  //     status: 'success',
+  //     message: 'List of Employees',
+  //     data: viewEmployee
+  //   };
+  // }
+
+  //with pagination
+  async getEmployees(
+    user: RequestUser,
+    page = 1,
+    perPage = 10,
+    search?: string,
+    sortBy: string = 'created_at',
+    order: 'asc' | 'desc' = 'asc',
+  ) {
     // const hrViewEmployee = [ 'Human Resources' ].includes(user.role.name);
 
     // const hrViewEmployee = user.roles.some(
@@ -219,49 +291,126 @@ export class EmployeeService {
       throw new BadRequestException('You are not allowed to view this sub module')
     }
 
-    const viewEmployee = await this.prisma.employee.findMany({
-      // where: hrViewEmployee ? {} : { id: user.id },
-      select: {
-        id: true,
-        employee_id: true,
-        person: {
-          select: {
-            first_name: true,
-            middle_name: true,
-            last_name: true,
-          },
-        },
-        company: {
-          select: {
-            name: true,
-          },
-        },
-        //to include designation in employee schema
-        //to include group in employee schema
-        department: {
-          select: {
-            name: true,
-          },
-        },
-        //to include division in employee schema
-        position: {
-          select: {
-            name: true,
-          },
-        },
-        // to only include label of employment status
-        employment_status: {
-          select: {
-            label: true,
-          }
-        },
+    //PAGINATION AREA
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: any = {
+      employment_status_id: {
+        //as long as its not terminated or resigned
+        notIn:[
+          '3bf1a436-6bd6-4ae5-9aa9-508436114279', // TERMINATED
+          'f683e242-9a4c-4071-bc01-3d7022e865f6', // RESIGNED
+        ]
       },
-    });
+    };
+
+    //search query
+    if(search) {
+      whereCondition.employee_id = {
+        contains: search,
+        mode: 'insensitive' //postgresql case-insensitive
+      };
+    }
+
+    const allowSortFeilds = ['department_id', 'company_id', 'employee_id', 'employment_status_id', 'created_at', 'updated_at' ]
+    if (!allowSortFeilds.includes(sortBy)) {
+      sortBy = 'created_at';
+    }
+
+    const [total, employees] = await this.prisma.$transaction([      // where: hrViewEmployee ? {} : { id: user.id },
+      this.prisma.employee.count({
+        where: whereCondition,
+      }),
+      this.prisma.employee.findMany({
+        where: whereCondition,
+        select: {
+          id: true,
+          employee_id: true,
+          person: {
+            select: {
+              first_name: true,
+              middle_name: true,
+              last_name: true,
+            },
+          },
+          company: {
+            select: {
+              name: true,
+            },
+          },
+          //to include designation in employee schema
+          //to include group in employee schema
+          department: {
+            select: {
+              name: true,
+            },
+          },
+          //to include division in employee schema
+          position: {
+            select: {
+              name: true,
+            },
+          },
+          employment_status: {
+            select: {
+              label: true
+            }
+          },
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [sortBy] : order,
+        }
+      }),
+    ]);
+    // const viewEmployee = await this.prisma.employee.findMany({
+    //   // where: hrViewEmployee ? {} : { id: user.id },
+    //   select: {
+    //     id: true,
+    //     employee_id: true,
+    //     person: {
+    //       select: {
+    //         first_name: true,
+    //         middle_name: true,
+    //         last_name: true,
+    //       },
+    //     },
+    //     company: {
+    //       select: {
+    //         name: true,
+    //       },
+    //     },
+    //     //to include designation in employee schema
+    //     //to include group in employee schema
+    //     department: {
+    //       select: {
+    //         name: true,
+    //       },
+    //     },
+    //     //to include division in employee schema
+    //     position: {
+    //       select: {
+    //         name: true,
+    //       },
+    //     },
+    //     // to only include label of employment status
+    //     employment_status: {
+    //       select: {
+    //         label: true,
+    //       }
+    //     },
+    //   },
+    // });
 
     return {
       status: 'success',
-      message: 'List of Employees',
-      data: viewEmployee
+      message: 'Employees Masterlist',
+      count: total,
+      page,
+      perPage,
+      totalPage: Math.ceil( total / perPage),
+      data: employees,
     };
   }
 

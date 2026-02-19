@@ -4,9 +4,9 @@ import {
   Body,
   Get,
   Put,
-  ParseIntPipe,
   Param,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import {
   ApiGetResponse,
@@ -39,9 +39,21 @@ export class EmployeeControllerV2 {
   @ApiGetResponse('List of employees')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   getEmployees(
-    @SessionUser() user: RequestUser
+    @SessionUser() user: RequestUser,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
-    return this.employeeService.getEmployees(user)
+    return this.employeeService.getEmployees(
+      user,
+      Number(page),
+      Number(perPage),
+      search,
+      sortBy,
+      order,
+    )
   }
 
   //get a single employee profile or view

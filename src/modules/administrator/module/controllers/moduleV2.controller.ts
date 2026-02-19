@@ -6,6 +6,8 @@ import {
   Put,
   Param,
   ParseUUIDPipe,
+  Query,
+  Search,
 } from '@nestjs/common';
 import { ModuleService } from '../module.service';
 import { Can } from '../../../../utils/decorators/can.decorator';
@@ -31,8 +33,22 @@ export class ModuleControllerV2 {
   @ApiOperation({ summary: 'Get modules' })
   @ApiGetResponse('Here are all the Modules available')
   @Can({ action: ACTION_READ , subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  getModules(@SessionUser() user: RequestUser) {
-    return this.moduleService.getModules(user);
+  getModules(
+    @SessionUser() user: RequestUser,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.moduleService.getModules(
+      user,
+      Number(page), 
+      Number(perPage),
+      search,
+      sortBy,
+      order,
+    );
   }
 
   @Get('modules/:id')
