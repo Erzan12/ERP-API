@@ -39,7 +39,7 @@ jobs:
             --exclude='.gitea' \
             --exclude='src' \
             --exclude='__test__' \
-            API_documentation views .dist node_modules public package.json package-lock.json \
+            API_documentation views .dist node_modules public package.json package-lock.json app.js\
             $STG_USER@$STG_HOST:$STG_PATH           
   
       - name: Restart Phusion Passenger
