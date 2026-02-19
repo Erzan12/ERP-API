@@ -52,7 +52,7 @@ export class LandingController {
         {
           title: 'Accounting',
           slug: 'accounting',
-          swaggerLink: '/api/accounting',
+          swaggerLink: '/docs/accounting',
           icon: '/public/icons/accounting.png',
           comingSoon: true, // put true value to disable target="blank"
           status: 'Coming Soon',
@@ -60,7 +60,7 @@ export class LandingController {
         {
           title: 'Purchasing',
           slug: 'purchasing',
-          swaggerLink: '/api/purchasing',
+          swaggerLink: '/docs/purchasing',
           icon: '/public/icons/purchasing.png',
           comingSoon: true,
           status: 'Coming Soon'
@@ -68,7 +68,7 @@ export class LandingController {
         {
           title: 'Inventory',
           slug: 'inventory',
-          swaggerLink: '/api/docs/inventory',
+          swaggerLink: '/docs/inventory',
           icon: '/public/icons/inventory.png',
           comingSoon: true,
           status: 'Coming Soon'
@@ -76,7 +76,7 @@ export class LandingController {
         {
           title: 'Marketing & Operations',
           slug: 'operations',
-          swaggerLink: 'marketingOps',
+          swaggerLink: '/docs/marketingOps',
           icon: '/public/icons/operations.png',
           comingSoon: true,
           status: 'Coming Soon'
@@ -84,7 +84,7 @@ export class LandingController {
         {
           title: 'Finance',
           slug: 'finance',
-          swaggerLink: '/api/finance',
+          swaggerLink: '/docs/finance',
           icon: '/public/icons/finance.png',
           comingSoon: true,
           status: 'Coming Soon'
@@ -92,7 +92,7 @@ export class LandingController {
         {
           title: 'Stars',
           slug: 'stars',
-          swaggerLink: '/api/stars',
+          swaggerLink: '/docs/stars',
           icon: '/public/icons/satelite.png',
           comingSoon: true,
           status: 'Coming Soon'
@@ -100,7 +100,7 @@ export class LandingController {
         {
           title: 'Biometric',
           slug: 'biometric',
-          swaggerLink: '/api/biometric',
+          swaggerLink: '/docs/biometric',
           icon: '/public/icons/biometric.png',
           comingSoon: true,
           status: 'Coming Soon'
@@ -108,7 +108,7 @@ export class LandingController {
         {
           title: 'Payroll',
           slug: 'payroll',
-          swaggerLink: '/api/payroll',
+          swaggerLink: '/docs/payroll',
           icon: '/public/icons/payroll.png',
           comingSoon: true,
           status: 'Coming Soon'
@@ -116,7 +116,7 @@ export class LandingController {
         {
           title: 'Corporate Services',
           slug: 'corporate',
-          swaggerLink: '/api/corporate-services',
+          swaggerLink: '/docs/corporate-services',
           icon: '/public/icons/corporate.png',
           comingSoon: true,
           status: 'Coming Soon'
@@ -124,7 +124,7 @@ export class LandingController {
         {
           title: 'IT Helpdesk',
           slug: 'helpdesk',
-          swaggerLink: '/api/it-helpdesk',
+          swaggerLink: '/docs/it-helpdesk',
           icon: '/public/icons/helpdesk.png',
           comingSoon: true,
           status: 'Coming Soon'
@@ -132,7 +132,7 @@ export class LandingController {
         {
           title: 'Compliance',
           slug: 'compliance',
-          swaggerLink: '/api/compliance',
+          swaggerLink: '/docs/compliance',
           icon: '/public/icons/compliance.png',
           comingSoon: true,
           status: 'Coming Soon'

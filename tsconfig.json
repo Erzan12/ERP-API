@@ -26,5 +26,5 @@
     "synchronousWatchDirectory": true,
     "excludeDirectories": ["**/node_modules", "dist"]
   },
-  "include": ["src/**/*", "src/types/express.ts", "prisma/ValidateAdminAccess.ts", "public"] 
+  "include": ["src/**/*", "src/types/express.ts", "public"] 
 }
