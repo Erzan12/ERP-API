@@ -40,7 +40,7 @@
         "operationId": "AuthController_logout",
         "parameters": [],
         "responses": {
-          "200": {
+          "201": {
             "description": "User logout successfully"
           },
           "400": {
@@ -86,7 +86,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "User reset password successfully"
           },
           "400": {
@@ -191,7 +191,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Submodule created successfully"
           },
           "400": {
@@ -275,7 +275,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Permission created successfully"
           },
           "400": {
@@ -316,7 +316,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Permission assigned to a submodule successfully"
           },
           "400": {
@@ -441,7 +441,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Employee status created successfully."
           },
           "400": {
@@ -603,7 +603,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Module created successfully"
           },
           "400": {
@@ -766,7 +766,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Role created successfully"
           },
           "400": {
@@ -849,7 +849,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Permissions added to role"
           },
           "400": {
@@ -1233,7 +1233,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Submodule created successfully"
           },
           "400": {
@@ -1317,7 +1317,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Permission created successfully"
           },
           "400": {
@@ -1358,7 +1358,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Permission assigned to a submodule successfully"
           },
           "400": {
@@ -1482,7 +1482,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Module created successfully"
           },
           "400": {
@@ -1645,7 +1645,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Role created successfully"
           },
           "400": {
@@ -1728,7 +1728,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Permissions added to role"
           },
           "400": {
@@ -2308,7 +2308,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Position created successfully"
           },
           "400": {
@@ -2472,7 +2472,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Department created successfully"
           },
           "400": {
@@ -2636,7 +2636,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Company created successfully"
           },
           "400": {
@@ -2800,7 +2800,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Division created successfully"
           },
           "400": {
@@ -2964,7 +2964,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Position created successfully"
           },
           "400": {
@@ -3128,7 +3128,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Department created successfully"
           },
           "400": {
@@ -3292,7 +3292,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Company created successfully"
           },
           "400": {
@@ -3456,7 +3456,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Division created successfully"
           },
           "400": {
@@ -3620,7 +3620,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Employee status created successfully."
           },
           "400": {
@@ -3856,7 +3856,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Employee created successfully"
           },
           "400": {
@@ -4052,7 +4052,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Employee created successfully"
           },
           "400": {
@@ -4248,7 +4248,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Permission template created successfully"
           },
           "400": {
@@ -4432,7 +4432,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Permission Template assigned to user successfully"
           },
           "400": {
@@ -4507,7 +4507,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "User Account created successfully"
           },
           "400": {
@@ -4583,7 +4583,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Role permission added to user successfully"
           },
           "400": {
@@ -4627,7 +4627,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Password reset done! you can now log in!"
           },
           "400": {
@@ -4862,7 +4862,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Permission template created successfully"
           },
           "400": {
@@ -5046,7 +5046,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Permission Template assigned to user successfully"
           },
           "400": {
@@ -5121,7 +5121,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "User Account created successfully"
           },
           "400": {
@@ -5197,7 +5197,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Role permission added to user successfully"
           },
           "400": {
@@ -5241,7 +5241,7 @@
           }
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "Password reset done! you can now log in!"
           },
           "400": {
@@ -6032,24 +6032,24 @@
       "CreateEmployeeDto": {
         "type": "object",
         "properties": {
-          "company": {
+          "company_id": {
             "type": "string",
-            "example": "abmci, svsc, lmvc, abisc ",
+            "example": "PK uuid of company",
             "description": "Company of the employee"
           },
-          "department": {
+          "department_id": {
             "type": "string",
-            "example": "it department, hr department",
+            "example": "PK uuid of department",
             "description": "Department of the employee"
           },
-          "position": {
+          "position_id": {
             "type": "string",
-            "example": "it manager, administrator, it staff, hr manager, hr clerk",
+            "example": "PK uuid of position",
             "description": "Position of the employee"
           },
-          "division": {
+          "division_id": {
             "type": "string",
-            "example": "Asset Management, Corporate Services",
+            "example": "PK uuid of division",
             "description": "Division of the employee"
           },
           "salary": {
@@ -6067,9 +6067,9 @@
             "example": "Monthly",
             "description": "Pay frequency of the employee salary"
           },
-          "employment_status": {
+          "employment_status_id": {
             "type": "string",
-            "example": "regular, on Leave, terminated, resigned, probationary",
+            "example": "PK uuid of employment status",
             "description": "The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated"
           },
           "monthly_equivalent_salary": {
@@ -6094,14 +6094,14 @@
           }
         },
         "required": [
-          "company",
-          "department",
-          "position",
-          "division",
+          "company_id",
+          "department_id",
+          "position_id",
+          "division_id",
           "salary",
           "hire_date",
           "pay_frequency",
-          "employment_status",
+          "employment_status_id",
           "monthly_equivalent_salary",
           "archive_date",
           "other_employee_data",

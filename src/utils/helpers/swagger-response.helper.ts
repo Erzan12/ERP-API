@@ -39,7 +39,7 @@ const Conflict: ApiResponseOptions = {
 //custom group decorators
 export function ApiPostResponse(description = 'Resource created successfully') {
   return applyDecorators(
-    ApiResponse({ status: 200, description }),
+    ApiResponse({ status: 201, description }),
     ApiResponse(BadRequest),
     ApiResponse(Unauthorized),
     ApiResponse(Forbidden),
