@@ -24,10 +24,13 @@ jobs:
           node-version: 'node'
 
       - name: Install dependencies and Build NestJS
-        run: npm ci && npm run build
+        run: npm ci
 
       - name: Migrate Prisma
-        run: npx prisma generate
+        run: npx prisma generate 
+
+      - name: Build NestJS
+        run: npm run build
 
       - name: Upload to Staging Server
         env:
