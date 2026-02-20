@@ -7,6 +7,7 @@ import {
   IsInt,
   IsBoolean,
   IsOptional,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateRolePermissionDto {
@@ -21,7 +22,7 @@ export class CreateRolePermissionDto {
   @ArrayNotEmpty()
   action: string[];
 
-  @IsInt()
+  @IsUUID()
   @IsNotEmpty()
   @ApiProperty({ example: 1, description: 'ID of the Sub Module' })
   sub_module_id: string;
@@ -31,17 +32,17 @@ export class CreateRolePermissionDto {
   // @ApiProperty({ example: 1, description: 'ID of the Module' })
   // module_id: number;
 
-  @IsInt()
+  @IsUUID()
   @IsNotEmpty()
   @ApiProperty({ example: 1, description: 'ID of the Role' })
   role_id: string;
 
-  @IsInt()
+  @IsUUID()
   @IsNotEmpty()
   @ApiProperty({ example: 1, description: 'ID of the Department' })
   department_id: string;
 
-  @IsInt()
+  @IsUUID()
   @IsNotEmpty()
   @IsOptional()
   @ApiProperty({ example: 1, description: 'ID of the Position' })
