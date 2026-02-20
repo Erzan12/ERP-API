@@ -4,9 +4,12 @@ import {
   Post,
   Query,
   ValidationPipe,
-  Res,
+  Get,
   Req,
   UsePipes,
+  Param,
+  Headers,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -32,9 +35,8 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'User authorized login' })
   @ApiLoginResponse('User login successful')
-  
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  async login(
+  login(
     @Body() loginDto: LoginDto, 
     @Req() req: Request
   ) {
@@ -48,7 +50,7 @@ export class AuthController {
   @ApiOperation({ summary: 'User will logout'})
   @ApiPostResponse('User logout successfully')
   @UsePipes(new ValidationPipe({ whitelist: true}))
-  async logout(
+  logout(
     @SessionUser() user: RequestUser,
     @Req() req: Request
   ) {
@@ -62,7 +64,7 @@ export class AuthController {
   @ApiOperation({ summary: 'User reset password' })
   @ApiPostResponse('User reset password successfully')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  async passwordResetWithToken(
+  passwordResetWithToken(
     @Query('token') token: string,
     @Body() resetPasswordWithTokenDto: ResetPasswordWithTokenDto,
     @Req() req: Request
@@ -76,6 +78,17 @@ export class AuthController {
       ipAddress,
       userAgent
     );
+  }
+
+  @Get('/user-access/:id')
+  @ApiOperation({ summary: 'Verify user' })
+  @ApiLoginResponse('User has been verified')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  verify(
+    @SessionUser() requestUser: RequestUser,
+    @Param('id', new ParseUUIDPipe) id: string,
+  ) {
+    return this.authService.getUser(requestUser,id);
   }
 
   // <<<----- REFRESH TOKENS TESTING CONTROLLER ----->>>
