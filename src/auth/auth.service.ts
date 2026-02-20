@@ -110,21 +110,15 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { username },
       include: {
+        employee: true,
         user_roles: {
           include: {
-            // role: {
-            // include: {
-            // role_permission: {
-            // include: {
-            //     // permission: true,
-            //     sub_module_permission: true,
-
-            // },
-            // },
+            role: true,
             user_permissions: {
               include: {
                 role_permission: {
                   include: {
+                    sub_module: true,
                     sub_module_permission: true,
                   },
                 },
@@ -154,20 +148,20 @@ export class AuthService {
     const userAudit = await this.prisma.user.findUnique({
       where: { username },
       include: {
-          user_roles: {
-          include: {
+        user_roles: {
+        include: {
               role: true,
               user_permissions: {
-              include: {
-                  role_permission: {
-                  include: {
-                      sub_module: true,
+                include: {
+                    role_permission: {
+                    include: {
+                        sub_module: true,
+                    },
                   },
-                  },
-              },
+                },
               },
           },
-          },
+        },
       },
     });
 
@@ -219,6 +213,7 @@ export class AuthService {
 
     const payload = {
       userUUID: userValidate.id,
+      // department name?
       name: userValidate.username,
       issuedAt: issuedAt,
     };
@@ -238,10 +233,11 @@ export class AuthService {
     });
 
     const requestUser: RequestUser = {
-        id: userAudit.id,
-        email: userAudit.email,
-        security_clearance_level: userAudit.security_clearance_level ?? 0,
-        roles: userAudit.user_roles.map((ur) => ({
+        id: userValidate.id,
+        email: userValidate.email,
+        department_id: userValidate.employee.department_id,
+        security_clearance_level: userValidate.security_clearance_level ?? 0,
+        roles: userValidate.user_roles.map((ur) => ({
             id: ur.role?.id ?? 0,
             name: ur.role?.name ?? 'Unknown Role',
             // module: {
@@ -290,5 +286,83 @@ export class AuthService {
     );
 
     return { message: 'User logout successfully' };
+  }
+
+  async getUser(requestUser: RequestUser, id:string) {
+    // const payload = this.jwtService.verify(token)
+
+    // if (payload.userUUID !== id) {
+    //   throw new UnauthorizedException('Invalid token for this user')
+    // }
+
+    if (requestUser) {
+      throw new UnauthorizedException('Invalid token for this user');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        employee: {
+          include: {
+            department: true,
+            division: true,
+            company: true, 
+            employment_status: true,
+            position: true,
+          }
+        },
+        user_roles: {
+          include: {
+            role: true,
+            user_permissions: {
+              include: {
+                role_permission: {
+                  include: {
+                    sub_module: true,
+                    sub_module_permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }
+    })
+
+    if (!user || user.stat !== 1) {
+      // You can throw an Unauthorized or NotFound exception
+      throw new UnauthorizedException('User not found or invalid token');
+    }
+
+    const employee = user.employee;
+
+    return {
+      status: 'success',
+      message: 'User is validated successfully',
+      data: {
+        id: user.id,
+        email: user.email,
+        department: employee.department.name,
+        company: employee.company.name,
+        division: employee.division.name,
+        position: employee.position.name,
+        security_clearance_level: user.security_clearance_level ?? 0,
+        roles: user.user_roles.map((ur) => ({
+            id: ur.role?.id ?? 0,
+            role_name: ur.role?.name ?? 'Unknown Role',
+            // module: {
+            //   id: ur.role.module?.id,
+            //   name: ur.role.module?.name,
+            // },
+            permissions: ur.user_permissions.map((up) => ({
+            action: up.role_permission?.action ?? 'unknown',
+            // status: true, // if you have a field for it, use it
+            permission: {
+            sub_module_name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+            },
+            })),
+        })),
+      }
+    }
   }
 }
