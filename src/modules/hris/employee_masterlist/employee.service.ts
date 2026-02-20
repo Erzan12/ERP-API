@@ -6,7 +6,6 @@ import {
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { RequestUser } from '../../../utils/types/request-user.interface';
-import { GetEmployeeDto } from './dto/get-employee.dto';
 import {
   CivilStatus,
   Gender,
@@ -15,6 +14,7 @@ import { CreateEmployeeWithDetailsDto } from './dto/create-employee-with-details
 import { UpdateEmployeeWithDetailsDto } from './dto/update-employee-with-details.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { GetEmployeesDto } from './dto/get-employee.dto';
 
 @Injectable()
 export class EmployeeService {
@@ -268,17 +268,20 @@ export class EmployeeService {
   //with pagination
   async getEmployees(
     user: RequestUser,
-    page = 1,
-    perPage = 10,
-    search?: string,
-    sortBy: string = 'created_at',
-    order: 'asc' | 'desc' = 'asc',
+    dto: GetEmployeesDto,
+    // page = 1,
+    // perPage = 10,
+    // search?: string,
+    // sortBy: string = 'id',
+    // order: 'asc' | 'desc' = 'asc',
   ) {
     // const hrViewEmployee = [ 'Human Resources' ].includes(user.role.name);
 
     // const hrViewEmployee = user.roles.some(
     //   (role) => role.name === 'Human Resources',
     // );
+
+    const { search, sortBy, order, page, perPage } = dto;
 
     const canView = await this.prisma.userRole.findFirst({
       where: {
@@ -294,35 +297,106 @@ export class EmployeeService {
     //PAGINATION AREA
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = {
-      employment_status_id: {
+    const whereCondition: any = { 
+      employment_status: {
         //as long as its not terminated or resigned
-        notIn:[
-          '3bf1a436-6bd6-4ae5-9aa9-508436114279', // TERMINATED
-          'f683e242-9a4c-4071-bc01-3d7022e865f6', // RESIGNED
-        ]
+        code: {
+          notIn:[
+            'TERMINATED', // TERMINATED
+            'RESIGNED', // RESIGNED
+          ]
+        }
       },
     };
 
     //search query
-    if(search) {
-      whereCondition.employee_id = {
-        contains: search,
-        mode: 'insensitive' //postgresql case-insensitive
+    const personFields = ['first_name', 'last_name', 'email'];
+    const emplomentStatusFields = ['code', 'label'];
+    const departmentFields = ['name'];
+    const companyFields = ['name'];
+    const divisionFields = ['name'];
+    const positionFields = ['name'];
+
+    let whereConditions: any ={};
+
+    if (search) {
+      whereConditions = {
+        OR: [
+          ...personFields.map(field => ({
+            person: {
+              [field]: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          })),
+          ...emplomentStatusFields.map(field => ({
+            employment_status: {
+              [field]: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          })),
+          ...departmentFields.map(field => ({
+            department: {
+              [field]: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          })),
+          ...companyFields.map(field => ({
+            company: {
+              [field]: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          })),
+          ...divisionFields.map(field => ({
+            division: {
+              [field]: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          })),
+          ...positionFields.map(field => ({
+            position: {
+              [field]: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            },
+          })),
+          {
+            employee_id: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
       };
     }
 
     const allowSortFeilds = ['department_id', 'company_id', 'employee_id', 'employment_status_id', 'created_at', 'updated_at' ]
     if (!allowSortFeilds.includes(sortBy)) {
-      sortBy = 'created_at';
+      sortBy;
     }
 
     const [total, employees] = await this.prisma.$transaction([      // where: hrViewEmployee ? {} : { id: user.id },
       this.prisma.employee.count({
-        where: whereCondition,
+        where:{
+          ...whereCondition,
+          ...whereConditions
+        },
       }),
       this.prisma.employee.findMany({
-        where: whereCondition,
+        where:{
+          ...whereCondition,
+          ...whereConditions
+        },
         select: {
           id: true,
           employee_id: true,
@@ -331,6 +405,11 @@ export class EmployeeService {
               first_name: true,
               middle_name: true,
               last_name: true,
+            },
+          },
+          division: {
+            select: {
+              name: true,
             },
           },
           company: {
@@ -353,6 +432,7 @@ export class EmployeeService {
           },
           employment_status: {
             select: {
+              id: true,
               label: true
             }
           },
@@ -364,44 +444,7 @@ export class EmployeeService {
         }
       }),
     ]);
-    // const viewEmployee = await this.prisma.employee.findMany({
-    //   // where: hrViewEmployee ? {} : { id: user.id },
-    //   select: {
-    //     id: true,
-    //     employee_id: true,
-    //     person: {
-    //       select: {
-    //         first_name: true,
-    //         middle_name: true,
-    //         last_name: true,
-    //       },
-    //     },
-    //     company: {
-    //       select: {
-    //         name: true,
-    //       },
-    //     },
-    //     //to include designation in employee schema
-    //     //to include group in employee schema
-    //     department: {
-    //       select: {
-    //         name: true,
-    //       },
-    //     },
-    //     //to include division in employee schema
-    //     position: {
-    //       select: {
-    //         name: true,
-    //       },
-    //     },
-    //     // to only include label of employment status
-    //     employment_status: {
-    //       select: {
-    //         label: true,
-    //       }
-    //     },
-    //   },
-    // });
+
 
     return {
       status: 'success',
