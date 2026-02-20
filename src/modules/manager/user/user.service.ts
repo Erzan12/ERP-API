@@ -3,6 +3,7 @@ import {
   BadRequestException,
   ForbiddenException,
   ConflictException,
+  NotFoundException,
 } from '@nestjs/common';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
@@ -609,6 +610,52 @@ export class UserService {
         employees: newEmployees,
       },
     };
+  }
+
+  async addRoleUser(requestUser: RequestUser, userId: string, roleName: string) {
+    //find role
+    const role = await this.prisma.role.findUnique({
+      where: { name: roleName },
+      include: {
+        role_permissions: true,
+      },
+    });
+
+    if (!role) {
+      throw new NotFoundException('Role not found');
+    }
+
+    //create UserRole (or use upsert)
+    const userRole = await this.prisma.userRole.upsert({
+      where: {
+        user_id_role_id: {
+          user_id: userId,
+          role_id: role.id,
+        },
+      },
+      update: {},
+      create: {
+        user_id: userId,
+        role_id: role.id,
+        role_name: role.name,
+      },
+    });
+
+    //prepare UserPermissions from RolePermissions
+    const userPermissionsData = role.role_permissions.map((rp) => ({
+      user_id: userId,
+      user_role_id: userRole.id,
+      role_permission_id: rp.id,
+      action: rp.action,
+    }));
+
+    //insert UserPermissions (skip duplicates)
+    await this.prisma.userPermission.createMany({
+      data: userPermissionsData,
+      skipDuplicates: true,
+    });
+
+    return userRole;
   }
 
   // async getUsersWithRolesAndPermissions() {
