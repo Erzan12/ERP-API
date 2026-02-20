@@ -39,7 +39,7 @@ const Conflict: ApiResponseOptions = {
 //server error
 const InternalServerError: ApiResponseOptions = {
   status: 500,
-  description: 'Internal Server Error - ',
+  description: 'Internal Server Error',
 }
 
 //custom group decorators
@@ -69,7 +69,7 @@ export function ApiPatchResponse(
   description = 'Resource updated successfully',
 ) {
   return applyDecorators(
-    ApiResponse({ status: 200, description }),
+    ApiResponse({ status: 201, description }),
     ApiResponse(BadRequest),
     ApiResponse(Unauthorized),
     ApiResponse(Forbidden),
@@ -82,7 +82,7 @@ export function ApiLoginResponse(
   description = 'Login successfully - returns JWT Token',
 ) {
   return applyDecorators(
-    ApiResponse({ status: 201, description }),
+    ApiResponse({ status: 200, description }),
     ApiResponse(BadRequest),
     ApiResponse(Unauthorized),
     ApiResponse(UserNotFound),
