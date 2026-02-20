@@ -20,7 +20,6 @@ import {
   EMPLOYEE_MASTERLIST,
 } from 'src/utils/constants/ability.constant';
 import { UpdateEmployeeWithDetailsDto } from '../dto/update-employee-with-details.dto';
-import { GetEmployeeDto } from '../dto/get-employee.dto';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';;
 import { EmployeeService } from '../employee.service';

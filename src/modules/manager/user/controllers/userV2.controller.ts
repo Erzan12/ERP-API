@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Get, Put } from '@nestjs/common';
+import { Controller, Body, Post, Get, Put, ParseUUIDPipe, Param } from '@nestjs/common';
 import { CreateUserWithRolePermissionDto } from '../dto/create-user-with-role-permission.dto';
 import { UserService } from '../user.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -99,6 +99,20 @@ export class UserControllerV2 {
       addUserRolePermissionsDto.rolePermissionIds,
       user,
     );
+  }
+
+  @Put('user/add-role/:userId/:roleName')
+  @ApiOperation({ summary: 'Add Role to user'})
+  @ApiPostResponse('Role has been added to the user with permission')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
+  addUserRole(
+    @SessionUser() requestUser: RequestUser,
+    @Param('userId', new ParseUUIDPipe) userId: string,
+    @Param('roleName') roleName: string,
+  ) {
+    return this.userService.addRoleUser(requestUser,userId,roleName)
   }
 
   //for expired first time login reset token key

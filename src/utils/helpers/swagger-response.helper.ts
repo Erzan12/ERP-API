@@ -36,6 +36,12 @@ const Conflict: ApiResponseOptions = {
   description: 'Conflict - Resource already exist or duplicate entry',
 };
 
+//server error
+const InternalServerError: ApiResponseOptions = {
+  status: 500,
+  description: 'Internal Server Error',
+}
+
 //custom group decorators
 export function ApiPostResponse(description = 'Resource created successfully') {
   return applyDecorators(
@@ -44,6 +50,7 @@ export function ApiPostResponse(description = 'Resource created successfully') {
     ApiResponse(Unauthorized),
     ApiResponse(Forbidden),
     ApiResponse(Conflict),
+    ApiResponse(InternalServerError),
   );
 }
 
@@ -54,6 +61,7 @@ export function ApiGetResponse(description = 'Resource(s) fetch successfully') {
     ApiResponse(Unauthorized),
     ApiResponse(Forbidden),
     ApiResponse(NotFound),
+    ApiResponse(InternalServerError),
   );
 }
 
@@ -61,11 +69,12 @@ export function ApiPatchResponse(
   description = 'Resource updated successfully',
 ) {
   return applyDecorators(
-    ApiResponse({ status: 200, description }),
+    ApiResponse({ status: 201, description }),
     ApiResponse(BadRequest),
     ApiResponse(Unauthorized),
     ApiResponse(Forbidden),
     ApiResponse(NotFound),
+    ApiResponse(InternalServerError),
   );
 }
 
@@ -73,10 +82,11 @@ export function ApiLoginResponse(
   description = 'Login successfully - returns JWT Token',
 ) {
   return applyDecorators(
-    ApiResponse({ status: 201, description }),
+    ApiResponse({ status: 200, description }),
     ApiResponse(BadRequest),
     ApiResponse(Unauthorized),
     ApiResponse(UserNotFound),
+    ApiResponse(InternalServerError),
   );
 }
 
@@ -89,6 +99,7 @@ export function ApiDeactivateResponse(
     ApiResponse(Unauthorized),
     ApiResponse(Forbidden),
     ApiResponse(NotFound),
+    ApiResponse(InternalServerError),
   );
 }
 
@@ -101,6 +112,7 @@ export function ApiActivateResponse(
     ApiResponse(Unauthorized),
     ApiResponse(Forbidden),
     ApiResponse(NotFound),
+    ApiResponse(InternalServerError),
   );
 }
 
