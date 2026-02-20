@@ -27,6 +27,9 @@
           },
           "404": {
             "description": "Not Found - User not found"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "summary": "User authorized login",
@@ -54,6 +57,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "summary": "User will logout",
@@ -100,6 +106,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "summary": "User reset password",
@@ -164,6 +173,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -205,6 +217,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -246,6 +261,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -289,6 +307,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -330,6 +351,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -382,6 +406,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -414,6 +441,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -455,6 +485,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -496,6 +529,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -545,6 +581,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -577,6 +616,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -617,6 +659,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -658,6 +703,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -708,6 +756,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -740,6 +791,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -780,6 +834,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -821,6 +878,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -863,6 +923,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -914,6 +977,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -986,6 +1052,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1206,6 +1275,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1247,6 +1319,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1288,6 +1363,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1331,6 +1409,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1372,6 +1453,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1424,6 +1508,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1481,6 +1568,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1521,6 +1611,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1562,6 +1655,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1612,6 +1708,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1644,6 +1743,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1684,6 +1786,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1725,6 +1830,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1767,6 +1875,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1818,6 +1929,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -1890,6 +2004,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2317,6 +2434,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2349,6 +2469,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2390,6 +2513,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2422,6 +2548,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2463,6 +2592,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2504,6 +2636,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2554,6 +2689,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2586,6 +2724,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2627,6 +2768,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2668,6 +2812,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2718,6 +2865,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2750,6 +2900,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2791,6 +2944,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2832,6 +2988,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2882,6 +3041,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2914,6 +3076,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2955,6 +3120,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -2996,6 +3164,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3046,6 +3217,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3078,6 +3252,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3119,6 +3296,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3160,6 +3340,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3210,6 +3393,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3242,6 +3428,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3283,6 +3472,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3324,6 +3516,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3374,6 +3569,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3406,6 +3604,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3447,6 +3648,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3488,6 +3692,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3538,6 +3745,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3570,6 +3780,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3611,6 +3824,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3652,6 +3868,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3702,6 +3921,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3734,6 +3956,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3775,6 +4000,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3816,6 +4044,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3865,6 +4096,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3897,6 +4131,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3938,6 +4175,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -3970,6 +4210,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4011,6 +4254,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4052,6 +4298,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4102,6 +4351,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4134,6 +4386,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4153,26 +4408,51 @@
         "parameters": [
           {
             "name": "search",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
+              "default": "''",
               "type": "string"
             }
           },
           {
             "name": "sortBy",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
+              "default": "id",
+              "example": "id",
               "type": "string"
             }
           },
           {
             "name": "order",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
+              "default": "desc",
+              "example": "desc",
               "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
             }
           }
         ],
@@ -4191,6 +4471,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4232,6 +4515,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4273,6 +4559,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4323,6 +4612,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4355,6 +4647,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4387,6 +4682,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4428,6 +4726,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4469,6 +4770,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4519,6 +4823,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4560,6 +4867,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4612,6 +4922,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4645,6 +4958,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4687,6 +5003,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4720,6 +5039,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4763,6 +5085,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4807,6 +5132,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4850,6 +5178,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4893,6 +5224,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4936,6 +5270,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -4969,6 +5306,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5001,6 +5341,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5042,6 +5385,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5083,6 +5429,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5133,6 +5482,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5174,6 +5526,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5226,6 +5581,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5259,6 +5617,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5301,6 +5662,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5334,6 +5698,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5377,6 +5744,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5421,6 +5791,9 @@
           },
           "409": {
             "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5464,6 +5837,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5507,6 +5883,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5550,6 +5929,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [
@@ -5583,6 +5965,9 @@
           },
           "404": {
             "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error - "
           }
         },
         "security": [

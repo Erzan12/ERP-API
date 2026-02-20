@@ -20,7 +20,7 @@ import {
   EMPLOYEE_MASTERLIST,
 } from 'src/utils/constants/ability.constant';
 import { UpdateEmployeeWithDetailsDto } from '../dto/update-employee-with-details.dto';
-import { GetEmployeeDto } from '../dto/get-employee.dto';
+import { GetEmployeesDto } from '../dto/get-employee.dto';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';;
 import { EmployeeService } from '../employee.service';
@@ -40,6 +40,7 @@ export class EmployeeControllerV2 {
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   getEmployees(
     @SessionUser() user: RequestUser,
+    @Query() dto: GetEmployeesDto,
     @Query('page') page = 1,
     @Query('perPage') perPage = 10,
     @Query('search') search?: string,
@@ -48,11 +49,12 @@ export class EmployeeControllerV2 {
   ) {
     return this.employeeService.getEmployees(
       user,
-      Number(page),
-      Number(perPage),
-      search,
-      sortBy,
-      order,
+      dto,
+      // Number(page),
+      // Number(perPage),
+      // search,
+      // sortBy,
+      // order,
     )
   }
 
