@@ -135,20 +135,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.userUUID },
       include: {
+        employee: true,
         user_roles: {
           include: {
             role: true,
-            // {
-            //   include: {
-            //     module: true,
-            //   },
-            // },
-            // role_permission: {
-            //   include: {
-            //     sub_module: true,
-            //     sub_module_permission: true,
-            //   },
-            // },
+
             user_permissions: {
               include: {
                 role_permission: {
@@ -169,33 +160,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User not found or invalid token');
     }
 
-    // move to auth service for login check
-    // const requestUser: RequestUser = {
-    //   id: user.id,
-    //   email: user.email,
-    //   security_clearance_level: user.security_clearance_level ?? 0,
-    //   roles: user.user_roles.map((ur) => ({
-    //     id: ur.role?.id ?? 0,
-    //     name: ur.role?.name ?? 'Unkown Role',
-    //     // module: {
-    //     //   id: ur.role.module?.id,
-    //     //   name: ur.role.module?.name,
-    //     // },
-    //     permissions: ur.user_permissions.map((up) => ({
-    //       action: up.role_permission?.action ?? 'unknown',
-    //       // status: true, // if you have a field for it, use it
-    //       permission: {
-    //         name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-    //       },
-    //     })),
-    //   })),
-    // };
-
-    // return requestUser; // This becomes `request.user` in controllers and guards
+    const employee = user.employee
 
     return {
       id: user.id,
       email: user.email,
+      department_id: employee.employee_id,
       security_clearance_level: user.security_clearance_level ?? 0,
       roles: user.user_roles.map((ur) => ({
         id: ur.role?.id ?? 0,
