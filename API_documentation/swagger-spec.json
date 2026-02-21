@@ -1292,6 +1292,47 @@
         ]
       }
     },
+    "/v2/administrator/user-access/{id}": {
+      "get": {
+        "operationId": "UserController_verify_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has been verified"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Verify user",
+        "tags": [
+          "Administrator - User Access"
+        ]
+      }
+    },
     "/v2/administrator/sub-modules": {
       "get": {
         "operationId": "SubModuleControllerV2_getSubmodules_v2",
@@ -5633,10 +5674,10 @@
         ]
       }
     },
-    "/v2/user/user": {
+    "/v2/user/user_account": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserControllerV2_viewUsers_v2",
+        "operationId": "UserAccountControllerV2_viewUsers_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -5670,7 +5711,7 @@
       },
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserControllerV2_createUser_v2",
+        "operationId": "UserAccountControllerV2_createUser_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -5714,10 +5755,10 @@
         ]
       }
     },
-    "/v2/user/user/me/permissions": {
+    "/v2/user/user_account/me/permissions": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserControllerV2_getMyPermissions_v2",
+        "operationId": "UserAccountControllerV2_getMyPermissions_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -5750,10 +5791,10 @@
         ]
       }
     },
-    "/v2/user/user/role_permission": {
+    "/v2/user/user_account/role_permission": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserControllerV2_addRolePermission_v2",
+        "operationId": "UserAccountControllerV2_addRolePermission_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -5796,10 +5837,10 @@
         ]
       }
     },
-    "/v2/user/user/add-role/{userId}/{roleName}": {
+    "/v2/user/user_account/add-role/{userId}/{roleName}": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserControllerV2_addUserRole_v2",
+        "operationId": "UserAccountControllerV2_addUserRole_v2",
         "parameters": [
           {
             "name": "userId",
@@ -5849,10 +5890,10 @@
         ]
       }
     },
-    "/v2/user/user/new_reset_token": {
+    "/v2/user/user_account/new_reset_token": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserControllerV2_newResetToken_v2",
+        "operationId": "UserAccountControllerV2_newResetToken_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -5896,10 +5937,10 @@
         ]
       }
     },
-    "/v2/user/user/token_keys": {
+    "/v2/user/user_account/token_keys": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserControllerV2_viewUserKeys_v2",
+        "operationId": "UserAccountControllerV2_viewUserKeys_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -5942,10 +5983,10 @@
         ]
       }
     },
-    "/v2/user/user/deactivate": {
+    "/v2/user/user_account/deactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserControllerV2_deactivateUser_v2",
+        "operationId": "UserAccountControllerV2_deactivateUser_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -5988,10 +6029,10 @@
         ]
       }
     },
-    "/v2/user/user/reactivate": {
+    "/v2/user/user_account/reactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserControllerV2_reactivateUser_v2",
+        "operationId": "UserAccountControllerV2_reactivateUser_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -6034,10 +6075,10 @@
         ]
       }
     },
-    "/v2/user/user/new_employees": {
+    "/v2/user/user_account/new_employees": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserControllerV2_viewNewEmployees_v2",
+        "operationId": "UserAccountControllerV2_viewNewEmployees_v2",
         "parameters": [],
         "responses": {
           "200": {
