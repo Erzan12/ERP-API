@@ -19,7 +19,7 @@ import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @Injectable()
-export class UserService {
+export class UserAccountService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
