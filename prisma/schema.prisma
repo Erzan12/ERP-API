@@ -267,6 +267,7 @@ model UserRole {
   user_id          String           @db.Uuid
   role_id          String           @db.Uuid
   role_name        String
+  isActive         Boolean          @default(true)
   created_at       DateTime         @default(now())
   updated_at       DateTime         @updatedAt
 
