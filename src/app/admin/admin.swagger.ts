@@ -15,6 +15,7 @@ export function setupAdminSwagger(app: INestApplication): void {
     .setVersion('1.0')
     .addTag('Authentication')
     .addTag('Administrator - Dashboard')
+    .addTag('Administrator - User Access')
     .addTag('Administrator - Audit')
     .addTag('Administrator - Module')
     .addTag('Administrator - Submodule')
