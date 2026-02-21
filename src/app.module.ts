@@ -23,7 +23,7 @@ import { AuthController } from './auth/auth.controller';
 // import { UserController } from './modules/manager/user/controllers/userv2.controller';
 // import { UserLocationController } from './modules/master/user_location/controller/user_locationV2.controller';
 
-import { UserService } from './modules/manager/user/user.service';
+import { UserAccountService } from './modules/manager/user_account/user_account.service';
 import { AuditService } from './modules/administrator/audit/audit.service';
 import { PositionService } from './modules/master/position/position.service';
 import { EmployeeService } from './modules/hris/employee_masterlist/employee.service';
@@ -35,6 +35,7 @@ import { PrismaService } from './config/prisma/prisma.service';
 import { DivisionService } from './modules/master/division/division.service';
 import { MailService } from './jobs/mail/mail.service';
 import { UserLocationService } from './modules/master/user_location/user_location.service';
+import { UserService } from './modules/administrator/user/user.service';
 
 import { CreateCompanyDto } from './modules/master/company/dto/create-company.dto';
 import { CreateDivisionDto } from './modules/master/division/dto/create-division.dto';
@@ -69,7 +70,7 @@ import { CreatePositionDto } from './modules/master/position/dto/create-position
     // HealthModule,
   ],
   providers: [
-    UserService,
+    UserAccountService,
     PrismaService,
     {
       //global custom auth guard
