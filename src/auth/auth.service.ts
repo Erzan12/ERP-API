@@ -304,6 +304,7 @@ export class AuthService {
       include: {
         employee: {
           include: {
+            person: true,
             department: true,
             division: true,
             company: true, 
@@ -341,27 +342,48 @@ export class AuthService {
       message: 'User is validated successfully',
       data: {
         id: user.id,
+        full_name: [
+          employee.person.first_name,
+          employee.person.middle_name,
+          employee.person.last_name
+        ].filter(Boolean).join(' '),
         email: user.email,
         department: employee.department.name,
         company: employee.company.name,
         division: employee.division.name,
         position: employee.position.name,
         security_clearance_level: user.security_clearance_level ?? 0,
-        roles: user.user_roles.map((ur) => ({
+        // roles: user.user_roles.map((ur) => ({
+        //     id: ur.role?.id ?? 0,
+        //     role_name: ur.role?.name ?? 'Unknown Role',
+        //     // module: {
+        //     //   id: ur.role.module?.id,
+        //     //   name: ur.role.module?.name,
+        //     // },
+        //     sub_modules: ur.user_permissions.map((up) => ({
+        //     name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+        //     // action: up.role_permission?.action ?? 'unknown',
+        //     // status: true, // if you have a field for it, use it
+        //     })),
+        // })),
+        roles: user.user_roles.map((ur) => {
+          const uniqueSubmodules = [
+            ...new Map(
+              ur.user_permissions.map((up) => {
+                const name =
+                  up.role_permission?.sub_module?.name ?? 'unknown';
+                  up.role_permission?.action ?? 'unknown';
+                return [name, { name }];
+              })
+            ).values(),
+          ];
+          return {
             id: ur.role?.id ?? 0,
             role_name: ur.role?.name ?? 'Unknown Role',
-            // module: {
-            //   id: ur.role.module?.id,
-            //   name: ur.role.module?.name,
-            // },
-            permissions: ur.user_permissions.map((up) => ({
-            action: up.role_permission?.action ?? 'unknown',
-            // status: true, // if you have a field for it, use it
-            permission: {
-            sub_module_name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-            },
-            })),
-        })),
+            isActive: ur.isActive ?? 'false',
+            sub_modules: uniqueSubmodules,
+          };
+        }),
       }
     }
   }

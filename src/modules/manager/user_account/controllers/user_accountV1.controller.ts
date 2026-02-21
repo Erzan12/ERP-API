@@ -1,6 +1,6 @@
 import { Controller, Body, Post, Get, Put } from '@nestjs/common';
 import { CreateUserWithRolePermissionDto } from '../dto/create-user-with-role-permission.dto';
-import { UserService } from '../user.service';
+import { UserAccountService } from '../user_account.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
   DeactivateUserAccountDto,
@@ -38,7 +38,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 @ApiTags('Manager - User Account')
 @Controller({path:'user',version:'1'})
 export class UserControllerV1 {
-  constructor(private userService: UserService) {}
+  constructor(private userAccountService: UserAccountService) {}
 
   //view user accounts
   //to set up viewuser accounts in service
@@ -49,7 +49,7 @@ export class UserControllerV1 {
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
   viewUsers(@SessionUser() user: RequestUser) {
-    return this.userService.viewUserAccount(user);
+    return this.userAccountService.viewUserAccount(user);
   }
 
   @Get('user/me/permissions')
@@ -59,7 +59,7 @@ export class UserControllerV1 {
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
   getMyPermissions(@SessionUser() user: RequestUser) {
-    return this.userService.getUserPermissions(user.id);
+    return this.userAccountService.getUserPermissions(user.id);
   }
 
   //create user account
@@ -77,7 +77,7 @@ export class UserControllerV1 {
     @Body() createUserWithRolePermissionDto: CreateUserWithRolePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userService.createUserAccount(
+    return this.userAccountService.createUserAccount(
       createUserWithRolePermissionDto,
       user,
     );
@@ -94,7 +94,7 @@ export class UserControllerV1 {
     @Body() addUserRolePermissionsDto: AddUserRolePermissionsDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userService.addUserRolePermissions(
+    return this.userAccountService.addUserRolePermissions(
       addUserRolePermissionsDto.userId,
       addUserRolePermissionsDto.rolePermissionIds,
       user,
@@ -116,7 +116,7 @@ export class UserControllerV1 {
     @Body() userEmailResetTokenDto: UserEmailResetTokenDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userService.userNewResetToken(userEmailResetTokenDto, user);
+    return this.userAccountService.userNewResetToken(userEmailResetTokenDto, user);
   }
 
   //first login password reset token
@@ -133,7 +133,7 @@ export class UserControllerV1 {
     @Body() createUserWithTemplateDto: CreateUserWithRolePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userService.createUserAccount(createUserWithTemplateDto, user);
+    return this.userAccountService.createUserAccount(createUserWithTemplateDto, user);
   }
 
   @Put('user/deactivate')
@@ -145,7 +145,7 @@ export class UserControllerV1 {
     @Body() deactivateUserAccountDto: DeactivateUserAccountDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userService.deactivateUserAccount(
+    return this.userAccountService.deactivateUserAccount(
       deactivateUserAccountDto,
       user,
     );
@@ -160,7 +160,7 @@ export class UserControllerV1 {
     @Body() reactivateUserAccountDto: ReactivateUserAccountDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userService.reactivateUserAccount(
+    return this.userAccountService.reactivateUserAccount(
       reactivateUserAccountDto,
       user,
     );
@@ -172,7 +172,7 @@ export class UserControllerV1 {
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   viewNewEmployees(@SessionUser() user: RequestUser) {
-    return this.userService.viewNewEmployeeWithoutUserAccount(user);
+    return this.userAccountService.viewNewEmployeeWithoutUserAccount(user);
   }
 
   // @Get('with_roles_permissions')
