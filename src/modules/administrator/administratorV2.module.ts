@@ -10,7 +10,6 @@ import { ModuleControllerV2 } from './module/controllers/moduleV2.controller';
 import { SubModuleControllerV2 } from './sub_module/controllers/sub_moduleV2.controller';
 import { SecurityClearanceService } from './security_clearance/security-clearance.service';
 import { SecurityClearanceControllerV2 } from './security_clearance/controllers/security-clearanceV2.controller';
-import { UserService } from 'src/modules/manager/user/user.service';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { EmploymentStatusService } from '../master/employment_status/employment_status.service';
 import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
@@ -25,6 +24,8 @@ import { DbQueryService } from './db-query/db-query.service';
 import { SlackModule } from 'src/jobs/slack/slack.module';
 import { HttpModule } from '@nestjs/axios';
 import { SlackService } from 'src/jobs/slack/slack.service';
+import { UserService } from './user/user.service';
+import { UserController } from './user/user.controller';
 
 @Module({
   imports: [AuthModule, TerminusModule, SlackModule, HttpModule],
@@ -37,6 +38,7 @@ import { SlackService } from 'src/jobs/slack/slack.service';
     AuditControllerV2,
     HealthController,
     DbQueryControllerV2,
+    UserController,
   ],
   providers: [
     JwtStrategy,
@@ -52,7 +54,8 @@ import { SlackService } from 'src/jobs/slack/slack.service';
     DashboardService,
     AuditService,
     DbQueryService, 
-    SlackService
+    SlackService,
+    UserService
   ],
   exports: [AdministratorV2Module],
 })

@@ -8,7 +8,7 @@ import { RoleService } from './role/role.service';
 import { ModuleService } from './module/module.service';
 import { SubModuleControllerV1 } from './sub_module/controllers/sub_moduleV1.controller';
 import { SecurityClearanceService } from './security_clearance/security-clearance.service';
-import { UserService } from 'src/modules/manager/user/user.service';
+// import { UserService } from 'src/modules/manager/user_account/user_account.service';
 import { DashboardService } from './dashboard/dashboard.service';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { EmploymentStatusService } from '../master/employment_status/employment_status.service';
@@ -19,6 +19,8 @@ import { DashboardControllerv1 } from './dashboard/controllers/dashboardV1.contr
 import { ModuleControllerV1 } from './module/controllers/moduleV1.controller';
 import { SecurityClearanceControllerV1 } from './security_clearance/controllers/security-clearanceV1.controller';
 import { EmploymentStatusControllerV1 } from '../master/employment_status/controllers/employment_statusV1.controller';
+import { UserController } from './user/user.controller';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [AuthModule],
@@ -30,6 +32,7 @@ import { EmploymentStatusControllerV1 } from '../master/employment_status/contro
     SecurityClearanceControllerV1,
     DashboardControllerv1,
     AuditControllerV1,
+    UserController,
   ],
   providers: [
     JwtStrategy,
