@@ -1,17 +1,21 @@
-import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
-import { INestApplication } from "@nestjs/common";
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { INestApplication } from '@nestjs/common';
 
-import { AuthModule } from "src/auth/auth.module";
-import { HrV1Module } from "src/modules/hris/hrV1.module";
-import { HrV2Module } from "src/modules/hris/hrV2.module";
+import { AuthModule } from 'src/auth/auth.module';
+import { HrV1Module } from 'src/modules/hris/hrV1.module';
+import { HrV2Module } from 'src/modules/hris/hrV2.module';
 
 export function setupHRISSwagger(app: INestApplication): void {
-
   // build document for V1
   const optionsV1 = new DocumentBuilder()
-    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' }, 'access-token')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+      'access-token',
+    )
     .setTitle('HRIS API (v1)')
-    .setDescription('API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 1')
+    .setDescription(
+      'API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 1',
+    )
     .setVersion('1.0')
     .addTag('Authentication')
     .addTag('Human Resources - Dashboard')
@@ -19,14 +23,19 @@ export function setupHRISSwagger(app: INestApplication): void {
     .build();
 
   const documentV1 = SwaggerModule.createDocument(app, optionsV1, {
-    include: [HrV1Module, AuthModule]
+    include: [HrV1Module, AuthModule],
   });
 
   // build document for V2
   const optionsV2 = new DocumentBuilder()
-    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' }, 'access-token')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+      'access-token',
+    )
     .setTitle('HRIS API (v2)')
-    .setDescription('API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 2')
+    .setDescription(
+      'API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 2',
+    )
     .setVersion('2.0')
     .addTag('Authentication')
     .addTag('Human Resources - Dashboard')
@@ -34,7 +43,7 @@ export function setupHRISSwagger(app: INestApplication): void {
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
-    include: [HrV2Module, AuthModule]
+    include: [HrV2Module, AuthModule],
   });
 
   // mount individual endpoints (This automatically exposes /docs/admin/v1-json and v2-json)
@@ -47,10 +56,10 @@ export function setupHRISSwagger(app: INestApplication): void {
     swaggerOptions: {
       urls: [
         { name: 'v2', url: '/docs/hris/v2-json' },
-        { name: 'v1', url: '/docs/hris/v1-json' }
+        { name: 'v1', url: '/docs/hris/v1-json' },
       ],
       persistAuthorization: true,
       filter: true,
-    }
+    },
   });
 }
