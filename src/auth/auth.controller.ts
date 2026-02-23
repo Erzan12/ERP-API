@@ -7,9 +7,6 @@ import {
   Get,
   Req,
   UsePipes,
-  Param,
-  Headers,
-  ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -21,46 +18,42 @@ import {
 import { LoginDto } from './dto/login.dto';
 import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 import { Public } from 'src/utils/decorators/public.decorator';
-import { Can } from 'src/utils/decorators/can.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
-import { Authenticated } from 'src/utils/decorators/auth-guard.decorator';
 
-// @ApiBearerAuth('access-token')
 @Public()
 @ApiTags('Authentication')
-@Controller('auth')
+@Controller({path:'auth', version: '2'})
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @ApiOperation({ summary: 'User authorized login' })
   @ApiLoginResponse('User login successful')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
-  login(
-    @Body() loginDto: LoginDto, 
-    @Req() req: Request
-  ) {
+  // @UsePipes(new ValidationPipe({ whitelist: true }))
+  login(@Body() loginDto: LoginDto, @Req() req: Request) {
     const ipAddress = req.ip || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
-
-    return this.authService.login(loginDto, ipAddress, userAgent);
+    try {
+      const loginData = this.authService.login(loginDto, ipAddress, userAgent)
+      return loginData;
+    } catch (error) {
+      console.log(error)
+    }
+    // return this.authService.login(loginDto, ipAddress, userAgent);
   }
 
   @Post('logout')
-  @ApiOperation({ summary: 'User will logout'})
+  @ApiOperation({ summary: 'User will logout' })
   @ApiPostResponse('User logout successfully')
-  @UsePipes(new ValidationPipe({ whitelist: true}))
-  logout(
-    @SessionUser() user: RequestUser,
-    @Req() req: Request
-  ) {
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  logout(@SessionUser() user: RequestUser, @Req() req: Request) {
     const ipAddress = req.ip || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
 
-    return this.authService.logout(user, ipAddress, userAgent)
+    return this.authService.logout(user, ipAddress, userAgent);
   }
 
   @Post('reset-password')
@@ -70,16 +63,15 @@ export class AuthController {
   passwordResetWithToken(
     @Query('token') token: string,
     @Body() resetPasswordWithTokenDto: ResetPasswordWithTokenDto,
-    @Req() req: Request
   ) {
-    const ipAddress = req.ip || req.socket.remoteAddress;
-    const userAgent = req.headers['user-agent'];
+    // const ipAddress = req.ip || req.socket.remoteAddress;
+    // const userAgent = req.headers['user-agent'];
 
     return this.authService.resetPasswordWithToken(
       resetPasswordWithTokenDto,
       token,
-      ipAddress,
-      userAgent
+      // ipAddress,
+      // userAgent,
     );
   }
 
@@ -89,9 +81,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Verify user' })
   @ApiLoginResponse('User has been verified')
   @UsePipes(new ValidationPipe({ whitelist: true }))
-  verify(
-    @SessionUser() requestUser: RequestUser,
-  ) {
+  verify(@SessionUser() requestUser: RequestUser) {
     return this.authService.getUser(requestUser);
   }
 
