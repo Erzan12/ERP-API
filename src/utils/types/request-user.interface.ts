@@ -1,6 +1,7 @@
 export interface RequestUser {
   id: string;
   email: string;
+  username: string;
   department_id: string;
   security_clearance_level: number;
   roles: {
@@ -18,5 +19,4 @@ export interface RequestUser {
       // status: boolean;
     }[];
   }[];
-  
 }

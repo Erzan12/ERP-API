@@ -28,7 +28,11 @@ export class CustomJwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 
-  handleRequest(err, user, info) {
+  handleRequest(
+    err: Error | null,
+    user: any,
+    info: Error | string | undefined,
+  ) {
     if (info instanceof TokenExpiredError) {
       throw new UnauthorizedException('Token already has expired');
     }

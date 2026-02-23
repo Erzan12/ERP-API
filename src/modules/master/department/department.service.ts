@@ -51,7 +51,7 @@ export class DepartmentService {
     };
   }
 
-  async createDepartment(createDepartmentDto: CreateDepartmentDto, user) {
+  async createDepartment(createDepartmentDto: CreateDepartmentDto, user: RequestUser) {
     const { name, division_id, stat } = createDepartmentDto;
 
     const existingDepartment = await this.prisma.department.findFirst({
@@ -118,7 +118,7 @@ export class DepartmentService {
     };
   }
 
-  async updateDepartment(id: string, updateDepartmentDto: UpdateDepartmentDto, user,
+  async updateDepartment(id: string, updateDepartmentDto: UpdateDepartmentDto, user: RequestUser,
   ) {
     const { department_name, sorting, division_id, stat } = updateDepartmentDto;
 

@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { permission } from 'process';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
@@ -124,9 +123,13 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private prisma: PrismaService) {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error('JWT_SECRET environment variable is not defined');
+    }
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: secret,
     });
   }
 
@@ -160,11 +163,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User not found or invalid token');
     }
 
-    const employee = user.employee
+    const employee = user.employee;
 
     return {
       id: user.id,
       email: user.email,
+      username: user.username,
       department_id: employee.employee_id,
       security_clearance_level: user.security_clearance_level ?? 0,
       roles: user.user_roles.map((ur) => ({

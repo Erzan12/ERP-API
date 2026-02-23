@@ -232,7 +232,7 @@ export class SubModuleService {
   // }
   async assignSubModulePermissions(
     dto: AssignSubModulePermissionDto,
-    user,
+    user: RequestUser,
   ) {
     const { action, sub_module_id } = dto;
 
