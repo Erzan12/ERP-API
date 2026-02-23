@@ -4,7 +4,7 @@ import { PrismaModule } from './config/prisma/prisma.module';
 import { CaslModule } from './middleware/casl/casl.module';
 import { LandingModule } from './landing/landing.module';
 import { AuthModule } from './auth/auth.module';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { AdministratorV1Module } from 'src/modules/administrator/administratorV1.module';
 import { AdministratorV2Module } from './modules/administrator/administratorV2.module';
 import { HrV1Module } from './modules/hris/hrV1.module';
@@ -78,14 +78,14 @@ import { CreatePositionDto } from './modules/master/position/dto/create-position
       useClass: CustomJwtAuthGuard,
     },
     {
-      //global security clearance level guard
-      provide: APP_GUARD,
-      useClass: SecurityClearanceGuard,
-    },
-    {
       //global roles permission guard
       provide: APP_GUARD,
       useClass: PermissionsGuard,
+    },
+    {
+      //global security clearance level guard
+      provide: APP_GUARD,
+      useClass: SecurityClearanceGuard,
     },
     AuditService,
     MailService,

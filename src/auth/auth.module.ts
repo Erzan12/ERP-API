@@ -21,7 +21,7 @@ import { CaslModule } from 'src/middleware/casl/casl.module';
     MailService,
     ConfigService,
     AuditService,
-    CaslAbilityService
+    CaslAbilityService,
   ],
   exports: [AuthModule, JwtStrategy],
 })
