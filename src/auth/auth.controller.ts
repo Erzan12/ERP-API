@@ -3,11 +3,8 @@ import {
   Controller,
   Post,
   Query,
-  ValidationPipe,
   Get,
   Req,
-  UsePipes,
-  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -21,7 +18,7 @@ import { Public } from 'src/utils/decorators/public.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
-import { AuthGuard } from '@nestjs/passport';
+import { Authenticated } from 'src/utils/decorators/auth-guard.decorator';
 
 @Public()
 @ApiTags('Authentication')
@@ -32,23 +29,21 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'User authorized login' })
   @ApiLoginResponse('User login successful')
-  // @UsePipes(new ValidationPipe({ whitelist: true }))
   login(@Body() loginDto: LoginDto, @Req() req: Request) {
     const ipAddress = req.ip || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
-    try {
-      const loginData = this.authService.login(loginDto, ipAddress, userAgent)
-      return loginData;
-    } catch (error) {
-      console.log(error)
-    }
-    // return this.authService.login(loginDto, ipAddress, userAgent);
+    // try {
+    //   const loginData = this.authService.login(loginDto, ipAddress, userAgent)
+    //   return loginData;
+    // } catch (error) {
+    //   console.log(error)
+    // }
+    return this.authService.login(loginDto, ipAddress, userAgent);
   }
 
   @Post('logout')
   @ApiOperation({ summary: 'User will logout' })
   @ApiPostResponse('User logout successfully')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
   logout(@SessionUser() user: RequestUser, @Req() req: Request) {
     const ipAddress = req.ip || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
@@ -59,7 +54,6 @@ export class AuthController {
   @Post('reset-password')
   @ApiOperation({ summary: 'User reset password' })
   @ApiPostResponse('User reset password successfully')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
   passwordResetWithToken(
     @Query('token') token: string,
     @Body() resetPasswordWithTokenDto: ResetPasswordWithTokenDto,
@@ -76,11 +70,10 @@ export class AuthController {
   }
 
   @ApiBearerAuth('access-token')
-  @UseGuards(AuthGuard('jwt'))
+  @Authenticated()
   @Get('/verify')
   @ApiOperation({ summary: 'Verify user' })
   @ApiLoginResponse('User has been verified')
-  @UsePipes(new ValidationPipe({ whitelist: true }))
   verify(@SessionUser() requestUser: RequestUser) {
     return this.authService.getUser(requestUser);
   }

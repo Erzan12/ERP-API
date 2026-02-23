@@ -56,7 +56,7 @@ export class UserAccountService {
   //refactored version no more role_ids and module_ids in user account creation will be basing on the permission_tempalte model
   async createUserAccount(
     createUserWithRolePermissionDto: CreateUserWithRolePermissionDto,
-    user: RequestUser,
+    requestUser: RequestUser,
   ) {
     return this.prisma.$transaction(async (tx) => {
       const plainPassword =
@@ -79,7 +79,7 @@ export class UserAccountService {
       }
 
       const creatorUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
+        where: { id: requestUser.id },
         include: {
           employee: {
             include: {
@@ -234,8 +234,8 @@ export class UserAccountService {
 
       // Send welcome email
       await this.mailService.sendWelcomeMail(
-        user.email,
-        user.username,
+        newUser.email,
+        newUser.username,
         plainPassword,
         tokenKey,
       );
