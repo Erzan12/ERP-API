@@ -7,9 +7,11 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { JwtStrategy } from '../middleware/jwt/jwt.strategy';
 import { MailService } from 'src/jobs/mail/mail.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
+import { CaslAbilityService } from 'src/middleware/casl/casl.service';
+import { CaslModule } from 'src/middleware/casl/casl.module';
 
 @Module({
-  imports: [],
+  imports: [CaslModule],
   controllers: [AuthController],
   providers: [
     AuthService,
@@ -18,7 +20,8 @@ import { AuditService } from 'src/modules/administrator/audit/audit.service';
     JwtService,
     MailService,
     ConfigService,
-    AuditService
+    AuditService,
+    CaslAbilityService
   ],
   exports: [AuthModule, JwtStrategy],
 })

@@ -117,19 +117,10 @@
         ]
       }
     },
-    "/auth/user-access/{id}": {
+    "/auth/verify": {
       "get": {
         "operationId": "AuthController_verify",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "User has been verified"
@@ -147,6 +138,11 @@
             "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
         "summary": "Verify user",
         "tags": [
           "Authentication"
@@ -6826,6 +6822,35 @@
       "UpdatePersonDto": {
         "type": "object",
         "properties": {
+          "first_name": {
+            "type": "string",
+            "example": "Juan",
+            "description": "First name of the employee"
+          },
+          "middle_name": {
+            "type": "string",
+            "example": "Hindi",
+            "description": "Middle name of the employee but it is optional"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "Tamad",
+            "description": "Last name of the employee"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "example": "2025-07-10",
+            "description": "Date of birth of the employee"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ],
+            "example": "male",
+            "description": "Gender of the employee"
+          },
           "civil_status": {
             "type": "string",
             "enum": [
@@ -6842,15 +6867,72 @@
             "example": "sample@gmail.com",
             "description": "Email of the employee"
           }
-        },
-        "required": [
-          "civil_status",
-          "email"
-        ]
+        }
       },
       "UpdateEmployeeDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "company_id": {
+            "type": "string",
+            "example": "PK uuid of company",
+            "description": "Company of the employee"
+          },
+          "department_id": {
+            "type": "string",
+            "example": "PK uuid of department",
+            "description": "Department of the employee"
+          },
+          "position_id": {
+            "type": "string",
+            "example": "PK uuid of position",
+            "description": "Position of the employee"
+          },
+          "division_id": {
+            "type": "string",
+            "example": "PK uuid of division",
+            "description": "Division of the employee"
+          },
+          "salary": {
+            "type": "number",
+            "example": 21000,
+            "description": "The salary of the employee"
+          },
+          "hire_date": {
+            "type": "string",
+            "example": "2025-07-10",
+            "description": "Hired date of the employee"
+          },
+          "pay_frequency": {
+            "type": "string",
+            "example": "Monthly",
+            "description": "Pay frequency of the employee salary"
+          },
+          "employment_status_id": {
+            "type": "string",
+            "example": "PK uuid of employment status",
+            "description": "The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated"
+          },
+          "monthly_equivalent_salary": {
+            "type": "number",
+            "example": 21000,
+            "description": "The equivalent amount of salary per month of the employee"
+          },
+          "archive_date": {
+            "type": "string",
+            "example": "can be left out for now since its optional",
+            "description": "The archived date of this employee record"
+          },
+          "other_employee_data": {
+            "type": "object",
+            "example": "Hobbies, Personal Experiences, etc. can be left out for now since its optional",
+            "description": "Other personal data or details of the employee"
+          },
+          "corporate_rank_id": {
+            "type": "number",
+            "example": "can be left out for now since its optional",
+            "description": "Rank of the employee in the company"
+          }
+        }
       },
       "UpdateEmployeeWithDetailsDto": {
         "type": "object",
