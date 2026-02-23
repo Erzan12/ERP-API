@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   Injectable,
   BadRequestException,
   UnauthorizedException,
@@ -8,7 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcryptjs';
 import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
-import { v4 as uuidv4 } from 'uuid';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -18,11 +16,16 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly auditService: AuditService
+    private readonly auditService: AuditService,
   ) {}
 
   //For first time log in password reset with token from user or person registration/creation
-  async resetPasswordWithToken(dto: ResetPasswordWithTokenDto, token: string, ipAddress?: string, userAgent?: string) {
+  async resetPasswordWithToken(
+    dto: ResetPasswordWithTokenDto,
+    token: string,
+    // ipAddress?: string,
+    // userAgent?: string,
+  ) {
     const { newPassword } = dto;
 
     if (!token) {
@@ -149,44 +152,44 @@ export class AuthService {
       where: { username },
       include: {
         user_roles: {
-        include: {
-              role: true,
-              user_permissions: {
-                include: {
-                    role_permission: {
-                    include: {
-                        sub_module: true,
-                    },
+          include: {
+            role: true,
+            user_permissions: {
+              include: {
+                role_permission: {
+                  include: {
+                    sub_module: true,
                   },
                 },
               },
+            },
           },
         },
       },
     });
 
     if (!userAudit || !(await bcrypt.compare(password, userAudit.password))) {
-        //log failed login attempt
-        await this.auditService.logAuth(
-            'LOGIN_FAILED',
-            undefined,
-            ipAddress,
-            userAgent,
-            false,
-            `Failed login attempt for username: ${username}`,
-        );
+      //log failed login attempt
+      await this.auditService.logAuth(
+        'LOGIN_FAILED',
+        undefined,
+        ipAddress,
+        userAgent,
+        false,
+        `Failed login attempt for username: ${username}`,
+      );
 
-        throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const userValidate = await this.validateUser(username, password);
 
     if (userValidate.require_reset === 1) {
-        return {
-            status: 'password_require_reset',
-            message: 'You must reset your password first for first time login!',
-            userId: userValidate.id,
-        };
+      return {
+        status: 'password_require_reset',
+        message: 'You must reset your password first for first time login!',
+        userId: userValidate.id,
+      };
     }
 
     if (userValidate.stat !== 1) {
@@ -233,33 +236,34 @@ export class AuthService {
     });
 
     const requestUser: RequestUser = {
-        id: userValidate.id,
-        email: userValidate.email,
-        department_id: userValidate.employee.department_id,
-        security_clearance_level: userValidate.security_clearance_level ?? 0,
-        roles: userValidate.user_roles.map((ur) => ({
-            id: ur.role?.id ?? 0,
-            name: ur.role?.name ?? 'Unknown Role',
-            // module: {
-            //   id: ur.role.module?.id,
-            //   name: ur.role.module?.name,
-            // },
-            permissions: ur.user_permissions.map((up) => ({
-            action: up.role_permission?.action ?? 'unknown',
-            // status: true, // if you have a field for it, use it
-            permission: {
-                name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-            },
-            })),
+      id: userValidate.id,
+      email: userValidate.email,
+      username: userValidate.username,
+      department_id: userValidate.employee.department_id,
+      security_clearance_level: userValidate.security_clearance_level ?? 0,
+      roles: userValidate.user_roles.map((ur) => ({
+        id: ur.role?.id ?? 0,
+        name: ur.role?.name ?? 'Unknown Role',
+        // module: {
+        //   id: ur.role.module?.id,
+        //   name: ur.role.module?.name,
+        // },
+        permissions: ur.user_permissions.map((up) => ({
+          action: up.role_permission?.action ?? 'unknown',
+          // status: true, // if you have a field for it, use it
+          permission: {
+            name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+          },
         })),
+      })),
     };
 
     await this.auditService.logAuth(
-        'LOGIN',
-        requestUser,
-        ipAddress,
-        userAgent,
-        true,
+      'LOGIN',
+      requestUser,
+      ipAddress,
+      userAgent,
+      true,
     );
 
     const isNewAccount =
@@ -277,13 +281,7 @@ export class AuthService {
   }
 
   async logout(user: RequestUser, ipAddress?: string, userAgent?: string) {
-    await this.auditService.logAuth(
-      'LOGOUT',
-      user,
-      ipAddress,
-      userAgent,
-      true,
-    );
+    await this.auditService.logAuth('LOGOUT', user, ipAddress, userAgent, true);
 
     return { message: 'User logout successfully' };
   }
@@ -301,10 +299,10 @@ export class AuthService {
             person: true,
             department: true,
             division: true,
-            company: true, 
+            company: true,
             employment_status: true,
             position: true,
-          }
+          },
         },
         user_roles: {
           include: {
@@ -321,8 +319,8 @@ export class AuthService {
             },
           },
         },
-      }
-    })
+      },
+    });
 
     if (!user || user.stat !== 1) {
       // You can throw an Unauthorized or NotFound exception
@@ -339,8 +337,10 @@ export class AuthService {
         full_name: [
           employee.person.first_name,
           employee.person.middle_name,
-          employee.person.last_name
-        ].filter(Boolean).join(' '),
+          employee.person.last_name,
+        ]
+          .filter(Boolean)
+          .join(' '),
         email: user.email,
         department: employee.department.name,
         company: employee.company.name,
@@ -364,11 +364,10 @@ export class AuthService {
           const uniqueSubmodules = [
             ...new Map(
               ur.user_permissions.map((up) => {
-                const name =
-                  up.role_permission?.sub_module?.name ?? 'unknown';
-                  up.role_permission?.action ?? 'unknown';
+                const name = up.role_permission?.sub_module?.name ?? 'unknown';
+                up.role_permission?.action ?? 'unknown';
                 return [name, { name }];
-              })
+              }),
             ).values(),
           ];
           return {
@@ -378,7 +377,7 @@ export class AuthService {
             sub_modules: uniqueSubmodules,
           };
         }),
-      }
-    }
+      },
+    };
   }
 }
