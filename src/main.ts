@@ -1,7 +1,6 @@
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { PrismaClient } from '@prisma/client';
@@ -19,8 +18,7 @@ async function bootstrap() {
   });
 
   //log manual queries
-  new PrismaClient({adapter, log: ['query']});
-
+  new PrismaClient({ adapter, log: ['query'] });
 
   //enable validation pipe globally -> This ensures the DTOs and decorators (@ValidateNested, @IsDateString, etc.) work properly and transform inputs like date strings into Date objects where necessary.
   app.useGlobalPipes(
@@ -51,11 +49,10 @@ async function bootstrap() {
   app.setBaseViewsDir(join(process.cwd(), 'views'));
   app.setViewEngine('hbs');
 
-
   await app.listen(3000, () => {
-    console.log('Server is running at http://localhost:3000')
-    console.log('Swagger API is running at http://localhost:3000/docs')
-    console.log('Prisma Studio is running at http://localhost:51212')
+    console.log('Server is running at http://localhost:3000');
+    console.log('Swagger API is running at http://localhost:3000/docs');
+    console.log('Prisma Studio is running at http://localhost:51212');
   });
 }
 bootstrap();

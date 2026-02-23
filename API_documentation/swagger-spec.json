@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "paths": {
-    "/auth/login": {
+    "/v2/auth/login": {
       "post": {
-        "operationId": "AuthController_login",
+        "operationId": "AuthController_login_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -38,9 +38,9 @@
         ]
       }
     },
-    "/auth/logout": {
+    "/v2/auth/logout": {
       "post": {
-        "operationId": "AuthController_logout",
+        "operationId": "AuthController_logout_v2",
         "parameters": [],
         "responses": {
           "201": {
@@ -68,9 +68,9 @@
         ]
       }
     },
-    "/auth/reset-password": {
+    "/v2/auth/reset-password": {
       "post": {
-        "operationId": "AuthController_passwordResetWithToken",
+        "operationId": "AuthController_passwordResetWithToken_v2",
         "parameters": [
           {
             "name": "token",
@@ -117,9 +117,9 @@
         ]
       }
     },
-    "/auth/verify": {
+    "/v2/auth/verify": {
       "get": {
-        "operationId": "AuthController_verify",
+        "operationId": "AuthController_verify_v2",
         "parameters": [],
         "responses": {
           "200": {
