@@ -36,7 +36,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Manager - User Account')
-@Controller({path:'user',version:'1'})
+@Controller({ path: 'user', version: '1' })
 export class UserControllerV1 {
   constructor(private userAccountService: UserAccountService) {}
 
@@ -116,7 +116,10 @@ export class UserControllerV1 {
     @Body() userEmailResetTokenDto: UserEmailResetTokenDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userAccountService.userNewResetToken(userEmailResetTokenDto, user);
+    return this.userAccountService.userNewResetToken(
+      userEmailResetTokenDto,
+      user,
+    );
   }
 
   //first login password reset token
@@ -133,7 +136,10 @@ export class UserControllerV1 {
     @Body() createUserWithTemplateDto: CreateUserWithRolePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userAccountService.createUserAccount(createUserWithTemplateDto, user);
+    return this.userAccountService.createUserAccount(
+      createUserWithTemplateDto,
+      user,
+    );
   }
 
   @Put('user/deactivate')

@@ -1,6 +1,6 @@
 import { AbilityBuilder, AbilityClass, PureAbility } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
-import { ACTION_MAP, VALID_ACTIONS } from 'src/utils/constants/action-map';
+import { ACTION_MAP } from 'src/utils/constants/action-map';
 
 @Injectable()
 export class CaslAbilityService {
@@ -21,7 +21,7 @@ export class CaslAbilityService {
       }[];
     }[],
   ) {
-    const { can, cannot, build } = new AbilityBuilder(this.Ability);
+    const { can, build } = new AbilityBuilder(this.Ability);
 
     // const actionMap: Record<string, string[]> = {
     //   manage: ['create', 'read', 'update', 'delete'],
@@ -41,7 +41,6 @@ export class CaslAbilityService {
         }
       }
     }
-
     return build();
   }
 }

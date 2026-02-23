@@ -29,7 +29,7 @@ import {
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Masterstable - Department')
-@Controller({path:'masterstable',version:'1'})
+@Controller({ path: 'masterstable', version: '1' })
 export class DepartmentControllerV1 {
   constructor(private departmentService: DepartmentService) {}
 
@@ -46,7 +46,7 @@ export class DepartmentControllerV1 {
   @ApiGetResponse('Here is the department')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDepartment(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.departmentService.getDepartment(id, user);
@@ -76,7 +76,7 @@ export class DepartmentControllerV1 {
   @ApiPatchResponse('Department updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateDepartment(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateDeptDto: UpdateDepartmentDto,
     @SessionUser() user: RequestUser,
   ) {

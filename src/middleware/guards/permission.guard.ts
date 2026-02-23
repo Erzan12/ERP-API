@@ -12,7 +12,7 @@ import {
   PERMISSIONS_KEY,
   PermissionMetadata,
 } from 'src/utils/decorators/can.decorator';
-import { ACTION_MAP, VALID_ACTIONS } from 'src/utils/constants/action-map';
+import { VALID_ACTIONS } from 'src/utils/constants/action-map';
 import { IS_PUBLIC_KEY } from 'src/utils/decorators/public.decorator';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 
@@ -24,7 +24,7 @@ export class PermissionsGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly caslAbilityService: CaslAbilityService,
-    private readonly auditService: AuditService
+    private readonly auditService: AuditService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -79,7 +79,6 @@ export class PermissionsGuard implements CanActivate {
     const canAccess = ability.can(action, subject);
 
     if (!canAccess) {
-
       //log permission denial -> audit
       await this.auditService.logPermissionDenied(
         user,

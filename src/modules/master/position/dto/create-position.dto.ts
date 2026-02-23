@@ -26,9 +26,11 @@ export class CreatePositionDto {
   })
   @Transform(({ value }) => {
     console.log('Transforming status:', value);
-    if (value === 'human resources') return "ddc33ca7-6088-4368-9c95-86f4b30e3cfd";
-    if (value === 'information technology') return "4c0647c8-2b00-49dd-8a82-deee685dd95d";
-    if (value === 'accounting') return "0fd6a4fb-6e39-4b98-9d8e-de76fa52e0f9";
+    if (value === 'human resources')
+      return 'ddc33ca7-6088-4368-9c95-86f4b30e3cfd';
+    if (value === 'information technology')
+      return '4c0647c8-2b00-49dd-8a82-deee685dd95d';
+    if (value === 'accounting') return '0fd6a4fb-6e39-4b98-9d8e-de76fa52e0f9';
     throw new BadRequestException(
       `Invalid status value ${value}. Allowed values are "active" or "inactive"`,
     );

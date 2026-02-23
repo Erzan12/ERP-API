@@ -24,7 +24,7 @@ import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Masterstable - User Location')
-@Controller({path:'masterstable',version:'1'})
+@Controller({ path: 'masterstable', version: '1' })
 export class UserLocationControllerV1 {
   constructor(private userLocationService: UserLocationService) {}
 
@@ -41,9 +41,9 @@ export class UserLocationControllerV1 {
   @ApiGetResponse('Here is the user location')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getUserLocation(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
-) {
-  return this.userLocationService.getUserLocation(id,user)
-}
+  ) {
+    return this.userLocationService.getUserLocation(id, user);
+  }
 }
