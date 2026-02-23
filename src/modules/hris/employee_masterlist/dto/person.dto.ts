@@ -8,7 +8,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import {
   CivilStatus,
   Gender,
@@ -51,7 +51,7 @@ export class CreatePersonDto {
   @IsString()
   @ApiProperty({
     enum: Gender,
-    example: Gender.Male,
+    example: Gender.MALE,
     description: 'Gender of the employee',
   })
   @IsEnum(Gender, { message: 'Gender must be male and female' })
@@ -60,7 +60,7 @@ export class CreatePersonDto {
   @Type(() => String)
   @ApiProperty({
     enum: CivilStatus,
-    example: CivilStatus.Single,
+    example: CivilStatus.SINGLE,
     description: 'Civil Status of the employee',
   })
   @IsEnum(CivilStatus, {
@@ -76,3 +76,5 @@ export class CreatePersonDto {
   })
   email: string;
 }
+
+export class UpdatePersonDto extends PartialType(CreatePersonDto) {}
