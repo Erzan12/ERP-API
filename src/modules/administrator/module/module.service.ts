@@ -11,7 +11,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 export class ModuleService {
   constructor(private prisma: PrismaService) {}
   // validate if module already exist
-  async createModule(createModuleDto: CreateModuleDto, user) {
+  async createModule(createModuleDto: CreateModuleDto) {
     const existingModule = await this.prisma.module.findFirst({
       where: {
         name: createModuleDto.name,
@@ -22,24 +22,24 @@ export class ModuleService {
       throw new BadRequestException('Module already exists!');
     }
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-      },
-    });
+    // const requestUser = await this.prisma.user.findUnique({
+    //   where: { id: user.id },
+    //   include: {
+    //     employee: {
+    //       include: {
+    //         person: true,
+    //         position: true,
+    //       },
+    //     },
+    //   },
+    // });
 
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
+    // if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+    //   throw new BadRequestException(`User does not exist.`);
+    // }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    // const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    // const userPos = requestUser.employee.position.name;
 
     const moduleCreate = await this.prisma.module.create({
       data: {
@@ -51,11 +51,11 @@ export class ModuleService {
     return {
       status: 'success',
       message: `New module has been added to the system!`,
-      created_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
+      // created_by: {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPos,
+      // },
       data: {
         module_id: moduleCreate.id,
         module_name: moduleCreate.name,
@@ -66,28 +66,28 @@ export class ModuleService {
   async getModule(user: RequestUser, id: string) {
     const subModules = await this.prisma.subModule.findMany();
 
-    if(subModules.length === 0) {
-      throw new NotFoundException('No available submodules for this module')
+    if (subModules.length === 0) {
+      throw new NotFoundException('No available submodules for this module');
     }
 
     const module = await this.prisma.module.findUnique({
       where: { id },
       include: {
         sub_module: true,
-      }
-    })
+      },
+    });
 
-    if(!module) {
-      throw new NotFoundException('Module does not exist')
+    if (!module) {
+      throw new NotFoundException('Module does not exist');
     }
 
     return {
       status: 'success',
       message: 'Here is the module with its submodule',
       data: {
-        module
-      }
-    }
+        module,
+      },
+    };
   }
 
   // async getSubModulePerModule(user: RequestUser, id: string) {
@@ -142,11 +142,11 @@ export class ModuleService {
 
   // with pagination
   async getModules(
-    user: RequestUser, 
-    page = 1, 
-    perPage = 10, 
-    search?: string, 
-    sortBy: string = 'created_at', 
+    user: RequestUser,
+    page = 1,
+    perPage = 10,
+    search?: string,
+    sortBy: string = 'created_at',
     order: 'asc' | 'desc' = 'asc',
   ) {
     const skip = (page - 1) * perPage;
@@ -162,7 +162,7 @@ export class ModuleService {
         mode: 'insensitive', //postgresql case-insensitive
       };
     }
-  //prevent sorting by invalied fields (very important)
+    //prevent sorting by invalied fields (very important)
     const allowSortFeilds = ['name', 'created_at', 'updated_at'];
     if (!allowSortFeilds.includes(sortBy)) {
       sortBy = 'created_at';
@@ -184,8 +184,8 @@ export class ModuleService {
         },
       }),
     ]);
-    
-    if(modules.length === 0) {
+
+    if (modules.length === 0) {
       throw new NotFoundException('No available modules found!');
     }
 
@@ -200,7 +200,11 @@ export class ModuleService {
     };
   }
 
-  async updateModude(updateModuleDto: UpdateModuleDto, user: RequestUser, id: string) {
+  async updateModude(
+    updateModuleDto: UpdateModuleDto,
+    user: RequestUser,
+    id: string,
+  ) {
     const existingModule = await this.prisma.module.findUnique({
       where: { id },
       select: {
