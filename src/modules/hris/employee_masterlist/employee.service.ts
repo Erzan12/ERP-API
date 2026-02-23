@@ -3,16 +3,12 @@ import {
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
-import { CreateEmployeeDto } from './dto/create-employee.dto';
-import { CreatePersonDto } from './dto/create-person.dto';
 import { RequestUser } from '../../../utils/types/request-user.interface';
 import {
   CivilStatus,
   Gender,
 } from '../../../utils/decorators/global.enums.decorator';
-import { CreateEmployeeWithDetailsDto } from './dto/create-employee-with-details.dto';
-import { UpdateEmployeeWithDetailsDto } from './dto/update-employee-with-details.dto';
-import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { CreateEmployeeWithDetailsDto, UpdateEmployeeWithDetailsDto } from './dto/employee-person.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { GetEmployeesDto } from './dto/get-employee.dto';
 

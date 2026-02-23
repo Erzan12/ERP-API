@@ -1,16 +1,16 @@
 export enum Gender {
-  Male = 'male',
-  Female = 'female',
+  MALE = 'male',
+  FEMALE = 'female',
 }
 
 export enum CivilStatus {
-  Single = 'single',
-  Married = 'married',
-  Separated = 'separated',
-  Widowed = 'widowed',
+  SINGLE = 'single',
+  MARRIED = 'married',
+  SEPARATED = 'separated',
+  WIDOWED = 'widowed',
 }
 
 export enum StatusEnum {
-  Active = 'active',
-  Inactive = 'inactive',
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
 }
