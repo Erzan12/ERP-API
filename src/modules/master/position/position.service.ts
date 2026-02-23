@@ -167,7 +167,7 @@ export class PositionService {
     }
 
     const updatePositionInfo = await this.prisma.position.update({
-      where: { id},
+      where: { id },
       data: {
         name: position_name,
         sorting: updatePositionDto.sorting,

@@ -12,7 +12,7 @@ import {
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Human Resources - Dashboard')
-@Controller({path:'hris', version:'1'})
+@Controller({ path: 'hris', version: '1' })
 export class DashboardControllerV1 {
   constructor(private dashboardService: DashboardService) {}
 
@@ -20,7 +20,7 @@ export class DashboardControllerV1 {
   @ApiOperation({ summary: 'Summary of the employees' })
   @ApiGetResponse('Dashboard')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-  getHrDashboard(@SessionUser() user: RequestUser) {
-    return this.dashboardService.getHRDashboard(user);
+  getHrDashboard() {
+    return this.dashboardService.getHRDashboard();
   }
 }

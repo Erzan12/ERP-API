@@ -33,11 +33,9 @@ import { CreatePermissionTemplateDto } from 'src/modules/manager/permission_temp
 
 @ApiBearerAuth('access-token')
 @ApiTags('Administrator - Role')
-@Controller({path:'administrator', version: '1'})
+@Controller({ path: 'administrator', version: '1' })
 export class RoleControllerV1 {
-  constructor(
-    private roleService: RoleService,
-  ) {}
+  constructor(private roleService: RoleService) {}
 
   //get all available roles
   @Get('roles')
@@ -53,12 +51,12 @@ export class RoleControllerV1 {
   @ApiGetResponse('Here is the Role')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getRole(
-    @Param('id', new ParseUUIDPipe) id: string,
-    @SessionUser() user: RequestUser
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @SessionUser() user: RequestUser,
   ) {
-    return this.roleService.getRole(id,user);
+    return this.roleService.getRole(id, user);
   }
-  
+
   //create role
   @Post('roles')
   @ApiOperation({ summary: 'Create new role' })
@@ -92,7 +90,7 @@ export class RoleControllerV1 {
   @ApiPatchResponse('Permissions updated to role')
   @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   updateRolePermissions(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateRolePermissionsDto: UpdateRolePermissionsDto,
     @SessionUser() user: RequestUser,
   ) {

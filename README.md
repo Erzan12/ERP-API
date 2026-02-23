@@ -137,6 +137,10 @@ $ npm run start
 # watch mode
 $ npm run start:dev
 
+# check lint errors
+$ npm run lint
+```
+
 # production mode
 $ npm run start:prod
 ```

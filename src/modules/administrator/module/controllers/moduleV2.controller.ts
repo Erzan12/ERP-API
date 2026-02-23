@@ -68,6 +68,7 @@ export class ModuleControllerV2 {
     return this.moduleService.getModule(user, id); // 👈 pass the id to your service
   }
 
+  @Public()
   @Post('modules')
   @ApiOperation({ summary: 'Create a new Module' })
   @ApiPostResponse('Module created successfully')
@@ -76,7 +77,7 @@ export class ModuleControllerV2 {
     @Body() createModuleDto: CreateModuleDto,
     // @SessionUser() user: RequestUser,
   ) {
-    return this.moduleService.createModule(createModuleDto, );
+    return this.moduleService.createModule(createModuleDto);
   }
 
   @Put('modules/:id')

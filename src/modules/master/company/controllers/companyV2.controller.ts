@@ -29,7 +29,7 @@ import { UpdateCompanyDto } from '../dto/update-company.dto';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Masterstable - Company')
-@Controller({path:'masterstable',version:'2'})
+@Controller({ path: 'masterstable', version: '2' })
 export class CompanyControllerV2 {
   constructor(private companyService: CompanyService) {}
 
@@ -48,7 +48,7 @@ export class CompanyControllerV2 {
   @ApiGetResponse('Here is the company')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getCompany(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.companyService.getCompany(id, user);
@@ -72,7 +72,7 @@ export class CompanyControllerV2 {
   @ApiPatchResponse('Company updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateCompany(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
     @SessionUser() user: RequestUser,
   ) {

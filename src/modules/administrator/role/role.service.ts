@@ -49,8 +49,8 @@ export class RoleService {
     });
 
     if (!role) {
-      throw new NotFoundException('Role does not exist')
-    };
+      throw new NotFoundException('Role does not exist');
+    }
 
     return {
       status: 'success',
