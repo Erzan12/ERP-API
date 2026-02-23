@@ -1,5 +1,5 @@
-import { BadRequestException } from "@nestjs/common";
-import { Transform } from "class-transformer";
+import { BadRequestException } from '@nestjs/common';
+import { Transform } from 'class-transformer';
 
 /**
  * Returns a @Transform decorator that maps friendly names to UUIDs.
@@ -8,14 +8,15 @@ import { Transform } from "class-transformer";
  */
 
 export function MapFriendlyNameToUUID(
-    map: Record<string, string>,
-    propertyName?: string,
+  map: Record<string, string>,
+  propertyName?: string,
 ) {
-    return Transform(({ value }) => {
-        if (!value) throw new BadRequestException(`${propertyName || 'value'} is required`);
-        if (map[value]) return map[value];
-        throw new BadRequestException(
-            `Invalid ${propertyName || 'value'}: ${value}. Allowed values: ${Object.keys(map).join(', ')}`,
-        );
-    });
+  return Transform(({ value }) => {
+    if (!value)
+      throw new BadRequestException(`${propertyName || 'value'} is required`);
+    if (map[value]) return map[value];
+    throw new BadRequestException(
+      `Invalid ${propertyName || 'value'}: ${value}. Allowed values: ${Object.keys(map).join(', ')}`,
+    );
+  });
 }

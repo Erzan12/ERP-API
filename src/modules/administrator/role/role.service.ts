@@ -212,7 +212,7 @@ export class RoleService {
   async updateRolePermissions(
     id: string,
     updateRolePermissionsDto: UpdateRolePermissionsDto,
-    user,
+    user: RequestUser,
   ) {
     const { action_updates = [] } = updateRolePermissionsDto;
 

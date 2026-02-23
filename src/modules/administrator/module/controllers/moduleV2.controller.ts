@@ -21,18 +21,24 @@ import {
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
 import { UpdateModuleDto } from '../dto/module.dto';
-import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, SYSTEM_MANAGEMENT } from 'src/utils/constants/ability.constant';
+import {
+  ACTION_CREATE,
+  ACTION_READ,
+  ACTION_UPDATE,
+  SYSTEM_MANAGEMENT,
+} from 'src/utils/constants/ability.constant';
+import { Public } from 'src/utils/decorators/public.decorator';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Administrator - Module')
-@Controller({path:'administrator', version: '2'})
+@Controller({ path: 'administrator', version: '2' })
 export class ModuleControllerV2 {
   constructor(private moduleService: ModuleService) {}
 
   @Get('modules')
   @ApiOperation({ summary: 'Get modules' })
   @ApiGetResponse('Here are all the Modules available')
-  @Can({ action: ACTION_READ , subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModules(
     @SessionUser() user: RequestUser,
     @Query('page') page = 1,
@@ -43,7 +49,7 @@ export class ModuleControllerV2 {
   ) {
     return this.moduleService.getModules(
       user,
-      Number(page), 
+      Number(page),
       Number(perPage),
       search,
       sortBy,
@@ -57,20 +63,21 @@ export class ModuleControllerV2 {
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModule(
     @SessionUser() user: RequestUser,
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
   ) {
     return this.moduleService.getModule(user, id); // 👈 pass the id to your service
   }
 
+  @Public()
   @Post('modules')
   @ApiOperation({ summary: 'Create a new Module' })
   @ApiPostResponse('Module created successfully')
   @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   createModule(
     @Body() createModuleDto: CreateModuleDto,
-    @SessionUser() user: RequestUser,
+    // @SessionUser() user: RequestUser,
   ) {
-    return this.moduleService.createModule(createModuleDto, user);
+    return this.moduleService.createModule(createModuleDto, );
   }
 
   @Put('modules/:id')
@@ -84,7 +91,7 @@ export class ModuleControllerV2 {
   updateModule(
     @Body() updateModuleDto: UpdateModuleDto,
     @SessionUser() user: RequestUser,
-    @Param('id', new ParseUUIDPipe) id: string, //can be number can be string depends on the defined prisma value if int or string
+    @Param('id', new ParseUUIDPipe()) id: string, //can be number can be string depends on the defined prisma value if int or string
   ) {
     return this.moduleService.updateModude(updateModuleDto, user, id);
   }
