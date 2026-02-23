@@ -271,7 +271,7 @@ export class AuthService {
       status: 1,
       message: 'Login successful',
       token,
-      payload,
+      // payload,
       ...(isNewAccount && { new_account: 1 }),
     };
   }
@@ -288,19 +288,13 @@ export class AuthService {
     return { message: 'User logout successfully' };
   }
 
-  async getUser(requestUser: RequestUser, id:string) {
-    // const payload = this.jwtService.verify(token)
-
-    // if (payload.userUUID !== id) {
-    //   throw new UnauthorizedException('Invalid token for this user')
-    // }
-
-    if (requestUser) {
-      throw new UnauthorizedException('Invalid token for this user');
+  async getUser(requestUser: RequestUser) {
+    if (!requestUser?.id) {
+      throw new UnauthorizedException('Invalid or missing token');
     }
 
     const user = await this.prisma.user.findUnique({
-      where: { id },
+      where: { id: requestUser.id }, // ownership enforced here
       include: {
         employee: {
           include: {

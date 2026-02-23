@@ -10,6 +10,7 @@ import {
   Param,
   Headers,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -24,6 +25,8 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { Authenticated } from 'src/utils/decorators/auth-guard.decorator';
 
 // @ApiBearerAuth('access-token')
 @Public()
@@ -80,15 +83,16 @@ export class AuthController {
     );
   }
 
-  @Get('/user-access/:id')
+  @ApiBearerAuth('access-token')
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/verify')
   @ApiOperation({ summary: 'Verify user' })
   @ApiLoginResponse('User has been verified')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   verify(
     @SessionUser() requestUser: RequestUser,
-    @Param('id', new ParseUUIDPipe) id: string,
   ) {
-    return this.authService.getUser(requestUser,id);
+    return this.authService.getUser(requestUser);
   }
 
   // <<<----- REFRESH TOKENS TESTING CONTROLLER ----->>>
