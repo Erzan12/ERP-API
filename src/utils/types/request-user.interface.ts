@@ -1,7 +1,7 @@
 export interface RequestUser {
   id: string;
   email: string;
-  username: string;
+  // username: string;
   department_id: string;
   security_clearance_level: number;
   roles: {

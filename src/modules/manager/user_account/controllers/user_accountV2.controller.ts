@@ -11,7 +11,6 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
-  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import {
@@ -26,7 +25,6 @@ import {
   ACTION_READ,
   ACTION_CREATE,
   USER_ACCOUNT,
-  ACTION_APPROVE,
   SEC_LVL_5,
   USER_TOKEN_KEY,
 } from 'src/utils/constants/ability.constant';
@@ -75,11 +73,11 @@ export class UserAccountControllerV2 {
   @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
   createUser(
     @Body() createUserWithRolePermissionDto: CreateUserWithRolePermissionDto,
-    @SessionUser() user: RequestUser,
+    @SessionUser() requestUser: RequestUser,
   ) {
     return this.userAccountService.createUserAccount(
       createUserWithRolePermissionDto,
-      user,
+      requestUser,
     );
   }
 
