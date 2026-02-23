@@ -6,7 +6,7 @@ export class DeactivateUserAccountDto {
   @IsNotEmpty()
   @ApiProperty({
     example: 1,
-    description: 'The id number of the user you want to deactivate'
+    description: 'The id number of the user you want to deactivate',
   })
   user_id: string;
 }
@@ -16,7 +16,7 @@ export class ReactivateUserAccountDto {
   @IsNotEmpty()
   @ApiProperty({
     example: 1,
-    description: 'The id number of the user you want to reactivate'
+    description: 'The id number of the user you want to reactivate',
   })
   user_id: string;
 }

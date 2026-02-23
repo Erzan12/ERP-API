@@ -53,9 +53,9 @@ import { UserController } from './user/user.controller';
     SecurityClearanceService,
     DashboardService,
     AuditService,
-    DbQueryService, 
+    DbQueryService,
     SlackService,
-    UserService
+    UserService,
   ],
   exports: [AdministratorV2Module],
 })

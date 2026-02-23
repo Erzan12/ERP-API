@@ -8,7 +8,10 @@ import {
   CivilStatus,
   Gender,
 } from '../../../utils/decorators/global.enums.decorator';
-import { CreateEmployeeWithDetailsDto, UpdateEmployeeWithDetailsDto } from './dto/employee-person.dto';
+import {
+  CreateEmployeeWithDetailsDto,
+  UpdateEmployeeWithDetailsDto,
+} from './dto/employee-person.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { GetEmployeesDto } from './dto/get-employee.dto';
 
@@ -282,26 +285,36 @@ export class EmployeeService {
     const canView = await this.prisma.userRole.findFirst({
       where: {
         user_id: user.id,
-        role_name: { in: ["Administrator", "Super Administrator", "HR Manager", "HR Clerk", "HR Staff"]}
-       },
+        role_name: {
+          in: [
+            'Administrator',
+            'Super Administrator',
+            'HR Manager',
+            'HR Clerk',
+            'HR Staff',
+          ],
+        },
+      },
     });
 
-    if(!canView) {
-      throw new BadRequestException('You are not allowed to view this sub module')
+    if (!canView) {
+      throw new BadRequestException(
+        'You are not allowed to view this sub module',
+      );
     }
 
     //PAGINATION AREA
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = { 
+    const whereCondition: any = {
       employment_status: {
         //as long as its not terminated or resigned
         code: {
-          notIn:[
+          notIn: [
             'TERMINATED', // TERMINATED
             'RESIGNED', // RESIGNED
-          ]
-        }
+          ],
+        },
       },
     };
 
@@ -313,12 +326,12 @@ export class EmployeeService {
     const divisionFields = ['name'];
     const positionFields = ['name'];
 
-    let whereConditions: any ={};
+    let whereConditions: any = {};
 
     if (search) {
       whereConditions = {
         OR: [
-          ...personFields.map(field => ({
+          ...personFields.map((field) => ({
             person: {
               [field]: {
                 contains: search,
@@ -326,7 +339,7 @@ export class EmployeeService {
               },
             },
           })),
-          ...emplomentStatusFields.map(field => ({
+          ...emplomentStatusFields.map((field) => ({
             employment_status: {
               [field]: {
                 contains: search,
@@ -334,7 +347,7 @@ export class EmployeeService {
               },
             },
           })),
-          ...departmentFields.map(field => ({
+          ...departmentFields.map((field) => ({
             department: {
               [field]: {
                 contains: search,
@@ -342,7 +355,7 @@ export class EmployeeService {
               },
             },
           })),
-          ...companyFields.map(field => ({
+          ...companyFields.map((field) => ({
             company: {
               [field]: {
                 contains: search,
@@ -350,7 +363,7 @@ export class EmployeeService {
               },
             },
           })),
-          ...divisionFields.map(field => ({
+          ...divisionFields.map((field) => ({
             division: {
               [field]: {
                 contains: search,
@@ -358,7 +371,7 @@ export class EmployeeService {
               },
             },
           })),
-          ...positionFields.map(field => ({
+          ...positionFields.map((field) => ({
             position: {
               [field]: {
                 contains: search,
@@ -376,22 +389,30 @@ export class EmployeeService {
       };
     }
 
-    const allowSortFeilds = ['department_id', 'company_id', 'employee_id', 'employment_status_id', 'created_at', 'updated_at' ]
+    const allowSortFeilds = [
+      'department_id',
+      'company_id',
+      'employee_id',
+      'employment_status_id',
+      'created_at',
+      'updated_at',
+    ];
     if (!allowSortFeilds.includes(sortBy)) {
       sortBy;
     }
 
-    const [total, employees] = await this.prisma.$transaction([      // where: hrViewEmployee ? {} : { id: user.id },
+    const [total, employees] = await this.prisma.$transaction([
+      // where: hrViewEmployee ? {} : { id: user.id },
       this.prisma.employee.count({
-        where:{
+        where: {
           ...whereCondition,
-          ...whereConditions
+          ...whereConditions,
         },
       }),
       this.prisma.employee.findMany({
-        where:{
+        where: {
           ...whereCondition,
-          ...whereConditions
+          ...whereConditions,
         },
         select: {
           id: true,
@@ -429,18 +450,17 @@ export class EmployeeService {
           employment_status: {
             select: {
               id: true,
-              label: true
-            }
+              label: true,
+            },
           },
         },
         skip,
         take: perPage,
         orderBy: {
-          [sortBy] : order,
-        }
+          [sortBy]: order,
+        },
       }),
     ]);
-
 
     return {
       status: 'success',
@@ -448,7 +468,7 @@ export class EmployeeService {
       count: total,
       page,
       perPage,
-      totalPage: Math.ceil( total / perPage),
+      totalPage: Math.ceil(total / perPage),
       data: employees,
     };
   }

@@ -4,17 +4,17 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class SlackService {
-    constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) {}
 
-    async notify(message: string) {
-        const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  async notify(message: string) {
+    const webhookUrl = process.env.SLACK_WEBHOOK_URL;
 
-        if (!webhookUrl) return;
+    if (!webhookUrl) return;
 
-        await firstValueFrom(
-            this.httpService.post(webhookUrl, {
-                text: message,
-            }),
-        );
-    }
+    await firstValueFrom(
+      this.httpService.post(webhookUrl, {
+        text: message,
+      }),
+    );
+  }
 }

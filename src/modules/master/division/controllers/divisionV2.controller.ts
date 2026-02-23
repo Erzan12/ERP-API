@@ -29,7 +29,7 @@ import { UpdateDivisionDto } from '../dto/update-division.dto.';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Masterstable - Division')
-@Controller({path:'masterstable',version:'2'})
+@Controller({ path: 'masterstable', version: '2' })
 export class DivisionControllerV2 {
   constructor(private divisionService: DivisionService) {}
 
@@ -48,7 +48,7 @@ export class DivisionControllerV2 {
   @ApiGetResponse('Here is the division')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDivision(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.divisionService.getDivision(id, user);
@@ -84,10 +84,6 @@ export class DivisionControllerV2 {
     @Body() updateDivisiionDto: UpdateDivisionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.divisionService.updateDivision(
-      id,
-      updateDivisiionDto,
-      user,
-    );
+    return this.divisionService.updateDivision(id, updateDivisiionDto, user);
   }
 }

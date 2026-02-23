@@ -335,9 +335,9 @@ export class UserAccountService {
               data: {
                 user_roles: {
                   connect: { id: rp.role_id },
-                }
-              }
-            })
+                },
+              },
+            });
           }
 
           userRolesMap.set(key, userRole);
@@ -612,7 +612,11 @@ export class UserAccountService {
     };
   }
 
-  async addRoleUser(requestUser: RequestUser, userId: string, roleName: string) {
+  async addRoleUser(
+    requestUser: RequestUser,
+    userId: string,
+    roleName: string,
+  ) {
     //find role
     const role = await this.prisma.role.findUnique({
       where: { name: roleName },
