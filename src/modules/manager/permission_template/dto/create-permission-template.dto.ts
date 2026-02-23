@@ -32,7 +32,7 @@ export class CreatePermissionTemplateDto {
   @ArrayNotEmpty()
   @IsInt({ each: true }) // validate each item is an integer
   @ApiProperty({
-    example: ["UUID1", "UUID2", "UUID3"],
+    example: ['UUID1', 'UUID2', 'UUID3'],
     description: 'List of role_permission IDs to associate with the template',
   })
   role_permission_ids: string[]; //permission template can be applied to multiple departments

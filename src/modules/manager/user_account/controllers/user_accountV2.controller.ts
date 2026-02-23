@@ -1,4 +1,12 @@
-import { Controller, Body, Post, Get, Put, ParseUUIDPipe, Param } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Post,
+  Get,
+  Put,
+  ParseUUIDPipe,
+  Param,
+} from '@nestjs/common';
 import { CreateUserWithRolePermissionDto } from '../dto/create-user-with-role-permission.dto';
 import { UserAccountService } from '../user_account.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -7,12 +15,7 @@ import {
   ReactivateUserAccountDto,
 } from '../dto/user-account-status.dto';
 import { UserEmailResetTokenDto } from '../dto/user-email.reset-token.dto';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPostResponse,
@@ -34,7 +37,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Manager - User Account')
-@Controller({path:'user',version:'2'})
+@Controller({ path: 'user', version: '2' })
 export class UserAccountControllerV2 {
   constructor(private userAccountService: UserAccountService) {}
 
@@ -100,17 +103,17 @@ export class UserAccountControllerV2 {
   }
 
   @Put('user_account/add-role/:userId/:roleName')
-  @ApiOperation({ summary: 'Add Role to user'})
+  @ApiOperation({ summary: 'Add Role to user' })
   @ApiPostResponse('Role has been added to the user with permission')
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
   addUserRole(
     @SessionUser() requestUser: RequestUser,
-    @Param('userId', new ParseUUIDPipe) userId: string,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
     @Param('roleName') roleName: string,
   ) {
-    return this.userAccountService.addRoleUser(requestUser,userId,roleName)
+    return this.userAccountService.addRoleUser(requestUser, userId, roleName);
   }
 
   //for expired first time login reset token key
@@ -128,7 +131,10 @@ export class UserAccountControllerV2 {
     @Body() userEmailResetTokenDto: UserEmailResetTokenDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userAccountService.userNewResetToken(userEmailResetTokenDto, user);
+    return this.userAccountService.userNewResetToken(
+      userEmailResetTokenDto,
+      user,
+    );
   }
 
   //first login password reset token
@@ -145,7 +151,10 @@ export class UserAccountControllerV2 {
     @Body() createUserWithTemplateDto: CreateUserWithRolePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userAccountService.createUserAccount(createUserWithTemplateDto, user);
+    return this.userAccountService.createUserAccount(
+      createUserWithTemplateDto,
+      user,
+    );
   }
 
   @Put('user_account/deactivate')

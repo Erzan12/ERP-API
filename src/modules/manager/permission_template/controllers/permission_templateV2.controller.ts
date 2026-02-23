@@ -6,7 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Put,
-  ParseUUIDPipe
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { PermissionTemplateService } from '../permission_template.service';
 import { Can } from 'src/utils/decorators/can.decorator';
@@ -30,11 +30,9 @@ import { UpdatePermissionTemplateDto } from '../dto/update-permission-template.d
 
 @ApiBearerAuth('access-token')
 @ApiTags('Manager - Permission Template')
-@Controller({path:'manager', version:'2'})
+@Controller({ path: 'manager', version: '2' })
 export class PermissionTemplateControllerV2 {
-  constructor(
-    private permissionTemplateService: PermissionTemplateService
-  ) {}
+  constructor(private permissionTemplateService: PermissionTemplateService) {}
 
   //get permission templates
   @Get('permission-template')
@@ -51,11 +49,10 @@ export class PermissionTemplateControllerV2 {
   @ApiGetResponse('Here is the permission template')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
   getPermissionTemplate(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.permissionTemplateService.getPermissionTemplate(id, user,
-    );
+    return this.permissionTemplateService.getPermissionTemplate(id, user);
   }
 
   //get user permission templates
@@ -64,7 +61,8 @@ export class PermissionTemplateControllerV2 {
   @ApiGetResponse('Here are the list of permission templates available')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
   getUserPermissionTemplate(
-    @Param('userPermissionTemplateId', new ParseUUIDPipe) userPermissionTemplateId: string,
+    @Param('userPermissionTemplateId', new ParseUUIDPipe())
+    userPermissionTemplateId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.permissionTemplateService.getUserPermissionTemplate(
@@ -117,10 +115,13 @@ export class PermissionTemplateControllerV2 {
   @Can({ action: ACTION_UPDATE, subject: PERMISSION_TEMPLATE })
   updatePermissionTemplate(
     @Body() dto: UpdatePermissionTemplateDto,
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.permissionTemplateService.updatePermissionTemplate(id, dto, user,
+    return this.permissionTemplateService.updatePermissionTemplate(
+      id,
+      dto,
+      user,
     );
   }
 }

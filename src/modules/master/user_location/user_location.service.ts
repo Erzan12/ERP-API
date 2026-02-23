@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
@@ -31,7 +30,7 @@ export class UserLocationService {
   //query a user location
   async getUserLocation(id: string, user: RequestUser) {
     const user_location = await this.prisma.userLocation.findUnique({
-      where: { id }
+      where: { id },
     });
     if (!user_location) {
       throw new BadRequestException('User Location not found');
@@ -46,7 +45,10 @@ export class UserLocationService {
   }
 
   //create a user location
-  async createUserLocation(createUserLocationDto: CreateUserLocationDto, user: RequestUser) {
+  async createUserLocation(
+    createUserLocationDto: CreateUserLocationDto,
+    user: RequestUser,
+  ) {
     const { location_name, address, stat } = createUserLocationDto;
 
     const existingUserLocation = await this.prisma.userLocation.findFirst({
@@ -76,7 +78,9 @@ export class UserLocationService {
     }
 
     const isAdmin = requestUser.user_roles.some(
-      (role) => role.role_id === "b1118e05-6377-4e64-a677-14f9b9226fdd" && role.role_name === 'Administrator',
+      (role) =>
+        role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator',
     );
 
     if (!isAdmin) {

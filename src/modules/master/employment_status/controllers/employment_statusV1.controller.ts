@@ -28,7 +28,7 @@ import {
 
 @ApiBearerAuth('access-token')
 @ApiTags('Masterstable - Employment Status')
-@Controller({path:'masterstable',version:'1'})
+@Controller({ path: 'masterstable', version: '1' })
 export class EmploymentStatusControllerV1 {
   constructor(private employmentStatusService: EmploymentStatusService) {}
 
@@ -47,7 +47,7 @@ export class EmploymentStatusControllerV1 {
   @ApiGetResponse('Here is the employment status.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getEmployeeStat(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.employmentStatusService.getEmployeeStat(id, user);
@@ -66,7 +66,10 @@ export class EmploymentStatusControllerV1 {
     @Body() createEmpStat: CreateEmployeeStatusDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employmentStatusService.createEmployeeStatus(createEmpStat, user);
+    return this.employmentStatusService.createEmployeeStatus(
+      createEmpStat,
+      user,
+    );
   }
 
   @Put('employment_status/:id')
@@ -74,7 +77,7 @@ export class EmploymentStatusControllerV1 {
   @ApiPatchResponse('Employee status details updated successfully.')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateEmployeeStatus(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateEmpStatusDto: UpdateEmpStatusDto,
     @SessionUser() user: RequestUser,
   ) {

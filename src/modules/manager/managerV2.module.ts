@@ -22,7 +22,7 @@ import { AuditService } from '../administrator/audit/audit.service';
     JwtService,
     MailService,
     PermissionTemplateService,
-    AuditService
+    AuditService,
   ],
   exports: [AuthService, UserAccountService],
 })

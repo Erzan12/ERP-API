@@ -51,7 +51,10 @@ export class DepartmentService {
     };
   }
 
-  async createDepartment(createDepartmentDto: CreateDepartmentDto, user: RequestUser) {
+  async createDepartment(
+    createDepartmentDto: CreateDepartmentDto,
+    user: RequestUser,
+  ) {
     const { name, division_id, stat } = createDepartmentDto;
 
     const existingDepartment = await this.prisma.department.findFirst({
@@ -83,7 +86,9 @@ export class DepartmentService {
     }
 
     const isAdmin = requestUser.user_roles.some(
-      (role) => role.role_id === "b1118e05-6377-4e64-a677-14f9b9226fdd" && role.role_name === 'Administrator',
+      (role) =>
+        role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator',
     );
 
     if (!isAdmin) {
@@ -118,7 +123,10 @@ export class DepartmentService {
     };
   }
 
-  async updateDepartment(id: string, updateDepartmentDto: UpdateDepartmentDto, user: RequestUser,
+  async updateDepartment(
+    id: string,
+    updateDepartmentDto: UpdateDepartmentDto,
+    user: RequestUser,
   ) {
     const { department_name, sorting, division_id, stat } = updateDepartmentDto;
 

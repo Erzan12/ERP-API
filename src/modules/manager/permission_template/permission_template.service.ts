@@ -11,7 +11,8 @@ export class PermissionTemplateService {
 
   //get permission template
   async getPermissionTemplates(user: RequestUser) {
-    const existingPermTemplate = await this.prisma.permissionTemplate.findMany();
+    const existingPermTemplate =
+      await this.prisma.permissionTemplate.findMany();
 
     if (existingPermTemplate.length === 0) {
       throw new BadRequestException(
@@ -105,7 +106,10 @@ export class PermissionTemplateService {
   }
 
   //update existing permission template
-  async updatePermissionTemplate(id: string, dto: UpdatePermissionTemplateDto, user: RequestUser,
+  async updatePermissionTemplate(
+    id: string,
+    dto: UpdatePermissionTemplateDto,
+    user: RequestUser,
   ) {
     return this.prisma.$transaction(async (tx) => {
       const { name, department_id, position_id, role_permission_ids } = dto;
@@ -147,7 +151,7 @@ export class PermissionTemplateService {
       // 2. Handle department/position record
       // Remove old dept/position associations
       await tx.permissionTemplateDepartment.deleteMany({
-        where: { permission_template_id: id},
+        where: { permission_template_id: id },
       });
 
       //default the existing values of posId and deptId

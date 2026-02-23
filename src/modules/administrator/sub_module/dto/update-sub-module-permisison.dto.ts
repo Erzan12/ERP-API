@@ -7,7 +7,7 @@ export class UpdateSubModulePermisisonDto {
   @IsInt()
   @IsNotEmpty()
   @ApiProperty({
-    example: "UUID",
+    example: 'UUID',
     description: 'ID of the sub module permission you want to update',
   })
   sub_module_permission_id: string;
