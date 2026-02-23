@@ -51,6 +51,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          ref: staging
 
       - name: Set up OS Tools
         run: |
@@ -74,9 +76,9 @@ jobs:
 
       - name: Upload to Staging Server
         env:
-          STG_HOST: ${{ secrets.SSH_HOST }}
-          STG_USER: ${{ secrets.SSH_USER }}
-          STG_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          STG_HOST: ${{ secrets.STG_HOST }}
+          STG_USER: ${{ secrets.STG_USER }}
+          STG_PASSWORD: ${{ secrets.STG_PASSWORD }}
           STG_PATH: /home/avegabrosnet/public_html/abas-api-v2/
         run: |
           sshpass -p "$STG_PASSWORD" rsync -avz --delete \
@@ -90,9 +92,9 @@ jobs:
 
       - name: Restart Phusion Passenger
         env:
-          STG_HOST: ${{ secrets.SSH_HOST }}
-          STG_USER: ${{ secrets.SSH_USER }}
-          STG_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          STG_HOST: ${{ secrets.STG_HOST }}
+          STG_USER: ${{ secrets.STG_USER }}
+          STG_PASSWORD: ${{ secrets.STG_PASSWORD }}
           STG_PATH: /home/avegabrosnet/public_html/abas-api-v2
         run: |
           sshpass -p "$STG_PASSWORD" ssh -o StrictHostKeyChecking=no $STG_USER@$STG_HOST "
