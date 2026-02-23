@@ -11,6 +11,7 @@ import {
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { ApiSecurityClearance } from 'src/utils/helpers/swagger-response.helper';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Administrator - Security Clearance')
@@ -26,7 +27,7 @@ export class SecurityClearanceControllerV2 {
   updateClearance(
     @Param('id', new ParseUUIDPipe) targetId: string,
     @Body() dto: UpdateSecurityClearanceDto,
-    @SessionUser() admin,
+    @SessionUser() admin: RequestUser,
   ) {
     return this.clearanceService.updateUserClearance(
       admin.id,

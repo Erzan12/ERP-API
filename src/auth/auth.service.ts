@@ -275,7 +275,7 @@ export class AuthService {
       status: 1,
       message: 'Login successful',
       token,
-      // payload,
+      payload,
       ...(isNewAccount && { new_account: 1 }),
     };
   }
