@@ -12,7 +12,12 @@ import {
   ApiPatchResponse,
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
-import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, SYSTEM_MANAGEMENT } from 'src/utils/constants/ability.constant';
+import {
+  ACTION_CREATE,
+  ACTION_READ,
+  ACTION_UPDATE,
+  SYSTEM_MANAGEMENT,
+} from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { ModuleService } from '../module.service';
 import { CreateModuleDto, UpdateModuleDto } from '../dto/module.dto';
@@ -22,14 +27,14 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Administrator - Module')
-@Controller({path:'administrator', version: '1'})
+@Controller({ path: 'administrator', version: '1' })
 export class ModuleControllerV1 {
   constructor(private moduleService: ModuleService) {}
 
   @Get('modules')
   @ApiOperation({ summary: 'Get modules' })
   @ApiGetResponse('Here are all the Modules available')
-  @Can({ action: ACTION_READ , subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModules(@SessionUser() user: RequestUser) {
     // return this.moduleService.getModules(user);
   }
@@ -40,7 +45,7 @@ export class ModuleControllerV1 {
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModule(
     @SessionUser() user: RequestUser,
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
   ) {
     // return this.moduleService.getModule(user, id); // 👈 pass the id to your service
   }
@@ -67,7 +72,7 @@ export class ModuleControllerV1 {
   updateModule(
     @Body() updateModuleDto: UpdateModuleDto,
     @SessionUser() user: RequestUser,
-    @Param('id', new ParseUUIDPipe) id: string, //can be number can be string depends on the defined prisma value if int or string
+    @Param('id', new ParseUUIDPipe()) id: string, //can be number can be string depends on the defined prisma value if int or string
   ) {
     // return this.moduleService.updateModude(updateModuleDto, user, id);
   }
