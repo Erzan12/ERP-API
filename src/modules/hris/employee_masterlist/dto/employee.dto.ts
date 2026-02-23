@@ -9,7 +9,7 @@ import {
   IsUUID,
 } from 'class-validator';
 // import { Expose, Transform } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 // import { BadRequestException } from '@nestjs/common';
 
 export class CreateEmployeeDto {
@@ -169,3 +169,5 @@ export class CreateEmployeeDto {
   })
   corporate_rank_id?: number;
 }
+
+export class UpdateEmployeeDto extends PartialType(CreateEmployeeDto) {}
