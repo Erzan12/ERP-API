@@ -19,11 +19,10 @@ import {
   ACTION_UPDATE,
   EMPLOYEE_MASTERLIST,
 } from 'src/utils/constants/ability.constant';
-import { UpdateEmployeeWithDetailsDto } from '../dto/update-employee-with-details.dto';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';;
 import { EmployeeService } from '../employee.service';
-import { CreateEmployeeWithDetailsDto } from '../dto/create-employee-with-details.dto';
+import { CreateEmployeeWithDetailsDto, UpdateEmployeeWithDetailsDto } from '../dto/employee-person.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ApiBearerAuth, ApiTags, ApiBody, ApiOperation } from '@nestjs/swagger';
 

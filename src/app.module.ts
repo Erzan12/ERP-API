@@ -78,14 +78,14 @@ import { CreatePositionDto } from './modules/master/position/dto/create-position
       useClass: CustomJwtAuthGuard,
     },
     {
-      //global roles permission guard
-      provide: APP_GUARD,
-      useClass: PermissionsGuard,
-    },
-    {
       //global security clearance level guard
       provide: APP_GUARD,
       useClass: SecurityClearanceGuard,
+    },
+    {
+      //global roles permission guard
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
     },
     AuditService,
     MailService,
