@@ -6,7 +6,7 @@ export class CreateModuleDto {
   @IsNotEmpty()
   @ApiProperty({
     example: 'Operations',
-    description: 'The name of the module'
+    description: 'The name of the module',
   })
   name: string;
 }

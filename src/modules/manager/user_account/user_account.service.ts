@@ -56,7 +56,7 @@ export class UserAccountService {
   //refactored version no more role_ids and module_ids in user account creation will be basing on the permission_tempalte model
   async createUserAccount(
     createUserWithRolePermissionDto: CreateUserWithRolePermissionDto,
-    user,
+    user: RequestUser,
   ) {
     return this.prisma.$transaction(async (tx) => {
       const plainPassword =
@@ -478,7 +478,7 @@ export class UserAccountService {
 
   async deactivateUserAccount(
     deactivateUserAccountDto: DeactivateUserAccountDto,
-    user,
+    user: RequestUser,
   ) {
     const existingUser = await this.prisma.user.findUnique({
       where: { id: deactivateUserAccountDto.user_id },
@@ -510,7 +510,7 @@ export class UserAccountService {
 
   async reactivateUserAccount(
     reactivateUserAccountDto: ReactivateUserAccountDto,
-    user,
+    user: RequestUser,
   ) {
     const existingDeactivatedUser = await this.prisma.user.findUnique({
       where: { id: reactivateUserAccountDto.user_id },

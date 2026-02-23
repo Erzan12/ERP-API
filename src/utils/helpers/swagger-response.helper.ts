@@ -40,7 +40,7 @@ const Conflict: ApiResponseOptions = {
 const InternalServerError: ApiResponseOptions = {
   status: 500,
   description: 'Internal Server Error',
-}
+};
 
 //custom group decorators
 export function ApiPostResponse(description = 'Resource created successfully') {

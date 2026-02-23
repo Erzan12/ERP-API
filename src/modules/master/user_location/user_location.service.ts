@@ -46,7 +46,7 @@ export class UserLocationService {
   }
 
   //create a user location
-  async createUserLocation(createUserLocationDto: CreateUserLocationDto, user) {
+  async createUserLocation(createUserLocationDto: CreateUserLocationDto, user: RequestUser) {
     const { location_name, address, stat } = createUserLocationDto;
 
     const existingUserLocation = await this.prisma.userLocation.findFirst({
@@ -112,7 +112,7 @@ export class UserLocationService {
   async updateUserLocation(
     Id: number,
     updateUserLocationDto: UpdateUserLocationDto,
-    user,
+    user: RequestUser,
   ) {
     const { location_name, address, stat } = updateUserLocationDto;
   }
