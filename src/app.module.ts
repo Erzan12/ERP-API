@@ -72,21 +72,21 @@ import { CreatePositionDto } from './modules/master/position/dto/create-position
   providers: [
     UserAccountService,
     PrismaService,
-    // {
-    //   //global custom auth guard
-    //   provide: APP_GUARD,
-    //   useClass: CustomJwtAuthGuard,
-    // },
-    // {
-    //   //global roles permission guard
-    //   provide: APP_GUARD,
-    //   useClass: PermissionsGuard,
-    // },
-    // {
-    //   //global security clearance level guard
-    //   provide: APP_GUARD,
-    //   useClass: SecurityClearanceGuard,
-    // },
+    {
+      //global custom auth guard
+      provide: APP_GUARD,
+      useClass: CustomJwtAuthGuard,
+    },
+    {
+      //global roles permission guard
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
+    },
+    {
+      //global security clearance level guard
+      provide: APP_GUARD,
+      useClass: SecurityClearanceGuard,
+    },
     AuditService,
     MailService,
     EmployeeService,

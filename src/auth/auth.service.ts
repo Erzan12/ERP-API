@@ -238,7 +238,7 @@ export class AuthService {
     const requestUser: RequestUser = {
       id: userValidate.id,
       email: userValidate.email,
-      username: userValidate.username,
+      // username: userValidate.username,
       department_id: userValidate.employee.department_id,
       security_clearance_level: userValidate.security_clearance_level ?? 0,
       roles: userValidate.user_roles.map((ur) => ({
@@ -275,7 +275,6 @@ export class AuthService {
       status: 1,
       message: 'Login successful',
       token,
-      payload,
       ...(isNewAccount && { new_account: 1 }),
     };
   }
