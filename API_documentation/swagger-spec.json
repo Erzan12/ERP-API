@@ -4218,6 +4218,50 @@
         "tags": [
           "Masterstable - User Location"
         ]
+      },
+      "post": {
+        "operationId": "UserLocationControllerV2_createUserLocation_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create User Location",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserLocationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User Location has been created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a User Location",
+        "tags": [
+          "Masterstable - User Location"
+        ]
       }
     },
     "/v2/masterstable/user-locations/{id}": {
@@ -4259,6 +4303,59 @@
           }
         ],
         "summary": "Get a user locations",
+        "tags": [
+          "Masterstable - User Location"
+        ]
+      },
+      "put": {
+        "operationId": "UserLocationControllerV2_updateUserLocation_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update User Location information",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserLocationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User Location updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current User Location information",
         "tags": [
           "Masterstable - User Location"
         ]
@@ -6461,18 +6558,12 @@
             "type": "string",
             "example": "corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 4",
             "description": "The Division where the department belongs to"
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "department_name",
           "sorting",
-          "division",
-          "status"
+          "division"
         ]
       },
       "UpdateDepartmentDto": {
@@ -6663,6 +6754,50 @@
         "required": [
           "division_id",
           "division_name",
+          "status"
+        ]
+      },
+      "CreateUserLocationDto": {
+        "type": "object",
+        "properties": {
+          "location_name": {
+            "type": "string",
+            "example": "Tayud",
+            "description": "The name of the place the user located"
+          },
+          "address": {
+            "type": "string",
+            "example": "Consolacion",
+            "description": "The address of the location"
+          }
+        },
+        "required": [
+          "location_name",
+          "address"
+        ]
+      },
+      "UpdateUserLocationDto": {
+        "type": "object",
+        "properties": {
+          "location_name": {
+            "type": "string",
+            "example": "New User Location",
+            "description": "If you want to update the User Location name"
+          },
+          "address": {
+            "type": "string",
+            "example": "New User Location address",
+            "description": "If you want to update the User Location address"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "location_name",
+          "address",
           "status"
         ]
       },

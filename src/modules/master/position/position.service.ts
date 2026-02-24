@@ -193,19 +193,17 @@ export class PositionService {
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
-      message: `${position.name} Position has been updated Successfully!`,
+      message: `${position.name} Position has been updated successfully!`,
       updated_by: {
         id: requestUser.id,
         name: userName,
-        position: userPos,
+        position: userPosition,
       },
-      data: {
-        updatePositionInfo,
-      },
+      updatePositionInfo,
     };
   }
 }

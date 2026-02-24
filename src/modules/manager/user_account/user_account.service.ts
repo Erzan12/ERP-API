@@ -613,7 +613,7 @@ export class UserAccountService {
   }
 
   async addRoleUser(
-    requestUser: RequestUser,
+    user: RequestUser,
     userId: string,
     roleName: string,
   ) {
@@ -629,6 +629,35 @@ export class UserAccountService {
       throw new NotFoundException('Role not found');
     }
 
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator' || 'Manager',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to add role User Account.',
+      );
+    }
+
     //create UserRole (or use upsert)
     const userRole = await this.prisma.userRole.upsert({
       where: {
@@ -642,7 +671,11 @@ export class UserAccountService {
         user_id: userId,
         role_id: role.id,
         role_name: role.name,
+        isActive: true,
       },
+      include: {
+        user: true,
+      }
     });
 
     //prepare UserPermissions from RolePermissions
@@ -659,7 +692,21 @@ export class UserAccountService {
       skipDuplicates: true,
     });
 
-    return userRole;
+    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    const userPosition = requestUser.employee.position.name;
+
+    return {
+      status: 'success',
+      message: `Role ${userRole.role_name} has been added to user ${userRole.user.username}`,
+      added_by: {
+        id: requestUser.id,
+        name: userName,
+        position: userPosition,
+      },
+      permissions: {
+        userPermissionsData
+      }
+    }
   }
 
   // async getUsersWithRolesAndPermissions() {

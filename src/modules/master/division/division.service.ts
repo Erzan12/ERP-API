@@ -19,16 +19,43 @@ export class DivisionService {
       where: { id },
     });
 
-    if (!division) {
-      throw new BadRequestException('Division not found.');
+    if (!division || division.stat === 0) {
+      throw new BadRequestException('Division not found or is inactive!');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to view a Company',
+      );
     }
 
     return {
       status: 'success',
       message: 'Here is the Division',
-      data: {
-        division,
-      },
+      division,
     };
   }
 
@@ -63,7 +90,7 @@ export class DivisionService {
     });
 
     if (existingDivision) {
-      throw new ConflictException('Division name already exists!');
+      throw new ConflictException('Division already exists!');
     }
 
     const createDivision = await this.prisma.division.create({
@@ -121,14 +148,8 @@ export class DivisionService {
       },
     });
 
-    if (!division) {
-      throw new BadRequestException('Department does not exist!');
-    }
-
-    if (division.stat === 0) {
-      throw new ForbiddenException(
-        `${division.name} Division status is inactive!`,
-      );
+    if (!division || division.stat === 0) {
+      throw new BadRequestException('Department does not exist or is inactive!');
     }
 
     const updateDivision = await this.prisma.division.update({
