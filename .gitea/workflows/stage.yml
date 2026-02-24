@@ -87,8 +87,21 @@ jobs:
            --exclude='.gitea' \
            --exclude='src' \
            --exclude='__test__' \
-           API_documentation views dist node_modules public package.json package-lock.json app.js nest-cli.json prisma.config.ts tsconfig.json\
+           API_documentation prisma views dist node_modules public package.json package-lock.json app.js nest-cli.json prisma.config.ts tsconfig.json\
            $STG_USER@$STG_HOST:$STG_PATH
+
+      - name: Install deps & Run Prisma Migrations on Staging
+        env:
+          STG_HOST: ${{ secrets.STG_HOST }}
+          STG_USER: ${{ secrets.STG_USER }}
+          STG_PASSWORD: ${{ secrets.STG_PASSWORD }}
+          STG_PATH: /home/avegabrosnet/public_html/abas-api-v2
+        run: |
+          sshpass -p "$STG_PASSWORD" ssh -o StrictHostKeyChecking=no $STG_USER@$STG_HOST "
+            cd $STG_PATH &&
+            npm install --omit=dev &&
+            npx prisma migrate deploy
+          "
 
       - name: Restart Phusion Passenger
         env:
