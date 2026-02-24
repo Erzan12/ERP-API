@@ -12,7 +12,7 @@ import { SlackService } from 'src/jobs/slack/slack.service';
 export class DbQueryService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly slackService: SlackService
+    private readonly slackService: SlackService,
   ) {}
 
   private validateSql(sql: string) {
@@ -41,7 +41,7 @@ export class DbQueryService {
       result = await this.prisma.$queryRawUnsafe(dto.sql);
     } catch (error) {
       success = false;
-      
+
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         errorMessage = error.message;
       } else if (error instanceof Error) {
@@ -75,7 +75,7 @@ export class DbQueryService {
       Admin: ${adminId}
       Purpose: ${dto.purpose}
       Success: ${success}
-      Time: ${executionMs}ms`
+      Time: ${executionMs}ms`,
     );
 
     return {

@@ -1,10 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  IsArray,
-  ArrayNotEmpty,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, ArrayNotEmpty } from 'class-validator';
 
 export class UpdateRolePermissionsDto {
   @IsString({ each: true })

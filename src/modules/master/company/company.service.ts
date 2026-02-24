@@ -20,16 +20,43 @@ export class CompanyService {
       where: { id },
     });
 
-    if (!company) {
-      throw new BadRequestException('Company not found.');
+    if (!company || company.stat === 0) {
+      throw new BadRequestException('Company not found or is inactive.');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to view a Company',
+      );
     }
 
     return {
       status: 'success',
       message: 'Here is the Company.',
-      data: {
-        company,
-      },
+      company,
     };
   }
 
@@ -41,12 +68,39 @@ export class CompanyService {
       throw new BadRequestException('No available companies found.');
     }
 
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to view Companies',
+      );
+    }
+
     return {
       status: 'success',
       message: 'Here are the list of Companies.',
-      data: {
-        company,
-      },
+      company,
     };
   }
 
@@ -62,6 +116,45 @@ export class CompanyService {
       stat,
     } = createCompanyDto;
 
+    const existingCompany = await this.prisma.company.findFirst({
+      where: {
+        name: createCompanyDto.name,
+      }
+    })
+
+    if (existingCompany) {
+      throw new ConflictException('Company already exist!');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to view Companies',
+      );
+    }
+
     const createCompany = await this.prisma.company.create({
       data: {
         name,
@@ -74,22 +167,6 @@ export class CompanyService {
         stat,
       },
     });
-
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPos = requestUser.employee.position.name;
@@ -158,11 +235,24 @@ export class CompanyService {
             position: true,
           },
         },
+        user_roles: true,
       },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
       throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to view Companies',
+      );
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
@@ -176,10 +266,8 @@ export class CompanyService {
         name: userName,
         position: userPos,
       },
-      data: {
-        company_id: updateCompany.id,
-        company_name: updateCompany.name,
-      },
+      company_id: updateCompany.id,
+      company_name: updateCompany.name,
     };
   }
 }

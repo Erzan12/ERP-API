@@ -21,6 +21,6 @@ export class AssignSubModulePermissionDto {
 
   @IsInt()
   @IsNotEmpty()
-  @ApiProperty({ example: "UUID", description: 'ID of the Sub Module' })
+  @ApiProperty({ example: 'UUID', description: 'ID of the Sub Module' })
   sub_module_id: string;
 }

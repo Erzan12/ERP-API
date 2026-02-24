@@ -1,4 +1,13 @@
-import { Controller, Post, Body, Param, Get, Put, ParseIntPipe, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Get,
+  Put,
+  ParseIntPipe,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { Can } from '../../../../utils/decorators/can.decorator';
 import { CreateSubModuleDto } from '../dto/create-sub-module.dto';
 import { AssignSubModulePermissionDto } from '../dto/assign-sub-module-permission.dto';
@@ -13,11 +22,14 @@ import {
   ApiGetResponse,
 } from 'src/utils/helpers/swagger-response.helper';
 import { UpdateSubModulePermisisonDto } from '../dto/update-sub-module-permisison.dto';
-import { ACTION_READ, SYSTEM_MANAGEMENT } from 'src/utils/constants/ability.constant';
+import {
+  ACTION_READ,
+  SYSTEM_MANAGEMENT,
+} from 'src/utils/constants/ability.constant';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Administrator - Submodule')
-@Controller({path:'administrator', version: '2'})
+@Controller({ path: 'administrator', version: '2' })
 export class SubModuleControllerV2 {
   constructor(private subModuleService: SubModuleService) {}
 
@@ -35,7 +47,7 @@ export class SubModuleControllerV2 {
   @ApiGetResponse('status: Success!')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getSubmodule(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.subModuleService.getSubmodule(id, user);
@@ -104,12 +116,8 @@ export class SubModuleControllerV2 {
   updatePermission(
     @Body() dto: UpdateSubModulePermisisonDto,
     @SessionUser() user: RequestUser,
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
   ) {
-    return this.subModuleService.updateSubModulePerm(
-      dto,
-      user,
-      id,
-    );
+    return this.subModuleService.updateSubModulePerm(dto, user, id);
   }
 }

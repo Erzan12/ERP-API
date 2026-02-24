@@ -48,8 +48,8 @@ export class SubModuleService {
       },
     });
 
-    if(!subModule) {
-      throw new NotFoundException('Submodule not found')
+    if (!subModule) {
+      throw new NotFoundException('Submodule not found');
     }
 
     return {
@@ -169,10 +169,9 @@ export class SubModuleService {
   async updateSubModulePerm(
     dto: UpdateSubModulePermisisonDto,
     user: RequestUser,
-    id: string
+    id: string,
   ) {
-    const { sub_module_permission_id, action, stat } =
-      dto;
+    const { sub_module_permission_id, action, stat } = dto;
 
     const existingSubModulePermission =
       await this.prisma.subModuleAction.findFirst({

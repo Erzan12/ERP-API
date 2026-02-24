@@ -18,6 +18,15 @@ async function bootstrap() {
     connectionString: process.env.DATABASE_URL,
   });
 
+  app.enableCors({
+    // origin: ['https://www.example.com'], // specify allowed domains
+    origin: "*",
+    methods: 'GET,POST,PUT,PATCH,DELETE', 
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    credentials: true, // allow cookies/auth headers
+  });
+
   //log manual queries
   new PrismaClient({ adapter, log: ['query'] });
 
@@ -30,7 +39,8 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new AllExceptionsFilter());
+  //catch erros e.g database exception errors mising migration, or columns or tables
+  // app.useGlobalFilters(new AllExceptionsFilter());
 
   //enable api version in controller and swagger
   app.enableVersioning({

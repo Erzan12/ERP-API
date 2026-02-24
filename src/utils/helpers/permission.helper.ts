@@ -1,6 +1,5 @@
 // permission.helpers.ts
 import { Can } from '../decorators/can.decorator';
-import { PermissionMetadata } from '../decorators/can.decorator';
 
 export const Read = (subject: string): MethodDecorator =>
   Can({ action: 'read', subject });

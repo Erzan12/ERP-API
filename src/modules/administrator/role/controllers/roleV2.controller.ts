@@ -34,11 +34,9 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Administrator - Role')
-@Controller({path:'administrator', version: '2'})
+@Controller({ path: 'administrator', version: '2' })
 export class RoleControllerV2 {
-  constructor(
-    private roleService: RoleService,
-  ) {}
+  constructor(private roleService: RoleService) {}
 
   //get all available roles
   @Get('roles')
@@ -54,12 +52,12 @@ export class RoleControllerV2 {
   @ApiGetResponse('Here is the Role')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getRole(
-    @Param('id', new ParseUUIDPipe) id: string,
-    @SessionUser() user: RequestUser
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @SessionUser() user: RequestUser,
   ) {
-    return this.roleService.getRole(id,user);
+    return this.roleService.getRole(id, user);
   }
-  
+
   //create role
   @Post('roles')
   @ApiOperation({ summary: 'Create new role' })
@@ -93,7 +91,7 @@ export class RoleControllerV2 {
   @ApiPatchResponse('Permissions updated to role')
   @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   updateRolePermissions(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateRolePermissionsDto: UpdateRolePermissionsDto,
     @SessionUser() user: RequestUser,
   ) {

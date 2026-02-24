@@ -1,18 +1,11 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
-import { IsDefined, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsDefined, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserLocationDto {
-  @IsDefined()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 1,
-    description: 'ID of the User Location you want to update',
-  })
-  user_location_id: number;
-
   @IsString()
+  @IsOptional()
   @ApiProperty({
     example: 'New User Location',
     description: 'If you want to update the User Location name',
@@ -20,13 +13,15 @@ export class UpdateUserLocationDto {
   location_name?: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({
     example: 'New User Location address',
     description: 'If you want to update the User Location address',
   })
   address?: string;
-
+ 
   @IsInt()
+  @IsOptional()
   @IsDefined()
   @Expose({ name: 'status' }) //maps "status" input field to this property
   @ApiProperty({
@@ -37,7 +32,7 @@ export class UpdateUserLocationDto {
   @Transform(({ value }) => {
     console.log('Transforming status:', value);
     if (value === 'active') return 1;
-    if (value === 'inactive') return 2;
+    if (value === 'inactive') return 0;
     throw new BadRequestException(
       `Invalid status value: ${value}. Allowed vales are "active" or "inactive".`,
     );
