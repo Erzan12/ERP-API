@@ -1,4 +1,5 @@
 import { Body, Param, Put, Controller, ParseUUIDPipe } from '@nestjs/common';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { UpdateSecurityClearanceDto } from '../dto/update-security-clearance.dto';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SecurityClearanceService } from '../security-clearance.service';
@@ -11,11 +12,10 @@ import {
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { ApiSecurityClearance } from 'src/utils/helpers/swagger-response.helper';
 import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
-import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Administrator - Security Clearance')
-@Controller({path:'administrator', version:'1'})
+@Controller({ path: 'administrator', version: '1' })
 export class SecurityClearanceControllerV1 {
   constructor(private clearanceService: SecurityClearanceService) {}
 
@@ -25,7 +25,7 @@ export class SecurityClearanceControllerV1 {
   @SecurityClearance(SEC_LVL_9) // admin must be 9+ to update others
   @Can({ action: ACTION_UPDATE, subject: USER_ACCOUNT })
   updateClearance(
-    @Param('id', new ParseUUIDPipe) targetId: string,
+    @Param('id', new ParseUUIDPipe()) targetId: string,
     @Body() dto: UpdateSecurityClearanceDto,
     @SessionUser() admin: RequestUser,
   ) {

@@ -6,6 +6,6 @@ import { HttpModule } from '@nestjs/axios';
 @Module({
   imports: [HttpModule],
   controllers: [],
-  providers: [SlackService]
+  providers: [SlackService],
 })
 export class SlackModule {}

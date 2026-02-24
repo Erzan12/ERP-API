@@ -29,41 +29,33 @@ export class CreateDepartmentDto {
   })
   @Transform(({ value }) => {
     console.log('Transforming status:', value);
-    if (value === 'corporate services') return "233098f7-9f12-4faf-8131-2c3feb81698c";
-    if (value === 'asset management') return "274a1a571-ed6b-4426-b2ee-893d3165e994";
-    if (value === 'marketing and operations') return "3";
-    if (value === 'cebu air inc') return "4";
+    if (value === 'corporate services')
+      return '233098f7-9f12-4faf-8131-2c3feb81698c';
+    if (value === 'asset management')
+      return '274a1a571-ed6b-4426-b2ee-893d3165e994';
+    if (value === 'marketing and operations') return '3';
+    if (value === 'cebu air inc') return '4';
     throw new BadRequestException(
       `Invalid division value: ${value}. Allowed values are "corporate services", "asset management", "marketing and operations", "cebu air inc".`,
     );
   })
   division_id?: string;
 
-  // @ApiProperty({ name: 'status', example: 'active', description: 'active = 1', })
-  // @Expose({ name: 'status' }) // maps "status" input field to this property
-  // @Transform(({ value }) => {
-  //     console.log('Transforming status:', value);
-  //     if (value === 'active') return 1;
-  //     throw new BadRequestException(`Invalid status value: ${value}. Allowed value is active`);
-  // })
+  // @IsInt()
   // @IsDefined()
-  // stat: number;
-
-  @IsInt()
-  @IsDefined()
-  @Expose({ name: 'status' }) // maps " status" input field to this property
-  @ApiProperty({
-    name: 'status',
-    example: 'active or inactive',
-    description: 'active = 1, inactive = 0',
-  })
-  @Transform(({ value }) => {
-    console.log('Transforming status:', value);
-    if (value === 'active') return 1;
-    if (value === 'inactive') return 0;
-    throw new BadRequestException(
-      `Invalid status value ${value}. Allowed values are "active" or "inactive"`,
-    );
-  })
-  stat?: number;
+  // @Expose({ name: 'status' }) // maps " status" input field to this property
+  // @ApiProperty({
+  //   name: 'status',
+  //   example: 'active or inactive',
+  //   description: 'active = 1, inactive = 0',
+  // })
+  // @Transform(({ value }) => {
+  //   console.log('Transforming status:', value);
+  //   if (value === 'active') return 1;
+  //   if (value === 'inactive') return 0;
+  //   throw new BadRequestException(
+  //     `Invalid status value ${value}. Allowed values are "active" or "inactive"`,
+  //   );
+  // })
+  // stat?: number;
 }

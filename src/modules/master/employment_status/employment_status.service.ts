@@ -40,8 +40,6 @@ export class EmploymentStatusService {
     };
   }
 
-
-
   async createEmployeeStatus(
     empStatusDto: CreateEmployeeStatusDto,
     user: RequestUser,

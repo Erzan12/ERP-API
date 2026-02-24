@@ -15,54 +15,14 @@ export class DepartmentService {
 
   //query all available departments
   async getDepartments(user: RequestUser) {
-    const department = await this.prisma.department.findMany({
+    const departments = await this.prisma.department.findMany({
       include: {
         division: true,
       },
     });
-    if (!department) {
+
+    if (!departments) {
       throw new BadRequestException('No available departments found');
-    }
-    return {
-      status: 'success',
-      message: 'Here are the list of Departments.',
-      data: {
-        department,
-      },
-    };
-  }
-
-  //to add single query of department
-  async getDepartment(id: string, user: RequestUser) {
-    const department = await this.prisma.department.findUnique({
-      where: { id },
-    });
-
-    if (!department) {
-      throw new BadRequestException('Department not found.');
-    }
-
-    return {
-      status: 'success',
-      message: 'Here is the Department',
-      data: {
-        department,
-      },
-    };
-  }
-
-  async createDepartment(createDepartmentDto: CreateDepartmentDto, user: RequestUser) {
-    const { name, division_id, stat } = createDepartmentDto;
-
-    const existingDepartment = await this.prisma.department.findFirst({
-      where: {
-        name: createDepartmentDto.name,
-        division_id: createDepartmentDto.division_id,
-      },
-    });
-
-    if (existingDepartment) {
-      throw new BadRequestException('Department already exists!');
     }
 
     const requestUser = await this.prisma.user.findUnique({
@@ -83,7 +43,106 @@ export class DepartmentService {
     }
 
     const isAdmin = requestUser.user_roles.some(
-      (role) => role.role_id === "b1118e05-6377-4e64-a677-14f9b9226fdd" && role.role_name === 'Administrator',
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to view Departments',
+      );
+    }
+
+    return {
+      status: 'success',
+      message: 'Here are the list of Departments.',
+      departments,
+    };
+  }
+
+  //to add single query of department
+  async getDepartment(id: string, user: RequestUser) {
+    const department = await this.prisma.department.findUnique({
+      where: { id },
+    });
+
+    if (!department || department.stat === 0) {
+      throw new BadRequestException('Department not found or is inactive');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to view a Department',
+      );
+    }
+
+    return {
+      status: 'success',
+      message: 'Here is the Department',
+      department,
+    };
+  }
+
+  async createDepartment(
+    createDepartmentDto: CreateDepartmentDto,
+    user: RequestUser,
+  ) {
+    const existingDepartment = await this.prisma.department.findFirst({
+      where: {
+        name: createDepartmentDto.name,
+        division_id: createDepartmentDto.division_id,
+      },
+    });
+
+    if (existingDepartment) {
+      throw new ConflictException('Department already exists!');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Superadministrator',
     );
 
     if (!isAdmin) {
@@ -98,7 +157,6 @@ export class DepartmentService {
         division: {
           connect: { id: createDepartmentDto.division_id },
         },
-        stat: stat,
       },
     });
 
@@ -118,7 +176,10 @@ export class DepartmentService {
     };
   }
 
-  async updateDepartment(id: string, updateDepartmentDto: UpdateDepartmentDto, user: RequestUser,
+  async updateDepartment(
+    id: string,
+    updateDepartmentDto: UpdateDepartmentDto,
+    user: RequestUser,
   ) {
     const { department_name, sorting, division_id, stat } = updateDepartmentDto;
 
@@ -130,20 +191,14 @@ export class DepartmentService {
       },
     });
 
-    if (!department) {
-      throw new BadRequestException('Department does not exist!');
-    }
-
-    if (department.stat === 0) {
-      throw new ForbiddenException(
-        `${department.name} Department status is inactive!`,
-      );
+    if (!department || department.stat === 0) {
+      throw new BadRequestException('Department does not exist or is inactive!');
     }
 
     const updateDept = await this.prisma.department.update({
       where: { id },
       data: {
-        name: department_name, // assuming you want to change the name
+        name: department_name,
         sorting,
         division_id,
         stat,
@@ -162,11 +217,24 @@ export class DepartmentService {
             position: true,
           },
         },
+        user_roles: true,
       },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
       throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to update Department',
+      );
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
@@ -180,10 +248,8 @@ export class DepartmentService {
         name: userName,
         position: userPos,
       },
-      data: {
-        department_id: updateDept.id,
-        department_name: updateDept.name,
-      },
+      department_id: updateDept.id,
+      department_name: updateDept.name,
     };
   }
 }

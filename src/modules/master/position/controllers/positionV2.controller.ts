@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
   Put,
   Post,
   ParseUUIDPipe,
@@ -29,7 +28,7 @@ import { UpdatePositionDto } from '../dto/update-position.dto';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Masterstable - Position')
-@Controller({path:'masterstable',version:'2'})
+@Controller({ path: 'masterstable', version: '2' })
 export class PositionControllerV2 {
   constructor(private positionService: PositionService) {}
 
@@ -48,7 +47,7 @@ export class PositionControllerV2 {
   @ApiGetResponse('Here is the position.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getPosition(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.positionService.getPosition(id, user);
@@ -78,14 +77,10 @@ export class PositionControllerV2 {
   @ApiPatchResponse('Position updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updatePosition(
-    @Param('id', new ParseUUIDPipe) id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updatePositionDto: UpdatePositionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.positionService.updatePosition(
-      id,
-      updatePositionDto,
-      user,
-    );
+    return this.positionService.updatePosition(id, updatePositionDto, user);
   }
 }
