@@ -98,6 +98,7 @@ jobs:
           STG_PATH: /home/avegabrosnet/public_html/abas-api-v2
         run: |
           sshpass -p "$STG_PASSWORD" ssh -o StrictHostKeyChecking=no $STG_USER@$STG_HOST "
+            export PATH=/opt/cpanel/ea-nodejs22/bin:\$PATH &&
             cd $STG_PATH &&
             npm install --omit=dev &&
             npx prisma migrate deploy
