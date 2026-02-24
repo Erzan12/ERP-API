@@ -31,7 +31,7 @@ async function bootstrap() {
   );
 
   //catch erros e.g database exception errors mising migration, or columns or tables
-  app.useGlobalFilters(new AllExceptionsFilter());
+  // app.useGlobalFilters(new AllExceptionsFilter());
 
   //enable api version in controller and swagger
   app.enableVersioning({
