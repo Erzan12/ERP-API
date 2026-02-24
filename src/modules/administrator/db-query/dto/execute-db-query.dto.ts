@@ -6,7 +6,7 @@ export class ExecuteDbQueryDto {
   @IsNotEmpty()
   @MinLength(5)
   @ApiProperty({
-    example: 'ALTER TABLE \"Module\" ADD COLUMN \"test\" TEXT;',
+    example: 'ALTER TABLE "Module" ADD COLUMN "test" TEXT;',
     description: 'Manual db query operation',
   })
   sql: string;

@@ -649,12 +649,12 @@ export class UserAccountService {
     const isAdmin = requestUser.user_roles.some(
       (role) =>
         // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Manager',
+        role.role_name === 'Administrator' || 'Super Administrator' || 'Manager',
     );
 
     if (!isAdmin) {
       throw new ForbiddenException(
-        'User is not allowed to add new User Location.',
+        'User is not allowed to add role User Account.',
       );
     }
 

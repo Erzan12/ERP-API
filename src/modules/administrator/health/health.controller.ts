@@ -3,7 +3,6 @@ import { ApiTags } from '@nestjs/swagger';
 import {
   HealthCheck,
   HealthCheckService,
-  HttpHealthIndicator,
   PrismaHealthIndicator,
 } from '@nestjs/terminus';
 import { PrismaService } from 'src/config/prisma/prisma.service';
@@ -62,6 +61,7 @@ export class HealthController {
       return {
         status: 'error',
         message: 'DATABASE_URL is malformed',
+        error,
       };
     }
   }
