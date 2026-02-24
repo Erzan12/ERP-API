@@ -20,8 +20,8 @@ export class CompanyService {
       where: { id },
     });
 
-    if (!company) {
-      throw new BadRequestException('Company not found.');
+    if (!company || company.stat === 0) {
+      throw new BadRequestException('Company not found or is inactive.');
     }
 
     const requestUser = await this.prisma.user.findUnique({
