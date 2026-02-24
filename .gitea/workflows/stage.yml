@@ -99,6 +99,7 @@ jobs:
         run: |
           sshpass -p "$STG_PASSWORD" ssh -o StrictHostKeyChecking=no $STG_USER@$STG_HOST "
             export PATH=/opt/cpanel/ea-nodejs22/bin:\$PATH &&
+            export \$(grep -v '^#' $STG_PATH/.env | xargs) &&
             cd $STG_PATH &&
             npm install --omit=dev &&
             npx prisma migrate deploy
