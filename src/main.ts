@@ -20,8 +20,8 @@ async function bootstrap() {
 
   app.enableCors({
     // origin: ['https://www.example.com'], // specify allowed domains
-    origin: "*",
-    methods: 'GET,POST,PUT,PATCH,DELETE', 
+    origin: '*',
+    methods: 'GET,POST,PUT,PATCH,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,
     credentials: true, // allow cookies/auth headers
