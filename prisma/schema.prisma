@@ -62,6 +62,7 @@ model EmailAddress {
 
 model User {
   id                       String               @id @default(uuid()) @db.Uuid
+  token_version            Int                  @default(0)
   employee_id              String               @unique @db.Uuid
   person_id                String               @db.Uuid
   username                 String               @unique

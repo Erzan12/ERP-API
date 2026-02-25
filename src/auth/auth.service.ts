@@ -216,7 +216,8 @@ export class AuthService {
 
     const payload = {
       userUUID: userValidate.id,
-      // department name?
+      tokenVersion: userValidate.token_version,
+      department_id: userValidate.employee.department_id,
       name: userValidate.username,
       issuedAt: issuedAt,
     };
@@ -275,14 +276,24 @@ export class AuthService {
       status: 1,
       message: 'Login successful',
       token,
+      payload,
       ...(isNewAccount && { new_account: 1 }),
     };
   }
 
-  async logout(user: RequestUser, ipAddress?: string, userAgent?: string) {
-    await this.auditService.logAuth('LOGOUT', user, ipAddress, userAgent, true);
+  async logout(requestUser: RequestUser, ipAddress?: string, userAgent?: string) {
+    const logOutUser = await this.prisma.user.update({
+      where: { id: requestUser.id },
+      data: {
+        token_version: { increment: 1 },
+      },
+    });
 
-    return { message: 'User logout successfully' };
+    console.log('id of user', logOutUser.id)
+
+    await this.auditService.logAuth('LOGOUT', requestUser, ipAddress, userAgent, true);
+
+    return { message: 'User logged out successfully' };
   }
 
   async getUser(requestUser: RequestUser) {
@@ -296,7 +307,12 @@ export class AuthService {
         employee: {
           include: {
             person: true,
-            department: true,
+            department: {
+              select: {
+                id: true,
+                name: true,
+              }
+            },
             division: true,
             company: true,
             employment_status: true,
@@ -322,7 +338,6 @@ export class AuthService {
     });
 
     if (!user || user.stat !== 1) {
-      // You can throw an Unauthorized or NotFound exception
       throw new UnauthorizedException('User not found or invalid token');
     }
 
@@ -341,7 +356,10 @@ export class AuthService {
           .filter(Boolean)
           .join(' '),
         email: user.email,
-        department: employee.department.name,
+        department: employee.department ? {
+          id: employee.department.id,
+          name: employee.department.name
+        } : null,
         company: employee.company.name,
         division: employee.division.name,
         position: employee.position.name,
@@ -363,9 +381,13 @@ export class AuthService {
           const uniqueSubmodules = [
             ...new Map(
               ur.user_permissions.map((up) => {
+
                 const name = up.role_permission?.sub_module?.name ?? 'unknown';
+                const id = up.role_permission?.sub_module?.id ?? 'unknown';
+                
                 up.role_permission?.action ?? 'unknown';
-                return [name, { name }];
+
+                return [name, { id, name },];
               }),
             ).values(),
           ];
