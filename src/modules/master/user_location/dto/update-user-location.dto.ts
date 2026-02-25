@@ -1,7 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
-import { IsDefined, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDefined,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class UpdateUserLocationDto {
   @IsString()
@@ -19,7 +25,7 @@ export class UpdateUserLocationDto {
     description: 'If you want to update the User Location address',
   })
   address?: string;
- 
+
   @IsInt()
   @IsOptional()
   @IsDefined()
