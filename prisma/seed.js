@@ -1,15 +1,14 @@
-//with role and role permission latest seed
-import { PrismaClient, Prisma } from '@prisma/client';
-// import type { Prisma } from '@prisma/client';
-// import * as bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
-import { PrismaPg } from '@prisma/adapter-pg';
+// with role and role permission latest seed (JS version)
+
+const { PrismaClient, Prisma } = require('@prisma/client');
+const { PrismaPg } = require('@prisma/adapter-pg');
+const { v4: uuidv4 } = require('uuid');
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
 });
 
-const prisma = new PrismaClient({adapter});
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const now = new Date();
@@ -264,7 +263,7 @@ async function main() {
   const subModuleActions = await prisma.subModuleAction.findMany();
 
   //const subModulePermissionsData = [];
-  const subModulePermissionsData: Prisma.SubModulePermissionCreateManyInput[] = [];
+  const subModulePermissionsData = [];
 
   for (const subModule of subModules) {
     for (const action of subModuleActions) {
@@ -310,11 +309,11 @@ async function main() {
     )
   );
 
-  const superAdminRole = roleRecords.find((r) => r.name === 'Super Administrator')!;
-  const adminRole = roleRecords.find((r) => r.name === 'Administrator')!;
-  const hrRole = roleRecords.find((r) => r.name === 'HR Clerk')!;
-  const itRole = roleRecords.find((r) => r.name === 'IT Staff')!;
-  const manRole = roleRecords.find((r) => r.name === 'Manager')!;
+  const superAdminRole = roleRecords.find((r) => r.name === 'Super Administrator');
+  const adminRole = roleRecords.find((r) => r.name === 'Administrator');
+  const hrRole = roleRecords.find((r) => r.name === 'HR Clerk');
+  const itRole = roleRecords.find((r) => r.name === 'IT Staff');
+  const manRole = roleRecords.find((r) => r.name === 'Manager');
 
   // Create Employement Status
   // async function main() {
@@ -491,7 +490,7 @@ async function main() {
     subModulePermissionMap.set(`${perm.sub_module_id}-${perm.action}`, perm.id);
   }
 
-  const rolePermissionPayload: any[] = [];
+  const rolePermissionPayload = [];
 
   for (const sub of allSubModules) {
     const isDashboard = dashboardOnly.includes(sub.name);
