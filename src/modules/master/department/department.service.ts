@@ -49,9 +49,7 @@ export class DepartmentService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException(
-        'User is not allowed to view Departments',
-      );
+      throw new ForbiddenException('User is not allowed to view Departments');
     }
 
     return {
@@ -95,9 +93,7 @@ export class DepartmentService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException(
-        'User is not allowed to view a Department',
-      );
+      throw new ForbiddenException('User is not allowed to view a Department');
     }
 
     return {
@@ -192,7 +188,9 @@ export class DepartmentService {
     });
 
     if (!department || department.stat === 0) {
-      throw new BadRequestException('Department does not exist or is inactive!');
+      throw new BadRequestException(
+        'Department does not exist or is inactive!',
+      );
     }
 
     const updateDept = await this.prisma.department.update({
@@ -232,9 +230,7 @@ export class DepartmentService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException(
-        'User is not allowed to update Department',
-      );
+      throw new ForbiddenException('User is not allowed to update Department');
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
