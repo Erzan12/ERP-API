@@ -20,7 +20,11 @@ import {
   ACTION_UPDATE,
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
-import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
+import {
+  ApiGetResponse,
+  ApiPatchResponse,
+  ApiPostResponse,
+} from 'src/utils/helpers/swagger-response.helper';
 import { UpdateUserLocationDto } from '../dto/update-user-location.dto';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
@@ -60,7 +64,10 @@ export class UserLocationControllerV2 {
     @Body() createUserLocationDto: CreateUserLocationDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userLocationService.createUserLocation(createUserLocationDto, user)
+    return this.userLocationService.createUserLocation(
+      createUserLocationDto,
+      user,
+    );
   }
 
   @Put('user-locations/:id')
@@ -73,9 +80,13 @@ export class UserLocationControllerV2 {
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateUserLocation(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() updateUserLocationDto:UpdateUserLocationDto,
+    @Body() updateUserLocationDto: UpdateUserLocationDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userLocationService.updateUserLocation(id, updateUserLocationDto, user);
+    return this.userLocationService.updateUserLocation(
+      id,
+      updateUserLocationDto,
+      user,
+    );
   }
 }

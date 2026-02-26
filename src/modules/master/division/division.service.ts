@@ -47,9 +47,7 @@ export class DivisionService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException(
-        'User is not allowed to view a Company',
-      );
+      throw new ForbiddenException('User is not allowed to view a Company');
     }
 
     return {
@@ -149,7 +147,9 @@ export class DivisionService {
     });
 
     if (!division || division.stat === 0) {
-      throw new BadRequestException('Department does not exist or is inactive!');
+      throw new BadRequestException(
+        'Department does not exist or is inactive!',
+      );
     }
 
     const updateDivision = await this.prisma.division.update({
