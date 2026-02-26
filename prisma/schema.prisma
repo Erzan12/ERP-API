@@ -62,6 +62,7 @@ model EmailAddress {
 
 model User {
   id                       String               @id @default(uuid()) @db.Uuid
+  token_version            Int                  @default(0)
   employee_id              String               @unique @db.Uuid
   person_id                String               @db.Uuid
   username                 String               @unique
@@ -84,7 +85,7 @@ model User {
   user_roles                   UserRole[]
   user_permission              UserPermission[]
   PermissionTemplateDepartment PermissionTemplateDepartment[]
-  audit_logs                   AuditLog[]
+  audit_trail                  AuditTrail[]
 
   employee                     Employee             @relation(fields: [employee_id], references: [id], onDelete: Cascade)
   person                       Person               @relation(fields: [person_id], references: [id], onDelete: Cascade)
@@ -97,13 +98,13 @@ model User {
 
 model UserLocation {
   id              String      @id @default(uuid()) @db.Uuid
-  location_name   String
+  locationName    String?
   address         String
   stat            Int      @default(1)
   created_at      DateTime @default(now())
   updated_at      DateTime @default(now())
 
-  @@index([location_name])
+  @@index([locationName])
   @@index([address])
 }
 
@@ -327,7 +328,7 @@ model UserPermission {
 // AUDIT TRAIL & DATABASE CONTROL
 ////////////////////////////////////////'
 
-model AuditLog {
+model AuditTrail {
   id            String         @id @default(uuid()) @db.Uuid
   //who performed the action
   user_id       String?        @db.Uuid

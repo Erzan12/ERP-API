@@ -90,7 +90,7 @@ export class UserLocationService {
       );
     }
 
-    console.log('Current user role', isAdmin)
+    console.log('Current user role', isAdmin);
 
     const createUserLocation = await this.prisma.userLocation.create({
       data: {
@@ -127,7 +127,7 @@ export class UserLocationService {
     });
 
     if (!userLocation) {
-      throw new NotFoundException('User location does not exist')
+      throw new NotFoundException('User location does not exist');
     }
 
     const updateUserLocation = await this.prisma.userLocation.update({
@@ -146,14 +146,14 @@ export class UserLocationService {
           include: {
             person: true,
             position: true,
-          }
+          },
         },
         user_roles: true,
       },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new NotFoundException ('User does not exist')
+      throw new NotFoundException('User does not exist');
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
@@ -161,13 +161,13 @@ export class UserLocationService {
 
     const isAdmin = requestUser.user_roles.some(
       (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' && 
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
         role.role_name === 'Administrator',
-    )
+    );
 
     if (!isAdmin) {
-      throw new ForbiddenException (
-        'User is not allowed to update User Location.'
+      throw new ForbiddenException(
+        'User is not allowed to update User Location.',
       );
     }
 
