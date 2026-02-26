@@ -35,13 +35,15 @@ export class AuthController {
   }
 
   @Post('logout')
+  @Authenticated()
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'User will logout' })
   @ApiPostResponse('User logout successfully')
-  logout(@SessionUser() user: RequestUser, @Req() req: Request) {
+  logout(@SessionUser() requestUser: RequestUser, @Req() req: Request) {
     const ipAddress = req.ip || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
 
-    return this.authService.logout(user, ipAddress, userAgent);
+    return this.authService.logout(requestUser, ipAddress, userAgent);
   }
 
   @Post('reset-password')

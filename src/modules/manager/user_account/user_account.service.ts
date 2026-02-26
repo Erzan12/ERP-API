@@ -612,11 +612,7 @@ export class UserAccountService {
     };
   }
 
-  async addRoleUser(
-    user: RequestUser,
-    userId: string,
-    roleName: string,
-  ) {
+  async addRoleUser(user: RequestUser, userId: string, roleName: string) {
     //find role
     const role = await this.prisma.role.findUnique({
       where: { name: roleName },
@@ -649,7 +645,9 @@ export class UserAccountService {
     const isAdmin = requestUser.user_roles.some(
       (role) =>
         // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator' || 'Manager',
+        role.role_name === 'Administrator' ||
+        'Super Administrator' ||
+        'Manager',
     );
 
     if (!isAdmin) {
@@ -675,7 +673,7 @@ export class UserAccountService {
       },
       include: {
         user: true,
-      }
+      },
     });
 
     //prepare UserPermissions from RolePermissions
@@ -704,9 +702,9 @@ export class UserAccountService {
         position: userPosition,
       },
       permissions: {
-        userPermissionsData
-      }
-    }
+        userPermissionsData,
+      },
+    };
   }
 
   // async getUsersWithRolesAndPermissions() {

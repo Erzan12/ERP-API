@@ -48,9 +48,7 @@ export class CompanyService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException(
-        'User is not allowed to view a Company',
-      );
+      throw new ForbiddenException('User is not allowed to view a Company');
     }
 
     return {
@@ -92,9 +90,7 @@ export class CompanyService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException(
-        'User is not allowed to view Companies',
-      );
+      throw new ForbiddenException('User is not allowed to view Companies');
     }
 
     return {
@@ -119,8 +115,8 @@ export class CompanyService {
     const existingCompany = await this.prisma.company.findFirst({
       where: {
         name: createCompanyDto.name,
-      }
-    })
+      },
+    });
 
     if (existingCompany) {
       throw new ConflictException('Company already exist!');
@@ -150,9 +146,7 @@ export class CompanyService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException(
-        'User is not allowed to view Companies',
-      );
+      throw new ForbiddenException('User is not allowed to view Companies');
     }
 
     const createCompany = await this.prisma.company.create({
@@ -250,9 +244,7 @@ export class CompanyService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException(
-        'User is not allowed to view Companies',
-      );
+      throw new ForbiddenException('User is not allowed to view Companies');
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
