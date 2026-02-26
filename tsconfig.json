@@ -5,6 +5,7 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2023",
     "sourceMap": true,
@@ -27,5 +28,5 @@
     "synchronousWatchDirectory": true,
     "excludeDirectories": ["**/node_modules", "dist"]
   },
-  "include": ["src/**/*", "src/types/express.ts", "public", ".d.ts", "app.e2e-spec"] 
+  "include": ["src/**/*", "src/types/express.ts", "public", ".d.ts"] 
 }
