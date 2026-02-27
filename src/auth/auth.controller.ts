@@ -1,6 +1,6 @@
-import { Body, Controller, Post, Query, Get, Req } from '@nestjs/common';
+import { Body, Controller, Post, Query, Get, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiOperation, ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiBearerAuth, ApiTags, ApiCookieAuth } from '@nestjs/swagger';
 import {
   ApiLoginResponse,
   ApiPostResponse,
@@ -9,9 +9,10 @@ import { LoginDto } from './dto/login.dto';
 import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 import { Public } from 'src/utils/decorators/public.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { Request } from 'express';
+import { Request, response } from 'express';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { Authenticated } from 'src/utils/decorators/auth-guard.decorator';
+import { Response } from 'express';
 
 @Public()
 @ApiTags('Authentication')
@@ -22,26 +23,39 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'User authorized login' })
   @ApiLoginResponse('User login successful')
-  login(@Body() loginDto: LoginDto, @Req() req: Request) {
+  async login(@Body() loginDto: LoginDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const token = await this.authService.login(loginDto);
     const ipAddress = req.ip || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
-    // try {
-    //   const loginData = this.authService.login(loginDto, ipAddress, userAgent)
-    //   return loginData;
-    // } catch (error) {
-    //   console.log(error)
-    // }
+    
+    res.cookie('access-token', token.token, {
+      httpOnly: true,    // Prevents JavaScript access (XSS protection)
+      secure: false, // Only sends over HTTPS
+      sameSite: 'lax',   // CSRF protection
+      maxAge: 3600000,   // 1 hour in milliseconds
+    });
+
     return this.authService.login(loginDto, ipAddress, userAgent);
   }
 
   @Post('logout')
   @Authenticated()
-  @ApiBearerAuth('access-token')
+  // @ApiCookieAuth('access-token')
   @ApiOperation({ summary: 'User will logout' })
   @ApiPostResponse('User logout successfully')
-  logout(@SessionUser() requestUser: RequestUser, @Req() req: Request) {
+  logout(
+    @SessionUser() requestUser: RequestUser,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const ipAddress = req.ip || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
+
+    // Clear cookie here
+    res.clearCookie('access-token', {
+      httpOnly: true,
+      path: '/',
+    });
 
     return this.authService.logout(requestUser, ipAddress, userAgent);
   }
@@ -64,12 +78,12 @@ export class AuthController {
     );
   }
 
-  @ApiBearerAuth('access-token')
+  @ApiCookieAuth('access-token')
   @Authenticated()
   @Get('/verify')
   @ApiOperation({ summary: 'Verify user' })
   @ApiLoginResponse('User has been verified')
-  verify(@SessionUser() requestUser: RequestUser) {
+  async verify(@SessionUser() requestUser: RequestUser) {
     return this.authService.getUser(requestUser);
   }
 

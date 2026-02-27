@@ -5,11 +5,13 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
+import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
+import { response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -26,35 +28,34 @@ export class AuthService {
     // ipAddress?: string,
     // userAgent?: string,
   ) {
-    const { newPassword } = dto;
-
     if (!token) {
       throw new BadRequestException('Reset token is required.');
     }
 
     // find the user token
-    const passwordresetToken = await this.prisma.passwordResetToken.findFirst({
+    const passwordResetToken = await this.prisma.passwordResetToken.findFirst({
       where: { password_token: token },
       include: { user: true },
     });
 
-    if (!passwordresetToken) {
+    if (!passwordResetToken) {
       throw new BadRequestException('Invalid or expired reset token.');
     }
 
     // Check if token was already used
-    if (passwordresetToken.is_used) {
+    if (passwordResetToken.is_used) {
       throw new BadRequestException('Reset token has already been used.');
     }
 
     // optional: check expiration
-    if (passwordresetToken.expires_at < new Date()) {
+    if (passwordResetToken.expires_at < new Date()) {
       throw new BadRequestException('Reset token has expired.');
     }
 
     //validate if the password is the same as the old password
-    const user = passwordresetToken.user;
-    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    const user = passwordResetToken.user;
+
+    const isSamePassword = await bcrypt.compare(dto.newPassword, user.password);
     if (isSamePassword) {
       throw new BadRequestException(
         'New password cannot be the same as the old password, Please add a new one!',
@@ -62,7 +63,7 @@ export class AuthService {
     }
 
     //hashed the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(dto.newPassword, 10);
 
     // Update the user's password
     const updatedUser = await this.prisma.user.update({
@@ -70,23 +71,23 @@ export class AuthService {
       data: {
         password: hashedPassword, // your hashed new password
         require_reset: 0, // disable require_reset flag
-        password_reset: '', // clear any reset token/flag
+        // password_reset: '', // clear any reset token/flag
       },
     });
 
-    const passwordToken = await this.prisma.passwordResetToken.findUnique({
-      where: { id: passwordresetToken.id },
-    });
+    // const passwordToken = await this.prisma.passwordResetToken.findUnique({
+    //   where: { id: passwordResetToken.id },
+    // });
 
-    if (!passwordToken?.is_used) {
-      await this.prisma.passwordResetToken.update({
-        where: { id: passwordresetToken.id },
-        data: { is_used: true },
-      });
-    }
+    // if (!passwordToken?.is_used) {
+    //   await this.prisma.passwordResetToken.update({
+    //     where: { id: passwordresetToken.id },
+    //     data: { is_used: true },
+    //   });
+    // }
 
     await this.prisma.passwordResetToken.update({
-      where: { id: passwordresetToken.id },
+      where: { id: passwordResetToken.id },
       data: {
         is_used: true,
       },
@@ -106,6 +107,37 @@ export class AuthService {
         email: updatedUser.email,
       },
     };
+  }
+
+  //generate reset token
+  async generateResetToken(userId: string) {
+    // Delete old unused tokens
+    await this.prisma.passwordResetToken.deleteMany({
+      where: {
+        user_id: userId,
+        is_used: false,
+      },
+    });
+
+    const tokenKey = crypto.randomBytes(64).toString('hex');
+
+    const expiresAt = new Date(
+      Date.now() + 1000 * 60 * 60 * 24 * 3, // 3 days
+    );
+
+    const token = await this.prisma.passwordResetToken.create({
+      data: {
+        user_id: userId,
+        password_token: tokenKey,
+        expires_at: expiresAt,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Reset Token generated successfully',
+      token,
+    }
   }
 
   //v3 log in with validateUser - to validate the user log in request if the user is a valid user and existed in the database if yes then jwt token will be generated
@@ -185,11 +217,15 @@ export class AuthService {
     const userValidate = await this.validateUser(username, password);
 
     if (userValidate.require_reset === 1) {
-      return {
-        status: 'password_require_reset',
-        message: 'You must reset your password first for first time login!',
-        userId: userValidate.id,
-      };
+      // return {
+      //   status: 'password_require_reset',
+      //   message: 'You must reset your password first for first time login!',
+      //   userId: userValidate.id,
+      //   token: string;
+      // };
+      throw new BadRequestException(
+        'You must reset your password first for first time login!',
+      );
     }
 
     if (userValidate.stat !== 1) {
@@ -281,17 +317,26 @@ export class AuthService {
     };
   }
 
-  async logout(requestUser: RequestUser, ipAddress?: string, userAgent?: string) {
-    const logOutUser = await this.prisma.user.update({
+  async logout(
+    requestUser: RequestUser,
+    ipAddress?: string,
+    userAgent?: string,
+  ) {
+    await this.prisma.user.update({
       where: { id: requestUser.id },
       data: {
         token_version: { increment: 1 },
       },
     });
+    // console.log('id of user', logOutUser.id);
 
-    console.log('id of user', logOutUser.id)
-
-    await this.auditService.logAuth('LOGOUT', requestUser, ipAddress, userAgent, true);
+    await this.auditService.logAuth(
+      'LOGOUT',
+      requestUser,
+      ipAddress,
+      userAgent,
+      true,
+    );
 
     return { message: 'User logged out successfully' };
   }
@@ -311,7 +356,7 @@ export class AuthService {
               select: {
                 id: true,
                 name: true,
-              }
+              },
             },
             division: true,
             company: true,
@@ -356,10 +401,12 @@ export class AuthService {
           .filter(Boolean)
           .join(' '),
         email: user.email,
-        department: employee.department ? {
-          id: employee.department.id,
-          name: employee.department.name
-        } : null,
+        department: employee.department
+          ? {
+              id: employee.department.id,
+              name: employee.department.name,
+            }
+          : null,
         company: employee.company.name,
         division: employee.division.name,
         position: employee.position.name,
@@ -381,13 +428,12 @@ export class AuthService {
           const uniqueSubmodules = [
             ...new Map(
               ur.user_permissions.map((up) => {
-
                 const name = up.role_permission?.sub_module?.name ?? 'unknown';
                 const id = up.role_permission?.sub_module?.id ?? 'unknown';
-                
+
                 up.role_permission?.action ?? 'unknown';
 
-                return [name, { id, name },];
+                return [name, { id, name }];
               }),
             ).values(),
           ];
