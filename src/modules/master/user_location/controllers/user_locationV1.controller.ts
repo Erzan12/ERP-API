@@ -1,23 +1,11 @@
-import {
-  Body,
-  Controller,
-  Param,
-  ParseIntPipe,
-  Put,
-  Post,
-  Get,
-  ParseUUIDPipe,
-} from '@nestjs/common';
+import { Controller, Param, Get, ParseUUIDPipe } from '@nestjs/common';
 import { UserLocationService } from '../user_location.service';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateUserLocationDto } from '../dto/create-user-location.dto';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { Can } from 'src/utils/decorators/can.decorator';
 import {
-  ACTION_CREATE,
   ACTION_READ,
-  ACTION_UPDATE,
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
