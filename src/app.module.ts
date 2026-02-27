@@ -37,10 +37,11 @@ import { MailService } from './jobs/mail/mail.service';
 import { UserLocationService } from './modules/master/user_location/user_location.service';
 import { UserService } from './modules/administrator/user/user.service';
 
-import { CreateCompanyDto } from './modules/master/company/dto/create-company.dto';
-import { CreateDivisionDto } from './modules/master/division/dto/create-division.dto';
-import { CreateDepartmentDto } from './modules/master/department/dto/create-dept.dto';
-import { CreatePositionDto } from './modules/master/position/dto/create-position.dto';
+import { CreateCompanyDto } from './modules/master/company/dto/company.dto';
+import { CreateDivisionDto } from './modules/master/division/dto/division.dto';
+import { CreateDepartmentDto } from './modules/master/department/dto/department.dto';
+import { CreatePositionDto } from './modules/master/position/dto/position.dto';
+import { AuditControllerV2 } from './modules/administrator/audit/controllers/auditV2.controller';
 // import { HealthCheckController } from './health-check/health-check.controller';
 // import { HealthCheckService } from './health-check/health-check.service';
 // import { HealthCheckModule } from './health-check/health-check.module';
