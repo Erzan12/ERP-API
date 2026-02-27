@@ -28,10 +28,10 @@ export function setupManagerSwagger(app: INestApplication): void {
 
   // build document for V2
   const optionsV2 = new DocumentBuilder()
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-      'access-token',
-    )
+    // .addBearerAuth(
+    //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+    //   'access-token',
+    // )
     .setTitle('Manager API (v2)')
     .setDescription('API for Manager. CURRENTLY VIEWING API VERSION 2')
     .setVersion('2.0')
