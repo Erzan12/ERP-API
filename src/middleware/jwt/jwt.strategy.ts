@@ -3,6 +3,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { Request }  from 'express';
+
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -11,8 +13,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!secret) {
       throw new Error('JWT_SECRET environment variable is not defined');
     }
+    // super({
+    //   // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    //   // secretOrKey: secret,
+
+    //   jwtFromRequest: ExtractJwt.fromExtractors([
+    //     (request: Request) => {
+    //       return request?.cookies?.access-token;
+    //     },
+    //   ]),
+    //   secretOrKey: secret,
+    // });
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) => request?.cookies?.['access-token'],
+      ]),
       secretOrKey: secret,
     });
   }

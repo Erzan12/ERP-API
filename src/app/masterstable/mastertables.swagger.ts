@@ -8,10 +8,12 @@ import { MasterV2Module } from 'src/modules/master/masterV2.module';
 export function setupMasterSwagger(app: INestApplication): void {
   // build document for V1
   const optionsV1 = new DocumentBuilder()
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-      'access-token',
-    )
+    // .addBearerAuth(
+    //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+    //   'access-token',
+    // )
+    //since token is now stored in cookies session will not use this anymore
+    // .addCookieAuth('access-token')
     .setTitle('Masterstable API (v1)')
     .setDescription('API for Manager. CURRENTLY VIEWING API VERSION 1')
     .setVersion('1.0')

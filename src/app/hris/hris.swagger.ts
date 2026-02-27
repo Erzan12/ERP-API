@@ -8,10 +8,11 @@ import { HrV2Module } from 'src/modules/hris/hrV2.module';
 export function setupHRISSwagger(app: INestApplication): void {
   // build document for V1
   const optionsV1 = new DocumentBuilder()
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-      'access-token',
-    )
+    // .addBearerAuth(
+    //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+    //   'access-token',
+    // )
+   .addCookieAuth('access-token')
     .setTitle('HRIS API (v1)')
     .setDescription(
       'API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 1',
@@ -19,7 +20,7 @@ export function setupHRISSwagger(app: INestApplication): void {
     .setVersion('1.0')
     .addTag('Authentication')
     .addTag('Human Resources - Dashboard')
-    .addTag('Human Resources - Employees')
+    .addTag('Human Resources - Employees Masterlist')
     .build();
 
   const documentV1 = SwaggerModule.createDocument(app, optionsV1, {
@@ -28,10 +29,12 @@ export function setupHRISSwagger(app: INestApplication): void {
 
   // build document for V2
   const optionsV2 = new DocumentBuilder()
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-      'access-token',
-    )
+    // .addBearerAuth(
+    //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+    //   'access-token',
+    // )
+    //since token is now stored in cookies session will not use this anymore
+    // .addCookieAuth('access-token')
     .setTitle('HRIS API (v2)')
     .setDescription(
       'API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 2',
