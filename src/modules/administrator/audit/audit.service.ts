@@ -23,7 +23,7 @@ export class AuditService {
       const complianceFlag =
         data.compliance_flag ?? this.isComplianceCritical(data);
 
-      await this.prisma.auditLog.create({
+      await this.prisma.auditTrail.create({
         data: {
           user_id: data.user?.id,
           user_email: data.user?.email,
@@ -226,7 +226,7 @@ export class AuditService {
       offset = 0,
     } = filters;
 
-    return this.prisma.auditLog.findMany({
+    return this.prisma.auditTrail.findMany({
       where: {
         user_id,
         employee_id,
@@ -260,7 +260,7 @@ export class AuditService {
 
   // get audit trail for ta specific resource
   async getResourceHistory(resource: string, resource_id: number) {
-    return this.prisma.auditLog.findMany({
+    return this.prisma.auditTrail.findMany({
       where: {
         resource,
         resource_id,
@@ -285,7 +285,7 @@ export class AuditService {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    return this.prisma.auditLog.findMany({
+    return this.prisma.auditTrail.findMany({
       where: {
         user_id,
         created_at: {
@@ -303,7 +303,7 @@ export class AuditService {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    return this.prisma.auditLog.findMany({
+    return this.prisma.auditTrail.findMany({
       where: {
         department_id,
         created_at: {
@@ -330,7 +330,7 @@ export class AuditService {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    return this.prisma.auditLog.findMany({
+    return this.prisma.auditTrail.findMany({
       where: {
         compliance_flag: true,
         created_at: {
@@ -357,7 +357,7 @@ export class AuditService {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    return this.prisma.auditLog.findMany({
+    return this.prisma.auditTrail.findMany({
       where: {
         OR: [
           { severity: 'CRITICAL' },
