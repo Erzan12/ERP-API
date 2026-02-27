@@ -12,7 +12,7 @@ export function setupHRISSwagger(app: INestApplication): void {
     //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
     //   'access-token',
     // )
-   .addCookieAuth('access-token')
+  //  .addCookieAuth('access-token')
     .setTitle('HRIS API (v1)')
     .setDescription(
       'API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 1',
