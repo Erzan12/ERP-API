@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Param,
-  ParseIntPipe,
   Put,
   Post,
   Get,
@@ -10,7 +9,10 @@ import {
 } from '@nestjs/common';
 import { UserLocationService } from '../user_location.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateUserLocationDto } from '../dto/create-user-location.dto';
+import {
+  CreateUserLocationDto,
+  UpdateUserLocationDto,
+} from '../dto/user-location.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { Can } from 'src/utils/decorators/can.decorator';
@@ -25,7 +27,6 @@ import {
   ApiPatchResponse,
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
-import { UpdateUserLocationDto } from '../dto/update-user-location.dto';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Masterstable - User Location')

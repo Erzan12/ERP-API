@@ -1,6 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Transform } from 'class-transformer';
 import {
   IsDefined,
   IsInt,
@@ -8,6 +5,29 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { BadRequestException } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose, Transform } from 'class-transformer';
+
+export class CreateUserLocationDto {
+  @IsString()
+  @IsDefined()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'Tayud',
+    description: 'The name of the place the user located',
+  })
+  locationName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsDefined()
+  @ApiProperty({
+    example: 'Consolacion',
+    description: 'The address of the location',
+  })
+  address: string;
+}
 
 export class UpdateUserLocationDto {
   @IsString()
@@ -16,7 +36,7 @@ export class UpdateUserLocationDto {
     example: 'New User Location',
     description: 'If you want to update the User Location name',
   })
-  location_name?: string;
+  locationName?: string;
 
   @IsString()
   @IsOptional()
