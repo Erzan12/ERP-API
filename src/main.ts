@@ -8,10 +8,14 @@ import { PrismaPg } from '@prisma/adapter-pg';
 
 import { setupAppSwagger } from './app/app.swagger';
 import { setupGlobalPrefix } from './utils/helpers/global-prefix.helper';
+import cookieParser = require('cookie-parser');
+
 import { AllExceptionsFilter } from './utils/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.use(cookieParser());
 
   //log manual queries
   const adapter = new PrismaPg({
@@ -39,8 +43,10 @@ async function bootstrap() {
     }),
   );
 
+  
+
   //catch erros e.g database exception errors mising migration, or columns or tables
-  // app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   //enable api version in controller and swagger
   app.enableVersioning({

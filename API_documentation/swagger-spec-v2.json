@@ -1,0 +1,4398 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/v2/administrator/sub-modules": {
+      "get": {
+        "operationId": "SubModuleControllerV2_getSubmodules_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are all the Sub modules available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get Submodules",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      },
+      "post": {
+        "operationId": "SubModuleControllerV2_createSubModule_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Submodule",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubModuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Submodule created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new Submodule",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/v2/administrator/sub-modules/{id}": {
+      "get": {
+        "operationId": "SubModuleControllerV2_getSubmodule_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "status: Success!"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a Submodule",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/v2/administrator/sub-modules/permissions": {
+      "post": {
+        "operationId": "SubModuleControllerV2_createPermission_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create permissions for submodule",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSubModulePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Permission created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new permission for submodule",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      },
+      "put": {
+        "operationId": "SubModuleControllerV2_createSubModulePermission_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to assign permissions for submodule",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignSubModulePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Permission assigned to a submodule successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Assign a new permission for submodule",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/v2/administrator/sub-module/permissions/{id}": {
+      "put": {
+        "operationId": "SubModuleControllerV2_updatePermission_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update the current sub module permission",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubModulePermisisonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sub module permission updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current sub module permission",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/v2/administrator/modules": {
+      "get": {
+        "operationId": "ModuleControllerV2_getModules_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here are all the Modules available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get modules",
+        "tags": [
+          "Administrator - Module"
+        ]
+      },
+      "post": {
+        "operationId": "ModuleControllerV2_createModule_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateModuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Module created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new Module",
+        "tags": [
+          "Administrator - Module"
+        ]
+      }
+    },
+    "/v2/administrator/modules/{id}": {
+      "get": {
+        "operationId": "ModuleControllerV2_getModule_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details of the module with submodules"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a module",
+        "tags": [
+          "Administrator - Module"
+        ]
+      },
+      "put": {
+        "operationId": "ModuleControllerV2_updateModule_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update the module info",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateModuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Module updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update current module",
+        "tags": [
+          "Administrator - Module"
+        ]
+      }
+    },
+    "/v2/administrator/roles": {
+      "get": {
+        "operationId": "RoleControllerV2_getRoles_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of Roles"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all Roles",
+        "tags": [
+          "Administrator - Role"
+        ]
+      },
+      "post": {
+        "operationId": "RoleControllerV2_createRole_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Role created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create new role",
+        "tags": [
+          "Administrator - Role"
+        ]
+      }
+    },
+    "/v2/administrator/roles/{id}": {
+      "get": {
+        "operationId": "RoleControllerV2_getRole_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Role"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a role",
+        "tags": [
+          "Administrator - Role"
+        ]
+      }
+    },
+    "/v2/administrator/roles/role_permission": {
+      "put": {
+        "operationId": "RoleControllerV2_createRolePermission_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRolePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Permissions added to role"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Adding permission to role",
+        "tags": [
+          "Administrator - Role"
+        ]
+      }
+    },
+    "/v2/administrator/roles/role_permission/{id}": {
+      "put": {
+        "operationId": "RoleControllerV2_updateRolePermissions_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRolePermissionsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Permissions updated to role"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Updating current permission to role",
+        "tags": [
+          "Administrator - Role"
+        ]
+      }
+    },
+    "/v2/administrator/security_clearance/{id}": {
+      "put": {
+        "description": "This endpoint requires a minimun security clearance of level 9.",
+        "operationId": "SecurityClearanceControllerV2_updateClearance_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSecurityClearanceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Assign the security clearance level for user",
+        "tags": [
+          "Administrator - Security Clearance"
+        ]
+      }
+    },
+    "/v2/administrator": {
+      "get": {
+        "operationId": "DashboardControllerv2_getAdminDashboard_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Adminstrator Dashboard"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Summary of Users",
+        "tags": [
+          "Administrator - Dashboard"
+        ]
+      }
+    },
+    "/v2/administrator/audit": {
+      "get": {
+        "operationId": "AuditControllerV2_getAuditLogs_v2",
+        "parameters": [
+          {
+            "name": "user_id",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "resource",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "start_date",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "end_date",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "success",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get audit logs with filters",
+        "tags": [
+          "Administrator - Audit"
+        ]
+      }
+    },
+    "/v2/administrator/audit/resource/{resource}/{id}": {
+      "get": {
+        "operationId": "AuditControllerV2_getResourceHistory_v2",
+        "parameters": [
+          {
+            "name": "resource",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get audit history fo ra specific resource",
+        "tags": [
+          "Administrator - Audit"
+        ]
+      }
+    },
+    "/v2/administrator/audit/user/{id}/activity": {
+      "get": {
+        "operationId": "AuditControllerV2_getUserActivity_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "days",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get user activity report",
+        "tags": [
+          "Administrator - Audit"
+        ]
+      }
+    },
+    "/v2/administrator/audit/my-activity": {
+      "get": {
+        "operationId": "AuditControllerV2_getMyActivity_v2",
+        "parameters": [
+          {
+            "name": "days",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get own activity report",
+        "tags": [
+          "Administrator - Audit"
+        ]
+      }
+    },
+    "/v2/administrator/health/live": {
+      "get": {
+        "operationId": "HealthController_live_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator - Health Check"
+        ]
+      }
+    },
+    "/v2/administrator/health/ready": {
+      "get": {
+        "operationId": "HealthController_ready_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Health Check is successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "info": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {},
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Health Check is not successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "info": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        },
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Administrator - Health Check"
+        ]
+      }
+    },
+    "/v2/administrator/health/env": {
+      "get": {
+        "operationId": "HealthController_envCheck_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator - Health Check"
+        ]
+      }
+    },
+    "/v2/administrator/db-query/execute": {
+      "post": {
+        "operationId": "DbQueryControllerV2_executeQuery_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload for manual db query",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExecuteDbQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Db manual query successful"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Execute manual SQL query (Super Admin Only)",
+        "tags": [
+          "Administrator - Database Manuel Query"
+        ]
+      }
+    },
+    "/v2/administrator/db-query/logs": {
+      "get": {
+        "operationId": "DbQueryControllerV2_getLogs_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Logs for all manual db queries performed"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get latest executed manual queries",
+        "tags": [
+          "Administrator - Database Manuel Query"
+        ]
+      }
+    },
+    "/v2/administrator/db-query/logs/{id}": {
+      "get": {
+        "operationId": "DbQueryControllerV2_getLog_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get a specific manual db query log"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get specific manual query log",
+        "tags": [
+          "Administrator - Database Manuel Query"
+        ]
+      }
+    },
+    "/v2/administrator/user-access/{id}": {
+      "get": {
+        "operationId": "UserController_verify_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has been verified"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Verify user",
+        "tags": [
+          "Administrator - User Access"
+        ]
+      }
+    },
+    "/v2/masterstable/positions": {
+      "get": {
+        "operationId": "PositionControllerV2_getPositions_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of positions retrieve"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all positions",
+        "tags": [
+          "Masterstable - Position"
+        ]
+      },
+      "post": {
+        "operationId": "PositionControllerV2_createPosition_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Position",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePositionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Position created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new position",
+        "tags": [
+          "Masterstable - Position"
+        ]
+      }
+    },
+    "/v2/masterstable/positions/{id}": {
+      "get": {
+        "operationId": "PositionControllerV2_getPosition_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the position."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a position.",
+        "tags": [
+          "Masterstable - Position"
+        ]
+      },
+      "put": {
+        "operationId": "PositionControllerV2_updatePosition_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Position information",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePositionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Position updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current position information",
+        "tags": [
+          "Masterstable - Position"
+        ]
+      }
+    },
+    "/v2/masterstable/departments": {
+      "get": {
+        "operationId": "DepartmentControllerV2_getDepartments_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of departments available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all departments",
+        "tags": [
+          "Masterstable - Department"
+        ]
+      },
+      "post": {
+        "operationId": "DepartmentControllerV2_createDepartment_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Department",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Department created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new department",
+        "tags": [
+          "Masterstable - Department"
+        ]
+      }
+    },
+    "/v2/masterstable/departments/{id}": {
+      "get": {
+        "operationId": "DepartmentControllerV2_getDepartment_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the department"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a department",
+        "tags": [
+          "Masterstable - Department"
+        ]
+      },
+      "put": {
+        "operationId": "DepartmentControllerV2_updateDepartment_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update department",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Department updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current department information",
+        "tags": [
+          "Masterstable - Department"
+        ]
+      }
+    },
+    "/v2/masterstable/companies": {
+      "get": {
+        "operationId": "CompanyControllerV2_getCompanies_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of companies retrieved"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all companies",
+        "tags": [
+          "Masterstable - Company"
+        ]
+      },
+      "post": {
+        "operationId": "CompanyControllerV2_createCompany_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create company",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCompanyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Company created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new company",
+        "tags": [
+          "Masterstable - Company"
+        ]
+      }
+    },
+    "/v2/masterstable/companies/{id}": {
+      "get": {
+        "operationId": "CompanyControllerV2_getCompany_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the company"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a company",
+        "tags": [
+          "Masterstable - Company"
+        ]
+      },
+      "put": {
+        "operationId": "CompanyControllerV2_updateCompany_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update company",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCompanyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Company updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current company information",
+        "tags": [
+          "Masterstable - Company"
+        ]
+      }
+    },
+    "/v2/masterstable/divisions": {
+      "get": {
+        "operationId": "DivisionControllerV2_getDivisions_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of divisions retrieved"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all divisions",
+        "tags": [
+          "Masterstable - Division"
+        ]
+      },
+      "post": {
+        "operationId": "DivisionControllerV2_createDivision_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Division",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDivisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Division created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new division",
+        "tags": [
+          "Masterstable - Division"
+        ]
+      }
+    },
+    "/v2/masterstable/divisions/{id}": {
+      "get": {
+        "operationId": "DivisionControllerV2_getDivision_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the division"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a division",
+        "tags": [
+          "Masterstable - Division"
+        ]
+      },
+      "put": {
+        "operationId": "DivisionControllerV2_updateDivision_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update division",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDivisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Division updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current division information",
+        "tags": [
+          "Masterstable - Division"
+        ]
+      }
+    },
+    "/v2/masterstable/employment_status": {
+      "get": {
+        "operationId": "EmploymentStatusControllerV2_getEmployeeStats_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of available employment status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all employment status",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      },
+      "post": {
+        "operationId": "EmploymentStatusControllerV2_createEmployeeStatus_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create employee status.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmploymentStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee status created successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create new employee status.",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      }
+    },
+    "/v2/masterstable/employment_status/{id}": {
+      "get": {
+        "operationId": "EmploymentStatusControllerV2_getEmployeeStat_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the employment status."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get an employment status.",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      },
+      "put": {
+        "operationId": "EmploymentStatusControllerV2_updateEmployeeStatus_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmploymentStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee status details updated successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Updating employee status details.",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      }
+    },
+    "/v2/masterstable/user-locations": {
+      "get": {
+        "operationId": "UserLocationControllerV2_getUserLocations_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of user locations available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all user locations",
+        "tags": [
+          "Masterstable - User Location"
+        ]
+      },
+      "post": {
+        "operationId": "UserLocationControllerV2_createUserLocation_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create User Location",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserLocationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User Location has been created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a User Location",
+        "tags": [
+          "Masterstable - User Location"
+        ]
+      }
+    },
+    "/v2/masterstable/user-locations/{id}": {
+      "get": {
+        "operationId": "UserLocationControllerV2_getUserLocation_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the user location"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a user locations",
+        "tags": [
+          "Masterstable - User Location"
+        ]
+      },
+      "put": {
+        "operationId": "UserLocationControllerV2_updateUserLocation_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update User Location information",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserLocationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User Location updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current User Location information",
+        "tags": [
+          "Masterstable - User Location"
+        ]
+      }
+    },
+    "/v2/hris/employees": {
+      "get": {
+        "operationId": "EmployeeControllerV2_getEmployees_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "''",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "id",
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of employees"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List of all employees",
+        "tags": [
+          "Human Resources - Employees"
+        ]
+      },
+      "post": {
+        "operationId": "EmployeeControllerV2_createEmployee_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create a new employee",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeWithDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new Employee",
+        "tags": [
+          "Human Resources - Employees"
+        ]
+      }
+    },
+    "/v2/hris/employees/{id}": {
+      "get": {
+        "operationId": "EmployeeControllerV2_getEmployee_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employees information"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "View employee profile",
+        "tags": [
+          "Human Resources - Employees"
+        ]
+      },
+      "put": {
+        "operationId": "EmployeeControllerV2_updateEmployee_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update a current employee",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployeeWithDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee information updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a current Employee",
+        "tags": [
+          "Human Resources - Employees"
+        ]
+      }
+    },
+    "/v2/hris": {
+      "get": {
+        "operationId": "DashboardControllerV2_getHrDashboard_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Dashboard"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Summary of the employees",
+        "tags": [
+          "Human Resources - Dashboard"
+        ]
+      }
+    },
+    "/v2/manager/permission-template": {
+      "get": {
+        "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are all the permission templates available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get permission templates",
+        "tags": [
+          "Manager - Permission Template"
+        ]
+      },
+      "post": {
+        "operationId": "PermissionTemplateControllerV2_createPermissionTemplate_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Permission Template",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePermissionTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Permission template created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create new permission template",
+        "tags": [
+          "Manager - Permission Template"
+        ]
+      }
+    },
+    "/v2/manager/permission-template/{id}": {
+      "get": {
+        "operationId": "PermissionTemplateControllerV2_getPermissionTemplate_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the permission template"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a permission template",
+        "tags": [
+          "Manager - Permission Template"
+        ]
+      },
+      "put": {
+        "operationId": "PermissionTemplateControllerV2_updatePermissionTemplate_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Permission Template",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePermissionTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Permissin Template has been updated."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get available permissin templates to user",
+        "tags": [
+          "Manager - Permission Template"
+        ]
+      }
+    },
+    "/v2/manager/permission-template/user/{userPermissionTemplateId}": {
+      "get": {
+        "operationId": "PermissionTemplateControllerV2_getUserPermissionTemplate_v2",
+        "parameters": [
+          {
+            "name": "userPermissionTemplateId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here are the list of permission templates available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get available permission templates to user",
+        "tags": [
+          "Manager - Permission Template"
+        ]
+      }
+    },
+    "/v2/manager/permission-template/user/{id}": {
+      "post": {
+        "operationId": "PermissionTemplateControllerV2_assignPermTemplate_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to assign permission template to user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignTemplateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Permission Template assigned to user successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Assign Permission template to user",
+        "tags": [
+          "Manager - Permission Template"
+        ]
+      }
+    },
+    "/v2/user/user_account": {
+      "get": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_viewUsers_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are all the User Accounts available"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get User Accounts",
+        "tags": [
+          "Manager - User Account"
+        ]
+      },
+      "post": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_createUser_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create User Account",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserWithRolePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User Account created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new user account",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/user/user_account/me/permissions": {
+      "get": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_getMyPermissions_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "My user account"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "My User Account",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/user/user_account/role_permission": {
+      "post": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_addRolePermission_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddUserRolePermissionsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Role permission added to user successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Add Role permissions to user",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/user/user_account/add-role/{userId}/{roleName}": {
+      "put": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_addUserRole_v2",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roleName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Role has been added to the user with permission"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Add Role to user",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/user/user_account/{id}/resend-invitation": {
+      "post": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_newResetToken_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload for user reset token",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserEmailResetTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Password reset done! you can now log in!"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Reset token for first time log in",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/user/user_account/token_keys": {
+      "get": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_viewUserKeys_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserWithRolePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Here are all the token keys available for this user"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get the token keys for this user",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/user/user_account/deactivate": {
+      "put": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_deactivateUser_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeactivateUserAccountDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User account deactivated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Deactivate the user account",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/user/user_account/reactivate": {
+      "put": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_reactivateUser_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReactivateUserAccountDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User account reactivated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Reactivate the user account",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/user/user_account/new_employees": {
+      "get": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_viewNewEmployees_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of new employees without user accounts"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get the new employees without user accounts",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "ABAS v3 API v2",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "CreateSubModuleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "User Account",
+            "description": "The name of the sub module"
+          },
+          "module_id": {
+            "type": "string",
+            "example": 1,
+            "description": "Module ID of the submodule "
+          }
+        },
+        "required": [
+          "name",
+          "module_id"
+        ]
+      },
+      "AddSubModulePermissionDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "example": "[\"view\", \"create\", \"update\", \"note\", \"delete\"]",
+            "description": "Create permission for sub module, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "action",
+          "status"
+        ]
+      },
+      "AssignSubModulePermissionDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
+            "description": "Assign permissions to sub module, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sub_module_id": {
+            "type": "string",
+            "example": "UUID",
+            "description": "ID of the Sub Module"
+          }
+        },
+        "required": [
+          "action",
+          "sub_module_id"
+        ]
+      },
+      "UpdateSubModulePermisisonDto": {
+        "type": "object",
+        "properties": {
+          "sub_module_permission_id": {
+            "type": "string",
+            "example": "UUID",
+            "description": "ID of the sub module permission you want to update"
+          },
+          "action": {
+            "type": "string",
+            "example": "view, create, update, note, delete",
+            "description": "if you want to update the current actions"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "If you want to update the status of the action "
+          }
+        },
+        "required": [
+          "sub_module_permission_id",
+          "action",
+          "status"
+        ]
+      },
+      "CreateModuleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Operations",
+            "description": "The name of the module"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateModuleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Operations",
+            "description": "The name of the module"
+          }
+        }
+      },
+      "CreateRoleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "IT Staff",
+            "description": "Name of the role"
+          },
+          "description": {
+            "type": "string",
+            "example": "Office staff for IT department",
+            "description": "Description of the role"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active, inactive"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "status"
+        ]
+      },
+      "CreateRolePermissionDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
+            "description": "Assign permissions to role, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sub_module_id": {
+            "type": "string",
+            "example": 1,
+            "description": "ID of the Sub Module"
+          },
+          "role_id": {
+            "type": "string",
+            "example": 1,
+            "description": "ID of the Role"
+          },
+          "department_id": {
+            "type": "string",
+            "example": 1,
+            "description": "ID of the Department"
+          },
+          "position_id": {
+            "type": "string",
+            "example": 1,
+            "description": "ID of the Position"
+          }
+        },
+        "required": [
+          "action",
+          "sub_module_id",
+          "role_id",
+          "department_id",
+          "position_id"
+        ]
+      },
+      "UpdateRolePermissionsDto": {
+        "type": "object",
+        "properties": {
+          "action_updates": {
+            "example": "[\"read\", \"update\", \"delete\", \"create\"]",
+            "description": "User can add or update new permission for a current role",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "action_updates"
+        ]
+      },
+      "UpdateSecurityClearanceDto": {
+        "type": "object",
+        "properties": {
+          "new_level": {
+            "type": "number",
+            "example": 1,
+            "description": "1 is the lowest level of security clearance while 9 is the highest"
+          }
+        },
+        "required": [
+          "new_level"
+        ]
+      },
+      "ExecuteDbQueryDto": {
+        "type": "object",
+        "properties": {
+          "sql": {
+            "type": "string",
+            "example": "ALTER TABLE \"Module\" ADD COLUMN \"test\" TEXT;",
+            "description": "Manual db query operation"
+          },
+          "purpose": {
+            "type": "string",
+            "example": "this is to add new column for Module table",
+            "description": "The purpose of you db query"
+          }
+        },
+        "required": [
+          "sql",
+          "purpose"
+        ]
+      },
+      "CreatePositionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Software Engineer",
+            "description": "The name of the position"
+          },
+          "sorting": {
+            "type": "number",
+            "example": 2,
+            "description": "Sorting number of the position"
+          },
+          "department": {
+            "type": "string",
+            "example": "human resources = 1, information technology = 2, accounting = 6",
+            "description": "The Department where the position is available"
+          }
+        },
+        "required": [
+          "name",
+          "sorting",
+          "department"
+        ]
+      },
+      "UpdatePositionDto": {
+        "type": "object",
+        "properties": {
+          "position_name": {
+            "type": "string",
+            "example": "New Position name",
+            "description": "If you want to update the Position Name"
+          },
+          "sorting": {
+            "type": "number",
+            "example": 2,
+            "description": "Sorting number of the position"
+          },
+          "department": {
+            "type": "string",
+            "example": "human resources, information technology, accounting",
+            "description": "The Department where the position is available"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "position_name",
+          "sorting",
+          "department",
+          "status"
+        ]
+      },
+      "CreateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "department_name": {
+            "type": "string",
+            "example": "Human Resources",
+            "description": "The name of the department"
+          },
+          "sorting": {
+            "type": "number",
+            "example": 2,
+            "description": "Sorting number of the department"
+          },
+          "division": {
+            "type": "string",
+            "example": "corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 4",
+            "description": "The Division where the department belongs to"
+          }
+        },
+        "required": [
+          "department_name",
+          "sorting",
+          "division"
+        ]
+      },
+      "UpdateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "department_name": {
+            "type": "string",
+            "example": "New Department name",
+            "description": "If you want to update the Department name"
+          },
+          "sorting": {
+            "type": "number",
+            "example": 2,
+            "description": "Sorting number of the department"
+          },
+          "division": {
+            "type": "string",
+            "example": "corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 3",
+            "description": "The Division where the department belongs to"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "department_name",
+          "sorting",
+          "division",
+          "status"
+        ]
+      },
+      "CreateCompanyDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Avega Bros. Integrated Shipping Corp",
+            "description": "Name of the company"
+          },
+          "address": {
+            "type": "string",
+            "example": "Cebu City, Cebu",
+            "description": "Address or location of the company"
+          },
+          "telephone_no": {
+            "type": "string",
+            "example": "011-63-45-123-4567",
+            "description": "Telephone No. of the company"
+          },
+          "fax_no": {
+            "type": "string",
+            "example": "011-63-2-1234567",
+            "description": "Fax No. of the company"
+          },
+          "company_tin": {
+            "type": "string",
+            "example": "11-M1115-1234",
+            "description": "Registered Tax Identification No. of the company"
+          },
+          "is_top_20000": {
+            "type": "number",
+            "example": "yes or no",
+            "description": "yes = 1, no = 0"
+          },
+          "abbreviation": {
+            "type": "string",
+            "example": "ABISC",
+            "description": "Short name or abbreviation of the company"
+          },
+          "stat": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "name",
+          "address",
+          "telephone_no",
+          "fax_no",
+          "company_tin",
+          "is_top_20000",
+          "abbreviation",
+          "stat"
+        ]
+      },
+      "UpdateCompanyDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Avega Bros. Integrated Shipping Corp",
+            "description": "Update current company name"
+          },
+          "address": {
+            "type": "string",
+            "example": "Cebu City, Cebu",
+            "description": "Update current company location"
+          },
+          "telephone_no": {
+            "type": "string",
+            "example": "011-63-45-123-4567",
+            "description": "Update current company telephone no."
+          },
+          "fax_no": {
+            "type": "string",
+            "example": "011-63-2-1234567",
+            "description": "Update current company fax no."
+          },
+          "company_tin": {
+            "type": "string",
+            "example": "11-M1115-1234",
+            "description": "Update current company tin no."
+          },
+          "is_top_20000": {
+            "type": "number",
+            "example": "yes or no",
+            "description": "Update current company is top 20000?"
+          },
+          "abbreviation": {
+            "type": "string",
+            "example": "ABISC",
+            "description": "Update current company abbreviation"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "Update current company status"
+          }
+        },
+        "required": [
+          "name",
+          "address",
+          "telephone_no",
+          "fax_no",
+          "company_tin",
+          "is_top_20000",
+          "abbreviation",
+          "status"
+        ]
+      },
+      "CreateDivisionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Cebu Air Inc",
+            "description": "The name of the division"
+          },
+          "division_head_id": {
+            "type": "string",
+            "example": "Division UUID",
+            "description": "ID number of the division head it belongs to"
+          }
+        },
+        "required": [
+          "name",
+          "division_head_id"
+        ]
+      },
+      "UpdateDivisionDto": {
+        "type": "object",
+        "properties": {
+          "division_name": {
+            "type": "string",
+            "example": "New Division Name",
+            "description": "If you want to update the Division name"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "division_name",
+          "status"
+        ]
+      },
+      "CreateEmploymentStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateEmploymentStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateUserLocationDto": {
+        "type": "object",
+        "properties": {
+          "locationName": {
+            "type": "string",
+            "example": "Tayud",
+            "description": "The name of the place the user located"
+          },
+          "address": {
+            "type": "string",
+            "example": "Consolacion",
+            "description": "The address of the location"
+          }
+        },
+        "required": [
+          "locationName",
+          "address"
+        ]
+      },
+      "UpdateUserLocationDto": {
+        "type": "object",
+        "properties": {
+          "locationName": {
+            "type": "string",
+            "example": "New User Location",
+            "description": "If you want to update the User Location name"
+          },
+          "address": {
+            "type": "string",
+            "example": "New User Location address",
+            "description": "If you want to update the User Location address"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
+          }
+        },
+        "required": [
+          "locationName",
+          "address",
+          "status"
+        ]
+      },
+      "CreatePersonDto": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "example": "Juan",
+            "description": "First name of the employee"
+          },
+          "middle_name": {
+            "type": "string",
+            "example": "Hindi",
+            "description": "Middle name of the employee but it is optional"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "Tamad",
+            "description": "Last name of the employee"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "example": "2025-07-10",
+            "description": "Date of birth of the employee"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ],
+            "example": "male",
+            "description": "Gender of the employee"
+          },
+          "civil_status": {
+            "type": "string",
+            "enum": [
+              "single",
+              "married",
+              "separated",
+              "widowed"
+            ],
+            "example": "single",
+            "description": "Civil Status of the employee"
+          },
+          "email": {
+            "type": "string",
+            "example": "sample@gmail.com",
+            "description": "Email of the employee"
+          }
+        },
+        "required": [
+          "first_name",
+          "middle_name",
+          "last_name",
+          "date_of_birth",
+          "gender",
+          "civil_status",
+          "email"
+        ]
+      },
+      "CreateEmployeeDto": {
+        "type": "object",
+        "properties": {
+          "company_id": {
+            "type": "string",
+            "example": "PK uuid of company",
+            "description": "Company of the employee"
+          },
+          "department_id": {
+            "type": "string",
+            "example": "PK uuid of department",
+            "description": "Department of the employee"
+          },
+          "position_id": {
+            "type": "string",
+            "example": "PK uuid of position",
+            "description": "Position of the employee"
+          },
+          "division_id": {
+            "type": "string",
+            "example": "PK uuid of division",
+            "description": "Division of the employee"
+          },
+          "salary": {
+            "type": "number",
+            "example": 21000,
+            "description": "The salary of the employee"
+          },
+          "hire_date": {
+            "type": "string",
+            "example": "2025-07-10",
+            "description": "Hired date of the employee"
+          },
+          "pay_frequency": {
+            "type": "string",
+            "example": "Monthly",
+            "description": "Pay frequency of the employee salary"
+          },
+          "employment_status_id": {
+            "type": "string",
+            "example": "PK uuid of employment status",
+            "description": "The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated"
+          },
+          "monthly_equivalent_salary": {
+            "type": "number",
+            "example": 21000,
+            "description": "The equivalent amount of salary per month of the employee"
+          },
+          "archive_date": {
+            "type": "string",
+            "example": "can be left out for now since its optional",
+            "description": "The archived date of this employee record"
+          },
+          "other_employee_data": {
+            "type": "object",
+            "example": "Hobbies, Personal Experiences, etc. can be left out for now since its optional",
+            "description": "Other personal data or details of the employee"
+          },
+          "corporate_rank_id": {
+            "type": "number",
+            "example": "can be left out for now since its optional",
+            "description": "Rank of the employee in the company"
+          }
+        },
+        "required": [
+          "company_id",
+          "department_id",
+          "position_id",
+          "division_id",
+          "salary",
+          "hire_date",
+          "pay_frequency",
+          "employment_status_id",
+          "monthly_equivalent_salary",
+          "archive_date",
+          "other_employee_data",
+          "corporate_rank_id"
+        ]
+      },
+      "CreateEmployeeWithDetailsDto": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/CreatePersonDto"
+          },
+          "employee": {
+            "$ref": "#/components/schemas/CreateEmployeeDto"
+          }
+        },
+        "required": [
+          "person",
+          "employee"
+        ]
+      },
+      "UpdatePersonDto": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "example": "Juan",
+            "description": "First name of the employee"
+          },
+          "middle_name": {
+            "type": "string",
+            "example": "Hindi",
+            "description": "Middle name of the employee but it is optional"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "Tamad",
+            "description": "Last name of the employee"
+          },
+          "date_of_birth": {
+            "type": "string",
+            "example": "2025-07-10",
+            "description": "Date of birth of the employee"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female"
+            ],
+            "example": "male",
+            "description": "Gender of the employee"
+          },
+          "civil_status": {
+            "type": "string",
+            "enum": [
+              "single",
+              "married",
+              "separated",
+              "widowed"
+            ],
+            "example": "single",
+            "description": "Civil Status of the employee"
+          },
+          "email": {
+            "type": "string",
+            "example": "sample@gmail.com",
+            "description": "Email of the employee"
+          }
+        }
+      },
+      "UpdateEmployeeDto": {
+        "type": "object",
+        "properties": {
+          "company_id": {
+            "type": "string",
+            "example": "PK uuid of company",
+            "description": "Company of the employee"
+          },
+          "department_id": {
+            "type": "string",
+            "example": "PK uuid of department",
+            "description": "Department of the employee"
+          },
+          "position_id": {
+            "type": "string",
+            "example": "PK uuid of position",
+            "description": "Position of the employee"
+          },
+          "division_id": {
+            "type": "string",
+            "example": "PK uuid of division",
+            "description": "Division of the employee"
+          },
+          "salary": {
+            "type": "number",
+            "example": 21000,
+            "description": "The salary of the employee"
+          },
+          "hire_date": {
+            "type": "string",
+            "example": "2025-07-10",
+            "description": "Hired date of the employee"
+          },
+          "pay_frequency": {
+            "type": "string",
+            "example": "Monthly",
+            "description": "Pay frequency of the employee salary"
+          },
+          "employment_status_id": {
+            "type": "string",
+            "example": "PK uuid of employment status",
+            "description": "The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated"
+          },
+          "monthly_equivalent_salary": {
+            "type": "number",
+            "example": 21000,
+            "description": "The equivalent amount of salary per month of the employee"
+          },
+          "archive_date": {
+            "type": "string",
+            "example": "can be left out for now since its optional",
+            "description": "The archived date of this employee record"
+          },
+          "other_employee_data": {
+            "type": "object",
+            "example": "Hobbies, Personal Experiences, etc. can be left out for now since its optional",
+            "description": "Other personal data or details of the employee"
+          },
+          "corporate_rank_id": {
+            "type": "number",
+            "example": "can be left out for now since its optional",
+            "description": "Rank of the employee in the company"
+          }
+        }
+      },
+      "UpdateEmployeeWithDetailsDto": {
+        "type": "object",
+        "properties": {
+          "person": {
+            "$ref": "#/components/schemas/UpdatePersonDto"
+          },
+          "employee": {
+            "$ref": "#/components/schemas/UpdateEmployeeDto"
+          }
+        },
+        "required": [
+          "person",
+          "employee"
+        ]
+      },
+      "CreatePermissionTemplateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Accounting Clerk Template"
+          },
+          "department_id": {
+            "type": "string",
+            "example": 1,
+            "description": "ID of the department for this permission template"
+          },
+          "position_id": {
+            "type": "string",
+            "example": 1,
+            "description": "ID of the position for this permission template"
+          },
+          "role_permission_ids": {
+            "example": [
+              "UUID1",
+              "UUID2",
+              "UUID3"
+            ],
+            "description": "List of role_permission IDs to associate with the template",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "department_id",
+          "position_id",
+          "role_permission_ids"
+        ]
+      },
+      "AssignTemplateDto": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "example": "UUID",
+            "description": "The user uuid of the user"
+          },
+          "template_id": {
+            "type": "string",
+            "example": "UUID",
+            "description": "The permission template uuid to be assigned to user"
+          }
+        },
+        "required": [
+          "user_id",
+          "template_id"
+        ]
+      },
+      "UpdatePermissionTemplateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Accounting Clerk Template"
+          },
+          "department_id": {
+            "type": "string",
+            "example": 1,
+            "description": "ID of the department for this permission template"
+          },
+          "position_id": {
+            "type": "string",
+            "example": 1,
+            "description": "ID of the position for this permission template"
+          },
+          "role_permission_ids": {
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "description": "List of role_permission IDs to associate with the template",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "department_id",
+          "position_id",
+          "role_permission_ids"
+        ]
+      },
+      "UserDetailsDto": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "ABISC-250710-001",
+            "description": "The ID of the employee to link this user to"
+          },
+          "username": {
+            "type": "string",
+            "example": "sample_username",
+            "description": "The username for the new user"
+          },
+          "email": {
+            "type": "string",
+            "example": "sample@gmail.com",
+            "description": "Email address for the new user"
+          },
+          "password": {
+            "type": "string",
+            "example": "avegabros",
+            "description": "Password for the new user"
+          }
+        },
+        "required": [
+          "employee_id",
+          "username",
+          "email",
+          "password"
+        ]
+      },
+      "CreateUserWithRolePermissionDto": {
+        "type": "object",
+        "properties": {
+          "user_details": {
+            "$ref": "#/components/schemas/UserDetailsDto"
+          },
+          "role_permission_ids": {
+            "example": [
+              1
+            ],
+            "description": "The role permission IDs to assign to the user",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "user_details",
+          "role_permission_ids"
+        ]
+      },
+      "AddUserRolePermissionsDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "example": 1,
+            "description": "The id of the user to add role permission"
+          },
+          "rolePermissionIds": {
+            "example": [
+              101,
+              102,
+              103
+            ],
+            "description": "The role permission id that will be assign or added to the user it is array because you can add multiple role permission",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "userId",
+          "rolePermissionIds"
+        ]
+      },
+      "UserEmailResetTokenDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin@gmail.com",
+            "description": "Email of the user you want to give a reset token"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "DeactivateUserAccountDto": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "example": 1,
+            "description": "The id number of the user you want to deactivate"
+          }
+        },
+        "required": [
+          "user_id"
+        ]
+      },
+      "ReactivateUserAccountDto": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "example": 1,
+            "description": "The id number of the user you want to reactivate"
+          }
+        },
+        "required": [
+          "user_id"
+        ]
+      }
+    }
+  }
+}
