@@ -4,10 +4,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserLocationDto } from './dto/create-user-location.dto';
+import {
+  CreateUserLocationDto,
+  UpdateUserLocationDto,
+} from './dto/user-location.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { UpdateUserLocationDto } from './dto/update-user-location.dto';
 
 @Injectable()
 export class UserLocationService {
@@ -19,12 +21,38 @@ export class UserLocationService {
     if (!user_location) {
       throw new BadRequestException('No avaiable User Locations found');
     }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException('User is not allowed to view a Company');
+    }
+
     return {
       status: 'success',
       message: 'Here are the list of User Locations.',
-      data: {
-        user_location,
-      },
+      user_location,
     };
   }
 
@@ -36,12 +64,38 @@ export class UserLocationService {
     if (!user_location) {
       throw new BadRequestException('User Location not found');
     }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException('User is not allowed to view a Company');
+    }
+
     return {
       status: 'success',
       message: 'Here is the User Location.',
-      data: {
-        user_location,
-      },
+      user_location,
     };
   }
 
@@ -50,11 +104,11 @@ export class UserLocationService {
     createUserLocationDto: CreateUserLocationDto,
     user: RequestUser,
   ) {
-    const { location_name, address } = createUserLocationDto;
+    const { locationName, address } = createUserLocationDto;
 
     const existingUserLocation = await this.prisma.userLocation.findFirst({
       where: {
-        location_name: createUserLocationDto.location_name,
+        locationName: createUserLocationDto.locationName,
       },
     });
     if (existingUserLocation) {
@@ -94,7 +148,7 @@ export class UserLocationService {
 
     const createUserLocation = await this.prisma.userLocation.create({
       data: {
-        location_name: location_name,
+        locationName: locationName,
         address: address,
       },
     });
@@ -104,14 +158,14 @@ export class UserLocationService {
 
     return {
       status: 'success',
-      message: `${createUserLocation.location_name} User Location has been created successfully!`,
+      message: `${createUserLocation.locationName} User Location has been created successfully!`,
       created_by: {
         id: requestUser.id,
         name: userName,
         position: userPosition,
       },
       user_location_id: createUserLocation.id,
-      user_location_name: createUserLocation.location_name,
+      user_location_name: createUserLocation.locationName,
     };
   }
 
@@ -120,7 +174,7 @@ export class UserLocationService {
     updateUserLocationDto: UpdateUserLocationDto,
     user: RequestUser,
   ) {
-    const { location_name, address, stat } = updateUserLocationDto;
+    const { locationName, address, stat } = updateUserLocationDto;
 
     const userLocation = await this.prisma.userLocation.findUnique({
       where: { id: id },
@@ -133,7 +187,7 @@ export class UserLocationService {
     const updateUserLocation = await this.prisma.userLocation.update({
       where: { id },
       data: {
-        location_name,
+        locationName,
         address,
         stat,
       },
@@ -173,7 +227,7 @@ export class UserLocationService {
 
     return {
       status: 'success',
-      message: `${userLocation.location_name} User Location has been updated successfully!`,
+      message: `${userLocation.locationName} User Location has been updated successfully!`,
       updated_by: {
         id: requestUser.id,
         name: userName,
