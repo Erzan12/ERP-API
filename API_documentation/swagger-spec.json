@@ -502,7 +502,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateEmployeeStatusDto"
+                "$ref": "#/components/schemas/CreateEmploymentStatusDto"
               }
             }
           }
@@ -598,7 +598,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateEmpStatusDto"
+                "$ref": "#/components/schemas/UpdateEmploymentStatusDto"
               }
             }
           }
@@ -4058,7 +4058,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateEmployeeStatusDto"
+                "$ref": "#/components/schemas/CreateEmploymentStatusDto"
               }
             }
           }
@@ -4154,7 +4154,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateEmpStatusDto"
+                "$ref": "#/components/schemas/UpdateEmploymentStatusDto"
               }
             }
           }
@@ -5276,11 +5276,20 @@
         ]
       }
     },
-    "/v1/user/user/new_reset_token": {
+    "/v1/user/user_account/{id}/resend-invitation": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserControllerV1_newResetToken_v1",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
           "description": "Payload for new user reset token",
@@ -5988,14 +5997,23 @@
         ]
       }
     },
-    "/v2/user/user_account/new_reset_token": {
+    "/v2/user/user_account/{id}/resend-invitation": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_newResetToken_v2",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
-          "description": "Payload for new user reset token",
+          "description": "Payload for user reset token",
           "content": {
             "application/json": {
               "schema": {
@@ -6219,6 +6237,13 @@
   "tags": [],
   "servers": [],
   "components": {
+    "securitySchemes": {
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "access-token"
+      }
+    },
     "schemas": {
       "LoginDto": {
         "type": "object",
@@ -6340,11 +6365,11 @@
           "status"
         ]
       },
-      "CreateEmployeeStatusDto": {
+      "CreateEmploymentStatusDto": {
         "type": "object",
         "properties": {}
       },
-      "UpdateEmpStatusDto": {
+      "UpdateEmploymentStatusDto": {
         "type": "object",
         "properties": {}
       },
@@ -6501,18 +6526,12 @@
             "type": "string",
             "example": "human resources = 1, information technology = 2, accounting = 6",
             "description": "The Department where the position is available"
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
           "sorting",
-          "department",
-          "status"
+          "department"
         ]
       },
       "UpdatePositionDto": {
@@ -6724,27 +6743,16 @@
             "type": "string",
             "example": "Division UUID",
             "description": "ID number of the division head it belongs to"
-          },
-          "status": {
-            "type": "number",
-            "example": "active",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
-          "division_head_id",
-          "status"
+          "division_head_id"
         ]
       },
       "UpdateDivisionDto": {
         "type": "object",
         "properties": {
-          "division_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the division you want to update"
-          },
           "division_name": {
             "type": "string",
             "example": "New Division Name",
@@ -6757,7 +6765,6 @@
           }
         },
         "required": [
-          "division_id",
           "division_name",
           "status"
         ]
@@ -6765,7 +6772,7 @@
       "CreateUserLocationDto": {
         "type": "object",
         "properties": {
-          "location_name": {
+          "locationName": {
             "type": "string",
             "example": "Tayud",
             "description": "The name of the place the user located"
@@ -6777,14 +6784,14 @@
           }
         },
         "required": [
-          "location_name",
+          "locationName",
           "address"
         ]
       },
       "UpdateUserLocationDto": {
         "type": "object",
         "properties": {
-          "location_name": {
+          "locationName": {
             "type": "string",
             "example": "New User Location",
             "description": "If you want to update the User Location name"
@@ -6801,7 +6808,7 @@
           }
         },
         "required": [
-          "location_name",
+          "locationName",
           "address",
           "status"
         ]
@@ -7263,7 +7270,16 @@
       },
       "UserEmailResetTokenDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "admin@gmail.com",
+            "description": "Email of the user you want to give a reset token"
+          }
+        },
+        "required": [
+          "email"
+        ]
       },
       "DeactivateUserAccountDto": {
         "type": "object",
