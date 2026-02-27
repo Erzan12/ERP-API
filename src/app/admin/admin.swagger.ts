@@ -13,7 +13,7 @@ export function setupAdminSwagger(app: INestApplication): void {
     //   'access-token',
     // )
     //since token is now stored in cookies session will not use this anymore
-    // .addCookieAuth('access-token')
+    .addCookieAuth('access-token')
     .setTitle('Administrators API (v1)')
     .setDescription(
       'API for System Management. CURRENTLY VIEWING API VERSION 1',
@@ -35,10 +35,10 @@ export function setupAdminSwagger(app: INestApplication): void {
 
   // build document for V2
   const optionsV2 = new DocumentBuilder()
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-      'access-token',
-    )
+    // .addBearerAuth(
+    //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+    //   'access-token',
+    // )
     .setTitle('Administrators API (v2)')
     .setDescription(
       'API for System Management. CURRENTLY VIEWING API VERSION 2',

@@ -269,6 +269,181 @@
         ]
       }
     },
+    "/v1/masterstable/employment_status": {
+      "get": {
+        "operationId": "EmploymentStatusControllerV1_getEmployeeStats_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of available employment status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get all employment status",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      },
+      "post": {
+        "operationId": "EmploymentStatusControllerV1_createEmployeeStatus_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create employee status.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee status created successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create new employee status.",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      }
+    },
+    "/v1/masterstable/employment_status/{id}": {
+      "get": {
+        "operationId": "EmploymentStatusControllerV1_getEmployeeStat_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the employment status."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get an employment status.",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      },
+      "put": {
+        "operationId": "EmploymentStatusControllerV1_updateEmployeeStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmpStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee status details updated successfully."
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Updating employee status details.",
+        "tags": [
+          "Masterstable - Employment Status"
+        ]
+      }
+    },
     "/v1/administrator/modules": {
       "get": {
         "operationId": "ModuleControllerV1_getModules_v1",
@@ -925,6 +1100,47 @@
         "summary": "Get own activity report",
         "tags": [
           "Administrator - Audit"
+        ]
+      }
+    },
+    "/v2/administrator/user-access/{id}": {
+      "get": {
+        "operationId": "UserController_verify_v2",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User has been verified"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Verify user",
+        "tags": [
+          "Administrator - User Access"
         ]
       }
     },
@@ -1632,181 +1848,6 @@
         ]
       }
     },
-    "/v1/masterstable/employment_status": {
-      "get": {
-        "operationId": "EmploymentStatusControllerV1_getEmployeeStats_v1",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Here are the list of available employment status"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Get all employment status",
-        "tags": [
-          "Masterstable - Employment Status"
-        ]
-      },
-      "post": {
-        "operationId": "EmploymentStatusControllerV1_createEmployeeStatus_v1",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to create employee status.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEmploymentStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Employee status created successfully."
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Create new employee status.",
-        "tags": [
-          "Masterstable - Employment Status"
-        ]
-      }
-    },
-    "/v1/masterstable/employment_status/{id}": {
-      "get": {
-        "operationId": "EmploymentStatusControllerV1_getEmployeeStat_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Here is the employment status."
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Get an employment status.",
-        "tags": [
-          "Masterstable - Employment Status"
-        ]
-      },
-      "put": {
-        "operationId": "EmploymentStatusControllerV1_updateEmployeeStatus_v1",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEmploymentStatusDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Employee status details updated successfully."
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Updating employee status details.",
-        "tags": [
-          "Masterstable - Employment Status"
-        ]
-      }
-    },
     "/v1/hris/employees": {
       "get": {
         "operationId": "EmployeeControllerV1_getEmployees_v1",
@@ -2456,20 +2497,11 @@
         ]
       }
     },
-    "/v1/user/user_account/{id}/resend-invitation": {
+    "/v1/user/user/new_reset_token": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserControllerV1_newResetToken_v1",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "description": "Payload for new user reset token",
@@ -2785,6 +2817,14 @@
           "status"
         ]
       },
+      "CreateEmployeeStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateEmpStatusDto": {
+        "type": "object",
+        "properties": {}
+      },
       "CreateModuleDto": {
         "type": "object",
         "properties": {
@@ -2919,12 +2959,18 @@
             "type": "string",
             "example": "human resources = 1, information technology = 2, accounting = 6",
             "description": "The Department where the position is available"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
           "sorting",
-          "department"
+          "department",
+          "status"
         ]
       },
       "UpdatePositionDto": {
@@ -3136,16 +3182,27 @@
             "type": "string",
             "example": "Division UUID",
             "description": "ID number of the division head it belongs to"
+          },
+          "status": {
+            "type": "number",
+            "example": "active",
+            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
-          "division_head_id"
+          "division_head_id",
+          "status"
         ]
       },
       "UpdateDivisionDto": {
         "type": "object",
         "properties": {
+          "division_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the division you want to update"
+          },
           "division_name": {
             "type": "string",
             "example": "New Division Name",
@@ -3158,17 +3215,10 @@
           }
         },
         "required": [
+          "division_id",
           "division_name",
           "status"
         ]
-      },
-      "CreateEmploymentStatusDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateEmploymentStatusDto": {
-        "type": "object",
-        "properties": {}
       },
       "CreatePersonDto": {
         "type": "object",
@@ -3627,16 +3677,7 @@
       },
       "UserEmailResetTokenDto": {
         "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "admin@gmail.com",
-            "description": "Email of the user you want to give a reset token"
-          }
-        },
-        "required": [
-          "email"
-        ]
+        "properties": {}
       },
       "DeactivateUserAccountDto": {
         "type": "object",
