@@ -378,7 +378,7 @@ model AuditTrail {
   @@index([department_id])
   @@index([session_id])
   @@index([success])
-  @@map("audit_logs")  
+  @@map("AuditTrail")  
 }
 
 //important notice we will not be using this module for schema migration only for logging
