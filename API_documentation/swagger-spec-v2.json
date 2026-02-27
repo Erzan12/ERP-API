@@ -2062,7 +2062,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateEmploymentStatusDto"
+                "$ref": "#/components/schemas/CreateEmployeeStatusDto"
               }
             }
           }
@@ -2158,7 +2158,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateEmploymentStatusDto"
+                "$ref": "#/components/schemas/UpdateEmpStatusDto"
               }
             }
           }
@@ -3122,23 +3122,14 @@
         ]
       }
     },
-    "/v2/user/user_account/{id}/resend-invitation": {
+    "/v2/user/user_account/new_reset_token": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_newResetToken_v2",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
-          "description": "Payload for user reset token",
+          "description": "Payload for new user reset token",
           "content": {
             "application/json": {
               "schema": {
@@ -3604,12 +3595,18 @@
             "type": "string",
             "example": "human resources = 1, information technology = 2, accounting = 6",
             "description": "The Department where the position is available"
+          },
+          "status": {
+            "type": "number",
+            "example": "active or inactive",
+            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
           "sorting",
-          "department"
+          "department",
+          "status"
         ]
       },
       "UpdatePositionDto": {
@@ -3821,16 +3818,27 @@
             "type": "string",
             "example": "Division UUID",
             "description": "ID number of the division head it belongs to"
+          },
+          "status": {
+            "type": "number",
+            "example": "active",
+            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
-          "division_head_id"
+          "division_head_id",
+          "status"
         ]
       },
       "UpdateDivisionDto": {
         "type": "object",
         "properties": {
+          "division_id": {
+            "type": "number",
+            "example": 1,
+            "description": "ID of the division you want to update"
+          },
           "division_name": {
             "type": "string",
             "example": "New Division Name",
@@ -3843,15 +3851,16 @@
           }
         },
         "required": [
+          "division_id",
           "division_name",
           "status"
         ]
       },
-      "CreateEmploymentStatusDto": {
+      "CreateEmployeeStatusDto": {
         "type": "object",
         "properties": {}
       },
-      "UpdateEmploymentStatusDto": {
+      "UpdateEmpStatusDto": {
         "type": "object",
         "properties": {}
       },
@@ -4356,16 +4365,7 @@
       },
       "UserEmailResetTokenDto": {
         "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "example": "admin@gmail.com",
-            "description": "Email of the user you want to give a reset token"
-          }
-        },
-        "required": [
-          "email"
-        ]
+        "properties": {}
       },
       "DeactivateUserAccountDto": {
         "type": "object",
