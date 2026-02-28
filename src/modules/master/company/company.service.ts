@@ -5,11 +5,15 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { RequestUser } from 'src/utils/types/request-user.interface';
+
+import { Prisma } from '@prisma/client';
+import { PrismaService } from 'src/config/prisma/prisma.service';
+
+import { GetCompaniesDto } from './dto/get-companies.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { CreateCompanyDto } from './dto/create-company.dto';
-import { PrismaService } from 'src/config/prisma/prisma.service';
-import { GetCompaniesDto } from './dto/get-companies.dto';
+
+import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @Injectable()
 export class CompanyService {
@@ -95,29 +99,80 @@ export class CompanyService {
       stat: 1,
     };
 
-    const companyFields = ['abbreviation', 'address', 'company_tin', 'fax', 'is_top_20000', 'name', 'active', 'telephone_no'];
+
+    const stringFields  = ['name', 'abbreviation', 'address', 'company_tin', 'fax_no', 'telephone_no'] as const;
+
+    let whereConditions: Prisma.CompanyWhereInput = {
+      stat: 1,
+    };
 
     if (search) {
-      whereCondition.name = {
-        contains: search,
-        mode: 'insensitive',
-      };
+      //handle int and boolean search
+      const orConditions: Prisma.CompanyWhereInput[] = [];
+
+      // whereConditions = {
+      //   OR: companyFields.map((field) => ({
+      //     [field]: {
+      //       contains: search,
+      //       mode: 'insensitive',
+      //     },
+      //   })),
+      // };
+
+      // string search
+      orConditions.push(
+        ...stringFields.map((field) => ({
+          [field]: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        }))
+      );
+
+      //boolen search
+      // if ( search === 'true' || search === 'false' ) {
+      //   orConditions.push({
+      //     is_top_20000: search === 'true',
+      //   })
+      // }
+
+      // number search
+      if (!isNaN(Number(search))) {
+        orConditions.push({
+          is_top_20000: Number(search),
+        });
+      }
+
+      // number search
+      if (!isNaN(Number(search))) {
+        orConditions.push({
+          stat: Number(search),
+        });
+      }
+
+      whereConditions.OR = orConditions;
     }
 
-    const allowSortFeilds = ['company_id', 'created_at', 'updated_at'];
+    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'name', 'abbreviation'];
     if (!allowSortFeilds.includes(sortBy)) {
       sortBy;
     }
 
     const [ total, companies] = await this.prisma.$transaction([
       this.prisma.company.count({
-        where: whereCondition,
+        where: {
+          ...whereCondition,
+          ...whereConditions,
+        }
       }),
-      this.prisma.module.findMany({
-      where: whereCondition,
-        include: {
-          sub_module: true,
+      this.prisma.company.findMany({
+        where: {
+          ...whereCondition,
+          ...whereConditions,
         },
+        // include: {
+        //   sub_module: true,
+        // },
         skip,
         take: perPage,
         orderBy: {
@@ -160,6 +215,10 @@ export class CompanyService {
     return {
       status: 'success',
       message: 'Here are the list of Companies.',
+      count: total,
+      page,
+      perPage,
+      // totalPages: Math.ceil( total / perPage),
       companies,
     };
   }

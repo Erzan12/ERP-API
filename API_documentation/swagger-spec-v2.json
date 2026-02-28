@@ -1685,8 +1685,8 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "company_id",
-              "example": "company_id",
+              "default": "id",
+              "example": "id",
               "type": "string"
             }
           },
@@ -1741,11 +1741,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get all companies",
         "tags": [
           "Masterstable - Company"
@@ -1785,11 +1780,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new company",
         "tags": [
           "Masterstable - Company"
@@ -1829,11 +1819,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a company",
         "tags": [
           "Masterstable - Company"
@@ -1882,11 +1867,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current company information",
         "tags": [
           "Masterstable - Company"
