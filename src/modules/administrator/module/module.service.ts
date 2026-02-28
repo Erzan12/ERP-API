@@ -173,7 +173,7 @@ export class ModuleService {
         where: whereCondition,
       }),
       this.prisma.module.findMany({
-        where: whereCondition,
+      where: whereCondition,
         include: {
           sub_module: true,
         },

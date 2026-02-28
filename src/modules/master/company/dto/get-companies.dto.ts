@@ -1,8 +1,8 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsString, IsInt, IsOptional } from 'class-validator';
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsInt, IsOptional, IsString } from "class-validator";
 
-export class GetEmployeesDto {
+export class GetCompaniesDto {
   @IsOptional()
   @IsString()
   @ApiPropertyOptional({ default: "" })
@@ -10,7 +10,7 @@ export class GetEmployeesDto {
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'id', default: 'id' })
+  @ApiPropertyOptional({ example: 'company_id', default: 'company_id'})
   sortBy: string = 'id';
 
   @IsOptional()
