@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PositionService } from './position/position.service';
-import { CreatePositionDto } from './position/dto/create-position.dto';
+import { CreatePositionDto } from './position/dto/position.dto';
 import { DepartmentService } from './department/department.service';
 import { CreateDepartmentDto } from './department/dto/department.dto';
 import { CompanyService } from './company/company.service';
