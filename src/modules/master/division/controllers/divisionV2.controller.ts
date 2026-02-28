@@ -7,9 +7,10 @@ import {
   Put,
   Post,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { DivisionService } from '../division.service';
+
+import { ApiBearerAuth, ApiBody, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
@@ -22,12 +23,16 @@ import {
   ACTION_UPDATE,
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
+
+import { DivisionService } from '../division.service';
+
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateDivisionDto } from '../dto/create-division.dto';
-import { UpdateDivisionDto } from '../dto/update-division.dto.';
 
-@ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
+import { CreateDivisionDto, UpdateDivisionDto } from '../dto/division.dto';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+
+// @ApiCookieAuth('access-token')
 @ApiTags('Masterstable - Division')
 @Controller({ path: 'masterstable', version: '2' })
 export class DivisionControllerV2 {
@@ -38,8 +43,16 @@ export class DivisionControllerV2 {
   @ApiOperation({ summary: 'Get all divisions' })
   @ApiGetResponse('List of divisions retrieved')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  getDivisions(@SessionUser() user: RequestUser) {
-    return this.divisionService.getDivisions(user);
+  getDivisions(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'company_id',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.divisionService.getDivisions(user, dto);
   }
 
   //get selected division
@@ -67,7 +80,6 @@ export class DivisionControllerV2 {
     @SessionUser() user: RequestUser,
   ) {
     console.log('createDivisionDto:', createDivisionDto);
-    console.log('stat:', createDivisionDto.stat);
     return this.divisionService.createDivision(createDivisionDto, user);
   }
 
