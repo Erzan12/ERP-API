@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { PositionService } from './position/position.service';
-import { CreatePositionDto } from './position/dto/create-position.dto';
+import { CreatePositionDto } from './position/dto/position.dto';
 import { DepartmentService } from './department/department.service';
-import { CreateDepartmentDto } from './department/dto/create-dept.dto';
+import { CreateDepartmentDto } from './department/dto/department.dto';
 import { CompanyService } from './company/company.service';
-import { CreateCompanyDto } from './company/dto/create-company.dto';
+import { CreateCompanyDto } from './company/dto/company.dto';
 import { DivisionService } from './division/division.service';
-import { CreateDivisionDto } from './division/dto/create-division.dto';
+import { CreateDivisionDto } from './division/dto/division.dto';
 import { PositionControllerV1 } from './position/controllers/positionV1.controller';
 import { DepartmentControllerV1 } from './department/controllers/departmentV1.controller';
 import { DivisionControllerV1 } from './division/controllers/divisionV1.controller';

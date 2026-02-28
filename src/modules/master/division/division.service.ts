@@ -4,10 +4,12 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { CreateDivisionDto } from './dto/create-division.dto';
+import { CreateDivisionDto, UpdateDivisionDto } from './dto/division.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { UpdateDivisionDto } from './dto/update-division.dto.';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { Prisma } from '@prisma/client';
+import { count } from 'console';
 
 @Injectable()
 export class DivisionService {
@@ -58,19 +60,111 @@ export class DivisionService {
   }
 
   //query all available divisions
-  async getDivisions(user: RequestUser) {
-    const division = await this.prisma.department.findMany();
+  async getDivisions(
+    user: RequestUser,
+    dto: PaginationDto,
+  ) {
 
-    if (!division) {
+    const { search, sortBy, order, page, perPage } = dto;
+
+    const canView = await this.prisma.userRole.findFirst({
+      where: {
+        user_id: user.id,
+        role_name: {
+          in: [
+            'Administrator',
+            'Super Administrator',
+            'HR Manager',
+            'HR Clerk',
+            'HR Staff',
+          ],
+        },
+      },
+    });
+
+    if (!canView) {
+      throw new BadRequestException(
+        'You are not allowed to view this sub module',
+      );
+    }
+
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: any = {
+      stat: 1,
+    };
+
+    //for string type search columns
+    const stringFields = ['name', 'division_head_id']
+
+    if (search) {
+      //handle int and boolean search
+      const orConditions: Prisma.DivisionWhereInput[] = [];
+
+      //string search
+      orConditions.push(
+        ...stringFields.map((field) => ({
+          [field]: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        }))
+      );
+
+      //boolean search
+      // if ( search === 'true' || search === 'false' ) {
+      //   orConditions.push({
+      //     stat: search === 'true',
+      //   })
+      // }
+
+      //number search 
+      if (!isNaN(Number(search))) {
+        orConditions.push({
+          stat: Number(search),
+        });
+      }
+
+      whereCondition.OR = orConditions;
+    }
+
+    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'name', 'division_head_id'];
+    if (!allowSortFeilds.includes(sortBy)) {
+      sortBy;
+    }
+
+    const [ total, divisions ] = await this.prisma.$transaction([
+      this.prisma.division.count({
+        where: {
+          ...whereCondition,
+        }
+      }),
+      this.prisma.division.findMany({
+        where: {
+          ...whereCondition,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [sortBy]: order,
+        },
+      }),
+    ])
+
+    // const division = await this.prisma.department.findMany();
+
+    if (divisions.length === 0) {
       throw new BadRequestException('No available divisions found');
     }
 
     return {
       status: 'success',
       message: 'Here are the list of Divisions',
-      data: {
-        division,
-      },
+      count: total,
+      page,
+      perPage,
+      // totalPages: Math.ceil( total / perPage),
+      divisions
     };
   }
 
@@ -78,7 +172,7 @@ export class DivisionService {
     createDivisionDto: CreateDivisionDto,
     user: RequestUser,
   ) {
-    const { name, division_head_id, stat } = createDivisionDto;
+    const { name, division_head_id } = createDivisionDto;
 
     const existingDivision = await this.prisma.division.findFirst({
       where: {
@@ -94,8 +188,7 @@ export class DivisionService {
     const createDivision = await this.prisma.division.create({
       data: {
         name,
-        division_head_id,
-        stat,
+        division_head_id
       },
     });
 

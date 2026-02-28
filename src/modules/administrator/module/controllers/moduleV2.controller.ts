@@ -7,29 +7,34 @@ import {
   Param,
   ParseUUIDPipe,
   Query,
-  Search,
 } from '@nestjs/common';
-import { ModuleService } from '../module.service';
-import { Can } from '../../../../utils/decorators/can.decorator';
-import { SessionUser } from '../../../../utils/decorators/session-user.decorator';
-import { RequestUser } from '../../../../utils/types/request-user.interface';
-import { CreateModuleDto } from '../dto/module.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { ApiBearerAuth, ApiBody, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
-import { UpdateModuleDto } from '../dto/module.dto';
+
 import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
   SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
-import { Public } from 'src/utils/decorators/public.decorator';
 
-@ApiBearerAuth('access-token')
+import { Can } from '../../../../utils/decorators/can.decorator';
+
+import { SessionUser } from '../../../../utils/decorators/session-user.decorator';
+import { RequestUser } from '../../../../utils/types/request-user.interface';
+
+import { Public } from 'src/utils/decorators/public.decorator';
+import { CreateModuleDto, UpdateModuleDto } from '../dto/module.dto';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+
+import { ModuleService } from '../module.service';
+
+// @ApiCookieAuth('access-token')
 @ApiTags('Administrator - Module')
 @Controller({ path: 'administrator', version: '2' })
 export class ModuleControllerV2 {
@@ -41,20 +46,14 @@ export class ModuleControllerV2 {
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModules(
     @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
     @Query('page') page = 1,
     @Query('perPage') perPage = 10,
     @Query('search') search?: string,
     @Query('sortBy') sortBy: string = 'created_at',
     @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
-    return this.moduleService.getModules(
-      user,
-      Number(page),
-      Number(perPage),
-      search,
-      sortBy,
-      order,
-    );
+    return this.moduleService.getModules(user, dto);
   }
 
   @Get('modules/:id')
