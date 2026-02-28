@@ -97,10 +97,6 @@ export class DivisionService {
     //for string type search columns
     const stringFields = ['name', 'division_head_id']
 
-    let whereConditions: Prisma.DivisionWhereInput = {
-      stat: 1,
-    };
-
     if (search) {
       //handle int and boolean search
       const orConditions: Prisma.DivisionWhereInput[] = [];
@@ -129,7 +125,7 @@ export class DivisionService {
         });
       }
 
-      whereConditions.OR = orConditions;
+      whereCondition.OR = orConditions;
     }
 
     const allowSortFeilds = ['id', 'created_at', 'updated_at', 'name', 'division_head_id'];
@@ -141,13 +137,11 @@ export class DivisionService {
       this.prisma.division.count({
         where: {
           ...whereCondition,
-          ...whereConditions,
         }
       }),
       this.prisma.division.findMany({
         where: {
           ...whereCondition,
-          ...whereConditions,
         },
         skip,
         take: perPage,
