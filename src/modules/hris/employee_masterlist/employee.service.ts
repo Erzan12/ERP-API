@@ -3,17 +3,22 @@ import {
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
-import { RequestUser } from '../../../utils/types/request-user.interface';
+
 import {
   CivilStatus,
   Gender,
 } from '../../../utils/decorators/global.enums.decorator';
+
 import {
   CreateEmployeeWithDetailsDto,
   UpdateEmployeeWithDetailsDto,
 } from './dto/employee-person.dto';
+
+import { RequestUser } from '../../../utils/types/request-user.interface';
+
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { GetEmployeesDto } from './dto/get-employee.dto';
 
 @Injectable()
 export class EmployeeService {
@@ -200,74 +205,10 @@ export class EmployeeService {
   }
 
   //view employee masterlist
-  // async getEmployees(user: RequestUser) {
-  //   // const hrViewEmployee = [ 'Human Resources' ].includes(user.role.name);
-
-  //   // const hrViewEmployee = user.roles.some(
-  //   //   (role) => role.name === 'Human Resources',
-  //   // );
-
-  //   const canView = await this.prisma.userRole.findFirst({
-  //     where: {
-  //       user_id: user.id,
-  //       role_name: { in: ["Administrator", "Super Administrator", "HR Manager", "HR Clerk", "HR Staff"]}
-  //      },
-  //   });
-
-  //   if(!canView) {
-  //     throw new BadRequestException('You are not allowed to view this sub module')
-  //   }
-
-  //   const viewEmployee = await this.prisma.employee.findMany({
-  //     // where: hrViewEmployee ? {} : { id: user.id },
-  //     select: {
-  //       id: true,
-  //       employee_id: true,
-  //       person: {
-  //         select: {
-  //           first_name: true,
-  //           middle_name: true,
-  //           last_name: true,
-  //         },
-  //       },
-  //       company: {
-  //         select: {
-  //           name: true,
-  //         },
-  //       },
-  //       //to include designation in employee schema
-  //       //to include group in employee schema
-  //       department: {
-  //         select: {
-  //           name: true,
-  //         },
-  //       },
-  //       //to include division in employee schema
-  //       position: {
-  //         select: {
-  //           name: true,
-  //         },
-  //       },
-  //       // to only include label of employment status
-  //       employment_status: {
-  //         select: {
-  //           label: true,
-  //         }
-  //       },
-  //     },
-  //   });
-
-  //   return {
-  //     status: 'success',
-  //     message: 'List of Employees',
-  //     data: viewEmployee
-  //   };
-  // }
-
   //with pagination
   async getEmployees(
     user: RequestUser,
-    dto: GetEmployeesDto,
+    dto: PaginationDto,
     // page = 1,
     // perPage = 10,
     // search?: string,

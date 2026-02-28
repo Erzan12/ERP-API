@@ -5,10 +5,14 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { RequestUser } from 'src/utils/types/request-user.interface';
-import { UpdateCompanyDto } from './dto/update-company.dto';
-import { CreateCompanyDto } from './dto/create-company.dto';
+
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { CreateCompanyDto, UpdateCompanyDto } from './dto/company.dto';
+
+import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @Injectable()
 export class CompanyService {
@@ -59,10 +63,121 @@ export class CompanyService {
   }
 
   //query all company available
-  async getCompanies(user: RequestUser) {
-    const company = await this.prisma.company.findMany();
+  async getCompanies(
+    user: RequestUser,
+    dto: PaginationDto,
+  ) {
 
-    if (!company) {
+    const { search, sortBy, order, page, perPage } = dto;
+
+    const canView = await this.prisma.userRole.findFirst({
+      where: {
+        user_id: user.id,
+        role_name: {
+          in: [
+            'Administrator',
+            'Super Administrator',
+            'HR Manager',
+            'HR Clerk',
+            'HR Staff',
+          ],
+        },
+      },
+    });
+
+    if (!canView) {
+      throw new BadRequestException(
+        'You are not allowed to view this sub module',
+      );
+    }
+
+    //PAGINATION AREA
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: any = {
+      stat: 1,
+    };
+
+    const stringFields  = ['name', 'abbreviation', 'address', 'company_tin', 'fax_no', 'telephone_no'] as const;
+
+    if (search) {
+      //handle int and boolean search
+      const orConditions: Prisma.CompanyWhereInput[] = [];
+
+      // whereConditions = {
+      //   OR: companyFields.map((field) => ({
+      //     [field]: {
+      //       contains: search,
+      //       mode: 'insensitive',
+      //     },
+      //   })),
+      // };
+
+      // string search
+      orConditions.push(
+        ...stringFields.map((field) => ({
+          [field]: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        }))
+      );
+
+      //boolean search
+      // if ( search === 'true' || search === 'false' ) {
+      //   orConditions.push({
+      //     is_top_20000: search === 'true',
+      //   })
+      // }
+
+      // number search
+      if (!isNaN(Number(search))) {
+        orConditions.push({
+          is_top_20000: Number(search),
+        });
+      }
+
+      //boolean search
+      // if ( search === 'true' || search === 'false' ) {
+      //   orConditions.push({
+      //     stat or isActive: search === 'true',
+      //   })
+      // }
+
+      // number search
+      if (!isNaN(Number(search))) {
+        orConditions.push({
+          stat: Number(search),
+        });
+      }
+
+      whereCondition.OR = orConditions;
+    }
+
+    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'name', 'abbreviation'];
+    if (!allowSortFeilds.includes(sortBy)) {
+      sortBy;
+    }
+
+    const [ total, companies ] = await this.prisma.$transaction([
+      this.prisma.company.count({
+        where: {
+          ...whereCondition,
+        }
+      }),
+      this.prisma.company.findMany({
+        where: {
+          ...whereCondition,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [sortBy]: order,
+        },
+      }),
+    ]);
+
+    if (companies.length === 0) {
       throw new BadRequestException('No available companies found.');
     }
 
@@ -96,7 +211,11 @@ export class CompanyService {
     return {
       status: 'success',
       message: 'Here are the list of Companies.',
-      company,
+      count: total,
+      page,
+      perPage,
+      // totalPages: Math.ceil( total / perPage),
+      companies,
     };
   }
 
@@ -109,7 +228,6 @@ export class CompanyService {
       company_tin,
       is_top_20000,
       abbreviation,
-      stat,
     } = createCompanyDto;
 
     const existingCompany = await this.prisma.company.findFirst({
@@ -158,7 +276,6 @@ export class CompanyService {
         company_tin,
         abbreviation,
         is_top_20000,
-        stat,
       },
     });
 

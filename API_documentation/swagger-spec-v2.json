@@ -275,26 +275,51 @@
         "parameters": [
           {
             "name": "search",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
+              "default": "",
               "type": "string"
             }
           },
           {
             "name": "sortBy",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
+              "default": "id",
+              "example": "id",
               "type": "string"
             }
           },
           {
             "name": "order",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
+              "default": "desc",
+              "example": "desc",
               "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
             }
           }
         ],
@@ -318,11 +343,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get modules",
         "tags": [
           "Administrator - Module"
@@ -361,11 +381,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new Module",
         "tags": [
           "Administrator - Module"
@@ -405,11 +420,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a module",
         "tags": [
           "Administrator - Module"
@@ -458,11 +468,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update current module",
         "tags": [
           "Administrator - Module"
@@ -1315,10 +1320,60 @@
         ]
       }
     },
-    "/v2/masterstable/positions": {
+    "/v1/masterstable/positions": {
       "get": {
-        "operationId": "PositionControllerV2_getPositions_v2",
-        "parameters": [],
+        "operationId": "PositionControllerV2_getPositions_v1",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "id",
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of positions retrieve"
@@ -1339,18 +1394,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get all positions",
         "tags": [
           "Masterstable - Position"
         ]
       },
       "post": {
-        "operationId": "PositionControllerV2_createPosition_v2",
+        "operationId": "PositionControllerV2_createPosition_v1",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1383,20 +1433,15 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new position",
         "tags": [
           "Masterstable - Position"
         ]
       }
     },
-    "/v2/masterstable/positions/{id}": {
+    "/v1/masterstable/positions/{id}": {
       "get": {
-        "operationId": "PositionControllerV2_getPosition_v2",
+        "operationId": "PositionControllerV2_getPosition_v1",
         "parameters": [
           {
             "name": "id",
@@ -1427,18 +1472,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a position.",
         "tags": [
           "Masterstable - Position"
         ]
       },
       "put": {
-        "operationId": "PositionControllerV2_updatePosition_v2",
+        "operationId": "PositionControllerV2_updatePosition_v1",
         "parameters": [
           {
             "name": "id",
@@ -1480,11 +1520,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current position information",
         "tags": [
           "Masterstable - Position"
@@ -1494,7 +1529,57 @@
     "/v2/masterstable/departments": {
       "get": {
         "operationId": "DepartmentControllerV2_getDepartments_v2",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "id",
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of departments available"
@@ -1515,11 +1600,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get all departments",
         "tags": [
           "Masterstable - Department"
@@ -1559,11 +1639,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new department",
         "tags": [
           "Masterstable - Department"
@@ -1603,11 +1678,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a department",
         "tags": [
           "Masterstable - Department"
@@ -1656,21 +1726,66 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current department information",
         "tags": [
           "Masterstable - Department"
         ]
       }
     },
-    "/v2/masterstable/companies": {
+    "/v1/masterstable/companies": {
       "get": {
-        "operationId": "CompanyControllerV2_getCompanies_v2",
-        "parameters": [],
+        "operationId": "CompanyControllerV2_getCompanies_v1",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "id",
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of companies retrieved"
@@ -1691,18 +1806,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get all companies",
         "tags": [
           "Masterstable - Company"
         ]
       },
       "post": {
-        "operationId": "CompanyControllerV2_createCompany_v2",
+        "operationId": "CompanyControllerV2_createCompany_v1",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1735,20 +1845,15 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new company",
         "tags": [
           "Masterstable - Company"
         ]
       }
     },
-    "/v2/masterstable/companies/{id}": {
+    "/v1/masterstable/companies/{id}": {
       "get": {
-        "operationId": "CompanyControllerV2_getCompany_v2",
+        "operationId": "CompanyControllerV2_getCompany_v1",
         "parameters": [
           {
             "name": "id",
@@ -1779,18 +1884,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a company",
         "tags": [
           "Masterstable - Company"
         ]
       },
       "put": {
-        "operationId": "CompanyControllerV2_updateCompany_v2",
+        "operationId": "CompanyControllerV2_updateCompany_v1",
         "parameters": [
           {
             "name": "id",
@@ -1832,11 +1932,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current company information",
         "tags": [
           "Masterstable - Company"
@@ -1846,7 +1941,57 @@
     "/v2/masterstable/divisions": {
       "get": {
         "operationId": "DivisionControllerV2_getDivisions_v2",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "id",
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of divisions retrieved"
@@ -1867,11 +2012,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get all divisions",
         "tags": [
           "Masterstable - Division"
@@ -1911,11 +2051,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new division",
         "tags": [
           "Masterstable - Division"
@@ -1955,11 +2090,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a division",
         "tags": [
           "Masterstable - Division"
@@ -2008,11 +2138,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current division information",
         "tags": [
           "Masterstable - Division"
@@ -2379,7 +2504,7 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "''",
+              "default": "",
               "type": "string"
             }
           },
@@ -2444,11 +2569,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "List of all employees",
         "tags": [
           "Human Resources - Employees"
@@ -2488,11 +2608,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new Employee",
         "tags": [
           "Human Resources - Employees"
@@ -2532,11 +2647,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "View employee profile",
         "tags": [
           "Human Resources - Employees"
@@ -2585,11 +2695,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current Employee",
         "tags": [
           "Human Resources - Employees"
@@ -3595,18 +3700,12 @@
             "type": "string",
             "example": "human resources = 1, information technology = 2, accounting = 6",
             "description": "The Department where the position is available"
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
           "sorting",
-          "department",
-          "status"
+          "department"
         ]
       },
       "UpdatePositionDto": {
@@ -3733,11 +3832,6 @@
             "type": "string",
             "example": "ABISC",
             "description": "Short name or abbreviation of the company"
-          },
-          "stat": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
@@ -3747,8 +3841,7 @@
           "fax_no",
           "company_tin",
           "is_top_20000",
-          "abbreviation",
-          "stat"
+          "abbreviation"
         ]
       },
       "UpdateCompanyDto": {
@@ -3818,27 +3911,16 @@
             "type": "string",
             "example": "Division UUID",
             "description": "ID number of the division head it belongs to"
-          },
-          "status": {
-            "type": "number",
-            "example": "active",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
-          "division_head_id",
-          "status"
+          "division_head_id"
         ]
       },
       "UpdateDivisionDto": {
         "type": "object",
         "properties": {
-          "division_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the division you want to update"
-          },
           "division_name": {
             "type": "string",
             "example": "New Division Name",
@@ -3851,7 +3933,6 @@
           }
         },
         "required": [
-          "division_id",
           "division_name",
           "status"
         ]
