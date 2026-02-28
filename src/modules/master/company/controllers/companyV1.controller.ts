@@ -3,13 +3,19 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
   Put,
   Post,
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiGetResponse,
+  ApiPatchResponse,
+  ApiPostResponse,
+} from 'src/utils/helpers/swagger-response.helper';
+
 import {
   ACTION_CREATE,
   ACTION_READ,
@@ -17,19 +23,16 @@ import {
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
-import { SessionUser } from 'src/utils/decorators/session-user.decorator';
-import {
-  ApiGetResponse,
-  ApiPatchResponse,
-  ApiPostResponse,
-} from 'src/utils/helpers/swagger-response.helper';
-import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CompanyService } from '../company.service';
-import { CreateCompanyDto } from '../dto/create-company.dto';
-import { UpdateCompanyDto } from '../dto/update-company.dto';
-import { GetEmployeesDto } from 'src/modules/hris/employee_masterlist/dto/get-employee.dto';
 
-@ApiBearerAuth('access-token')
+import { RequestUser } from 'src/utils/types/request-user.interface';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+
+import { CreateCompanyDto, UpdateCompanyDto } from '../dto/company.dto';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+
+import { CompanyService } from '../company.service';
+
+// @ApiCookieAuth('access-token')
 @ApiTags('Masterstable - Company')
 @Controller({ path: 'masterstable', version: '1' })
 export class CompanyControllerV1 {
@@ -42,7 +45,7 @@ export class CompanyControllerV1 {
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getCompanies(
     @SessionUser() user: RequestUser,
-    @Query() dto: GetEmployeesDto,
+    @Query() dto: PaginationDto,
     @Query('page') page = 1,
     @Query('perPage') perPage = 10,
     @Query('search') search?: string,

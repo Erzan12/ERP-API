@@ -9,9 +9,8 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
-import { GetCompaniesDto } from './dto/get-companies.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
-import { CreateCompanyDto } from './dto/create-company.dto';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { CreateCompanyDto, UpdateCompanyDto } from './dto/company.dto';
 
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
@@ -66,7 +65,7 @@ export class CompanyService {
   //query all company available
   async getCompanies(
     user: RequestUser,
-    dto: GetCompaniesDto,
+    dto: PaginationDto,
   ) {
 
     const { search, sortBy, order, page, perPage } = dto;
@@ -129,7 +128,7 @@ export class CompanyService {
         }))
       );
 
-      //boolen search
+      //boolean search
       // if ( search === 'true' || search === 'false' ) {
       //   orConditions.push({
       //     is_top_20000: search === 'true',
@@ -181,7 +180,7 @@ export class CompanyService {
       }),
     ]);
 
-    if (!companies) {
+    if (companies.length === 0) {
       throw new BadRequestException('No available companies found.');
     }
 
@@ -232,7 +231,6 @@ export class CompanyService {
       company_tin,
       is_top_20000,
       abbreviation,
-      stat,
     } = createCompanyDto;
 
     const existingCompany = await this.prisma.company.findFirst({
@@ -281,7 +279,6 @@ export class CompanyService {
         company_tin,
         abbreviation,
         is_top_20000,
-        stat,
       },
     });
 
