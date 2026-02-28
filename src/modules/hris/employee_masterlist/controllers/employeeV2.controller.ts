@@ -49,15 +49,7 @@ export class EmployeeControllerV2 {
     @Query('sortBy') sortBy: string = 'created_at',
     @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
-    return this.employeeService.getEmployees(
-      user,
-      dto,
-      // Number(page),
-      // Number(perPage),
-      // search,
-      // sortBy,
-      // order,
-    );
+    return this.employeeService.getEmployees(user,dto);
   }
 
   //get a single employee profile or view

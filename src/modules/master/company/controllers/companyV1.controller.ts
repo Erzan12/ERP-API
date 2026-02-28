@@ -7,6 +7,7 @@ import {
   Put,
   Post,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -26,6 +27,7 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CompanyService } from '../company.service';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
+import { GetEmployeesDto } from 'src/modules/hris/employee_masterlist/dto/get-employee.dto';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Masterstable - Company')
@@ -38,8 +40,16 @@ export class CompanyControllerV1 {
   @ApiOperation({ summary: 'Get all companies' })
   @ApiGetResponse('List of companies retrieved')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  getCompanies(@SessionUser() user: RequestUser) {
-    return this.companyService.getCompanies(user);
+  getCompanies(
+    @SessionUser() user: RequestUser,
+    @Query() dto: GetEmployeesDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.companyService.getCompanies(user,dto);
   }
 
   //get a single company

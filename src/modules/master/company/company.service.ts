@@ -9,6 +9,7 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { GetCompaniesDto } from './dto/get-companies.dto';
 
 @Injectable()
 export class CompanyService {
@@ -59,10 +60,73 @@ export class CompanyService {
   }
 
   //query all company available
-  async getCompanies(user: RequestUser) {
-    const company = await this.prisma.company.findMany();
+  async getCompanies(
+    user: RequestUser,
+    dto: GetCompaniesDto,
+  ) {
 
-    if (!company) {
+    const { search, sortBy, order, page, perPage } = dto;
+
+    const canView = await this.prisma.userRole.findFirst({
+      where: {
+        user_id: user.id,
+        role_name: {
+          in: [
+            'Administrator',
+            'Super Administrator',
+            'HR Manager',
+            'HR Clerk',
+            'HR Staff',
+          ],
+        },
+      },
+    });
+
+    if (!canView) {
+      throw new BadRequestException(
+        'You are not allowed to view this sub module',
+      );
+    }
+
+    //PAGINATION AREA
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: any = {
+      stat: 1,
+    };
+
+    const companyFields = ['abbreviation', 'address', 'company_tin', 'fax', 'is_top_20000', 'name', 'active', 'telephone_no'];
+
+    if (search) {
+      whereCondition.name = {
+        contains: search,
+        mode: 'insensitive',
+      };
+    }
+
+    const allowSortFeilds = ['company_id', 'created_at', 'updated_at'];
+    if (!allowSortFeilds.includes(sortBy)) {
+      sortBy;
+    }
+
+    const [ total, companies] = await this.prisma.$transaction([
+      this.prisma.company.count({
+        where: whereCondition,
+      }),
+      this.prisma.module.findMany({
+      where: whereCondition,
+        include: {
+          sub_module: true,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [sortBy]: order,
+        },
+      }),
+    ]);
+
+    if (!companies) {
       throw new BadRequestException('No available companies found.');
     }
 
@@ -96,7 +160,7 @@ export class CompanyService {
     return {
       status: 'success',
       message: 'Here are the list of Companies.',
-      company,
+      companies,
     };
   }
 
