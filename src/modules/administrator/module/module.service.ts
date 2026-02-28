@@ -133,7 +133,7 @@ export class ModuleService {
       //no map approach if table columns are not that many e.g name column and stat column only
       orConditions.push({
         name: {
-          contains: 'search',
+          contains: search,
           mode: 'insensitive',
         },
       });
