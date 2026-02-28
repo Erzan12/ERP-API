@@ -275,26 +275,51 @@
         "parameters": [
           {
             "name": "search",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
+              "default": "",
               "type": "string"
             }
           },
           {
             "name": "sortBy",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
+              "default": "id",
+              "example": "id",
               "type": "string"
             }
           },
           {
             "name": "order",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
+              "default": "desc",
+              "example": "desc",
               "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
             }
           }
         ],
@@ -318,11 +343,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get modules",
         "tags": [
           "Administrator - Module"
@@ -361,11 +381,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new Module",
         "tags": [
           "Administrator - Module"
@@ -405,11 +420,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a module",
         "tags": [
           "Administrator - Module"
@@ -458,11 +468,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update current module",
         "tags": [
           "Administrator - Module"

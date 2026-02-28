@@ -98,12 +98,7 @@ export class CompanyService {
       stat: 1,
     };
 
-
     const stringFields  = ['name', 'abbreviation', 'address', 'company_tin', 'fax_no', 'telephone_no'] as const;
-
-    let whereConditions: Prisma.CompanyWhereInput = {
-      stat: 1,
-    };
 
     if (search) {
       //handle int and boolean search
@@ -142,6 +137,13 @@ export class CompanyService {
         });
       }
 
+      //boolean search
+      // if ( search === 'true' || search === 'false' ) {
+      //   orConditions.push({
+      //     stat or isActive: search === 'true',
+      //   })
+      // }
+
       // number search
       if (!isNaN(Number(search))) {
         orConditions.push({
@@ -149,7 +151,7 @@ export class CompanyService {
         });
       }
 
-      whereConditions.OR = orConditions;
+      whereCondition.OR = orConditions;
     }
 
     const allowSortFeilds = ['id', 'created_at', 'updated_at', 'name', 'abbreviation'];
@@ -161,17 +163,12 @@ export class CompanyService {
       this.prisma.company.count({
         where: {
           ...whereCondition,
-          ...whereConditions,
         }
       }),
       this.prisma.company.findMany({
         where: {
           ...whereCondition,
-          ...whereConditions,
         },
-        // include: {
-        //   sub_module: true,
-        // },
         skip,
         take: perPage,
         orderBy: {
