@@ -159,7 +159,7 @@ export class CompanyService {
       sortBy;
     }
 
-    const [ total, companies] = await this.prisma.$transaction([
+    const [ total, companies ] = await this.prisma.$transaction([
       this.prisma.company.count({
         where: {
           ...whereCondition,
