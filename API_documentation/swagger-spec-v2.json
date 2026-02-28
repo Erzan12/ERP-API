@@ -1667,9 +1667,9 @@
         ]
       }
     },
-    "/v2/masterstable/companies": {
+    "/v1/masterstable/companies": {
       "get": {
-        "operationId": "CompanyControllerV2_getCompanies_v2",
+        "operationId": "CompanyControllerV2_getCompanies_v1",
         "parameters": [
           {
             "name": "search",
@@ -1747,7 +1747,7 @@
         ]
       },
       "post": {
-        "operationId": "CompanyControllerV2_createCompany_v2",
+        "operationId": "CompanyControllerV2_createCompany_v1",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1786,9 +1786,9 @@
         ]
       }
     },
-    "/v2/masterstable/companies/{id}": {
+    "/v1/masterstable/companies/{id}": {
       "get": {
-        "operationId": "CompanyControllerV2_getCompany_v2",
+        "operationId": "CompanyControllerV2_getCompany_v1",
         "parameters": [
           {
             "name": "id",
@@ -1825,7 +1825,7 @@
         ]
       },
       "put": {
-        "operationId": "CompanyControllerV2_updateCompany_v2",
+        "operationId": "CompanyControllerV2_updateCompany_v1",
         "parameters": [
           {
             "name": "id",
@@ -1876,7 +1876,57 @@
     "/v2/masterstable/divisions": {
       "get": {
         "operationId": "DivisionControllerV2_getDivisions_v2",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "id",
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of divisions retrieved"
@@ -1897,11 +1947,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get all divisions",
         "tags": [
           "Masterstable - Division"
@@ -1941,11 +1986,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new division",
         "tags": [
           "Masterstable - Division"
@@ -1985,11 +2025,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a division",
         "tags": [
           "Masterstable - Division"
@@ -2038,11 +2073,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current division information",
         "tags": [
           "Masterstable - Division"
@@ -2474,11 +2504,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "List of all employees",
         "tags": [
           "Human Resources - Employees"
@@ -2518,11 +2543,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new Employee",
         "tags": [
           "Human Resources - Employees"
@@ -2562,11 +2582,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "View employee profile",
         "tags": [
           "Human Resources - Employees"
@@ -2615,11 +2630,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current Employee",
         "tags": [
           "Human Resources - Employees"
@@ -3763,11 +3773,6 @@
             "type": "string",
             "example": "ABISC",
             "description": "Short name or abbreviation of the company"
-          },
-          "stat": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
@@ -3777,8 +3782,7 @@
           "fax_no",
           "company_tin",
           "is_top_20000",
-          "abbreviation",
-          "stat"
+          "abbreviation"
         ]
       },
       "UpdateCompanyDto": {
@@ -3848,27 +3852,16 @@
             "type": "string",
             "example": "Division UUID",
             "description": "ID number of the division head it belongs to"
-          },
-          "status": {
-            "type": "number",
-            "example": "active",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
-          "division_head_id",
-          "status"
+          "division_head_id"
         ]
       },
       "UpdateDivisionDto": {
         "type": "object",
         "properties": {
-          "division_id": {
-            "type": "number",
-            "example": 1,
-            "description": "ID of the division you want to update"
-          },
           "division_name": {
             "type": "string",
             "example": "New Division Name",
@@ -3881,7 +3874,6 @@
           }
         },
         "required": [
-          "division_id",
           "division_name",
           "status"
         ]
