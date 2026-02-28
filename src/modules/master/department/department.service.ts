@@ -49,22 +49,17 @@ export class DepartmentService {
       stat: 1,
     };
 
-    //deconstruct string fields in department table
-    const stringFields = ['name']
-
     if (search) {
       //handle int and boolean search
       const orConditions: Prisma.DepartmentWhereInput[] = [];
 
       //string field search
-      orConditions.push(
-        ...stringFields.map((field) => ({
-          [field]: {
-            contains: search,
-            mode: 'insensitive',
-          },
-        }))
-      );
+      orConditions.push({
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      });
 
       // Division name (relation search)
       //scalable search if e.g in department table there is division_id PK and its UUID and youll be searching for name not the pk itself
