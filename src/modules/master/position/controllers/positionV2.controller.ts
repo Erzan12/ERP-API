@@ -6,29 +6,36 @@ import {
   Put,
   Post,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PositionService } from '../position.service';
+
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
+
 import { Can } from 'src/utils/decorators/can.decorator';
-import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
-import { SessionUser } from 'src/utils/decorators/session-user.decorator';
-import { CreatePositionDto } from '../dto/create-position.dto';
-import { UpdatePositionDto } from '../dto/update-position.dto';
 
-@ApiBearerAuth('access-token')
+import { RequestUser } from 'src/utils/types/request-user.interface';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+
+import { CreatePositionDto, UpdatePositionDto } from '../dto/position.dto';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+
+import { PositionService } from '../position.service';
+
+// @ApiCookieAuth('access-token')
 @ApiTags('Masterstable - Position')
-@Controller({ path: 'masterstable', version: '2' })
+@Controller({ path: 'masterstable', version: '1' })
 export class PositionControllerV2 {
   constructor(private positionService: PositionService) {}
 
@@ -37,8 +44,16 @@ export class PositionControllerV2 {
   @ApiOperation({ summary: 'Get all positions' })
   @ApiGetResponse('List of positions retrieve')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  getPositions(@SessionUser() user: RequestUser) {
-    return this.positionService.getPositions(user);
+  getPositions(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.positionService.getPositions(user, dto);
   }
 
   //get single position

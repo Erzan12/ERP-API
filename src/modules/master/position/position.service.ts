@@ -4,10 +4,11 @@ import {
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
-import { CreatePositionDto } from './dto/create-position.dto';
-import { UpdatePositionDto } from './dto/update-position.dto';
+import { CreatePositionDto, UpdatePositionDto } from './dto/position.dto';
 import { RequestUser } from '../../../utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PositionService {
@@ -33,24 +34,148 @@ export class PositionService {
   }
 
   //get all available and active positions
-  async getPositions(user: RequestUser) {
-    const existingPositions = await this.prisma.position.findMany({
-      where: { stat: 1 },
-      include: {
-        department: true,
+  async getPositions(
+    user: RequestUser,
+    dto: PaginationDto,
+  ) {
+
+    const { search, sortBy, order, page, perPage } = dto;
+
+    const canView = await this.prisma.userRole.findFirst({
+      where: {
+        user_id: user.id,
+        role_name: {
+          in: [
+            'Administrator',
+            'Super Administrator',
+            'HR Clerk',
+            'HR Manager',
+            'HR Staff',
+          ],
+        },
       },
     });
 
-    if (existingPositions.length === 0) {
-      throw new BadRequestException('No available or active position exist!');
+    if (!canView) {
+      throw new BadRequestException(
+        'You are not allowed to view this sub module',
+      );
+    }
+
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: any = {
+      stat: 1,
+    };
+
+    if (search) {
+      //handle int and boolean search
+      const orConditions: Prisma.PositionWhereInput[] = [];
+
+      //string field search
+      orConditions.push({
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      });
+
+      // Division name (relation search)
+      //scalable search if e.g in position table there is department_id PK and its UUID and youll be searching for name not the pk itself
+      orConditions.push({
+        department: {
+          name: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        },
+      });
+
+      //boolean search 
+      // if ( search === 'true' || search === 'false' ) {
+      //   orConditions.push({
+      //     stat: search === 'true',
+      //   })
+      // }
+
+      // number search
+      if (!isNaN(Number(search))) {
+        orConditions.push({
+          sorting: Number(search),
+        });
+      }
+
+      if (!isNaN(Number(search))) {
+        orConditions.push({
+          stat: Number(search),
+        });
+      }
+
+      whereCondition.OR = orConditions;
+    }
+
+    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'name', 'department_id', 'sorting'];
+    if (!allowSortFeilds.includes(sortBy)) {
+      sortBy;
+    }
+
+    const [ total, positions ] = await this.prisma.$transaction([
+      this.prisma.position.count({
+        where: {
+          ...whereCondition,
+        }
+      }),
+      this.prisma.position.findMany({
+        where: {
+          ...whereCondition,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [sortBy]: order,
+        },
+      }),
+    ]);
+
+    if (positions.length === 0) {
+      throw new BadRequestException('No available departments found.');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException('User is not allowed to view Departments');
     }
 
     return {
       status: 'success',
       message: 'Here are the list of Positions',
-      data: {
-        existingPositions,
-      },
+      count: total,
+      page,
+      perPage,
+      // totalPages: Math.ceil( total / perPage),
+      positions
     };
   }
 
@@ -58,10 +183,9 @@ export class PositionService {
     createPositionDto: CreatePositionDto,
     user: RequestUser,
   ) {
-    const { name, department_id, stat } = createPositionDto;
+    const { name, department_id } = createPositionDto;
 
     console.log('createPositionDto:', createPositionDto);
-    console.log('stat value:', createPositionDto.stat);
 
     //Check for duplicate position name
     const existingPosition = await this.prisma.position.findFirst({
@@ -77,11 +201,6 @@ export class PositionService {
       throw new ConflictException('Position already exist! Try again!');
     }
 
-    //Validate incoming status
-    if (createPositionDto.stat !== 1) {
-      throw new BadRequestException('Invalid status. Only active is allowed.');
-    }
-
     //Create the new position
     const createdPosition = await this.prisma.position.create({
       data: {
@@ -89,7 +208,6 @@ export class PositionService {
         department: {
           connect: { id: createPositionDto.department_id }, // this links the foreign key
         },
-        stat,
       },
       include: {
         department: true,

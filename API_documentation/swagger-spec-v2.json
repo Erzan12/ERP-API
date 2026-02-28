@@ -1320,10 +1320,60 @@
         ]
       }
     },
-    "/v2/masterstable/positions": {
+    "/v1/masterstable/positions": {
       "get": {
-        "operationId": "PositionControllerV2_getPositions_v2",
-        "parameters": [],
+        "operationId": "PositionControllerV2_getPositions_v1",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "id",
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of positions retrieve"
@@ -1344,18 +1394,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get all positions",
         "tags": [
           "Masterstable - Position"
         ]
       },
       "post": {
-        "operationId": "PositionControllerV2_createPosition_v2",
+        "operationId": "PositionControllerV2_createPosition_v1",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1388,20 +1433,15 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new position",
         "tags": [
           "Masterstable - Position"
         ]
       }
     },
-    "/v2/masterstable/positions/{id}": {
+    "/v1/masterstable/positions/{id}": {
       "get": {
-        "operationId": "PositionControllerV2_getPosition_v2",
+        "operationId": "PositionControllerV2_getPosition_v1",
         "parameters": [
           {
             "name": "id",
@@ -1432,18 +1472,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a position.",
         "tags": [
           "Masterstable - Position"
         ]
       },
       "put": {
-        "operationId": "PositionControllerV2_updatePosition_v2",
+        "operationId": "PositionControllerV2_updatePosition_v1",
         "parameters": [
           {
             "name": "id",
@@ -1485,11 +1520,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current position information",
         "tags": [
           "Masterstable - Position"
@@ -3670,18 +3700,12 @@
             "type": "string",
             "example": "human resources = 1, information technology = 2, accounting = 6",
             "description": "The Department where the position is available"
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
           "name",
           "sorting",
-          "department",
-          "status"
+          "department"
         ]
       },
       "UpdatePositionDto": {
