@@ -8,7 +8,7 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ACTION_CREATE,
   ACTION_READ,
@@ -28,7 +28,7 @@ import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
 import { GetCompaniesDto } from '../dto/get-companies.dto';
 
-@ApiBearerAuth('access-token')
+// @ApiCookieAuth('access-token')
 @ApiTags('Masterstable - Company')
 @Controller({ path: 'masterstable', version: '2' })
 export class CompanyControllerV2 {

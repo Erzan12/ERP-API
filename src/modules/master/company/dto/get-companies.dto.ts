@@ -10,7 +10,7 @@ export class GetCompaniesDto {
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'company_id', default: 'company_id'})
+  @ApiPropertyOptional({ example: 'id', default: 'id'})
   sortBy: string = 'id';
 
   @IsOptional()
