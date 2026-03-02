@@ -2725,11 +2725,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Summary of the employees",
         "tags": [
           "Human Resources - Dashboard"

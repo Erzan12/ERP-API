@@ -9,16 +9,17 @@ import {
   Gender,
 } from '../../../utils/decorators/global.enums.decorator';
 
+import { RequestUser } from '../../../utils/types/request-user.interface';
+
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import {
   CreateEmployeeWithDetailsDto,
   UpdateEmployeeWithDetailsDto,
 } from './dto/employee-person.dto';
 
-import { RequestUser } from '../../../utils/types/request-user.interface';
-
-import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+import { error } from 'console';
 
 @Injectable()
 export class EmployeeService {
@@ -29,148 +30,162 @@ export class EmployeeService {
     user: RequestUser,
   ) {
     return await this.prisma.$transaction(async (prisma) => {
-      const { gender, civil_status } = createEmployeeWithDetails.person;
+      try {
+        const { gender, civil_status } = createEmployeeWithDetails.person;
 
-      if (!Object.values(Gender).includes(gender)) {
-        throw new ForbiddenException('Error! Please use male or female');
-      }
+        if (!Object.values(Gender).includes(gender)) {
+          throw new ForbiddenException('Error! Please use male or female');
+        }
 
-      if (!Object.values(CivilStatus).includes(civil_status)) {
-        throw new ForbiddenException(
-          'Error! Please use single, married, separated, or widowed',
-        );
-      }
-
-      const company = await prisma.company.findUnique({
-        where: { id: createEmployeeWithDetails.employee.company_id },
-      });
-      if (!company) throw new BadRequestException('Invalid company_id');
-
-      const department = await prisma.department.findUnique({
-        where: { id: createEmployeeWithDetails.employee.department_id },
-      });
-      if (!department) throw new BadRequestException('Invalid department_id');
-
-      const companyId = createEmployeeWithDetails.employee.company_id;
-
-      const existingPerson = await prisma.person.findFirst({
-        where: {
-          email: createEmployeeWithDetails.person.email,
-        },
-      });
-
-      if (existingPerson) {
-        //optionally, check if they're already employed
-        const existingEmployee = await prisma.employee.findFirst({
-          where: {
-            person_id: existingPerson.id,
-            company_id: createEmployeeWithDetails.employee.company_id,
-          },
-        });
-
-        if (existingEmployee) {
-          throw new BadRequestException(
-            'This person is already employed in the company.',
+        if (!Object.values(CivilStatus).includes(civil_status)) {
+          throw new ForbiddenException(
+            'Error! Please use single, married, separated, or widowed',
           );
         }
 
-        //if they exist but not employed yet, you can reuse `person.id` below
-      }
-      const person =
-        existingPerson ??
-        (await prisma.person.create({
-          data: {
-            first_name: createEmployeeWithDetails.person.first_name,
-            middle_name: createEmployeeWithDetails.person.middle_name,
-            last_name: createEmployeeWithDetails.person.last_name,
-            date_of_birth: new Date(
-              createEmployeeWithDetails.person.date_of_birth,
-            ),
-            gender,
-            civil_status,
+        const company = await prisma.company.findUnique({
+          where: { id: createEmployeeWithDetails.employee.company_id },
+        });
+        if (!company) throw new BadRequestException('Invalid company_id');
+
+        const department = await prisma.department.findUnique({
+          where: { id: createEmployeeWithDetails.employee.department_id },
+        });
+        if (!department) throw new BadRequestException('Invalid department_id');
+
+        const companyId = createEmployeeWithDetails.employee.company_id;
+
+        const existingPerson = await prisma.person.findFirst({
+          where: {
             email: createEmployeeWithDetails.person.email,
           },
-        }));
+        });
 
-      const hireDate = new Date(createEmployeeWithDetails.employee.hire_date);
-      const generatedEmpID = await this.createUniqueEmpID(companyId, hireDate);
+        if (existingPerson) {
+          //optionally, check if they're already employed
+          const existingEmployee = await prisma.employee.findFirst({
+            where: {
+              person_id: existingPerson.id,
+              company_id: createEmployeeWithDetails.employee.company_id,
+            },
+          });
 
-      // double check this person isn't already employed
-      const employeeCheck = await prisma.employee.findFirst({
-        where: {
-          person_id: person.id,
-          company_id: companyId,
-        },
-      });
+          if (existingEmployee) {
+            throw new BadRequestException(
+              'This person is already employed in the company.',
+            );
+          }
 
-      if (employeeCheck) {
-        throw new BadRequestException(
-          'Employee already exists for this person in this company.',
+          //if they exist but not employed yet, you can reuse `person.id` below
+        }
+        const person =
+          existingPerson ??
+          (await prisma.person.create({
+            data: {
+              first_name: createEmployeeWithDetails.person.first_name,
+              middle_name: createEmployeeWithDetails.person.middle_name,
+              last_name: createEmployeeWithDetails.person.last_name,
+              date_of_birth: new Date(
+                createEmployeeWithDetails.person.date_of_birth,
+              ),
+              gender,
+              civil_status,
+              email: createEmployeeWithDetails.person.email,
+            },
+          }));
+
+        const hireDate = new Date(createEmployeeWithDetails.employee.hire_date);
+        const generatedEmpID = await this.createUniqueEmpID(
+          prisma,
+          companyId,
+          hireDate,
         );
-      }
 
-      const employee = await prisma.employee.create({
-        data: {
-          person_id: person.id,
-          employee_id: generatedEmpID,
-          company_id: companyId,
-          department_id: createEmployeeWithDetails.employee.department_id,
-          position_id: createEmployeeWithDetails.employee.position_id,
-          division_id: createEmployeeWithDetails.employee.division_id,
-          salary: createEmployeeWithDetails.employee.salary,
-          hire_date: hireDate,
-          pay_frequency: createEmployeeWithDetails.employee.pay_frequency,
-          employment_status_id:
-            createEmployeeWithDetails.employee.employment_status_id,
-          monthly_equivalent_salary:
-            createEmployeeWithDetails.employee.monthly_equivalent_salary,
-          archive_date: createEmployeeWithDetails.employee.archive_date,
-          other_employee_data:
-            createEmployeeWithDetails.employee.other_employee_data,
-          corporate_rank_id:
-            createEmployeeWithDetails.employee.corporate_rank_id,
-        },
-      });
+        // double check this person isn't already employed
+        const employeeCheck = await prisma.employee.findFirst({
+          where: {
+            person_id: person.id,
+            company_id: companyId,
+          },
+        });
 
-      const requestUser = await prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-          employee: {
-            include: {
-              person: true,
-              position: true,
+        if (employeeCheck) {
+          throw new BadRequestException(
+            'Employee already exists for this person in this company.',
+          );
+        }
+
+        const employee = await prisma.employee.create({
+          data: {
+            person_id: person.id,
+            employee_id: generatedEmpID,
+            company_id: companyId,
+            department_id: createEmployeeWithDetails.employee.department_id,
+            position_id: createEmployeeWithDetails.employee.position_id,
+            division_id: createEmployeeWithDetails.employee.division_id,
+            salary: createEmployeeWithDetails.employee.salary,
+            hire_date: hireDate,
+            pay_frequency: createEmployeeWithDetails.employee.pay_frequency,
+            employment_status_id:
+              createEmployeeWithDetails.employee.employment_status_id,
+            monthly_equivalent_salary:
+              createEmployeeWithDetails.employee.monthly_equivalent_salary,
+            archive_date: createEmployeeWithDetails.employee.archive_date,
+            other_employee_data:
+              createEmployeeWithDetails.employee.other_employee_data,
+            corporate_rank_id:
+              createEmployeeWithDetails.employee.corporate_rank_id,
+          },
+        });
+
+        const requestUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          include: {
+            employee: {
+              include: {
+                person: true,
+                position: true,
+              },
             },
           },
-        },
-      });
+        });
 
-      if (!requestUser?.employee?.person) {
-        throw new BadRequestException(`User does not exist.`);
+        if (!requestUser?.employee?.person) {
+          throw new BadRequestException(`User does not exist.`);
+        }
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPos = requestUser.employee.position.name;
+
+        return {
+          status: 'success',
+          message: 'Employee created',
+          employee,
+          created_by: {
+            id: requestUser.id,
+            name: userName,
+            position: userPos,
+          },
+        };
+      } catch (error) {
+        console.error('CREATE EMPLOYEE ERROR');
+        console.error('Message:', error instanceof Error ? error.message : String(error));
+        console.error('Stack:', error instanceof Error ? error.stack : 'N/A');
+        console.error('Full error:', error);
+        console.error('Transaction failed:', error);
+        throw error;
       }
-
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPos = requestUser.employee.position.name;
-
-      return {
-        status: 'success',
-        message: 'Employee created',
-        employee,
-        created_by: {
-          id: requestUser.id,
-          name: userName,
-          position: userPos,
-        },
-      };
     });
   }
 
   //UNIQUE COMPANY EMPLOYEE ID FORMAT - ABISC-250710-001
   async createUniqueEmpID(
+    prisma: Prisma.TransactionClient,
     company_id: string,
     hire_date: Date,
   ): Promise<string> {
     //fetch company abbreviation
-    const company = await this.prisma.company.findUnique({
+    const company = await prisma.company.findUnique({
       where: { id: company_id },
       select: { abbreviation: true },
     });
@@ -187,7 +202,7 @@ export class EmployeeService {
     const day = String(hire_date.getDate()).padStart(2, '0'); // "29"
     const hireDateStr = `${year}${month}${day}`; // "250729"
 
-    const existingCount = await this.prisma.employee.count({
+    const existingCount = await prisma.employee.count({
       where: {
         company_id: company_id,
         hire_date: hire_date,
