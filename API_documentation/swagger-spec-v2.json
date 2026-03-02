@@ -2831,7 +2831,7 @@
         ]
       }
     },
-    "/v2/user/user": {
+    "/v2/users": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_viewUsers_v2",
@@ -2860,40 +2860,7 @@
         "tags": [
           "Manager - User Account"
         ]
-      }
-    },
-    "/v2/user/user/me/permissions": {
-      "get": {
-        "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_getMyPermissions_v2",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "My user account"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "My User Account",
-        "tags": [
-          "Manager - User Account"
-        ]
-      }
-    },
-    "/v2/user/create-user-account": {
+      },
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_createUser_v2",
@@ -2935,24 +2902,14 @@
         ]
       }
     },
-    "/v2/user/user/role_permission": {
-      "post": {
+    "/v2/users/me/permissions": {
+      "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_addRolePermission_v2",
+        "operationId": "UserAccountControllerV2_getMyPermissions_v2",
         "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddUserRolePermissionsDto"
-              }
-            }
-          }
-        },
         "responses": {
-          "201": {
-            "description": "Role permission added to user successfully"
+          "200": {
+            "description": "My user account"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -2963,20 +2920,20 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
           }
         },
-        "summary": "Add Role permissions to user",
+        "summary": "My User Account",
         "tags": [
           "Manager - User Account"
         ]
       }
     },
-    "/v2/user/user/new_reset_token": {
+    "/v2/users/resend-invitation": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_newResetToken_v2",
@@ -3018,7 +2975,96 @@
         ]
       }
     },
-    "/v2/user/user/token_keys": {
+    "/v2/users/add-role/{userId}/{roleName}": {
+      "put": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_addUserRole_v2",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roleName",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Role has been added to the user with permission"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Add Role to user",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/users/role_permission": {
+      "post": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_addRolePermission_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddUserRolePermissionsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Role permission added to user successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Add Role permissions to user",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/users/token_keys": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_viewUserKeys_v2",
@@ -3059,7 +3105,7 @@
         ]
       }
     },
-    "/v2/user/user/deactivate": {
+    "/v2/users/deactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_deactivateUser_v2",
@@ -3100,7 +3146,7 @@
         ]
       }
     },
-    "/v2/user/user/reactivate": {
+    "/v2/users/reactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_reactivateUser_v2",
@@ -3141,7 +3187,7 @@
         ]
       }
     },
-    "/v2/user/user/new_employees": {
+    "/v2/users/new_employees": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_viewNewEmployees_v2",
@@ -4149,6 +4195,10 @@
           "role_permission_ids"
         ]
       },
+      "UserEmailResetTokenDto": {
+        "type": "object",
+        "properties": {}
+      },
       "AddUserRolePermissionsDto": {
         "type": "object",
         "properties": {
@@ -4174,10 +4224,6 @@
           "userId",
           "rolePermissionIds"
         ]
-      },
-      "UserEmailResetTokenDto": {
-        "type": "object",
-        "properties": {}
       },
       "DeactivateUserAccountDto": {
         "type": "object",

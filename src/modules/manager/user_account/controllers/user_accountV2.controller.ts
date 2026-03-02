@@ -1,7 +1,6 @@
-import { Controller, Body, Post, Get, Put, Req } from '@nestjs/common';
+import { Controller, Body, Post, Get, Put, Req, ParseUUIDPipe, Param } from '@nestjs/common';
 import { UserAccountService } from '../user_account.service';
 import {
-  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiTags,
@@ -34,13 +33,13 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
 
 @ApiTags('Manager - User Account')
-@Controller({ path: 'user', version: '2' })
+@Controller({ path: 'users', version: '2' })
 export class UserAccountControllerV2 {
   constructor(private userAccountService: UserAccountService) {}
 
   //view user accounts
   //to set up viewuser accounts in service
-  @Get('user')
+  @Get()
   @ApiOperation({ summary: 'Get User Accounts' })
   @ApiGetResponse('Here are all the User Accounts available')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -50,7 +49,7 @@ export class UserAccountControllerV2 {
     return this.userAccountService.viewUserAccount(user);
   }
 
-  @Get('user/me/permissions')
+  @Get('me/permissions')
   @ApiOperation({ summary: 'My User Account' })
   @ApiGetResponse('My user account')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -61,7 +60,7 @@ export class UserAccountControllerV2 {
   }
 
   //create user account
-  @Post('create-user-account')
+  @Post()
   @ApiBody({
     type: CreateUserWithRolePermissionDto,
     description: 'Payload to create User Account',
@@ -84,8 +83,43 @@ export class UserAccountControllerV2 {
     );
   }
 
+  //for expired first time login reset token key
+  @Post('resend-invitation')
+  @ApiBody({
+    type: UserEmailResetTokenDto,
+    description: 'Payload for new user reset token',
+  })
+  @ApiOperation({ summary: 'Reset token for first time log in' })
+  @ApiPostResponse('Password reset done! you can now log in!')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  @Can({ action: ACTION_CREATE, subject: USER_TOKEN_KEY })
+  newResetToken(
+    @Body() id: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.userAccountService.resendInvitation(
+      id,
+      user,
+    );
+  }
+
+  @Put('add-role/:userId/:roleName')
+  @ApiOperation({ summary: 'Add Role to user' })
+  @ApiPostResponse('Role has been added to the user with permission')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
+  addUserRole(
+    @SessionUser() requestUser: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('roleName') roleName: string,
+  ) {
+    return this.userAccountService.addRoleUser(requestUser, userId, roleName);
+  }
+
   //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
-  @Post('user/role_permission')
+  @Post('role_permission')
   @ApiOperation({ summary: 'Add Role permissions to user' })
   @ApiPostResponse('Role permission added to user successfully')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -102,32 +136,10 @@ export class UserAccountControllerV2 {
     );
   }
 
-  //for expired first time login reset token key
-  @Post('user/new_reset_token')
-  @ApiBody({
-    type: UserEmailResetTokenDto,
-    description: 'Payload for new user reset token',
-  })
-  @ApiOperation({ summary: 'Reset token for first time log in' })
-  @ApiPostResponse('Password reset done! you can now log in!')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  @Can({ action: ACTION_CREATE, subject: USER_TOKEN_KEY })
-  newResetToken(
-    @Body() userEmailResetTokenDto: UserEmailResetTokenDto,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.userAccountService.userNewResetToken(
-      userEmailResetTokenDto,
-      user,
-    );
-  }
-
   //first login password reset token
-
   // view user tokens
   // to set up view user token keys in service
-  @Get('user/token_keys')
+  @Get('token_keys')
   @ApiOperation({ summary: 'Get the token keys for this user' })
   @ApiGetResponse('Here are all the token keys available for this user')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -146,7 +158,7 @@ export class UserAccountControllerV2 {
     );
   }
 
-  @Put('user/deactivate')
+  @Put('deactivate')
   @ApiOperation({ summary: 'Deactivate the user account' })
   @ApiDeactivateResponse('User account deactivated successfully')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -161,7 +173,7 @@ export class UserAccountControllerV2 {
     );
   }
 
-  @Put('user/reactivate')
+  @Put('reactivate')
   @ApiOperation({ summary: 'Reactivate the user account' })
   @ApiActivateResponse('User account reactivated successfully')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -176,7 +188,7 @@ export class UserAccountControllerV2 {
     );
   }
 
-  @Get('user/new_employees')
+  @Get('new_employees')
   @ApiOperation({ summary: 'Get the new employees without user accounts' })
   @ApiGetResponse('Here are the list of new employees without user accounts')
   @ApiSecurityClearance(SEC_LVL_5)
