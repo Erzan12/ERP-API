@@ -312,7 +312,7 @@ export class AuthService {
       status: 1,
       message: 'Login successful',
       token,
-      payload,
+      // payload,
       ...(isNewAccount && { new_account: 1 }),
     };
   }
@@ -322,6 +322,7 @@ export class AuthService {
     ipAddress?: string,
     userAgent?: string,
   ) {
+    
     await this.prisma.user.update({
       where: { id: requestUser.id },
       data: {

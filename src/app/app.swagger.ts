@@ -30,7 +30,7 @@ function setupAppSwagger(app: INestApplication): void {
   const optionsV2 = new DocumentBuilder()
     .setTitle('ABAS v3 API v2')
     .setVersion('1.0')
-    // .addCookieAuth('access-token')
+    .addCookieAuth('accessToken')
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
