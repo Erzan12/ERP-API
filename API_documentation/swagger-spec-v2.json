@@ -802,7 +802,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2831,7 +2831,7 @@
         ]
       }
     },
-    "/v2/user/user_account": {
+    "/v2/user/user": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_viewUsers_v2",
@@ -2860,7 +2860,40 @@
         "tags": [
           "Manager - User Account"
         ]
-      },
+      }
+    },
+    "/v2/user/user/me/permissions": {
+      "get": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "UserAccountControllerV2_getMyPermissions_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "My user account"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "My User Account",
+        "tags": [
+          "Manager - User Account"
+        ]
+      }
+    },
+    "/v2/user/create-user-account": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_createUser_v2",
@@ -2902,38 +2935,7 @@
         ]
       }
     },
-    "/v2/user/user_account/me/permissions": {
-      "get": {
-        "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_getMyPermissions_v2",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "My user account"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "My User Account",
-        "tags": [
-          "Manager - User Account"
-        ]
-      }
-    },
-    "/v2/user/user_account/role_permission": {
+    "/v2/user/user/role_permission": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_addRolePermission_v2",
@@ -2974,55 +2976,7 @@
         ]
       }
     },
-    "/v2/user/user_account/add-role/{userId}/{roleName}": {
-      "put": {
-        "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_addUserRole_v2",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "roleName",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Role has been added to the user with permission"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Add Role to user",
-        "tags": [
-          "Manager - User Account"
-        ]
-      }
-    },
-    "/v2/user/user_account/new_reset_token": {
+    "/v2/user/user/new_reset_token": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_newResetToken_v2",
@@ -3064,7 +3018,7 @@
         ]
       }
     },
-    "/v2/user/user_account/token_keys": {
+    "/v2/user/user/token_keys": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_viewUserKeys_v2",
@@ -3105,7 +3059,7 @@
         ]
       }
     },
-    "/v2/user/user_account/deactivate": {
+    "/v2/user/user/deactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_deactivateUser_v2",
@@ -3146,7 +3100,7 @@
         ]
       }
     },
-    "/v2/user/user_account/reactivate": {
+    "/v2/user/user/reactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_reactivateUser_v2",
@@ -3187,7 +3141,7 @@
         ]
       }
     },
-    "/v2/user/user_account/new_employees": {
+    "/v2/user/user/new_employees": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_viewNewEmployees_v2",

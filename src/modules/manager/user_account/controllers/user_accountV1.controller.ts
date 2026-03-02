@@ -1,17 +1,9 @@
-import { Controller, Body, Post, Get, Put } from '@nestjs/common';
-import { CreateUserWithRolePermissionDto } from '../dto/create-user-with-role-permission.dto';
+import { Controller, Body, Post, Get, Put, Req } from '@nestjs/common';
 import { UserAccountService } from '../user_account.service';
-import { RequestUser } from 'src/utils/types/request-user.interface';
-import {
-  DeactivateUserAccountDto,
-  ReactivateUserAccountDto,
-} from '../dto/user-account-status.dto';
-import { UserEmailResetTokenDto } from '../dto/user-email.reset-token.dto';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
-  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import {
@@ -21,20 +13,26 @@ import {
   ApiDeactivateResponse,
   ApiActivateResponse,
 } from 'src/utils/helpers/swagger-response.helper';
+
+import { DeactivateUserAccountDto, ReactivateUserAccountDto, } from '../dto/user-account-status.dto';
+import { CreateUserWithRolePermissionDto } from '../dto/create-user-with-role-permission.dto';
+import { UserEmailResetTokenDto } from '../dto/user-email.reset-token.dto';
 import { AddUserRolePermissionsDto } from '../dto/add-user-role-permissions.dto';
+
 import {
   ACTION_READ,
   ACTION_CREATE,
   USER_ACCOUNT,
-  ACTION_APPROVE,
   SEC_LVL_5,
   USER_TOKEN_KEY,
 } from 'src/utils/constants/ability.constant';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { Can } from 'src/utils/decorators/can.decorator';
-import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 
-@ApiBearerAuth('access-token')
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+import { RequestUser } from 'src/utils/types/request-user.interface';
+import { Request } from 'express';
+
 @ApiTags('Manager - User Account')
 @Controller({ path: 'user', version: '1' })
 export class UserControllerV1 {
@@ -76,9 +74,12 @@ export class UserControllerV1 {
   createUser(
     @Body() createUserWithRolePermissionDto: CreateUserWithRolePermissionDto,
     @SessionUser() user: RequestUser,
+    @Req() req: Request,
   ) {
     return this.userAccountService.createUserAccount(
       createUserWithRolePermissionDto,
+      user,
+      req,
       user,
     );
   }
@@ -135,9 +136,12 @@ export class UserControllerV1 {
   viewUserKeys(
     @Body() createUserWithTemplateDto: CreateUserWithRolePermissionDto,
     @SessionUser() user: RequestUser,
+    @Req() req: Request,
   ) {
     return this.userAccountService.createUserAccount(
       createUserWithTemplateDto,
+      user,
+      req,
       user,
     );
   }
