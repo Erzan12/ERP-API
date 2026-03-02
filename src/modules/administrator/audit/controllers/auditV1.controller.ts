@@ -56,7 +56,7 @@ export class AuditControllerV1 {
   @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
   getResourceHistory(
     @Param('resource') resource: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: string,
   ) {
     return this.auditService.getResourceHistory(resource, id);
   }
