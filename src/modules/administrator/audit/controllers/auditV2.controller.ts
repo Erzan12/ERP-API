@@ -18,7 +18,6 @@ import {
   SEC_LVL_8,
 } from 'src/utils/constants/ability.constant';
 
-@ApiBearerAuth('access-token')
 @ApiTags('Administrator - Audit')
 @Controller({ path: 'administrator', version: '2' })
 export class AuditControllerV2 {

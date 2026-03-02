@@ -26,7 +26,6 @@ import {
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 
-@ApiBearerAuth('access-token')
 @ApiTags('Masterstable - Employment Status')
 @Controller({ path: 'masterstable', version: '2' })
 export class EmploymentStatusControllerV2 {

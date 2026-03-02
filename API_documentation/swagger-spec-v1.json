@@ -1133,11 +1133,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Verify user",
         "tags": [
           "Administrator - User Access"

@@ -35,7 +35,6 @@ import { SecurityClearance } from 'src/middleware/security_clearance/security-cl
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 
-@ApiBearerAuth('access-token')
 @ApiTags('Manager - User Account')
 @Controller({ path: 'user', version: '2' })
 export class UserAccountControllerV2 {
