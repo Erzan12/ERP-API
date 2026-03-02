@@ -261,7 +261,7 @@ export class AuthService {
     //JWT service token is JWT Secret Key in .env with Payload from user name role id and permissions, the logic handling is in jwt.strategy.ts
     const token = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: '1h',
+      expiresIn: '8h',
     });
 
     // Update last login
@@ -312,7 +312,7 @@ export class AuthService {
       status: 1,
       message: 'Login successful',
       token,
-      payload,
+      // payload,
       ...(isNewAccount && { new_account: 1 }),
     };
   }
@@ -322,6 +322,7 @@ export class AuthService {
     ipAddress?: string,
     userAgent?: string,
   ) {
+    
     await this.prisma.user.update({
       where: { id: requestUser.id },
       data: {

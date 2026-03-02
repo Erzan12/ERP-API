@@ -5,8 +5,6 @@ import {
   Body,
   Put,
   Param,
-  Query,
-  ParseIntPipe,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { RoleService } from '../role.service';
@@ -16,8 +14,6 @@ import { RequestUser } from '../../../../utils/types/request-user.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { CreateRolePermissionDto } from '../dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from '../dto/update-role-permisisons.dto';
-import { CreatePermissionTemplateDto } from '../../../manager/permission_template/dto/create-permission-template.dto';
-import { UnassignRolePermissionDto } from '../dto/unassign-role-permission.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
@@ -30,9 +26,7 @@ import {
   ACTION_UPDATE,
   SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
-import { PrismaService } from 'src/config/prisma/prisma.service';
 
-@ApiBearerAuth('access-token')
 @ApiTags('Administrator - Role')
 @Controller({ path: 'administrator', version: '2' })
 export class RoleControllerV2 {

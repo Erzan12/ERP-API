@@ -1,27 +1,24 @@
 import {
-  IsNotEmpty,
-  IsInt,
+  IsString,
   ValidateNested,
-  IsArray,
-  ArrayNotEmpty,
   IsOptional,
 } from 'class-validator';
 import { Type, Expose } from 'class-transformer';
 import { UserDetailsDto } from './user-details.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateUserWithRolePermissionDto {
+export class CreateUserWithRoleDto {
   @ApiProperty({ type: () => UserDetailsDto })
   @ValidateNested()
   @Type(() => UserDetailsDto)
   user_details: UserDetailsDto;
 
   @IsOptional()
-  @IsInt({ each: true })
+  @IsString()
   @ApiProperty({
-    type: [Number],
-    example: [1],
-    description: 'The role permission IDs to assign to the user',
+    type: String,
+    example: 'Administrator',
+    description: 'The role to be assign to a user',
   })
-  role_permission_ids?: string[];
+  role_name: string;
 }
