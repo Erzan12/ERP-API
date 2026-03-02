@@ -14,7 +14,7 @@ import {
 } from 'src/utils/helpers/swagger-response.helper';
 
 import { DeactivateUserAccountDto, ReactivateUserAccountDto, } from '../dto/user-account-status.dto';
-import { CreateUserWithRolePermissionDto } from '../dto/create-user-with-role-permission.dto';
+import { CreateUserWithRoleDto } from '../dto/create-user-with-role-permission.dto';
 import { UserEmailResetTokenDto } from '../dto/user-email.reset-token.dto';
 import { AddUserRolePermissionsDto } from '../dto/add-user-role-permissions.dto';
 
@@ -62,7 +62,7 @@ export class UserAccountControllerV2 {
   //create user account
   @Post()
   @ApiBody({
-    type: CreateUserWithRolePermissionDto,
+    type: CreateUserWithRoleDto,
     description: 'Payload to create User Account',
   })
   @ApiOperation({ summary: 'Create a new user account' })
@@ -71,12 +71,12 @@ export class UserAccountControllerV2 {
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
   createUser(
-    @Body() createUserWithRolePermissionDto: CreateUserWithRolePermissionDto,
+    @Body() createUserWithRoleDto: CreateUserWithRoleDto,
     @SessionUser() user: RequestUser,
     @Req() req: Request,
   ) {
     return this.userAccountService.createUserAccount(
-      createUserWithRolePermissionDto,
+      createUserWithRoleDto,
       user,
       req,
       user,
@@ -146,7 +146,7 @@ export class UserAccountControllerV2 {
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: USER_TOKEN_KEY })
   viewUserKeys(
-    @Body() createUserWithTemplateDto: CreateUserWithRolePermissionDto,
+    @Body() createUserWithTemplateDto: CreateUserWithRoleDto,
     @SessionUser() user: RequestUser,
     @Req() req: Request,
   ) {
