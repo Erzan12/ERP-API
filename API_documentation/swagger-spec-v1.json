@@ -1017,7 +1017,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -2514,11 +2514,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get User Accounts",
         "tags": [
           "Manager - User Account"
@@ -2559,11 +2554,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new user account",
         "tags": [
           "Manager - User Account"
@@ -2595,11 +2585,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "My User Account",
         "tags": [
           "Manager - User Account"
@@ -2641,11 +2626,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Add Role permissions to user",
         "tags": [
           "Manager - User Account"
@@ -2688,11 +2668,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Reset token for first time log in",
         "tags": [
           "Manager - User Account"
@@ -2734,11 +2709,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get the token keys for this user",
         "tags": [
           "Manager - User Account"
@@ -2780,11 +2750,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Deactivate the user account",
         "tags": [
           "Manager - User Account"
@@ -2826,11 +2791,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Reactivate the user account",
         "tags": [
           "Manager - User Account"
@@ -2862,11 +2822,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get the new employees without user accounts",
         "tags": [
           "Manager - User Account"
