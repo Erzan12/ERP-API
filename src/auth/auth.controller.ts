@@ -15,12 +15,12 @@ import { Authenticated } from 'src/utils/decorators/auth-guard.decorator';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 
-@Public()
 @ApiTags('Authentication')
 @Controller({ path: 'auth', version: '2' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('login')
   @ApiOperation({ summary: 'User authorized login' })
   @ApiLoginResponse('User login successful')
@@ -40,7 +40,6 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'User will logout' })
   @ApiPostResponse('User logout successfully')
   logout(
@@ -60,6 +59,7 @@ export class AuthController {
     return this.authService.logout(requestUser, ipAddress, userAgent);
   }
 
+  @Public()
   @Post('reset-password')
   @ApiOperation({ summary: 'User reset password' })
   @ApiPostResponse('User reset password successfully')
@@ -78,7 +78,6 @@ export class AuthController {
     );
   }
 
-  @Authenticated()
   @Get('/verify')
   @ApiOperation({ summary: 'Verify user' })
   @ApiLoginResponse('User has been verified')

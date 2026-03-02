@@ -339,7 +339,7 @@ model AuditTrail {
   //what action was performed
   action        String  //'CREATE','READ','UPDATE','DELETE','LOGIN','LOGOUT', 'PERMISSION_DENIED', etc.
   resource      String  //'user_account','employee','salary','role_permisison', etc.
-  resource_id   Int?    //ID of the affected record (if applicable)
+  resource_id   String? @db.Uuid   //ID of the affected record (if applicable)
 
   //details of the change
   old_values    Json?   //previos state (for UPDATE/DELETE)

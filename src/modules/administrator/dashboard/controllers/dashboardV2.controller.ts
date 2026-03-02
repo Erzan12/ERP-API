@@ -7,7 +7,6 @@ import { ACTION_READ, DASHBOARD } from 'src/utils/constants/ability.constant';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 import { DashboardService } from '../dashboard.service';
 
-@ApiBearerAuth('access-token') //matches the name used in .addBearerAuth()
 @ApiTags('Administrator - Dashboard')
 @Controller({ path: 'administrator', version: '2' })
 export class DashboardControllerv2 {

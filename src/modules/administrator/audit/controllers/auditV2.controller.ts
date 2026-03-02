@@ -18,7 +18,6 @@ import {
   SEC_LVL_8,
 } from 'src/utils/constants/ability.constant';
 
-@ApiBearerAuth('access-token')
 @ApiTags('Administrator - Audit')
 @Controller({ path: 'administrator', version: '2' })
 export class AuditControllerV2 {
@@ -56,7 +55,7 @@ export class AuditControllerV2 {
   @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
   getResourceHistory(
     @Param('resource') resource: string,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: string,
   ) {
     return this.auditService.getResourceHistory(resource, id);
   }

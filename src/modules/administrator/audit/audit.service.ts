@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { AuditLogData } from './types/audit-log-data.interface';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { Request } from 'express';
 
 @Injectable()
 export class AuditService {
@@ -176,6 +177,43 @@ export class AuditService {
     });
   }
 
+  //log user account creation
+  async logUserCreation({
+    actorUserId,    //the user performing the action
+    actorEmail,     //email of the actor
+    newUser,        // the create user object
+    req,            //express request to get ip, user-agent
+  }: {
+    actorUserId?: string;
+    actorEmail?: string;
+    newUser: any;   //user entity
+    req: Request;
+  }) {
+   try {
+    return await this.prisma.auditTrail.create({
+      data: {
+        user_id: actorUserId ?? null,
+        user_email: actorEmail ?? null,
+        employee_id: newUser.employee_id ?? null,
+        action: 'CREATE',
+        resource: 'user_account',
+        resource_id: newUser.id,
+        old_values: undefined,
+        new_values: newUser,
+        change_fields: Object.keys(newUser),
+        ip_address: req.ip ?? undefined,
+        user_agent: req?.headers['user-agent'] ?? null,
+        endpoint: req ? `${req.method} ${req.originalUrl}` : null,
+        http_method: req?.method ?? null,
+        status_code: 201,
+        success: true,
+      },
+    });
+   } catch (error) {
+    console.error('Failed to log audit trail:', error);
+   }
+  } 
+
   // log permission denials
   async logPermissionDenied(
     user: RequestUser,
@@ -259,7 +297,7 @@ export class AuditService {
   }
 
   // get audit trail for ta specific resource
-  async getResourceHistory(resource: string, resource_id: number) {
+  async getResourceHistory(resource: string, resource_id: string) {
     return this.prisma.auditTrail.findMany({
       where: {
         resource,
