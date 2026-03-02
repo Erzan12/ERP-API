@@ -5,21 +5,17 @@ import {
   Put,
   Get,
   Param,
-  ParseIntPipe,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
-import { DepartmentService } from '../department.service';
-import { CreateDepartmentDto } from '../dto/create-dept.dto';
-import { UpdateDepartmentDto } from '../dto/update-dept.dto';
-import { RequestUser } from 'src/utils/types/request-user.interface';
-import { SessionUser } from 'src/utils/decorators/session-user.decorator';
-import { Can } from 'src/utils/decorators/can.decorator';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
+
 import {
   ACTION_CREATE,
   ACTION_READ,
@@ -27,7 +23,17 @@ import {
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 
-@ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
+import { Can } from 'src/utils/decorators/can.decorator';
+
+import { RequestUser } from 'src/utils/types/request-user.interface';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+
+import { CreateDepartmentDto, UpdateDepartmentDto } from '../dto/department.dto';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+
+import { DepartmentService } from '../department.service';
+
+// @ApiCookieAuth('access-token')
 @ApiTags('Masterstable - Department')
 @Controller({ path: 'masterstable', version: '2' })
 export class DepartmentControllerV2 {
@@ -37,8 +43,16 @@ export class DepartmentControllerV2 {
   @ApiOperation({ summary: 'Get all departments' })
   @ApiGetResponse('List of departments available')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  getDepartments(@SessionUser() user: RequestUser) {
-    return this.departmentService.getDepartments(user);
+  getDepartments(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.departmentService.getDepartments(user,dto);
   }
 
   @Get('departments/:id')

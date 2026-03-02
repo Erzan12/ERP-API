@@ -8,29 +8,35 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
+
+import { ApiTags, ApiBody, ApiOperation } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
+
 import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
   EMPLOYEE_MASTERLIST,
 } from 'src/utils/constants/ability.constant';
-import { GetEmployeesDto } from '../dto/get-employee.dto';
-import { Can } from 'src/utils/decorators/can.decorator';
-import { SessionUser } from 'src/utils/decorators/session-user.decorator';
-import { EmployeeService } from '../employee.service';
+
 import {
   CreateEmployeeWithDetailsDto,
   UpdateEmployeeWithDetailsDto,
 } from '../dto/employee-person.dto';
-import { RequestUser } from 'src/utils/types/request-user.interface';
-import { ApiBearerAuth, ApiTags, ApiBody, ApiOperation } from '@nestjs/swagger';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
-@ApiBearerAuth('access-token')
+import { Can } from 'src/utils/decorators/can.decorator';
+
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+import { RequestUser } from 'src/utils/types/request-user.interface';
+
+import { EmployeeService } from '../employee.service';
+
+// @ApiCookieAuth('access-token')
 @ApiTags('Human Resources - Employees')
 @Controller({ path: 'hris', version: '2' })
 export class EmployeeControllerV2 {
@@ -42,22 +48,14 @@ export class EmployeeControllerV2 {
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   getEmployees(
     @SessionUser() user: RequestUser,
-    @Query() dto: GetEmployeesDto,
+    @Query() dto: PaginationDto,
     @Query('page') page = 1,
     @Query('perPage') perPage = 10,
     @Query('search') search?: string,
     @Query('sortBy') sortBy: string = 'created_at',
     @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
-    return this.employeeService.getEmployees(
-      user,
-      dto,
-      // Number(page),
-      // Number(perPage),
-      // search,
-      // sortBy,
-      // order,
-    );
+    return this.employeeService.getEmployees(user,dto);
   }
 
   //get a single employee profile or view
