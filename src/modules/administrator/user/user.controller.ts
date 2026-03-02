@@ -12,7 +12,6 @@ import { ApiLoginResponse } from 'src/utils/helpers/swagger-response.helper';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
-@ApiBearerAuth('access-token')
 @ApiTags('Administrator - User Access')
 @Controller({ path: 'administrator', version: '2' })
 export class UserController {

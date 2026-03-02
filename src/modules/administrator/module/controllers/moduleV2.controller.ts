@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { ApiBearerAuth, ApiBody, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
@@ -34,7 +34,6 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 import { ModuleService } from '../module.service';
 
-// @ApiCookieAuth('access-token')
 @ApiTags('Administrator - Module')
 @Controller({ path: 'administrator', version: '2' })
 export class ModuleControllerV2 {

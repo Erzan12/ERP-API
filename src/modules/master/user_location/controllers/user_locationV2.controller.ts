@@ -8,7 +8,7 @@ import {
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { UserLocationService } from '../user_location.service';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CreateUserLocationDto,
   UpdateUserLocationDto,
@@ -28,7 +28,6 @@ import {
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
 
-@ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
 @ApiTags('Masterstable - User Location')
 @Controller({ path: 'masterstable', version: '2' })
 export class UserLocationControllerV2 {

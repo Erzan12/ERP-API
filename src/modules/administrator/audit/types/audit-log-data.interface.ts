@@ -4,7 +4,7 @@ export interface AuditLogData {
   user?: RequestUser;
   action: string;
   resource: string;
-  resource_id?: number;
+  resource_id?: string;
   old_values?: any;
   new_values?: any;
   changed_fields?: string[]; //new: explicit field tracking

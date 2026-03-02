@@ -25,11 +25,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get Submodules",
         "tags": [
           "Administrator - Submodule"
@@ -69,11 +64,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new Submodule",
         "tags": [
           "Administrator - Submodule"
@@ -113,11 +103,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a Submodule",
         "tags": [
           "Administrator - Submodule"
@@ -159,11 +144,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new permission for submodule",
         "tags": [
           "Administrator - Submodule"
@@ -203,11 +183,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Assign a new permission for submodule",
         "tags": [
           "Administrator - Submodule"
@@ -258,11 +233,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current sub module permission",
         "tags": [
           "Administrator - Submodule"
@@ -498,11 +468,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get all Roles",
         "tags": [
           "Administrator - Role"
@@ -541,11 +506,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create new role",
         "tags": [
           "Administrator - Role"
@@ -585,11 +545,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a role",
         "tags": [
           "Administrator - Role"
@@ -630,11 +585,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Adding permission to role",
         "tags": [
           "Administrator - Role"
@@ -684,11 +634,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Updating current permission to role",
         "tags": [
           "Administrator - Role"
@@ -724,11 +669,6 @@
             "description": ""
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Assign the security clearance level for user",
         "tags": [
           "Administrator - Security Clearance"
@@ -759,11 +699,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Summary of Users",
         "tags": [
           "Administrator - Dashboard"
@@ -844,11 +779,6 @@
             "description": ""
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get audit logs with filters",
         "tags": [
           "Administrator - Audit"
@@ -872,7 +802,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
           }
         ],
@@ -881,11 +811,6 @@
             "description": ""
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get audit history fo ra specific resource",
         "tags": [
           "Administrator - Audit"
@@ -918,11 +843,6 @@
             "description": ""
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get user activity report",
         "tags": [
           "Administrator - Audit"
@@ -947,11 +867,6 @@
             "description": ""
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get own activity report",
         "tags": [
           "Administrator - Audit"
@@ -1189,11 +1104,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Execute manual SQL query (Super Admin Only)",
         "tags": [
           "Administrator - Database Manuel Query"
@@ -1224,11 +1134,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get latest executed manual queries",
         "tags": [
           "Administrator - Database Manuel Query"
@@ -1268,11 +1173,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get specific manual query log",
         "tags": [
           "Administrator - Database Manuel Query"
@@ -1309,11 +1209,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Verify user",
         "tags": [
           "Administrator - User Access"
@@ -2168,11 +2063,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get all employment status",
         "tags": [
           "Masterstable - Employment Status"
@@ -2212,11 +2102,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create new employee status.",
         "tags": [
           "Masterstable - Employment Status"
@@ -2256,11 +2141,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get an employment status.",
         "tags": [
           "Masterstable - Employment Status"
@@ -2308,11 +2188,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Updating employee status details.",
         "tags": [
           "Masterstable - Employment Status"
@@ -2343,11 +2218,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get all user locations",
         "tags": [
           "Masterstable - User Location"
@@ -2387,11 +2257,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a User Location",
         "tags": [
           "Masterstable - User Location"
@@ -2431,11 +2296,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a user locations",
         "tags": [
           "Masterstable - User Location"
@@ -2484,11 +2344,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Update a current User Location information",
         "tags": [
           "Masterstable - User Location"
@@ -2755,11 +2610,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get permission templates",
         "tags": [
           "Manager - Permission Template"
@@ -2799,11 +2649,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create new permission template",
         "tags": [
           "Manager - Permission Template"
@@ -2843,11 +2688,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get a permission template",
         "tags": [
           "Manager - Permission Template"
@@ -2896,11 +2736,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get available permissin templates to user",
         "tags": [
           "Manager - Permission Template"
@@ -2940,11 +2775,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get available permission templates to user",
         "tags": [
           "Manager - Permission Template"
@@ -2995,18 +2825,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Assign Permission template to user",
         "tags": [
           "Manager - Permission Template"
         ]
       }
     },
-    "/v2/user/user_account": {
+    "/v2/users": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_viewUsers_v2",
@@ -3031,11 +2856,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get User Accounts",
         "tags": [
           "Manager - User Account"
@@ -3051,7 +2871,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserWithRolePermissionDto"
+                "$ref": "#/components/schemas/CreateUserWithRoleDto"
               }
             }
           }
@@ -3076,18 +2896,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Create a new user account",
         "tags": [
           "Manager - User Account"
         ]
       }
     },
-    "/v2/user/user_account/me/permissions": {
+    "/v2/users/me/permissions": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_getMyPermissions_v2",
@@ -3112,35 +2927,31 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "My User Account",
         "tags": [
           "Manager - User Account"
         ]
       }
     },
-    "/v2/user/user_account/role_permission": {
+    "/v2/users/resend-invitation": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_addRolePermission_v2",
+        "operationId": "UserAccountControllerV2_newResetToken_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Payload for new user reset token",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddUserRolePermissionsDto"
+                "$ref": "#/components/schemas/UserEmailResetTokenDto"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Role permission added to user successfully"
+            "description": "Password reset done! you can now log in!"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -3158,18 +2969,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Add Role permissions to user",
+        "summary": "Reset token for first time log in",
         "tags": [
           "Manager - User Account"
         ]
       }
     },
-    "/v2/user/user_account/add-role/{userId}/{roleName}": {
+    "/v2/users/add-role/{userId}/{roleName}": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_addUserRole_v2",
@@ -3211,36 +3017,30 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Add Role to user",
         "tags": [
           "Manager - User Account"
         ]
       }
     },
-    "/v2/user/user_account/new_reset_token": {
+    "/v2/users/role_permission": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_newResetToken_v2",
+        "operationId": "UserAccountControllerV2_addRolePermission_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
-          "description": "Payload for new user reset token",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UserEmailResetTokenDto"
+                "$ref": "#/components/schemas/AddUserRolePermissionsDto"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Password reset done! you can now log in!"
+            "description": "Role permission added to user successfully"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -3258,18 +3058,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
-        "summary": "Reset token for first time log in",
+        "summary": "Add Role permissions to user",
         "tags": [
           "Manager - User Account"
         ]
       }
     },
-    "/v2/user/user_account/token_keys": {
+    "/v2/users/token_keys": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_viewUserKeys_v2",
@@ -3279,7 +3074,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserWithRolePermissionDto"
+                "$ref": "#/components/schemas/CreateUserWithRoleDto"
               }
             }
           }
@@ -3304,18 +3099,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get the token keys for this user",
         "tags": [
           "Manager - User Account"
         ]
       }
     },
-    "/v2/user/user_account/deactivate": {
+    "/v2/users/deactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_deactivateUser_v2",
@@ -3350,18 +3140,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Deactivate the user account",
         "tags": [
           "Manager - User Account"
         ]
       }
     },
-    "/v2/user/user_account/reactivate": {
+    "/v2/users/reactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_reactivateUser_v2",
@@ -3396,18 +3181,13 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Reactivate the user account",
         "tags": [
           "Manager - User Account"
         ]
       }
     },
-    "/v2/user/user_account/new_employees": {
+    "/v2/users/new_employees": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "UserAccountControllerV2_viewNewEmployees_v2",
@@ -3432,11 +3212,6 @@
             "description": "Internal Server Error"
           }
         },
-        "security": [
-          {
-            "access-token": []
-          }
-        ],
         "summary": "Get the new employees without user accounts",
         "tags": [
           "Manager - User Account"
@@ -3453,6 +3228,13 @@
   "tags": [],
   "servers": [],
   "components": {
+    "securitySchemes": {
+      "cookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "accessToken"
+      }
+    },
     "schemas": {
       "CreateSubModuleDto": {
         "type": "object",
@@ -4391,27 +4173,26 @@
           "password"
         ]
       },
-      "CreateUserWithRolePermissionDto": {
+      "CreateUserWithRoleDto": {
         "type": "object",
         "properties": {
           "user_details": {
             "$ref": "#/components/schemas/UserDetailsDto"
           },
-          "role_permission_ids": {
-            "example": [
-              1
-            ],
-            "description": "The role permission IDs to assign to the user",
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
+          "role_name": {
+            "type": "string",
+            "example": "Administrator",
+            "description": "The role to be assign to a user"
           }
         },
         "required": [
           "user_details",
-          "role_permission_ids"
+          "role_name"
         ]
+      },
+      "UserEmailResetTokenDto": {
+        "type": "object",
+        "properties": {}
       },
       "AddUserRolePermissionsDto": {
         "type": "object",
@@ -4438,10 +4219,6 @@
           "userId",
           "rolePermissionIds"
         ]
-      },
-      "UserEmailResetTokenDto": {
-        "type": "object",
-        "properties": {}
       },
       "DeactivateUserAccountDto": {
         "type": "object",

@@ -5,7 +5,6 @@ import {
   Param,
   Get,
   Put,
-  ParseIntPipe,
   ParseUUIDPipe,
 } from '@nestjs/common';
 import { Can } from '../../../../utils/decorators/can.decorator';
@@ -27,7 +26,6 @@ import {
   SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
 
-@ApiBearerAuth('access-token')
 @ApiTags('Administrator - Submodule')
 @Controller({ path: 'administrator', version: '2' })
 export class SubModuleControllerV2 {
