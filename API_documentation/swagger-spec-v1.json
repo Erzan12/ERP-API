@@ -2529,7 +2529,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserWithRolePermissionDto"
+                "$ref": "#/components/schemas/CreateUserWithRoleDto"
               }
             }
           }
@@ -2732,7 +2732,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateUserWithRolePermissionDto"
+                "$ref": "#/components/schemas/CreateUserWithRoleDto"
               }
             }
           }
@@ -3761,26 +3761,21 @@
           "password"
         ]
       },
-      "CreateUserWithRolePermissionDto": {
+      "CreateUserWithRoleDto": {
         "type": "object",
         "properties": {
           "user_details": {
             "$ref": "#/components/schemas/UserDetailsDto"
           },
-          "role_permission_ids": {
-            "example": [
-              1
-            ],
-            "description": "The role permission IDs to assign to the user",
-            "type": "array",
-            "items": {
-              "type": "number"
-            }
+          "role_name": {
+            "type": "string",
+            "example": "Administrator",
+            "description": "The role to be assign to a user"
           }
         },
         "required": [
           "user_details",
-          "role_permission_ids"
+          "role_name"
         ]
       },
       "UserEmailResetTokenDto": {

@@ -9,7 +9,7 @@ import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import { MailService } from 'src/jobs/mail/mail.service';
 import { CreatePermissionTemplateDto } from 'src/modules/manager/permission_template/dto/create-permission-template.dto';
-import { CreateUserWithRolePermissionDto } from './dto/create-user-with-role-permission.dto';
+import { CreateUserWithRoleDto } from './dto/create-user-with-role-permission.dto';
 import {
   DeactivateUserAccountDto,
   ReactivateUserAccountDto,
@@ -60,22 +60,22 @@ export class UserAccountService {
 
   //refactored version no more role_ids and module_ids in user account creation will be basing on the permission_tempalte model
   async createUserAccount(
-    createUserWithRolePermissionDto: CreateUserWithRolePermissionDto,
-    requestUser: RequestUser,
+    createUserWithRoleDto: CreateUserWithRoleDto,
+    user: RequestUser,
     req: Request,
     actorUser: any
   ) {
     return this.prisma.$transaction(async (tx) => {
       try {
         const plainPassword =
-          createUserWithRolePermissionDto.user_details.password;
+          createUserWithRoleDto.user_details.password;
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
         const existingUser = await this.prisma.user.findFirst({
           where: {
             OR: [
-              { username: createUserWithRolePermissionDto.user_details.username },
-              { email: createUserWithRolePermissionDto.user_details.email },
+              { username: createUserWithRoleDto.user_details.username },
+              { email: createUserWithRoleDto.user_details.email },
             ],
           },
         });
@@ -86,8 +86,8 @@ export class UserAccountService {
           );
         }
 
-        const creatorUser = await this.prisma.user.findUnique({
-          where: { id: requestUser.id },
+        const requestUser = await this.prisma.user.findUnique({
+          where: { id: user.id },
           include: {
             employee: {
               include: {
@@ -95,25 +95,34 @@ export class UserAccountService {
                 position: true,
               },
             },
+            user_roles: true,
           },
         });
 
         if (
-          !creatorUser ||
-          !creatorUser.employee ||
-          !creatorUser.employee.person
+          !requestUser ||
+          !requestUser.employee ||
+          !requestUser.employee.person
         ) {
           throw new BadRequestException(
             `Creator (manager) information not found.`,
           );
         }
 
-        const admin = `${creatorUser.employee.person.first_name} ${creatorUser.employee.person.last_name}`;
-        const adminPos = creatorUser.employee.position.name;
+        const admin = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const adminPos = requestUser.employee.position.name;
+
+        // scalable approach
+        const allowedRoles = ['Administrator', 'Super Administrator', 'Manager']
+        const isAdmin = requestUser.user_roles.some(role => allowedRoles.includes(role.role_name))
+        
+        if (!isAdmin) {
+          throw new ForbiddenException('User is not allowed create User Account');
+        }
 
         const employee = await this.prisma.employee.findUnique({
           where: {
-            employee_id: createUserWithRolePermissionDto.user_details.employee_id,
+            employee_id: createUserWithRoleDto.user_details.employee_id,
           },
           include: { person: true },
         });
@@ -134,8 +143,8 @@ export class UserAccountService {
           data: {
             employee_id: employee.id,
             person_id: employee.person.id,
-            username: createUserWithRolePermissionDto.user_details.username,
-            email: createUserWithRolePermissionDto.user_details.email,
+            username: createUserWithRoleDto.user_details.username,
+            email: createUserWithRoleDto.user_details.email,
             password: hashedPassword,
             stat: 1,
             require_reset: 1,
@@ -158,66 +167,117 @@ export class UserAccountService {
         }
 
         //optional role permission creation upon creating user account
-        if (createUserWithRolePermissionDto.role_permission_ids?.length) {
-          const rolePermissions = await this.prisma.rolePermission.findMany({
+        // if (createUserWithRoleDto.role_name?.length) {
+        //   const rolePermissions = await this.prisma.rolePermission.findFirst({
+        //     where: {
+        //       id: createUserWithRoleDto.role_name,
+        //     },
+        //   });
+
+        //   // const userRolesMap = new Map<string, any>();
+        //   // const userRolesMap = new Map<string, { id: number }>();
+
+        //   const userRolesMap = new Map<string, any>();
+
+        //   for (const rp of rolePermissions) {
+        //     const key = `${rp.role_id}-${rp.sub_module_id}`;
+
+        //     let userRole = userRolesMap.get(key);
+
+        //     if (!userRole) {
+        //       // Check if UserRole already exists
+        //       userRole = await tx.userRole.findFirst({
+        //         where: {
+        //           user_id: newUser.id,
+        //           role_id: rp.role_id,
+        //         },
+        //       });
+
+        //       // If not exists, create it
+        //       if (!userRole) {
+        //         userRole = await tx.userRole.create({
+        //           data: {
+        //             user_id: newUser.id,
+        //             role_id: rp.role_id,
+        //             role_name: rp.role_name,
+        //             created_at: new Date(),
+        //           },
+        //         });
+        //       }
+
+        //       userRolesMap.set(key, userRole);
+        //     }
+
+        //     // Ensure no duplicate permission
+        //     const existingPermission = await tx.userPermission.findFirst({
+        //       where: {
+        //         user_id: newUser.id,
+        //         user_role_id: userRole.id,
+        //         role_permission_id: rp.id,
+        //       },
+        //     });
+
+        //     if (!existingPermission) {
+        //       await tx.userPermission.create({
+        //         data: {
+        //           user_id: newUser.id,
+        //           user_role_id: userRole.id,
+        //           role_permission_id: rp.id,
+        //           action: rp.action,
+        //         },
+        //       });
+        //     }
+        //   }
+        // }
+
+        //use only role name instead of role permission ids when adding role to user
+        if (createUserWithRoleDto.role_name) {
+          // 1️⃣ Find the role
+          const role = await tx.role.findFirst({
             where: {
-              id: { in: createUserWithRolePermissionDto.role_permission_ids },
+              name: createUserWithRoleDto.role_name,
+              stat: 1,
             },
           });
 
-          // const userRolesMap = new Map<string, any>();
-          // const userRolesMap = new Map<string, { id: number }>();
+          if (!role) {
+            throw new BadRequestException('Invalid role name');
+          }
 
-          const userRolesMap = new Map<string, any>();
+          // 2️⃣ Get all role permissions for that role
+          const rolePermissions = await tx.rolePermission.findMany({
+            where: {
+              role_id: role.id,
+              stat: 1,
+            },
+          });
 
+          if (!rolePermissions.length) {
+            throw new BadRequestException(
+              'No permissions found for this role',
+            );
+          }
+
+          // 3️⃣ Create UserRole (only once)
+          const userRole = await tx.userRole.create({
+            data: {
+              user_id: newUser.id,
+              role_id: role.id,
+              role_name: role.name,
+              created_at: new Date(),
+            },
+          });
+
+          // 4️⃣ Create UserPermissions
           for (const rp of rolePermissions) {
-            const key = `${rp.role_id}-${rp.sub_module_id}`;
-
-            let userRole = userRolesMap.get(key);
-
-            if (!userRole) {
-              // Check if UserRole already exists
-              userRole = await tx.userRole.findFirst({
-                where: {
-                  user_id: newUser.id,
-                  role_id: rp.role_id,
-                },
-              });
-
-              // If not exists, create it
-              if (!userRole) {
-                userRole = await tx.userRole.create({
-                  data: {
-                    user_id: newUser.id,
-                    role_id: rp.role_id,
-                    role_name: rp.role_name,
-                    created_at: new Date(),
-                  },
-                });
-              }
-
-              userRolesMap.set(key, userRole);
-            }
-
-            // Ensure no duplicate permission
-            const existingPermission = await tx.userPermission.findFirst({
-              where: {
+            await tx.userPermission.create({
+              data: {
                 user_id: newUser.id,
                 user_role_id: userRole.id,
                 role_permission_id: rp.id,
+                action: rp.action,
               },
             });
-
-            if (!existingPermission) {
-              await tx.userPermission.create({
-                data: {
-                  user_id: newUser.id,
-                  user_role_id: userRole.id,
-                  role_permission_id: rp.id,
-                  action: rp.action,
-                },
-              });
-            }
           }
         }
 
@@ -259,7 +319,7 @@ export class UserAccountService {
           status: 'success',
           message: `User ${newUser.username} with Employee ID ${newUser.employee?.employee_id} created with temporary password.`,
           created_by: {
-            id: creatorUser.id,
+            id: requestUser.id,
             name: admin,
             position: adminPos,
           },
