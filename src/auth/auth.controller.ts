@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Query, Get, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, Query, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiBearerAuth, ApiTags, ApiCookieAuth } from '@nestjs/swagger';
 import {
@@ -13,6 +13,7 @@ import { Request, response } from 'express';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { Authenticated } from 'src/utils/decorators/auth-guard.decorator';
 import { Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 
 @Public()
 @ApiTags('Authentication')
@@ -28,7 +29,7 @@ export class AuthController {
     const ipAddress = req.ip || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
     
-    res.cookie('access-token', token.token, {
+    res.cookie('accessToken', token.token, {
       httpOnly: true,    // Prevents JavaScript access (XSS protection)
       secure: false, // Only sends over HTTPS
       sameSite: 'lax',   // CSRF protection
@@ -39,8 +40,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  @Authenticated()
-  // @ApiCookieAuth('access-token')
+  @UseGuards(AuthGuard('jwt'))
   @ApiOperation({ summary: 'User will logout' })
   @ApiPostResponse('User logout successfully')
   logout(
@@ -52,7 +52,7 @@ export class AuthController {
     const userAgent = req.headers['user-agent'];
 
     // Clear cookie here
-    res.clearCookie('access-token', {
+    res.clearCookie('accessToken', {
       httpOnly: true,
       path: '/',
     });
@@ -78,7 +78,6 @@ export class AuthController {
     );
   }
 
-  @ApiCookieAuth('access-token')
   @Authenticated()
   @Get('/verify')
   @ApiOperation({ summary: 'Verify user' })
