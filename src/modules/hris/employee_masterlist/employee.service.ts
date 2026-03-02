@@ -19,7 +19,6 @@ import {
 
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
-import { error } from 'console';
 
 @Injectable()
 export class EmployeeService {
@@ -458,23 +457,23 @@ export class EmployeeService {
     }
 
     // 2. Optional: select specific person fields if you want
-    const personDetails = await this.prisma.person.findFirst({
-      where: { id: employee.person_id },
-      select: {
-        first_name: true,
-        last_name: true,
-        middle_name: true,
-        date_of_birth: true,
-        gender: true,
-        civil_status: true,
-        email: true,
-        contact_no: true,
-      },
-    });
+    // const personDetails = await this.prisma.person.findFirst({
+    //   where: { id: employee.person_id },
+    //   select: {
+    //     first_name: true,
+    //     last_name: true,
+    //     middle_name: true,
+    //     date_of_birth: true,
+    //     gender: true,
+    //     civil_status: true,
+    //     email: true,
+    //     contact_no: true,
+    //   },
+    // });
 
     return {
       employee,
-      person: personDetails,
+      // person: personDetails,
     };
   }
 

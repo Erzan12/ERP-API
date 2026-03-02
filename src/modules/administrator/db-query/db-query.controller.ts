@@ -22,7 +22,6 @@ import {
   ApiGetResponse,
 } from 'src/utils/helpers/swagger-response.helper';
 
-@ApiBearerAuth('access-token')
 @ApiTags('Administrator - Database Manuel Query')
 @Controller({ path: 'administrator/db-query', version: '2' })
 export class DbQueryControllerV2 {
