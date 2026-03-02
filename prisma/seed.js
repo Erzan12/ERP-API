@@ -347,7 +347,7 @@ async function main() {
   const superAdminEmployee = await prisma.employee.create({
     data: {
       person_id: superAdminPerson.id,
-      employee_id: 'ABISC-250710-001',
+      employee_id: 'EMP-IT-001',
       company_id: abisc.id,
       department_id: itDept.id,
       hire_date: new Date('2025-05-12'),
@@ -367,7 +367,7 @@ async function main() {
       employee_id: 'EMP-HR-001',
       company_id: abisc.id,
       department_id: hrDept.id,
-      hire_date: new Date('ABISC-250710-002'),
+      hire_date: new Date('2023-02-20'),
       position_id: hrManager.id,
       division_id: corpServices.id,
       salary: 30000,
@@ -381,7 +381,7 @@ async function main() {
   const itEmployee = await prisma.employee.create({
     data: {
       person_id: itPerson.id,
-      employee_id: 'ABISC-250710-003',
+      employee_id: 'EMP-IT-002',
       company_id: abisc.id,
       department_id: itDept.id,
       hire_date: new Date('2022-01-01'),
@@ -398,7 +398,7 @@ async function main() {
   const adminEmployee = await prisma.employee.create({
     data: {
       person_id: adminPerson.id,
-      employee_id: 'ABISC-250710-004',
+      employee_id: 'EMP-IT-003',
       company_id: abisc.id,
       department_id: itDept.id,
       hire_date: new Date('2025-05-12'),

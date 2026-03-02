@@ -26,7 +26,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // });
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => request?.cookies?.['access-token'],
+        (request: Request) => request?.cookies?.['accessToken'],
       ]),
       secretOrKey: secret,
     });
