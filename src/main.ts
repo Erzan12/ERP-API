@@ -24,7 +24,7 @@ async function bootstrap() {
 
   app.enableCors({
     // origin: ['https://www.example.com'], // specify allowed domains
-    origin: '*',
+    origin:['http://localhost:3002', 'http://localhost:3003'],
     methods: 'GET,POST,PUT,PATCH,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,
