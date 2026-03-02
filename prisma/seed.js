@@ -367,7 +367,7 @@ async function main() {
       employee_id: 'EMP-HR-001',
       company_id: abisc.id,
       department_id: hrDept.id,
-      hire_date: new Date('ABISC-250710-002'),
+      hire_date: new Date('2023-02-20'),
       position_id: hrManager.id,
       division_id: corpServices.id,
       salary: 30000,
