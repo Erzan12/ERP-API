@@ -2214,6 +2214,75 @@
         ]
       }
     },
+    "/v2/roles": {
+      "get": {
+        "operationId": "RoleManagementControllerV2_getRoles_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of Roles"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get All Roles",
+        "tags": [
+          "Human Resources - Role Management"
+        ]
+      }
+    },
+    "/v2/roles/{roleId}": {
+      "get": {
+        "operationId": "RoleManagementControllerV2_getRole_v2",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here are the list of Roles"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get All Roles",
+        "tags": [
+          "Human Resources - Role Management"
+        ]
+      }
+    },
     "/v1/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV1_getPermissionTemplates_v1",

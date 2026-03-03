@@ -113,7 +113,6 @@ export class RoleService {
   }
 
   //Add Get submodule permission -> to query the submodule permission table for available submolues with permission
-
   async createRolePermissions(
     createRolePermissionDto: CreateRolePermissionDto,
     user: RequestUser,
