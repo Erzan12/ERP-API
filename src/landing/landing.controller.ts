@@ -53,7 +53,7 @@ export class LandingController {
           swaggerLink: '/docs/db-query',
           icon: '/public/icons/database.png',
           comingSoon: true,
-          status: 'Deprecated',
+          status: 'Coming Soon',
         },
         {
           title: 'Accounting',
