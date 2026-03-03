@@ -12,13 +12,17 @@ export class EmploymentStatusService {
   async getEmployeeStats(user: RequestUser) {
     const existingEmpStat = await this.prisma.employmentStatus.findMany();
 
-    const formattedEmpStat = existingEmpStat.map((employmentStatus) => ({
+    const employmentStatus = existingEmpStat.map((employmentStatus) => ({
       emp_stat_id: employmentStatus.id,
       code: employmentStatus.code,
       label: employmentStatus.label,
     }));
 
-    return formattedEmpStat;
+    return {
+      status: 'success',
+      message: 'Here are the list of Employment Status',
+      employmentStatus,
+    }
   }
 
   //get a single employee_status
