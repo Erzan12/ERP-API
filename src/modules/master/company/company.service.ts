@@ -191,7 +191,7 @@ export class CompanyService {
 
     if (!canView) {
       throw new ForbiddenException(
-        'You are not allowed to view this sub module',
+        'You are not authorized to perform this action',
       );
     }
 

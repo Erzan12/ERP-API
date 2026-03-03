@@ -22,27 +22,6 @@ export class DepartmentService {
 
     const { search, sortBy, order, page, perPage } = dto;
 
-    const canView = await this.prisma.userRole.findFirst({
-      where: {
-        user_id: user.id,
-        role_name: {
-          in: [
-            'Administrator',
-            'Super Administrator',
-            'HR Clerk',
-            'HR Manager',
-            'HR Staff',
-          ],
-        },
-      },
-    });
-
-    if (!canView) {
-      throw new BadRequestException(
-        'You are not allowed to view this sub module',
-      );
-    }
-
     const skip = (page - 1) * perPage;
 
     const whereCondition: any = {
@@ -139,14 +118,22 @@ export class DepartmentService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
     );
 
-    if (!isAdmin) {
-      throw new ForbiddenException('User is not allowed to view Departments');
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     return {
@@ -250,7 +237,7 @@ export class DepartmentService {
 
     if (!canView) {
       throw new ForbiddenException(
-        'You are not allowed to view this sub module',
+        'You are not allowed to create department',
       );
     }
 
