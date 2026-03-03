@@ -6,6 +6,7 @@ import {
   Post,
   Get,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { UserLocationService } from '../user_location.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -27,6 +28,7 @@ import {
   ApiPatchResponse,
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Mastertable - User Location')
 @Controller({ path: 'mastertable', version: '2' })
@@ -37,8 +39,16 @@ export class UserLocationControllerV2 {
   @ApiOperation({ summary: 'Get all user locations' })
   @ApiGetResponse('List of user locations available')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check is jwt strategy
-  getUserLocations(@SessionUser() user: RequestUser) {
-    return this.userLocationService.getUserLocations(user);
+  getUserLocations(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.userLocationService.getUserLocations(user, dto);
   }
 
   @Get('user-locations/:userLocationId')

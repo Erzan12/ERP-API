@@ -10,16 +10,97 @@ import {
 } from './dto/user-location.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { Prisma } from '@prisma/client';
+import { count } from 'console';
 
 @Injectable()
 export class UserLocationService {
   constructor(private prisma: PrismaService) {}
 
   //query all available user locations
-  async getUserLocations(user: RequestUser) {
-    const user_location = await this.prisma.userLocation.findMany();
-    if (!user_location) {
-      throw new BadRequestException('No avaiable User Locations found');
+  async getUserLocations(
+    user: RequestUser,
+    dto: PaginationDto,
+  ) {
+
+    const { search, sortBy, order, page, perPage } = dto;
+
+    const canView = await this.prisma.userRole.findFirst({
+      where: {
+        user_id: user.id,
+        role_name: {
+          in: [
+            'Administrator',
+            'Super Administrator',
+          ],
+        },
+      },
+    });
+
+    if (!canView) {
+      throw new BadRequestException(
+        'You are not allowed to view this sub module',
+      );
+    }
+
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: any = {
+      stat: 1,
+    };
+
+    const stringFields = ['locationName', 'address'] as const;
+
+    if (search) {
+      //handle init and boolean search
+      const orConditions: Prisma.UserLocationWhereInput[] = [];
+
+      //string search
+      orConditions.push(
+        ...stringFields.map((field) => ({
+          [field]: {
+            contains: search,
+            mode: 'insensitive',
+          },
+        }))
+      );
+
+      //boolean search
+      // if ( search === 'true' || search === 'false' ) {
+      //   orConditions.push({
+      //     stat or isActive: search === 'true',
+      //   })
+      // }
+
+      whereCondition.OR = orConditions;
+    }
+
+    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'locationName', 'address'];
+    if (allowSortFeilds.includes(sortBy)) {
+      sortBy;
+    }
+
+    const [ total, userLocations ] = await this.prisma.$transaction([
+      this.prisma.userLocation.count({
+        where: {
+          ...whereCondition,
+        }
+      }),
+      this.prisma.userLocation.findMany({
+        where: {
+          ...whereCondition,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [sortBy]: order,
+        },
+      }),
+    ]);
+
+    if (userLocations.length === 0) {
+      throw new BadRequestException('No available companies found.');
     }
 
     const requestUser = await this.prisma.user.findUnique({
@@ -52,7 +133,11 @@ export class UserLocationService {
     return {
       status: 'success',
       message: 'Here are the list of User Locations.',
-      user_location,
+      count: total,
+      page,
+      perPage,
+      // totalPages: Math.ceil( total / perPage ),
+      userLocations,
     };
   }
 
