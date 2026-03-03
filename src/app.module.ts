@@ -23,7 +23,7 @@ import { AuthController } from './auth/auth.controller';
 // import { UserController } from './modules/manager/user/controllers/userv2.controller';
 // import { UserLocationController } from './modules/master/user_location/controller/user_locationV2.controller';
 
-import { UserAccountService } from './modules/manager/user_account/user_account.service';
+import { UserManagementService } from './modules/manager/user_management/user_management.service';
 import { AuditService } from './modules/administrator/audit/audit.service';
 import { PositionService } from './modules/master/position/position.service';
 import { EmployeeService } from './modules/hris/employee_masterlist/employee.service';
@@ -67,8 +67,6 @@ import { AuditControllerV2 } from './modules/administrator/audit/controllers/aud
     // HealthModule,
   ],
   providers: [
-    UserAccountService,
-    PrismaService,
     {
       //global custom auth guard
       provide: APP_GUARD,
@@ -84,6 +82,8 @@ import { AuditControllerV2 } from './modules/administrator/audit/controllers/aud
       provide: APP_GUARD,
       useClass: SecurityClearanceGuard,
     },
+    UserManagementService,
+    PrismaService,
     AuditService,
     MailService,
     EmployeeService,

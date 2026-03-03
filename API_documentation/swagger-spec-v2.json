@@ -2834,7 +2834,7 @@
     "/v2/users": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_viewUsers_v2",
+        "operationId": "UserManagementControllerV2_viewUsers_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -2858,12 +2858,12 @@
         },
         "summary": "Get User Accounts",
         "tags": [
-          "Manager - User Account"
+          "Manager - User Management"
         ]
       },
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_createUser_v2",
+        "operationId": "UserManagementControllerV2_createUser_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2898,14 +2898,14 @@
         },
         "summary": "Create a new user account",
         "tags": [
-          "Manager - User Account"
+          "Manager - User Management"
         ]
       }
     },
     "/v2/users/me/permissions": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_getMyPermissions_v2",
+        "operationId": "UserManagementControllerV2_getMyPermissions_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -2929,14 +2929,14 @@
         },
         "summary": "My User Account",
         "tags": [
-          "Manager - User Account"
+          "Manager - User Management"
         ]
       }
     },
     "/v2/users/resend-invitation": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_newResetToken_v2",
+        "operationId": "UserManagementControllerV2_newResetToken_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2971,14 +2971,14 @@
         },
         "summary": "Reset token for first time log in",
         "tags": [
-          "Manager - User Account"
+          "Manager - User Management"
         ]
       }
     },
     "/v2/users/add-role/{userId}/{roleName}": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_addUserRole_v2",
+        "operationId": "UserManagementControllerV2_addUserRole_v2",
         "parameters": [
           {
             "name": "userId",
@@ -3019,14 +3019,14 @@
         },
         "summary": "Add Role to user",
         "tags": [
-          "Manager - User Account"
+          "Manager - User Management"
         ]
       }
     },
     "/v2/users/role_permission": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_addRolePermission_v2",
+        "operationId": "UserManagementControllerV2_addRolePermission_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3060,14 +3060,14 @@
         },
         "summary": "Add Role permissions to user",
         "tags": [
-          "Manager - User Account"
+          "Manager - User Management"
         ]
       }
     },
     "/v2/users/token_keys": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_viewUserKeys_v2",
+        "operationId": "UserManagementControllerV2_viewUserKeys_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3101,14 +3101,14 @@
         },
         "summary": "Get the token keys for this user",
         "tags": [
-          "Manager - User Account"
+          "Manager - User Management"
         ]
       }
     },
     "/v2/users/deactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_deactivateUser_v2",
+        "operationId": "UserManagementControllerV2_deactivateUser_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3142,14 +3142,14 @@
         },
         "summary": "Deactivate the user account",
         "tags": [
-          "Manager - User Account"
+          "Manager - User Management"
         ]
       }
     },
     "/v2/users/reactivate": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_reactivateUser_v2",
+        "operationId": "UserManagementControllerV2_reactivateUser_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3183,14 +3183,14 @@
         },
         "summary": "Reactivate the user account",
         "tags": [
-          "Manager - User Account"
+          "Manager - User Management"
         ]
       }
     },
     "/v2/users/new_employees": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserAccountControllerV2_viewNewEmployees_v2",
+        "operationId": "UserManagementControllerV2_viewNewEmployees_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -3214,7 +3214,7 @@
         },
         "summary": "Get the new employees without user accounts",
         "tags": [
-          "Manager - User Account"
+          "Manager - User Management"
         ]
       }
     }
