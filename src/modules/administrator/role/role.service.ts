@@ -120,6 +120,10 @@ export class RoleService {
     return {
       status: 'success',
       message: 'Here are the list of Roles',
+      count: total,
+      page,
+      perPage,
+      // totalPage: Math.ceil(total / perPage),
       roles,
     };
   }

@@ -11,30 +11,125 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
 import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class SubModuleService {
   constructor(private prisma: PrismaService) {}
 
-  async getSubModules(user: RequestUser) {
-    const subModules = await this.prisma.subModule.findMany({
-      where: { stat: 1 },
-      include: {
-        module: true,
-        sub_module_permissions: true,
-      },
-    });
+  async getSubModules(
+    user: RequestUser,
+    dto: PaginationDto,
+  ) {
+
+    const { search, sortBy, order, page, perPage } = dto;
+
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: any = {
+      stat: 1,
+    };
+
+    if (search) {
+      const orConditions: Prisma.SubModuleWhereInput[]= [];
+
+      orConditions.push({
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      });
+
+      //boolean search
+      // if ( search === 'true' || search === 'false' ) {
+      //   orConditions.push({
+      //     stat or isActive: search === 'true',
+      //   })
+      // }
+
+      whereCondition.OR = orConditions;
+    }
+
+    const allowSortFeilds = ['name','module_id','created_at','updated_at'];
+    if (!allowSortFeilds.includes(sortBy)) {
+      sortBy;
+    }
+
+    const [total, subModules] = await this.prisma.$transaction([
+      this.prisma.subModule.count({
+        where: {
+          ...whereCondition,
+        },
+      }),
+      this.prisma.subModule.findMany({
+        where: {
+          ...whereCondition,
+        },
+        // select: {
+        //   id: true,
+        //   name: true,
+        //   module_id: true,
+        //   module: {
+        //     select: {
+        //       id: true,
+        //       name: true,
+        //       stat: true,
+        //     },
+        //   },
+        // },
+        skip,
+        take: perPage,
+        orderBy: {
+          [sortBy]: order,
+        },
+      }),
+    ]);
 
     if (subModules.length === 0) {
       throw new BadRequestException('No available or active sub module exist!');
     }
 
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
     return {
       status: 'success',
       message: 'Here are the list of Sub Modules',
-      data: {
-        subModules,
-      },
+      count: total,
+      page,
+      perPage,
+      // totalPage: Math.ceil(total / perPage),
+      subModules,
     };
   }
 
