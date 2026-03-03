@@ -15,9 +15,9 @@ export class PositionService {
   constructor(private prisma: PrismaService) {}
 
   //get a single position
-  async getPosition(id: string, user: RequestUser) {
+  async getPosition(positionId: string, user: RequestUser) {
     const position = await this.prisma.position.findUnique({
-      where: { id },
+      where: { id: positionId },
     });
 
     if (!position) {
@@ -27,9 +27,7 @@ export class PositionService {
     return {
       status: 'success',
       message: 'Here is the Position',
-      data: {
-        position,
-      },
+      position,
     };
   }
 
@@ -40,27 +38,6 @@ export class PositionService {
   ) {
 
     const { search, sortBy, order, page, perPage } = dto;
-
-    const canView = await this.prisma.userRole.findFirst({
-      where: {
-        user_id: user.id,
-        role_name: {
-          in: [
-            'Administrator',
-            'Super Administrator',
-            'HR Clerk',
-            'HR Manager',
-            'HR Staff',
-          ],
-        },
-      },
-    });
-
-    if (!canView) {
-      throw new BadRequestException(
-        'You are not allowed to view this sub module',
-      );
-    }
 
     const skip = (page - 1) * perPage;
 
@@ -158,14 +135,22 @@ export class PositionService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
     );
 
-    if (!isAdmin) {
-      throw new ForbiddenException('User is not allowed to view Departments');
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     return {
@@ -249,14 +234,14 @@ export class PositionService {
   }
 
   async updatePosition(
-    id: string,
+    positionId: string,
     updatePositionDto: UpdatePositionDto,
     user: RequestUser,
   ) {
     const { position_name, department_id, stat } = updatePositionDto;
 
     const position = await this.prisma.position.findUnique({
-      where: { id },
+      where: { id: positionId },
       select: {
         id: true,
         name: true,
@@ -284,8 +269,8 @@ export class PositionService {
       }
     }
 
-    const updatePositionInfo = await this.prisma.position.update({
-      where: { id },
+    const updatePosition = await this.prisma.position.update({
+      where: { id: positionId },
       data: {
         name: position_name,
         sorting: updatePositionDto.sorting,
@@ -321,7 +306,7 @@ export class PositionService {
         name: userName,
         position: userPosition,
       },
-      updatePositionInfo,
+      updatePosition,
     };
   }
 }

@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CreateModuleDto, UpdateModuleDto } from './dto/module.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -43,7 +44,7 @@ export class ModuleService {
     // const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     // const userPos = requestUser.employee.position.name;
 
-    const moduleCreate = await this.prisma.module.create({
+    const module = await this.prisma.module.create({
       data: {
         name: createModuleDto.name,
         //to be added field of stat for status active or inactive
@@ -58,10 +59,7 @@ export class ModuleService {
       //   name: userName,
       //   position: userPos,
       // },
-      data: {
-        module_id: moduleCreate.id,
-        module_name: moduleCreate.name,
-      },
+      module,
     };
   }
 
@@ -99,24 +97,6 @@ export class ModuleService {
   ) {
 
     const { search, sortBy, order, page, perPage } = dto;
-
-    const canView = await this.prisma.userRole.findFirst({
-      where: {
-        user_id: user.id,
-        role_name: {
-          in: [
-            'Administrator',
-            'Super Administrator',
-          ],
-        },
-      },
-    });
-
-    if (!canView) {
-      throw new BadRequestException(
-        'You are not allowed to view this sub module',
-      );
-    }
 
     //PAGINATION AREA
     const skip = (page - 1) * perPage;
@@ -184,6 +164,38 @@ export class ModuleService {
 
     if (modules.length === 0) {
       throw new NotFoundException('No available modules found!');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     return {

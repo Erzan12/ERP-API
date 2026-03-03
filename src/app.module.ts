@@ -13,6 +13,8 @@ import { ManagerV1Module } from './modules/manager/managerV1.module';
 import { ManagerV2Module } from './modules/manager/managerV2.module';
 import { MasterV1Module } from './modules/master/masterV1.module';
 import { MasterV2Module } from './modules/master/masterV2.module';
+import { UserManagementV1Module } from './modules/manager/user_management/modules/user_managementV1.module';
+import { UserManagementV2Module } from './modules/manager/user_management/modules/user_managementV2.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
 import { CustomJwtAuthGuard } from './middleware/jwt/jwt.auth.guard';
@@ -23,7 +25,7 @@ import { AuthController } from './auth/auth.controller';
 // import { UserController } from './modules/manager/user/controllers/userv2.controller';
 // import { UserLocationController } from './modules/master/user_location/controller/user_locationV2.controller';
 
-import { UserAccountService } from './modules/manager/user_account/user_account.service';
+import { UserManagementService } from './modules/manager/user_management/user_management.service';
 import { AuditService } from './modules/administrator/audit/audit.service';
 import { PositionService } from './modules/master/position/position.service';
 import { EmployeeService } from './modules/hris/employee_masterlist/employee.service';
@@ -62,13 +64,13 @@ import { AuditControllerV2 } from './modules/administrator/audit/controllers/aud
     HrV2Module,
     ManagerV1Module,
     ManagerV2Module,
+    UserManagementV1Module,
+    UserManagementV2Module,
     PrismaModule,
     // HealthCheckModule,
     // HealthModule,
   ],
   providers: [
-    UserAccountService,
-    PrismaService,
     {
       //global custom auth guard
       provide: APP_GUARD,
@@ -84,6 +86,8 @@ import { AuditControllerV2 } from './modules/administrator/audit/controllers/aud
       provide: APP_GUARD,
       useClass: SecurityClearanceGuard,
     },
+    UserManagementService,
+    PrismaService,
     AuditService,
     MailService,
     EmployeeService,

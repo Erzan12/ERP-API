@@ -16,9 +16,9 @@ export class DivisionService {
   constructor(private prisma: PrismaService) {}
 
   //query single division
-  async getDivision(id: string, user: RequestUser) {
+  async getDivision(divisionId: string, user: RequestUser) {
     const division = await this.prisma.division.findUnique({
-      where: { id },
+      where: { id: divisionId },
     });
 
     if (!division || division.stat === 0) {
@@ -66,27 +66,6 @@ export class DivisionService {
   ) {
 
     const { search, sortBy, order, page, perPage } = dto;
-
-    const canView = await this.prisma.userRole.findFirst({
-      where: {
-        user_id: user.id,
-        role_name: {
-          in: [
-            'Administrator',
-            'Super Administrator',
-            'HR Manager',
-            'HR Clerk',
-            'HR Staff',
-          ],
-        },
-      },
-    });
-
-    if (!canView) {
-      throw new BadRequestException(
-        'You are not allowed to view this sub module',
-      );
-    }
 
     const skip = (page - 1) * perPage;
 
@@ -149,12 +128,45 @@ export class DivisionService {
           [sortBy]: order,
         },
       }),
-    ])
-
-    // const division = await this.prisma.department.findMany();
+    ]);
 
     if (divisions.length === 0) {
       throw new BadRequestException('No available divisions found');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     return {
@@ -225,14 +237,14 @@ export class DivisionService {
   }
 
   async updateDivision(
-    id: string,
+    divisionId: string,
     updateDivisionDto: UpdateDivisionDto,
     user: RequestUser,
   ) {
     const { division_name, stat } = updateDivisionDto;
 
     const division = await this.prisma.division.findUnique({
-      where: { id },
+      where: { id: divisionId },
       select: {
         name: true,
         stat: true,
@@ -246,7 +258,7 @@ export class DivisionService {
     }
 
     const updateDivision = await this.prisma.division.update({
-      where: { id },
+      where: { id: divisionId },
       data: {
         name: division_name,
         stat,
@@ -280,10 +292,7 @@ export class DivisionService {
         name: userName,
         position: userPos,
       },
-      data: {
-        division_id: updateDivision.id,
-        division_name: updateDivision.name,
-      },
+      updateDivision,
     };
   }
 }

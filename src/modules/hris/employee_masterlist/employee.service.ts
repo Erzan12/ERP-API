@@ -275,7 +275,7 @@ export class EmployeeService {
 
     //search query
     const personFields = ['first_name', 'last_name', 'email'];
-    const emplomentStatusFields = ['code', 'label'];
+    const employmentStatusFields = ['code', 'label'];
     const departmentFields = ['name'];
     const companyFields = ['name'];
     const divisionFields = ['name'];
@@ -294,7 +294,7 @@ export class EmployeeService {
               },
             },
           })),
-          ...emplomentStatusFields.map((field) => ({
+          ...employmentStatusFields.map((field) => ({
             employment_status: {
               [field]: {
                 contains: search,
@@ -423,8 +423,8 @@ export class EmployeeService {
       count: total,
       page,
       perPage,
-      totalPage: Math.ceil(total / perPage),
-      data: employees,
+      // totalPage: Math.ceil(total / perPage),
+      employees,
     };
   }
 

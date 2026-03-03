@@ -6,6 +6,7 @@ import {
   Get,
   Put,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { Can } from '../../../../utils/decorators/can.decorator';
 import { CreateSubModuleDto } from '../dto/create-sub-module.dto';
@@ -25,6 +26,7 @@ import {
   ACTION_READ,
   SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Administrator - Submodule')
 @Controller({ path: 'administrator', version: '2' })
@@ -36,19 +38,35 @@ export class SubModuleControllerV2 {
   @ApiOperation({ summary: 'Get Submodules' })
   @ApiGetResponse('Here are all the Sub modules available')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  getSubmodules(@SessionUser() user: RequestUser) {
-    return this.subModuleService.getSubModules(user);
+  getSubmodules(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.subModuleService.getSubModules(user,dto);
   }
 
-  @Get('sub-modules/:id')
+  @Get('sub-modules/permissions')
+  @ApiOperation({ summary: 'Get Submodule actions/permissions' })
+  @ApiGetResponse('Here are the list of Submodule actions/permissions available')
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  getSubModuleActions(@SessionUser() user: RequestUser) {
+    return this.subModuleService.getSubModuleActions(user);
+  }
+
+  @Get('sub-modules/:subModuleId')
   @ApiOperation({ summary: 'Get a Submodule' })
   @ApiGetResponse('status: Success!')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getSubmodule(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('subModuleId', new ParseUUIDPipe()) subModuleId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.subModuleService.getSubmodule(id, user);
+    return this.subModuleService.getSubmodule(subModuleId, user);
   }
 
   //create submodule
@@ -72,7 +90,7 @@ export class SubModuleControllerV2 {
     type: AddSubModulePermissionDto,
     description: 'Payload to create permissions for submodule',
   })
-  @ApiOperation({ summary: 'Create a new permission for submodule' })
+  @ApiOperation({ summary: 'Create a new permissions/actions for submodule(acts as inventory of actions for submodules)' })
   @ApiPostResponse('Permission created successfully')
   @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   createPermission(
@@ -80,7 +98,7 @@ export class SubModuleControllerV2 {
     @SessionUser() user: RequestUser,
   ) {
     console.log('createSubModuleDto:', AddSubModulePermissionDto);
-    return this.subModuleService.addSubModulePerm(addSubModuleDto, user);
+    return this.subModuleService.addSubModuleAction(addSubModuleDto, user);
   }
 
   //add permissions to submodules
@@ -116,6 +134,6 @@ export class SubModuleControllerV2 {
     @SessionUser() user: RequestUser,
     @Param('id', new ParseUUIDPipe()) id: string,
   ) {
-    return this.subModuleService.updateSubModulePerm(dto, user, id);
+    return this.subModuleService.updateSubModuleAction(dto, user, id);
   }
 }

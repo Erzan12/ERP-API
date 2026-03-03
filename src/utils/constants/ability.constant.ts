@@ -27,6 +27,7 @@ export const SYSTEM_MANAGEMENT = 'system management';
 //SUBMODULES FOR HR - OR IN CONTROLLER SUBJECT
 export const EMPLOYEE_MASTERLIST = 'employee masterlist';
 export const ROLES_AND_STRUCTURE ='roles and structure';
+export const ROLE_MANAGEMENT = 'role management';
 
 //SUBMODULE FOR MANAGER - OR IN CONTROLLER SUBJECT
 export const USER_ACCOUNT = 'user account';

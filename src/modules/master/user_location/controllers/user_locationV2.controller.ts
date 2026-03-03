@@ -6,6 +6,7 @@ import {
   Post,
   Get,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { UserLocationService } from '../user_location.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -27,9 +28,10 @@ import {
   ApiPatchResponse,
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
-@ApiTags('Masterstable - User Location')
-@Controller({ path: 'masterstable', version: '2' })
+@ApiTags('Mastertable - User Location')
+@Controller({ path: 'mastertable', version: '2' })
 export class UserLocationControllerV2 {
   constructor(private userLocationService: UserLocationService) {}
 
@@ -37,19 +39,27 @@ export class UserLocationControllerV2 {
   @ApiOperation({ summary: 'Get all user locations' })
   @ApiGetResponse('List of user locations available')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check is jwt strategy
-  getUserLocations(@SessionUser() user: RequestUser) {
-    return this.userLocationService.getUserLocations(user);
+  getUserLocations(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.userLocationService.getUserLocations(user, dto);
   }
 
-  @Get('user-locations/:id')
+  @Get('user-locations/:userLocationId')
   @ApiOperation({ summary: 'Get a user locations' })
   @ApiGetResponse('Here is the user location')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getUserLocation(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('userLocationId', new ParseUUIDPipe()) userLocationId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userLocationService.getUserLocation(id, user);
+    return this.userLocationService.getUserLocation(userLocationId, user);
   }
 
   @Post('user-locations')
@@ -70,7 +80,7 @@ export class UserLocationControllerV2 {
     );
   }
 
-  @Put('user-locations/:id')
+  @Put('user-locations/:userLocationId')
   @ApiBody({
     type: UpdateUserLocationDto,
     description: 'Payload to update User Location information',
@@ -79,12 +89,12 @@ export class UserLocationControllerV2 {
   @ApiPatchResponse('User Location updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateUserLocation(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('userLocationId', new ParseUUIDPipe()) userLocationId: string,
     @Body() updateUserLocationDto: UpdateUserLocationDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.userLocationService.updateUserLocation(
-      id,
+      userLocationId,
       updateUserLocationDto,
       user,
     );
