@@ -11,8 +11,8 @@ import {
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Masterstable - User Location')
-@Controller({ path: 'masterstable', version: '1' })
+@ApiTags('Mastertable - User Location')
+@Controller({ path: 'mastertable', version: '1' })
 export class UserLocationControllerV1 {
   constructor(private userLocationService: UserLocationService) {}
 
