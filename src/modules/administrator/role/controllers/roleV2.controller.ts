@@ -14,7 +14,7 @@ import { RequestUser } from '../../../../utils/types/request-user.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { CreateRolePermissionDto } from '../dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from '../dto/update-role-permisisons.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,

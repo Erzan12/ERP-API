@@ -70,22 +70,13 @@
         ]
       }
     },
-    "/v2/administrator/sub-modules/{id}": {
+    "/v2/administrator/sub-modules/permissions": {
       "get": {
-        "operationId": "SubModuleControllerV2_getSubmodule_v2",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "operationId": "SubModuleControllerV2_getSubModuleActions_v2",
+        "parameters": [],
         "responses": {
           "200": {
-            "description": "status: Success!"
+            "description": "Here are the list of Submodule actions/permissions available"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -103,13 +94,11 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Get a Submodule",
+        "summary": "Get Submodule actions/permissions",
         "tags": [
           "Administrator - Submodule"
         ]
-      }
-    },
-    "/v2/administrator/sub-modules/permissions": {
+      },
       "post": {
         "operationId": "SubModuleControllerV2_createPermission_v2",
         "parameters": [],
@@ -144,7 +133,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Create a new permission for submodule",
+        "summary": "Create a new permissions/actions for submodule(acts as inventory of actions for submodules)",
         "tags": [
           "Administrator - Submodule"
         ]
@@ -184,6 +173,45 @@
           }
         },
         "summary": "Assign a new permission for submodule",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/v2/administrator/sub-modules/{subModuleId}": {
+      "get": {
+        "operationId": "SubModuleControllerV2_getSubmodule_v2",
+        "parameters": [
+          {
+            "name": "subModuleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "status: Success!"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a Submodule",
         "tags": [
           "Administrator - Submodule"
         ]
@@ -3315,7 +3343,7 @@
           },
           "module_id": {
             "type": "string",
-            "example": 1,
+            "example": "PK UUID",
             "description": "Module ID of the submodule "
           }
         },
@@ -3334,16 +3362,10 @@
             "items": {
               "type": "string"
             }
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
-          "action",
-          "status"
+          "action"
         ]
       },
       "AssignSubModulePermissionDto": {

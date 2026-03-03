@@ -2966,7 +2966,7 @@
           },
           "module_id": {
             "type": "string",
-            "example": 1,
+            "example": "PK UUID",
             "description": "Module ID of the submodule "
           }
         },
@@ -2985,16 +2985,10 @@
             "items": {
               "type": "string"
             }
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
           }
         },
         "required": [
-          "action",
-          "status"
+          "action"
         ]
       },
       "AssignSubModulePermissionDto": {

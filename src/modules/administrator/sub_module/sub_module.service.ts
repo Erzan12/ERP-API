@@ -38,9 +38,9 @@ export class SubModuleService {
     };
   }
 
-  async getSubmodule(id: string, user: RequestUser) {
+  async getSubmodule(subModuleId: string, user: RequestUser) {
     const subModule = await this.prisma.subModule.findUnique({
-      where: { id },
+      where: { id: subModuleId },
       include: {
         module: true,
         role_permission: true,
@@ -115,19 +115,34 @@ export class SubModuleService {
     };
   }
 
-  //multiple permissioin creation
-  async addSubModulePerm(
-    addSubModulePermissionDto: AddSubModulePermissionDto,
+  async getSubModuleActions(
     user: RequestUser,
   ) {
-    const { action, stat = 1 } = addSubModulePermissionDto;
+    const modules = await this.prisma.subModuleAction.findMany();
+
+    if(modules.length === 0) {
+      throw new NotFoundException('No Submodule actions yet available or added');
+    }
+
+    return {
+      status: 'success',
+      message: 'Here is the list of Submodule Actions available',
+      modules,
+    }
+  }
+
+  //add new submodule permission -> acts as inventory of all permisison/actions that can be assigned to a submodule
+  async addSubModuleAction(
+    dto: AddSubModulePermissionDto,
+    user: RequestUser,
+  ) {
+    const { action } = dto;
 
     const permissionsToCreate = action.map((act) => ({
       action: act,
-      stat,
     }));
 
-    const createSMPerms = await this.prisma.subModuleAction.createMany({
+    const subModuleAction = await this.prisma.subModuleAction.createMany({
       data: permissionsToCreate,
       skipDuplicates: true, // Optional: skips duplicate "action" entries
     });
@@ -153,20 +168,18 @@ export class SubModuleService {
 
     return {
       status: 'success',
-      message: `Added ${createSMPerms.count} new permission(s).`,
+      message: `Added ${subModuleAction.count} new permission(s).`,
       created_by: {
         id: requestUser.id,
         name: userName,
         position: userPos,
       },
-      data: {
-        count: createSMPerms.count,
-        actions_added: action,
-      },
+      count: subModuleAction.count,
+      actions_added: action,
     };
   }
 
-  async updateSubModulePerm(
+  async updateSubModuleAction(
     dto: UpdateSubModulePermisisonDto,
     user: RequestUser,
     id: string,
