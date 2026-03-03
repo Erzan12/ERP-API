@@ -14,16 +14,16 @@ export function setupMasterSwagger(app: INestApplication): void {
     // )
     //since token is now stored in cookies session will not use this anymore
     // .addCookieAuth('access-token')
-    .setTitle('Masterstable API (v1)')
+    .setTitle('Mastertable API (v1)')
     .setDescription('API for Manager. CURRENTLY VIEWING API VERSION 1')
     .setVersion('1.0')
     .addTag('Authentication')
-    .addTag('Masterstable - Company')
-    .addTag('Masterstable - Department')
-    .addTag('Masterstable - Division')
-    .addTag('Masterstable - Employment Status')
-    .addTag('Masterstable - Position')
-    .addTag('Masterstable - User Location')
+    .addTag('Mastertable - Company')
+    .addTag('Mastertable - Department')
+    .addTag('Mastertable - Division')
+    .addTag('Mastertable - Employment Status')
+    .addTag('Mastertable - Position')
+    .addTag('Mastertable - User Location')
     .build();
 
   const documentV1 = SwaggerModule.createDocument(app, optionsV1, {
@@ -36,18 +36,18 @@ export function setupMasterSwagger(app: INestApplication): void {
     //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
     //   'access-token',
     // )
-    .setTitle('Masterstable API (v2)')
+    .setTitle('Mastertable API (v2)')
     .setDescription(
       'API for Companies organization structure. CURRENTLY VIEWING API VERSION 2',
     )
     .setVersion('2.0')
     .addTag('Authentication')
-    .addTag('Masterstable - Company')
-    .addTag('Masterstable - Department')
-    .addTag('Masterstable - Division')
-    .addTag('Masterstable - Employment Status')
-    .addTag('Masterstable - Position')
-    .addTag('Masterstable - User Location')
+    .addTag('Mastertable - Company')
+    .addTag('Mastertable - Department')
+    .addTag('Mastertable - Division')
+    .addTag('Mastertable - Employment Status')
+    .addTag('Mastertable - Position')
+    .addTag('Mastertable - User Location')
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
@@ -55,16 +55,16 @@ export function setupMasterSwagger(app: INestApplication): void {
   });
 
   // mount individual endpoints (This automatically exposes /docs/admin/v1-json and v2-json)
-  SwaggerModule.setup('docs/masterstable/v1', app, documentV1);
-  SwaggerModule.setup('docs/masterstable/v2', app, documentV2);
+  SwaggerModule.setup('docs/mastertable/v1', app, documentV1);
+  SwaggerModule.setup('docs/mastertable/v2', app, documentV2);
 
   // mount the Unified UI with the Dropdown
-  SwaggerModule.setup('docs/masterstable', app, documentV2, {
+  SwaggerModule.setup('docs/mastertable', app, documentV2, {
     explorer: true, // enables the top bar
     swaggerOptions: {
       urls: [
-        { name: 'v2', url: '/docs/masterstable/v2-json' },
-        { name: 'v1', url: '/docs/masterstable/v1-json' },
+        { name: 'v2', url: '/docs/mastertable/v2-json' },
+        { name: 'v1', url: '/docs/mastertable/v1-json' },
       ],
       persistAuthorization: true,
       filter: true,

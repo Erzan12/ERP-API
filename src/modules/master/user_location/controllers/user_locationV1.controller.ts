@@ -1,4 +1,4 @@
-import { Controller, Param, Get, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Param, Get, ParseUUIDPipe, Query } from '@nestjs/common';
 import { UserLocationService } from '../user_location.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -9,10 +9,11 @@ import {
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Masterstable - User Location')
-@Controller({ path: 'masterstable', version: '1' })
+@ApiTags('Mastertable - User Location')
+@Controller({ path: 'mastertable', version: '1' })
 export class UserLocationControllerV1 {
   constructor(private userLocationService: UserLocationService) {}
 
@@ -20,8 +21,16 @@ export class UserLocationControllerV1 {
   @ApiOperation({ summary: 'Get all user locations' })
   @ApiGetResponse('List of user locations available')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check is jwt strategy
-  getUserLocations(@SessionUser() user: RequestUser) {
-    return this.userLocationService.getUserLocations(user);
+  getUserLocations(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.userLocationService.getUserLocations(user, dto);
   }
 
   @Get('user-locations/:id')
