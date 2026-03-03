@@ -1243,9 +1243,9 @@
         ]
       }
     },
-    "/v1/masterstable/positions": {
+    "/v2/masterstable/positions": {
       "get": {
-        "operationId": "PositionControllerV2_getPositions_v1",
+        "operationId": "PositionControllerV2_getPositions_v2",
         "parameters": [
           {
             "name": "search",
@@ -1323,7 +1323,7 @@
         ]
       },
       "post": {
-        "operationId": "PositionControllerV2_createPosition_v1",
+        "operationId": "PositionControllerV2_createPosition_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1362,9 +1362,9 @@
         ]
       }
     },
-    "/v1/masterstable/positions/{id}": {
+    "/v2/masterstable/positions/{id}": {
       "get": {
-        "operationId": "PositionControllerV2_getPosition_v1",
+        "operationId": "PositionControllerV2_getPosition_v2",
         "parameters": [
           {
             "name": "id",
@@ -1401,7 +1401,7 @@
         ]
       },
       "put": {
-        "operationId": "PositionControllerV2_updatePosition_v1",
+        "operationId": "PositionControllerV2_updatePosition_v2",
         "parameters": [
           {
             "name": "id",
@@ -1655,9 +1655,9 @@
         ]
       }
     },
-    "/v1/masterstable/companies": {
+    "/v2/masterstable/companies": {
       "get": {
-        "operationId": "CompanyControllerV2_getCompanies_v1",
+        "operationId": "CompanyControllerV2_getCompanies_v2",
         "parameters": [
           {
             "name": "search",
@@ -1735,7 +1735,7 @@
         ]
       },
       "post": {
-        "operationId": "CompanyControllerV2_createCompany_v1",
+        "operationId": "CompanyControllerV2_createCompany_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1774,9 +1774,9 @@
         ]
       }
     },
-    "/v1/masterstable/companies/{id}": {
+    "/v2/masterstable/companies/{id}": {
       "get": {
-        "operationId": "CompanyControllerV2_getCompany_v1",
+        "operationId": "CompanyControllerV2_getCompany_v2",
         "parameters": [
           {
             "name": "id",
@@ -1813,7 +1813,7 @@
         ]
       },
       "put": {
-        "operationId": "CompanyControllerV2_updateCompany_v1",
+        "operationId": "CompanyControllerV2_updateCompany_v2",
         "parameters": [
           {
             "name": "id",

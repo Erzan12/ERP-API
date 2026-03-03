@@ -35,7 +35,7 @@ import { PositionService } from '../position.service';
 
 // @ApiCookieAuth('access-token')
 @ApiTags('Masterstable - Position')
-@Controller({ path: 'masterstable', version: '1' })
+@Controller({ path: 'masterstable', version: '2' })
 export class PositionControllerV2 {
   constructor(private positionService: PositionService) {}
 

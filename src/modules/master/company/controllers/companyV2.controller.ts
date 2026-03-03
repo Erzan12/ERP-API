@@ -34,7 +34,7 @@ import { CompanyService } from '../company.service';
 
 // @ApiCookieAuth('access-token')
 @ApiTags('Masterstable - Company')
-@Controller({ path: 'masterstable', version: '1' })
+@Controller({ path: 'masterstable', version: '2' })
 export class CompanyControllerV2 {
   constructor(private companyService: CompanyService) {}
 
