@@ -11,36 +11,131 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
 import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class SubModuleService {
   constructor(private prisma: PrismaService) {}
 
-  async getSubModules(user: RequestUser) {
-    const subModules = await this.prisma.subModule.findMany({
-      where: { stat: 1 },
-      include: {
-        module: true,
-        sub_module_permissions: true,
-      },
-    });
+  async getSubModules(
+    user: RequestUser,
+    dto: PaginationDto,
+  ) {
+
+    const { search, sortBy, order, page, perPage } = dto;
+
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: any = {
+      stat: 1,
+    };
+
+    if (search) {
+      const orConditions: Prisma.SubModuleWhereInput[]= [];
+
+      orConditions.push({
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      });
+
+      //boolean search
+      // if ( search === 'true' || search === 'false' ) {
+      //   orConditions.push({
+      //     stat or isActive: search === 'true',
+      //   })
+      // }
+
+      whereCondition.OR = orConditions;
+    }
+
+    const allowSortFeilds = ['name','module_id','created_at','updated_at'];
+    if (!allowSortFeilds.includes(sortBy)) {
+      sortBy;
+    }
+
+    const [total, subModules] = await this.prisma.$transaction([
+      this.prisma.subModule.count({
+        where: {
+          ...whereCondition,
+        },
+      }),
+      this.prisma.subModule.findMany({
+        where: {
+          ...whereCondition,
+        },
+        // select: {
+        //   id: true,
+        //   name: true,
+        //   module_id: true,
+        //   module: {
+        //     select: {
+        //       id: true,
+        //       name: true,
+        //       stat: true,
+        //     },
+        //   },
+        // },
+        skip,
+        take: perPage,
+        orderBy: {
+          [sortBy]: order,
+        },
+      }),
+    ]);
 
     if (subModules.length === 0) {
       throw new BadRequestException('No available or active sub module exist!');
     }
 
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
     return {
       status: 'success',
       message: 'Here are the list of Sub Modules',
-      data: {
-        subModules,
-      },
+      count: total,
+      page,
+      perPage,
+      // totalPage: Math.ceil(total / perPage),
+      subModules,
     };
   }
 
-  async getSubmodule(id: string, user: RequestUser) {
+  async getSubmodule(subModuleId: string, user: RequestUser) {
     const subModule = await this.prisma.subModule.findUnique({
-      where: { id },
+      where: { id: subModuleId },
       include: {
         module: true,
         role_permission: true,
@@ -115,19 +210,34 @@ export class SubModuleService {
     };
   }
 
-  //multiple permissioin creation
-  async addSubModulePerm(
-    addSubModulePermissionDto: AddSubModulePermissionDto,
+  async getSubModuleActions(
     user: RequestUser,
   ) {
-    const { action, stat = 1 } = addSubModulePermissionDto;
+    const modules = await this.prisma.subModuleAction.findMany();
+
+    if(modules.length === 0) {
+      throw new NotFoundException('No Submodule actions yet available or added');
+    }
+
+    return {
+      status: 'success',
+      message: 'Here is the list of Submodule Actions available',
+      modules,
+    }
+  }
+
+  //add new submodule permission -> acts as inventory of all permisison/actions that can be assigned to a submodule
+  async addSubModuleAction(
+    dto: AddSubModulePermissionDto,
+    user: RequestUser,
+  ) {
+    const { action } = dto;
 
     const permissionsToCreate = action.map((act) => ({
       action: act,
-      stat,
     }));
 
-    const createSMPerms = await this.prisma.subModuleAction.createMany({
+    const subModuleAction = await this.prisma.subModuleAction.createMany({
       data: permissionsToCreate,
       skipDuplicates: true, // Optional: skips duplicate "action" entries
     });
@@ -153,20 +263,18 @@ export class SubModuleService {
 
     return {
       status: 'success',
-      message: `Added ${createSMPerms.count} new permission(s).`,
+      message: `Added ${subModuleAction.count} new permission(s).`,
       created_by: {
         id: requestUser.id,
         name: userName,
         position: userPos,
       },
-      data: {
-        count: createSMPerms.count,
-        actions_added: action,
-      },
+      count: subModuleAction.count,
+      actions_added: action,
     };
   }
 
-  async updateSubModulePerm(
+  async updateSubModuleAction(
     dto: UpdateSubModulePermisisonDto,
     user: RequestUser,
     id: string,

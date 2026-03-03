@@ -1,5 +1,5 @@
-import { Controller, Body, Post, Get, Put, Req, ParseUUIDPipe, Param } from '@nestjs/common';
-import { UserAccountService } from '../user_account.service';
+import { Controller, Body, Post, Get, Put, Req} from '@nestjs/common';
+import { UserManagementService } from '../user_management.service';
 import {
   ApiBody,
   ApiOperation,
@@ -16,7 +16,6 @@ import {
 import { DeactivateUserAccountDto, ReactivateUserAccountDto, } from '../dto/user-account-status.dto';
 import { CreateUserWithRoleDto } from '../dto/create-user-with-role-permission.dto';
 import { UserEmailResetTokenDto } from '../dto/user-email.reset-token.dto';
-import { AddUserRolePermissionsDto } from '../dto/add-user-role-permissions.dto';
 
 import {
   ACTION_READ,
@@ -32,10 +31,10 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
 
-@ApiTags('Manager - User Account')
+@ApiTags('Manager - User Management')
 @Controller({ path: 'users', version: '1' })
-export class UserControllerV1 {
-  constructor(private userAccountService: UserAccountService) {}
+export class UserManagementControllerV1 {
+  constructor(private userManagementService: UserManagementService) {}
 
   //view user accounts
   //to set up viewuser accounts in service
@@ -46,18 +45,18 @@ export class UserControllerV1 {
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
   viewUsers(@SessionUser() user: RequestUser) {
-    return this.userAccountService.viewUserAccount(user);
+    return this.userManagementService.viewUserAccount(user);
   }
 
-  @Get('users/me/permissions')
-  @ApiOperation({ summary: 'My User Account' })
-  @ApiGetResponse('My user account')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
-  getMyPermissions(@SessionUser() user: RequestUser) {
-    return this.userAccountService.getUserPermissions(user.id);
-  }
+  // @Get('users/me/permissions')
+  // @ApiOperation({ summary: 'My User Account' })
+  // @ApiGetResponse('My user account')
+  // @ApiSecurityClearance(SEC_LVL_5)
+  // @SecurityClearance(SEC_LVL_5)
+  // @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
+  // getMyPermissions(@SessionUser() user: RequestUser) {
+  //   return this.userManagementService.getUserPermissions(user.id);
+  // }
 
   //create user account
   @Post()
@@ -75,7 +74,7 @@ export class UserControllerV1 {
     @SessionUser() user: RequestUser,
     @Req() req: Request,
   ) {
-    return this.userAccountService.createUserAccount(
+    return this.userManagementService.createUserAccount(
       createUserWithRoleDto,
       user,
       req,
@@ -98,43 +97,43 @@ export class UserControllerV1 {
     @Body() id: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userAccountService.resendInvitation(
+    return this.userManagementService.resendInvitation(
       id,
       user,
     );
   }
 
-  @Put('add-role/:userId/:roleName')
-  @ApiOperation({ summary: 'Add Role to user' })
-  @ApiPostResponse('Role has been added to the user with permission')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
-  addUserRole(
-    @SessionUser() requestUser: RequestUser,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Param('roleName') roleName: string,
-  ) {
-    return this.userAccountService.addRoleUser(requestUser, userId, roleName);
-  }
+  // @Put('add-role/:userId/:roleName')
+  // @ApiOperation({ summary: 'Add Role to user' })
+  // @ApiPostResponse('Role has been added to the user with permission')
+  // @ApiSecurityClearance(SEC_LVL_5)
+  // @SecurityClearance(SEC_LVL_5)
+  // @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
+  // addUserRole(
+  //   @SessionUser() requestUser: RequestUser,
+  //   @Param('userId', new ParseUUIDPipe()) userId: string,
+  //   @Param('roleName') roleName: string,
+  // ) {
+  //   return this.userManagementService.addRoleUser(requestUser, userId, roleName);
+  // }
 
-  //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
-  @Post('role_permission')
-  @ApiOperation({ summary: 'Add Role permissions to user' })
-  @ApiPostResponse('Role permission added to user successfully')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
-  addRolePermission(
-    @Body() addUserRolePermissionsDto: AddUserRolePermissionsDto,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.userAccountService.addUserRolePermissions(
-      addUserRolePermissionsDto.userId,
-      addUserRolePermissionsDto.rolePermissionIds,
-      user,
-    );
-  }
+  // //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
+  // @Post('role_permission')
+  // @ApiOperation({ summary: 'Add Role permissions to user' })
+  // @ApiPostResponse('Role permission added to user successfully')
+  // @ApiSecurityClearance(SEC_LVL_5)
+  // @SecurityClearance(SEC_LVL_5)
+  // @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
+  // addRolePermission(
+  //   @Body() addUserRolePermissionsDto: AddUserRolePermissionsDto,
+  //   @SessionUser() user: RequestUser,
+  // ) {
+  //   return this.userManagementService.addUserRolePermissions(
+  //     addUserRolePermissionsDto.userId,
+  //     addUserRolePermissionsDto.rolePermissionIds,
+  //     user,
+  //   );
+  // }
 
   //first login password reset token
   // view user tokens
@@ -150,7 +149,7 @@ export class UserControllerV1 {
     @SessionUser() user: RequestUser,
     @Req() req: Request,
   ) {
-    return this.userAccountService.createUserAccount(
+    return this.userManagementService.createUserAccount(
       createUserWithRoleDto,
       user,
       req,
@@ -167,7 +166,7 @@ export class UserControllerV1 {
     @Body() deactivateUserAccountDto: DeactivateUserAccountDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userAccountService.deactivateUserAccount(
+    return this.userManagementService.deactivateUserAccount(
       deactivateUserAccountDto,
       user,
     );
@@ -182,7 +181,7 @@ export class UserControllerV1 {
     @Body() reactivateUserAccountDto: ReactivateUserAccountDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userAccountService.reactivateUserAccount(
+    return this.userManagementService.reactivateUserAccount(
       reactivateUserAccountDto,
       user,
     );
@@ -194,7 +193,7 @@ export class UserControllerV1 {
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   viewNewEmployees(@SessionUser() user: RequestUser) {
-    return this.userAccountService.viewNewEmployeeWithoutUserAccount(user);
+    return this.userManagementService.viewNewEmployeeWithoutUserAccount(user);
   }
 
   // @Get('with_roles_permissions')

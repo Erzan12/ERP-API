@@ -6,6 +6,7 @@ import {
   Put,
   Param,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { RoleService } from '../role.service';
 import { Can } from '../../../../utils/decorators/can.decorator';
@@ -14,7 +15,7 @@ import { RequestUser } from '../../../../utils/types/request-user.interface';
 import { CreateRoleDto } from '../dto/create-role.dto';
 import { CreateRolePermissionDto } from '../dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from '../dto/update-role-permisisons.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
@@ -26,6 +27,7 @@ import {
   ACTION_UPDATE,
   SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Administrator - Role')
 @Controller({ path: 'administrator', version: '2' })
@@ -37,8 +39,16 @@ export class RoleControllerV2 {
   @ApiOperation({ summary: 'Get all Roles' })
   @ApiGetResponse('Here are the list of Roles')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  getRoles(@SessionUser() user: RequestUser) {
-    return this.roleService.getRoles(user);
+  getRoles(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.roleService.getRoles(user, dto);
   }
 
   @Get('roles/:id')

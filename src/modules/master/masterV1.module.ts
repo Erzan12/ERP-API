@@ -16,8 +16,6 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { UserLocationService } from './user_location/user_location.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { CompanyControllerV1 } from './company/controllers/companyV1.controller';
-import { UserControllerV1 } from '../manager/user_account/controllers/user_accountV1.controller';
-import { UserLocationControllerV1 } from './user_location/controllers/user_locationV1.controller';
 
 @Module({
   imports: [AuthModule],
