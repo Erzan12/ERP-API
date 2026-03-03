@@ -82,7 +82,7 @@ export class SubModuleControllerV1 {
     @SessionUser() user: RequestUser,
   ) {
     console.log('createSubModuleDto:', AddSubModulePermissionDto);
-    return this.subModuleService.addSubModulePerm(addSubModuleDto, user);
+    return this.subModuleService.addSubModuleAction(addSubModuleDto, user);
   }
 
   //add permissions to submodules
@@ -118,6 +118,6 @@ export class SubModuleControllerV1 {
     @SessionUser() user: RequestUser,
     @Param('id', new ParseUUIDPipe()) id: string,
   ) {
-    return this.subModuleService.updateSubModulePerm(dto, user, id);
+    return this.subModuleService.updateSubModuleAction(dto, user, id);
   }
 }
