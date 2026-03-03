@@ -16,7 +16,7 @@ export class LandingController {
           title: 'Administrator',
           slug: 'admin',
           swaggerLink: '/docs/admin',
-          icon: '/public/icons/user.png',
+          icon: '/public/icons/administrator.png',
           status: 'New',
         },
         {
@@ -24,6 +24,13 @@ export class LandingController {
           slug: 'mastertable',
           swaggerLink: '/docs/mastertable',
           icon: '/public/icons/mastertable.png',
+          status: 'New',
+        },
+        {
+          title: 'User Management',
+          slug: 'user-management',
+          swaggerLink: '/docs/user-management',
+          icon: '/public/icons/user.png',
           status: 'New',
         },
         {

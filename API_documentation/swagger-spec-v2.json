@@ -2955,7 +2955,7 @@
         },
         "summary": "Get User Accounts",
         "tags": [
-          "Manager - User Management"
+          "User Management"
         ]
       },
       "post": {
@@ -2995,7 +2995,7 @@
         },
         "summary": "Create a new user account",
         "tags": [
-          "Manager - User Management"
+          "User Management"
         ]
       }
     },
@@ -3026,7 +3026,7 @@
         },
         "summary": "My User Account",
         "tags": [
-          "Manager - User Management"
+          "User Management"
         ]
       }
     },
@@ -3068,7 +3068,7 @@
         },
         "summary": "Reset token for first time log in",
         "tags": [
-          "Manager - User Management"
+          "User Management"
         ]
       }
     },
@@ -3116,7 +3116,7 @@
         },
         "summary": "Add Role to user",
         "tags": [
-          "Manager - User Management"
+          "User Management"
         ]
       }
     },
@@ -3157,7 +3157,7 @@
         },
         "summary": "Add Role permissions to user",
         "tags": [
-          "Manager - User Management"
+          "User Management"
         ]
       }
     },
@@ -3198,7 +3198,7 @@
         },
         "summary": "Get the token keys for this user",
         "tags": [
-          "Manager - User Management"
+          "User Management"
         ]
       }
     },
@@ -3239,7 +3239,7 @@
         },
         "summary": "Deactivate the user account",
         "tags": [
-          "Manager - User Management"
+          "User Management"
         ]
       }
     },
@@ -3280,7 +3280,7 @@
         },
         "summary": "Reactivate the user account",
         "tags": [
-          "Manager - User Management"
+          "User Management"
         ]
       }
     },
@@ -3311,7 +3311,7 @@
         },
         "summary": "Get the new employees without user accounts",
         "tags": [
-          "Manager - User Management"
+          "User Management"
         ]
       }
     }

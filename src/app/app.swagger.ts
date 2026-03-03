@@ -14,6 +14,7 @@ import { ManagerV1Module } from 'src/modules/manager/managerV1.module';
 import { ManagerV2Module } from 'src/modules/manager/managerV2.module';
 import { MasterV2Module } from 'src/modules/master/masterV2.module';
 import { MasterV1Module } from 'src/modules/master/masterV1.module';
+import { setupUserSwagger } from './user-management/user-management.swagger';
 
 function setupAppSwagger(app: INestApplication): void {
   // All APIs docs
@@ -66,6 +67,7 @@ function setupAppSwagger(app: INestApplication): void {
   setupHRISSwagger(app);
   setupManagerSwagger(app);
   setupMasterSwagger(app);
+  setupUserSwagger(app);
 }
 
 export { setupAppSwagger };
