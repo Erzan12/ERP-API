@@ -2,8 +2,8 @@ import {
   IsArray,
   ArrayNotEmpty,
   IsString,
-  IsInt,
   IsNotEmpty,
+  IsUUID,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -19,7 +19,7 @@ export class AssignSubModulePermissionDto {
   })
   action: string[];
 
-  @IsInt()
+  @IsUUID()
   @IsNotEmpty()
   @ApiProperty({ example: 'UUID', description: 'ID of the Sub Module' })
   sub_module_id: string;

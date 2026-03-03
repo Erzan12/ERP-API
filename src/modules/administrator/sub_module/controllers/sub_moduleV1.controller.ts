@@ -7,6 +7,7 @@ import {
   Put,
   ParseIntPipe,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { Can } from '../../../../utils/decorators/can.decorator';
 import { CreateSubModuleDto } from '../dto/create-sub-module.dto';
@@ -26,6 +27,7 @@ import {
   ACTION_READ,
   SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Administrator - Submodule')
@@ -38,8 +40,16 @@ export class SubModuleControllerV1 {
   @ApiOperation({ summary: 'Get Submodules' })
   @ApiGetResponse('Here are all the Sub modules available')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  getSubmodules(@SessionUser() user: RequestUser) {
-    return this.subModuleService.getSubModules(user);
+  getSubmodules(
+  @SessionUser() user: RequestUser,
+  @Query() dto: PaginationDto,
+  @Query('page') page = 1,
+  @Query('perPage') perPage = 10,
+  @Query('search') search?: string,
+  @Query('sortBy') sortBy: string = 'created_at',
+  @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.subModuleService.getSubModules(user,dto);
   }
 
   @Get('sub-modules/:id')
@@ -82,7 +92,7 @@ export class SubModuleControllerV1 {
     @SessionUser() user: RequestUser,
   ) {
     console.log('createSubModuleDto:', AddSubModulePermissionDto);
-    return this.subModuleService.addSubModulePerm(addSubModuleDto, user);
+    return this.subModuleService.addSubModuleAction(addSubModuleDto, user);
   }
 
   //add permissions to submodules
@@ -118,6 +128,6 @@ export class SubModuleControllerV1 {
     @SessionUser() user: RequestUser,
     @Param('id', new ParseUUIDPipe()) id: string,
   ) {
-    return this.subModuleService.updateSubModulePerm(dto, user, id);
+    return this.subModuleService.updateSubModuleAction(dto, user, id);
   }
 }

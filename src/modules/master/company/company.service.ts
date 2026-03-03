@@ -19,9 +19,9 @@ export class CompanyService {
   constructor(private prisma: PrismaService) {}
 
   //query single company
-  async getCompany(id: string, user: RequestUser) {
+  async getCompany(companyId: string, user: RequestUser) {
     const company = await this.prisma.company.findUnique({
-      where: { id },
+      where: { id: companyId },
     });
 
     if (!company || company.stat === 0) {
@@ -69,27 +69,6 @@ export class CompanyService {
   ) {
 
     const { search, sortBy, order, page, perPage } = dto;
-
-    const canView = await this.prisma.userRole.findFirst({
-      where: {
-        user_id: user.id,
-        role_name: {
-          in: [
-            'Administrator',
-            'Super Administrator',
-            'HR Manager',
-            'HR Clerk',
-            'HR Staff',
-          ],
-        },
-      },
-    });
-
-    if (!canView) {
-      throw new BadRequestException(
-        'You are not allowed to view this sub module',
-      );
-    }
 
     //PAGINATION AREA
     const skip = (page - 1) * perPage;
@@ -198,14 +177,22 @@ export class CompanyService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
     );
 
-    if (!isAdmin) {
-      throw new ForbiddenException('User is not allowed to view Companies');
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     return {
@@ -296,7 +283,7 @@ export class CompanyService {
   }
 
   async updateCompany(
-    id: string,
+    companyId: string,
     updateCompanyDto: UpdateCompanyDto,
     user: RequestUser,
   ) {
@@ -312,7 +299,7 @@ export class CompanyService {
     } = updateCompanyDto;
 
     const company = await this.prisma.company.findUnique({
-      where: { id },
+      where: { id: companyId },
       select: {
         name: true,
         stat: true,
@@ -324,7 +311,7 @@ export class CompanyService {
     }
 
     const updateCompany = await this.prisma.company.update({
-      where: { id },
+      where: { id: companyId },
       data: {
         name,
         address,
@@ -375,8 +362,7 @@ export class CompanyService {
         name: userName,
         position: userPos,
       },
-      company_id: updateCompany.id,
-      company_name: updateCompany.name,
+      updateCompany,
     };
   }
 }

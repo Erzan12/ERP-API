@@ -33,8 +33,8 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { CompanyService } from '../company.service';
 
 // @ApiCookieAuth('access-token')
-@ApiTags('Masterstable - Company')
-@Controller({ path: 'masterstable', version: '1' })
+@ApiTags('Mastertable - Company')
+@Controller({ path: 'mastertable', version: '2' })
 export class CompanyControllerV2 {
   constructor(private companyService: CompanyService) {}
 
@@ -56,15 +56,15 @@ export class CompanyControllerV2 {
   }
 
   //get a single company
-  @Get('companies/:id')
+  @Get('companies/:companyId')
   @ApiOperation({ summary: 'Get a company' })
   @ApiGetResponse('Here is the company')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getCompany(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('companyId', new ParseUUIDPipe()) companyId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.companyService.getCompany(id, user);
+    return this.companyService.getCompany(companyId, user);
   }
 
   @Post('companies')
@@ -79,16 +79,16 @@ export class CompanyControllerV2 {
     return this.companyService.createCompany(createCompanyDto, user);
   }
 
-  @Put('companies/:id')
+  @Put('companies/:companyId')
   @ApiBody({ type: UpdateCompanyDto, description: 'Payload to update company' })
   @ApiOperation({ summary: 'Update a current company information' })
   @ApiPatchResponse('Company updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateCompany(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('companyId', new ParseUUIDPipe()) companyId: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.companyService.updateCompany(id, updateCompanyDto, user);
+    return this.companyService.updateCompany(companyId, updateCompanyDto, user);
   }
 }

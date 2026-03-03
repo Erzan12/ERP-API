@@ -35,8 +35,8 @@ import { CreateDivisionDto, UpdateDivisionDto } from '../dto/division.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiBearerAuth('access-token') // matches the name used in .addBearerAuth()
-@ApiTags('Masterstable - Division')
-@Controller({ path: 'masterstable', version: '1' })
+@ApiTags('Mastertable - Division')
+@Controller({ path: 'mastertable', version: '1' })
 export class DivisionControllerV1 {
   constructor(private divisionService: DivisionService) {}
 

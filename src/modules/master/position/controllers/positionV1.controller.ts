@@ -34,8 +34,8 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { PositionService } from '../position.service';
 
 @ApiBearerAuth('access-token')
-@ApiTags('Masterstable - Position')
-@Controller({ path: 'masterstable', version: '1' })
+@ApiTags('Mastertable - Position')
+@Controller({ path: 'mastertable', version: '1' })
 export class PositionControllerV1 {
   constructor(private positionService: PositionService) {}
 
