@@ -26,24 +26,6 @@ export class UserLocationService {
 
     const { search, sortBy, order, page, perPage } = dto;
 
-    const canView = await this.prisma.userRole.findFirst({
-      where: {
-        user_id: user.id,
-        role_name: {
-          in: [
-            'Administrator',
-            'Super Administrator',
-          ],
-        },
-      },
-    });
-
-    if (!canView) {
-      throw new BadRequestException(
-        'You are not allowed to view this sub module',
-      );
-    }
-
     const skip = (page - 1) * perPage;
 
     const whereCondition: any = {
@@ -128,6 +110,24 @@ export class UserLocationService {
 
     if (!isAdmin) {
       throw new ForbiddenException('User is not allowed to view a Company');
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not allowed to view this sub module',
+      );
     }
 
     return {
