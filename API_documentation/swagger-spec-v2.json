@@ -1362,12 +1362,12 @@
         ]
       }
     },
-    "/v2/mastertable/positions/{id}": {
+    "/v2/mastertable/positions/{positionId}": {
       "get": {
         "operationId": "PositionControllerV2_getPosition_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "positionId",
             "required": true,
             "in": "path",
             "schema": {
@@ -1404,7 +1404,7 @@
         "operationId": "PositionControllerV2_updatePosition_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "positionId",
             "required": true,
             "in": "path",
             "schema": {
@@ -1568,12 +1568,12 @@
         ]
       }
     },
-    "/v2/mastertable/departments/{id}": {
+    "/v2/mastertable/departments/{departmentId}": {
       "get": {
         "operationId": "DepartmentControllerV2_getDepartment_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "departmentId",
             "required": true,
             "in": "path",
             "schema": {
@@ -1610,7 +1610,7 @@
         "operationId": "DepartmentControllerV2_updateDepartment_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "departmentId",
             "required": true,
             "in": "path",
             "schema": {
@@ -1774,12 +1774,12 @@
         ]
       }
     },
-    "/v2/mastertable/companies/{id}": {
+    "/v2/mastertable/companies/{companyId}": {
       "get": {
         "operationId": "CompanyControllerV2_getCompany_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "companyId",
             "required": true,
             "in": "path",
             "schema": {
@@ -1816,7 +1816,7 @@
         "operationId": "CompanyControllerV2_updateCompany_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "companyId",
             "required": true,
             "in": "path",
             "schema": {
@@ -1980,12 +1980,12 @@
         ]
       }
     },
-    "/v2/mastertable/divisions/{id}": {
+    "/v2/mastertable/divisions/{divisionId}": {
       "get": {
         "operationId": "DivisionControllerV2_getDivision_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "divisionId",
             "required": true,
             "in": "path",
             "schema": {
@@ -2022,7 +2022,7 @@
         "operationId": "DivisionControllerV2_updateDivision_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "divisionId",
             "required": true,
             "in": "path",
             "schema": {
@@ -2136,12 +2136,12 @@
         ]
       }
     },
-    "/v2/mastertable/employment_status/{id}": {
+    "/v2/mastertable/employment_status/{employeeStatusId}": {
       "get": {
         "operationId": "EmploymentStatusControllerV2_getEmployeeStat_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "employeeStatusId",
             "required": true,
             "in": "path",
             "schema": {
@@ -2178,7 +2178,7 @@
         "operationId": "EmploymentStatusControllerV2_updateEmployeeStatus_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "employeeStatusId",
             "required": true,
             "in": "path",
             "schema": {
@@ -2291,12 +2291,12 @@
         ]
       }
     },
-    "/v2/mastertable/user-locations/{id}": {
+    "/v2/mastertable/user-locations/{userLocationId}": {
       "get": {
         "operationId": "UserLocationControllerV2_getUserLocation_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "userLocationId",
             "required": true,
             "in": "path",
             "schema": {
@@ -2333,7 +2333,7 @@
         "operationId": "UserLocationControllerV2_updateUserLocation_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "userLocationId",
             "required": true,
             "in": "path",
             "schema": {

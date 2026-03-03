@@ -56,15 +56,15 @@ export class DivisionControllerV2 {
   }
 
   //get selected division
-  @Get('divisions/:id')
+  @Get('divisions/:divisionId')
   @ApiOperation({ summary: 'Get a division' })
   @ApiGetResponse('Here is the division')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDivision(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('divisionId', new ParseUUIDPipe()) divisionId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.divisionService.getDivision(id, user);
+    return this.divisionService.getDivision(divisionId, user);
   }
 
   @Post('divisions')
@@ -83,7 +83,7 @@ export class DivisionControllerV2 {
     return this.divisionService.createDivision(createDivisionDto, user);
   }
 
-  @Put('divisions/:id')
+  @Put('divisions/:divisionId')
   @ApiBody({
     type: UpdateDivisionDto,
     description: 'Payload to update division',
@@ -92,10 +92,10 @@ export class DivisionControllerV2 {
   @ApiPatchResponse('Division updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateDivision(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('divisionId', ParseIntPipe) divisionId: string,
     @Body() updateDivisiionDto: UpdateDivisionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.divisionService.updateDivision(id, updateDivisiionDto, user);
+    return this.divisionService.updateDivision(divisionId, updateDivisiionDto, user);
   }
 }

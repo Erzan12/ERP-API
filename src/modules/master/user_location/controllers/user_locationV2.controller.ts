@@ -41,15 +41,15 @@ export class UserLocationControllerV2 {
     return this.userLocationService.getUserLocations(user);
   }
 
-  @Get('user-locations/:id')
+  @Get('user-locations/:userLocationId')
   @ApiOperation({ summary: 'Get a user locations' })
   @ApiGetResponse('Here is the user location')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getUserLocation(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('userLocationId', new ParseUUIDPipe()) userLocationId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userLocationService.getUserLocation(id, user);
+    return this.userLocationService.getUserLocation(userLocationId, user);
   }
 
   @Post('user-locations')
@@ -70,7 +70,7 @@ export class UserLocationControllerV2 {
     );
   }
 
-  @Put('user-locations/:id')
+  @Put('user-locations/:userLocationId')
   @ApiBody({
     type: UpdateUserLocationDto,
     description: 'Payload to update User Location information',
@@ -79,12 +79,12 @@ export class UserLocationControllerV2 {
   @ApiPatchResponse('User Location updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateUserLocation(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('userLocationId', new ParseUUIDPipe()) userLocationId: string,
     @Body() updateUserLocationDto: UpdateUserLocationDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.userLocationService.updateUserLocation(
-      id,
+      userLocationId,
       updateUserLocationDto,
       user,
     );

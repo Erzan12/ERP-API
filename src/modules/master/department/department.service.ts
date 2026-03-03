@@ -161,9 +161,9 @@ export class DepartmentService {
   }
 
   //to add single query of department
-  async getDepartment(id: string, user: RequestUser) {
+  async getDepartment(departmentId: string, user: RequestUser) {
     const department = await this.prisma.department.findUnique({
-      where: { id },
+      where: { id: departmentId },
     });
 
     if (!department || department.stat === 0) {
@@ -274,14 +274,14 @@ export class DepartmentService {
   }
 
   async updateDepartment(
-    id: string,
+    departmentId: string,
     updateDepartmentDto: UpdateDepartmentDto,
     user: RequestUser,
   ) {
     const { department_name, sorting, division_id, stat } = updateDepartmentDto;
 
     const department = await this.prisma.department.findUnique({
-      where: { id },
+      where: { id: departmentId },
       select: {
         name: true,
         stat: true,
@@ -294,8 +294,8 @@ export class DepartmentService {
       );
     }
 
-    const updateDept = await this.prisma.department.update({
-      where: { id },
+    const updateDepartment = await this.prisma.department.update({
+      where: { id: departmentId },
       data: {
         name: department_name,
         sorting,
@@ -339,14 +339,13 @@ export class DepartmentService {
 
     return {
       status: 'success',
-      message: `${updateDept.name} Department has been updated successfully!`,
+      message: `${updateDepartment.name} Department has been updated successfully!`,
       updated_by: {
         id: requestUser.id,
         name: userName,
         position: userPos,
       },
-      department_id: updateDept.id,
-      department_name: updateDept.name,
+      updateDepartment,
     };
   }
 }

@@ -41,15 +41,15 @@ export class EmploymentStatusControllerV2 {
   }
 
   //get only one employment_status
-  @Get('employment_status/:id')
+  @Get('employment_status/:employeeStatusId')
   @ApiOperation({ summary: 'Get an employment status.' })
   @ApiGetResponse('Here is the employment status.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getEmployeeStat(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('employeeStatusId', new ParseUUIDPipe()) employeeStatusId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employmentStatusService.getEmployeeStat(id, user);
+    return this.employmentStatusService.getEmployeeStat(employeeStatusId, user);
   }
 
   //created new employee status
@@ -71,17 +71,17 @@ export class EmploymentStatusControllerV2 {
     );
   }
 
-  @Put('employment_status/:id')
+  @Put('employment_status/:employeeStatusId')
   @ApiOperation({ summary: 'Updating employee status details.' })
   @ApiPatchResponse('Employee status details updated successfully.')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateEmployeeStatus(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('employeeStatusId', new ParseUUIDPipe()) employeeStatusId: string,
     @Body() updateEmpStatusDto: UpdateEmpStatusDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.employmentStatusService.updateEmployeeStatus(
-      id,
+      employeeStatusId,
       updateEmpStatusDto,
       user,
     );
