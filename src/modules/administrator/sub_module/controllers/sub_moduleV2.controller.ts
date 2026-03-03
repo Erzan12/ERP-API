@@ -6,6 +6,7 @@ import {
   Get,
   Put,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { Can } from '../../../../utils/decorators/can.decorator';
 import { CreateSubModuleDto } from '../dto/create-sub-module.dto';
@@ -25,6 +26,7 @@ import {
   ACTION_READ,
   SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Administrator - Submodule')
 @Controller({ path: 'administrator', version: '2' })
@@ -36,8 +38,16 @@ export class SubModuleControllerV2 {
   @ApiOperation({ summary: 'Get Submodules' })
   @ApiGetResponse('Here are all the Sub modules available')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  getSubmodules(@SessionUser() user: RequestUser) {
-    return this.subModuleService.getSubModules(user);
+  getSubmodules(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.subModuleService.getSubModules(user,dto);
   }
 
   @Get('sub-modules/permissions')
