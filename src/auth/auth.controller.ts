@@ -22,21 +22,29 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  @ApiOperation({ summary: 'User authorized login' })
-  @ApiLoginResponse('User login successful')
-  async login(@Body() loginDto: LoginDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const token = await this.authService.login(loginDto);
+  async login(
+    @Body() loginDto: LoginDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const ipAddress = req.ip || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
-    
-    res.cookie('accessToken', token.token, {
-      httpOnly: true,    // Prevents JavaScript access (XSS protection)
-      secure: false, // Only sends over HTTPS
-      sameSite: 'lax',   // CSRF protection
-      maxAge: 3600000,   // 1 hour in milliseconds
+
+    const result = await this.authService.login(
+      loginDto,
+      ipAddress,
+      userAgent,
+    );
+
+    res.cookie('accessToken', result.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 3600000,
+      path: '/',
     });
 
-    return this.authService.login(loginDto, ipAddress, userAgent);
+    return result;
   }
 
   @Post('logout')
@@ -53,6 +61,8 @@ export class AuthController {
     // Clear cookie here
     res.clearCookie('accessToken', {
       httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
       path: '/',
     });
 
