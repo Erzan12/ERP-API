@@ -102,16 +102,6 @@ export class UserLocationService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
-    );
-
-    if (!isAdmin) {
-      throw new ForbiddenException('User is not allowed to view a Company');
-    }
-
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
@@ -126,7 +116,7 @@ export class UserLocationService {
 
     if (!canView) {
       throw new ForbiddenException(
-        'You are not allowed to view this sub module',
+        'You are not authorized to perform this action',
       );
     }
 
