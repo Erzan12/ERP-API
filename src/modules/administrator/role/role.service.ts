@@ -2,41 +2,125 @@ import {
   Injectable,
   BadRequestException,
   ForbiddenException,
-  ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
-import { CreatePermissionTemplateDto } from '../../manager/permission_template/dto/create-permission-template.dto';
 import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
-import { UnassignRolePermissionDto } from './dto/unassign-role-permission.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class RoleService {
   constructor(private prisma: PrismaService) {}
 
   //Add Get Role -> to query the roles available
-  async getRoles(user: RequestUser) {
-    const existingRoles = await this.prisma.role.findMany({
-      where: { stat: 1 },
+  async getRoles(
+    user: RequestUser,
+    dto: PaginationDto,
+  ) {
+
+    const { search, sortBy, order, page, perPage } = dto;
+
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: any = {
+      stat: 1,
+    };
+
+    if (search) {
+      const orConditions: Prisma.RoleWhereInput[] = [];
+
+      orConditions.push({
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      });
+
+      orConditions.push({
+        description: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      });
+
+      //boolean search
+      // if ( search === 'true' || search === 'false' ) {
+      //   orConditions.push({
+      //     stat or isActive: search === 'true',
+      //   })
+      // }
+
+      whereCondition.OR = orConditions;
+    }
+
+    //prevent sorting by invalid fields(very important)
+    const allowSortFeilds = ['id', 'name', 'created_at', 'updated_at', 'stat'];
+    if (!allowSortFeilds.includes(sortBy)) {
+      sortBy;
+    }
+
+    const [total, roles] = await this.prisma.$transaction([
+      this.prisma.role.count({
+        where: {
+          ...whereCondition,
+        },
+      }),
+      this.prisma.role.findMany({
+        where: {
+          ...whereCondition,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [sortBy]: order,
+        },
+      }),
+    ]);
+
+    if (roles.length === 0) {
+      throw new BadRequestException('No available or active roles exist!');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
       include: {
-        role_permissions: true,
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
       },
     });
 
-    if (existingRoles.length === 0) {
-      throw new BadRequestException('No available or active roles exist!');
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     return {
       status: 'success',
       message: 'Here are the list of Roles',
-      data: {
-        existingRoles,
-      },
+      roles,
     };
   }
 
