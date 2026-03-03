@@ -13,6 +13,8 @@ import { ManagerV1Module } from './modules/manager/managerV1.module';
 import { ManagerV2Module } from './modules/manager/managerV2.module';
 import { MasterV1Module } from './modules/master/masterV1.module';
 import { MasterV2Module } from './modules/master/masterV2.module';
+import { UserManagementV1Module } from './modules/manager/user_management/modules/user_managementV1.module';
+import { UserManagementV2Module } from './modules/manager/user_management/modules/user_managementV2.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
 import { CustomJwtAuthGuard } from './middleware/jwt/jwt.auth.guard';
@@ -62,6 +64,8 @@ import { AuditControllerV2 } from './modules/administrator/audit/controllers/aud
     HrV2Module,
     ManagerV1Module,
     ManagerV2Module,
+    UserManagementV1Module,
+    UserManagementV2Module,
     PrismaModule,
     // HealthCheckModule,
     // HealthModule,

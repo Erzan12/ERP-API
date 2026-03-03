@@ -32,7 +32,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
 
-@ApiTags('Manager - User Management')
+@ApiTags('User Management')
 @Controller({ path: 'users', version: '2' })
 export class UserManagementControllerV2 {
   constructor(private userManagementService: UserManagementService) {}
