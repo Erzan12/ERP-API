@@ -22,6 +22,8 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @ApiOperation({ summary: 'User authorized login' })
+  @ApiLoginResponse('User login successful')
   async login(
     @Body() loginDto: LoginDto,
     @Req() req: Request,
