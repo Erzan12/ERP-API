@@ -236,15 +236,21 @@ export class DepartmentService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Superadministrator',
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
     );
 
-    if (!isAdmin) {
+    if (!canView) {
       throw new ForbiddenException(
-        `User is not allowed to add new Department.`,
+        'You are not allowed to view this sub module',
       );
     }
 

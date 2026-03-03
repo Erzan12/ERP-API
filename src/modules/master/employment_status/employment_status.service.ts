@@ -18,26 +18,6 @@ export class EmploymentStatusService {
 
     const { search, sortBy, order, page, perPage } = dto;
 
-    // const existingEmpStat = await this.prisma.employmentStatus.findMany();
-
-    const canView = await this.prisma.userRole.findFirst({
-      where: {
-        user_id: user.id,
-        role_name: {
-          in: [
-            'Administrator',
-            'Super Administrator',
-          ],
-        },
-      },
-    });
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not allowed to view this sub module',
-      );
-    }
-
     //pagination area
     const skip = (page - 1) * perPage;
 
@@ -104,21 +84,23 @@ export class EmploymentStatusService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    // const isAdmin = requestUser.user_roles.some(
-    //   (role) =>
-    //     // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-    //     role.role_name === 'Administrator' || 'Super Administrator',
-    // );
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
 
-    // if (!canView) {
-    //   throw new ForbiddenException('User is not allowed to view Departments');
-    // }
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
-    // const employmentStatus = existingEmpStat.map((employmentStatus) => ({
-    //   emp_stat_id: employmentStatus.id,
-    //   code: employmentStatus.code,
-    //   label: employmentStatus.label,
-    // }));
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not allowed to view this sub module',
+      );
+    }
 
     return {
       status: 'success',
