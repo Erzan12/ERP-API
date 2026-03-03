@@ -55,7 +55,7 @@ export class PositionService {
     });
 
     if (!canView) {
-      throw new BadRequestException(
+      throw new ForbiddenException(
         'You are not allowed to view this sub module',
       );
     }
@@ -156,15 +156,15 @@ export class PositionService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
-    );
+    // const isAdmin = requestUser.user_roles.some(
+    //   (role) =>
+    //     // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+    //     role.role_name === 'Administrator' || 'Super Administrator',
+    // );
 
-    if (!isAdmin) {
-      throw new ForbiddenException('User is not allowed to view Departments');
-    }
+    // if (!isAdmin) {
+    //   throw new ForbiddenException('User is not allowed to view Departments');
+    // }
 
     return {
       status: 'success',

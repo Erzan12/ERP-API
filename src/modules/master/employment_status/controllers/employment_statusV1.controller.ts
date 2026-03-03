@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { EmploymentStatusService } from '../employment_status.service';
 import { Can } from '../../../../utils/decorators/can.decorator';
@@ -25,6 +26,7 @@ import {
   ACTION_UPDATE,
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiBearerAuth('access-token')
 @ApiTags('Mastertable - Employment Status')
@@ -37,8 +39,16 @@ export class EmploymentStatusControllerV1 {
   @ApiOperation({ summary: 'Get all employment status' })
   @ApiGetResponse('Here are the list of available employment status')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  getEmployeeStats(@SessionUser() user: RequestUser) {
-    return this.employmentStatusService.getEmployeeStats(user);
+  getEmployeeStats(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+    @Query('search') search?: string,
+    @Query('sortBy') sortBy: string = 'created_at',
+    @Query('order') order: 'asc' | 'desc' = 'asc',
+  ) {
+    return this.employmentStatusService.getEmployeeStats(user,dto);
   }
 
   //get only one employment_status
