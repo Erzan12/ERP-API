@@ -14,7 +14,7 @@ export function setupUserSwagger(app: INestApplication): void {
     // )
     //since token is now stored in cookies session will not use this anymore
     // .addCookieAuth('access-token')
-    .setTitle('User API (v1)')
+    .setTitle('User Management API (v1)')
     .setDescription('API for Manager. CURRENTLY VIEWING API VERSION 1')
     .setVersion('1.0')
     .addTag('Authentication')
@@ -31,7 +31,7 @@ export function setupUserSwagger(app: INestApplication): void {
     //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
     //   'access-token',
     // )
-    .setTitle('User API (v2)')
+    .setTitle('User Management API (v2)')
     .setDescription(
       'API for Companies organization structure. CURRENTLY VIEWING API VERSION 2',
     )
