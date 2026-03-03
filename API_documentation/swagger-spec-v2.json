@@ -2614,75 +2614,6 @@
         ]
       }
     },
-    "/v2/roles": {
-      "get": {
-        "operationId": "RoleManagementControllerV2_getRoles_v2",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Here are the list of Roles"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get All Roles",
-        "tags": [
-          "Human Resources - Role Management"
-        ]
-      }
-    },
-    "/v2/roles/{roleId}": {
-      "get": {
-        "operationId": "RoleManagementControllerV2_getRole_v2",
-        "parameters": [
-          {
-            "name": "roleId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Here are the list of Roles"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get All Roles",
-        "tags": [
-          "Human Resources - Role Management"
-        ]
-      }
-    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -2928,14 +2859,13 @@
         ]
       }
     },
-    "/v2/users": {
+    "/v2/manager/roles": {
       "get": {
-        "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserManagementControllerV2_viewUsers_v2",
+        "operationId": "RoleManagementControllerV2_getRoles_v2",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Here are all the User Accounts available"
+            "description": "Here are the list of Roles"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -2953,29 +2883,28 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Get User Accounts",
+        "summary": "Get All Roles",
         "tags": [
-          "User Management"
+          "Manager - Role Management"
         ]
-      },
-      "post": {
-        "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserManagementControllerV2_createUser_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to create User Account",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUserWithRoleDto"
-              }
+      }
+    },
+    "/v2/manager/roles/{roleId}": {
+      "get": {
+        "operationId": "RoleManagementControllerV2_getRole_v2",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
-          "201": {
-            "description": "User Account created successfully"
+          "200": {
+            "description": "Here are the list of Roles"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -2986,23 +2915,23 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
           }
         },
-        "summary": "Create a new user account",
+        "summary": "Get All Roles",
         "tags": [
-          "User Management"
+          "Manager - Role Management"
         ]
       }
     },
-    "/v2/users/me/permissions": {
+    "/v2/manager/me/permissions": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserManagementControllerV2_getMyPermissions_v2",
+        "operationId": "RoleManagementControllerV2_getMyPermissions_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -3026,56 +2955,14 @@
         },
         "summary": "My User Account",
         "tags": [
-          "User Management"
+          "Manager - Role Management"
         ]
       }
     },
-    "/v2/users/resend-invitation": {
-      "post": {
-        "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserManagementControllerV2_newResetToken_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload for new user reset token",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserEmailResetTokenDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Password reset done! you can now log in!"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Reset token for first time log in",
-        "tags": [
-          "User Management"
-        ]
-      }
-    },
-    "/v2/users/add-role/{userId}/{roleName}": {
+    "/v2/manager/add-role/{userId}/{roleName}": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserManagementControllerV2_addUserRole_v2",
+        "operationId": "RoleManagementControllerV2_addUserRole_v2",
         "parameters": [
           {
             "name": "userId",
@@ -3116,14 +3003,14 @@
         },
         "summary": "Add Role to user",
         "tags": [
-          "User Management"
+          "Manager - Role Management"
         ]
       }
     },
-    "/v2/users/role_permission": {
+    "/v2/manager/role_permission": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserManagementControllerV2_addRolePermission_v2",
+        "operationId": "RoleManagementControllerV2_addRolePermission_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3157,161 +3044,7 @@
         },
         "summary": "Add Role permissions to user",
         "tags": [
-          "User Management"
-        ]
-      }
-    },
-    "/v2/users/token_keys": {
-      "get": {
-        "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserManagementControllerV2_viewUserKeys_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUserWithRoleDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Here are all the token keys available for this user"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get the token keys for this user",
-        "tags": [
-          "User Management"
-        ]
-      }
-    },
-    "/v2/users/deactivate": {
-      "put": {
-        "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserManagementControllerV2_deactivateUser_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeactivateUserAccountDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User account deactivated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Deactivate the user account",
-        "tags": [
-          "User Management"
-        ]
-      }
-    },
-    "/v2/users/reactivate": {
-      "put": {
-        "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserManagementControllerV2_reactivateUser_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ReactivateUserAccountDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User account reactivated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Reactivate the user account",
-        "tags": [
-          "User Management"
-        ]
-      }
-    },
-    "/v2/users/new_employees": {
-      "get": {
-        "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "UserManagementControllerV2_viewNewEmployees_v2",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Here are the list of new employees without user accounts"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get the new employees without user accounts",
-        "tags": [
-          "User Management"
+          "Manager - Role Management"
         ]
       }
     }
@@ -4233,58 +3966,6 @@
           "role_permission_ids"
         ]
       },
-      "UserDetailsDto": {
-        "type": "object",
-        "properties": {
-          "employee_id": {
-            "type": "string",
-            "example": "ABISC-250710-001",
-            "description": "The ID of the employee to link this user to"
-          },
-          "username": {
-            "type": "string",
-            "example": "sample_username",
-            "description": "The username for the new user"
-          },
-          "email": {
-            "type": "string",
-            "example": "sample@gmail.com",
-            "description": "Email address for the new user"
-          },
-          "password": {
-            "type": "string",
-            "example": "avegabros",
-            "description": "Password for the new user"
-          }
-        },
-        "required": [
-          "employee_id",
-          "username",
-          "email",
-          "password"
-        ]
-      },
-      "CreateUserWithRoleDto": {
-        "type": "object",
-        "properties": {
-          "user_details": {
-            "$ref": "#/components/schemas/UserDetailsDto"
-          },
-          "role_name": {
-            "type": "string",
-            "example": "Administrator",
-            "description": "The role to be assign to a user"
-          }
-        },
-        "required": [
-          "user_details",
-          "role_name"
-        ]
-      },
-      "UserEmailResetTokenDto": {
-        "type": "object",
-        "properties": {}
-      },
       "AddUserRolePermissionsDto": {
         "type": "object",
         "properties": {
@@ -4309,32 +3990,6 @@
         "required": [
           "userId",
           "rolePermissionIds"
-        ]
-      },
-      "DeactivateUserAccountDto": {
-        "type": "object",
-        "properties": {
-          "user_id": {
-            "type": "string",
-            "example": 1,
-            "description": "The id number of the user you want to deactivate"
-          }
-        },
-        "required": [
-          "user_id"
-        ]
-      },
-      "ReactivateUserAccountDto": {
-        "type": "object",
-        "properties": {
-          "user_id": {
-            "type": "string",
-            "example": 1,
-            "description": "The id number of the user you want to reactivate"
-          }
-        },
-        "required": [
-          "user_id"
         ]
       }
     }

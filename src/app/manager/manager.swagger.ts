@@ -18,7 +18,7 @@ export function setupManagerSwagger(app: INestApplication): void {
     .setDescription('API for Manager. CURRENTLY VIEWING API VERSION 1')
     .setVersion('1.0')
     .addTag('Authentication')
-    .addTag('Manager - User Management')
+    .addTag('Manager - Role Management')
     .addTag('Manager - Permission Template')
     .build();
 
@@ -36,7 +36,7 @@ export function setupManagerSwagger(app: INestApplication): void {
     .setDescription('API for Manager. CURRENTLY VIEWING API VERSION 2')
     .setVersion('2.0')
     .addTag('Authentication')
-    .addTag('Manager - User Management')
+    .addTag('Manager - Role Management')
     .addTag('Manager - Permission Template')
     .build();
 

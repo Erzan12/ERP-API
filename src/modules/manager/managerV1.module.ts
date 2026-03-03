@@ -6,16 +6,13 @@ import { MailService } from 'src/jobs/mail/mail.service';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PermissionTemplateControllerV1 } from './permission_template/controllers/permission_templateV1.controller';
 import { PermissionTemplateService } from './permission_template/permission_template.service';
-import { UserManagementControllerV1 } from './user_management/controllers/user_managementV1.controller';
-import { UserManagementService } from './user_management/user_management.service';
 import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
 import { AuditService } from '../administrator/audit/audit.service';
 
 @Module({
   imports: [AuthModule],
-  controllers: [PermissionTemplateControllerV1, UserManagementControllerV1],
+  controllers: [PermissionTemplateControllerV1],
   providers: [
-    UserManagementService,
     PrismaService,
     AuthService,
     JwtStrategy,
@@ -24,6 +21,6 @@ import { AuditService } from '../administrator/audit/audit.service';
     PermissionTemplateService,
     AuditService,
   ],
-  exports: [AuthService, UserManagementService],
+  exports: [AuthService],
 })
 export class ManagerV1Module {}
