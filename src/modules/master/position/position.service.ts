@@ -15,9 +15,9 @@ export class PositionService {
   constructor(private prisma: PrismaService) {}
 
   //get a single position
-  async getPosition(id: string, user: RequestUser) {
+  async getPosition(positionId: string, user: RequestUser) {
     const position = await this.prisma.position.findUnique({
-      where: { id },
+      where: { id: positionId },
     });
 
     if (!position) {
@@ -27,9 +27,7 @@ export class PositionService {
     return {
       status: 'success',
       message: 'Here is the Position',
-      data: {
-        position,
-      },
+      position,
     };
   }
 
@@ -249,14 +247,14 @@ export class PositionService {
   }
 
   async updatePosition(
-    id: string,
+    positionId: string,
     updatePositionDto: UpdatePositionDto,
     user: RequestUser,
   ) {
     const { position_name, department_id, stat } = updatePositionDto;
 
     const position = await this.prisma.position.findUnique({
-      where: { id },
+      where: { id: positionId },
       select: {
         id: true,
         name: true,
@@ -284,8 +282,8 @@ export class PositionService {
       }
     }
 
-    const updatePositionInfo = await this.prisma.position.update({
-      where: { id },
+    const updatePosition = await this.prisma.position.update({
+      where: { id: positionId },
       data: {
         name: position_name,
         sorting: updatePositionDto.sorting,
@@ -321,7 +319,7 @@ export class PositionService {
         name: userName,
         position: userPosition,
       },
-      updatePositionInfo,
+      updatePosition,
     };
   }
 }

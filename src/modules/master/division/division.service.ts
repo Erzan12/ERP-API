@@ -16,9 +16,9 @@ export class DivisionService {
   constructor(private prisma: PrismaService) {}
 
   //query single division
-  async getDivision(id: string, user: RequestUser) {
+  async getDivision(divisionId: string, user: RequestUser) {
     const division = await this.prisma.division.findUnique({
-      where: { id },
+      where: { id: divisionId },
     });
 
     if (!division || division.stat === 0) {
@@ -225,14 +225,14 @@ export class DivisionService {
   }
 
   async updateDivision(
-    id: string,
+    divisionId: string,
     updateDivisionDto: UpdateDivisionDto,
     user: RequestUser,
   ) {
     const { division_name, stat } = updateDivisionDto;
 
     const division = await this.prisma.division.findUnique({
-      where: { id },
+      where: { id: divisionId },
       select: {
         name: true,
         stat: true,
@@ -246,7 +246,7 @@ export class DivisionService {
     }
 
     const updateDivision = await this.prisma.division.update({
-      where: { id },
+      where: { id: divisionId },
       data: {
         name: division_name,
         stat,
@@ -280,10 +280,7 @@ export class DivisionService {
         name: userName,
         position: userPos,
       },
-      data: {
-        division_id: updateDivision.id,
-        division_name: updateDivision.name,
-      },
+      updateDivision,
     };
   }
 }

@@ -57,15 +57,15 @@ export class PositionControllerV2 {
   }
 
   //get single position
-  @Get('positions/:id')
+  @Get('positions/:positionId')
   @ApiOperation({ summary: 'Get a position.' })
   @ApiGetResponse('Here is the position.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getPosition(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('positionId', new ParseUUIDPipe()) positionId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.positionService.getPosition(id, user);
+    return this.positionService.getPosition(positionId, user);
   }
 
   @Post('positions')
@@ -83,7 +83,7 @@ export class PositionControllerV2 {
     return this.positionService.createPosition(createPositionDto, user);
   }
 
-  @Put('positions/:id')
+  @Put('positions/:positionId')
   @ApiBody({
     type: UpdatePositionDto,
     description: 'Payload to update Position information',
@@ -92,10 +92,10 @@ export class PositionControllerV2 {
   @ApiPatchResponse('Position updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updatePosition(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('positionId', new ParseUUIDPipe()) positionId: string,
     @Body() updatePositionDto: UpdatePositionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.positionService.updatePosition(id, updatePositionDto, user);
+    return this.positionService.updatePosition(positionId, updatePositionDto, user);
   }
 }

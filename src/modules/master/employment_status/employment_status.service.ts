@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateEmployeeStatusDto } from './dto/create-emp-stat.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { UpdateEmpStatusDto } from './dto/update-emp-stat.dto';
@@ -26,9 +26,9 @@ export class EmploymentStatusService {
   }
 
   //get a single employee_status
-  async getEmployeeStat(id: string, user: RequestUser) {
+  async getEmployeeStat(employeeStatusId: string, user: RequestUser) {
     const employeeStatus = await this.prisma.employmentStatus.findUnique({
-      where: { id },
+      where: { id: employeeStatusId },
     });
 
     if (!employeeStatus) {
@@ -75,34 +75,69 @@ export class EmploymentStatusService {
   }
 
   async updateEmployeeStatus(
-    id: string,
+    employeeStatusId: string,
     updateEmpStatusDto: UpdateEmpStatusDto,
     user: RequestUser,
   ) {
     const { code, label } = updateEmpStatusDto;
 
     const employment_status = await this.prisma.employmentStatus.findUnique({
-      where: { id },
+      where: { id: employeeStatusId },
     });
 
     if (!employment_status) {
       throw new BadRequestException('Employee status does not exist.');
     }
 
-    const updateEmpStat = await this.prisma.employmentStatus.update({
-      where: { id },
+    const updateEmployeeStatus = await this.prisma.employmentStatus.update({
+      where: { id: employeeStatusId },
       data: {
         code,
         label,
       },
     });
 
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new NotFoundException('User does not exist');
+    }
+
+    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    const userPosition = requestUser.employee.position.name;
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to update User Location.',
+      );
+    }
+
     return {
       status: 'success',
       message: 'Employment Status updated successfully.',
-      data: {
-        updateEmpStat,
+      updated_by: {
+        id: requestUser.id,
+        name: userName,
+        position: userPosition,
       },
+      updateEmployeeStatus,
     };
   }
 }

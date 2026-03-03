@@ -55,15 +55,15 @@ export class DepartmentControllerV2 {
     return this.departmentService.getDepartments(user,dto);
   }
 
-  @Get('departments/:id')
+  @Get('departments/:departmentId')
   @ApiOperation({ summary: 'Get a department' })
   @ApiGetResponse('Here is the department')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDepartment(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('departmentId', new ParseUUIDPipe()) departmentId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.departmentService.getDepartment(id, user);
+    return this.departmentService.getDepartment(departmentId, user);
   }
 
   @Post('departments')
@@ -81,7 +81,7 @@ export class DepartmentControllerV2 {
     return this.departmentService.createDepartment(createDepartmentDto, user);
   }
 
-  @Put('departments/:id')
+  @Put('departments/:departmentId')
   @ApiBody({
     type: UpdateDepartmentDto,
     description: 'Payload to update department',
@@ -90,10 +90,10 @@ export class DepartmentControllerV2 {
   @ApiPatchResponse('Department updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateDepartment(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('departmentId', new ParseUUIDPipe()) departmentId: string,
     @Body() updateDeptDto: UpdateDepartmentDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.departmentService.updateDepartment(id, updateDeptDto, user);
+    return this.departmentService.updateDepartment(departmentId, updateDeptDto, user);
   }
 }

@@ -14,7 +14,7 @@ export function setupMasterSwagger(app: INestApplication): void {
     // )
     //since token is now stored in cookies session will not use this anymore
     // .addCookieAuth('access-token')
-    .setTitle('Masterstable API (v1)')
+    .setTitle('Mastertable API (v1)')
     .setDescription('API for Manager. CURRENTLY VIEWING API VERSION 1')
     .setVersion('1.0')
     .addTag('Authentication')
@@ -36,7 +36,7 @@ export function setupMasterSwagger(app: INestApplication): void {
     //   { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
     //   'access-token',
     // )
-    .setTitle('Masterstable API (v2)')
+    .setTitle('Mastertable API (v2)')
     .setDescription(
       'API for Companies organization structure. CURRENTLY VIEWING API VERSION 2',
     )

@@ -57,9 +57,9 @@ export class UserLocationService {
   }
 
   //query a user location
-  async getUserLocation(id: string, user: RequestUser) {
+  async getUserLocation(userLocationId: string, user: RequestUser) {
     const user_location = await this.prisma.userLocation.findUnique({
-      where: { id },
+      where: { id: userLocationId },
     });
     if (!user_location) {
       throw new BadRequestException('User Location not found');
@@ -170,14 +170,14 @@ export class UserLocationService {
   }
 
   async updateUserLocation(
-    id: string,
+    userLocationId: string,
     updateUserLocationDto: UpdateUserLocationDto,
     user: RequestUser,
   ) {
     const { locationName, address, stat } = updateUserLocationDto;
 
     const userLocation = await this.prisma.userLocation.findUnique({
-      where: { id: id },
+      where: { id: userLocationId },
     });
 
     if (!userLocation) {
@@ -185,7 +185,7 @@ export class UserLocationService {
     }
 
     const updateUserLocation = await this.prisma.userLocation.update({
-      where: { id },
+      where: { id: userLocationId },
       data: {
         locationName,
         address,
