@@ -22,7 +22,7 @@ import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
-export class UserAccountService {
+export class UserManagementService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
