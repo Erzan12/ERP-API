@@ -269,7 +269,7 @@
         ]
       }
     },
-    "/v1/masterstable/employment_status": {
+    "/v1/mastertable/employment_status": {
       "get": {
         "operationId": "EmploymentStatusControllerV1_getEmployeeStats_v1",
         "parameters": [],
@@ -300,7 +300,7 @@
         ],
         "summary": "Get all employment status",
         "tags": [
-          "Masterstable - Employment Status"
+          "Mastertable - Employment Status"
         ]
       },
       "post": {
@@ -344,11 +344,11 @@
         ],
         "summary": "Create new employee status.",
         "tags": [
-          "Masterstable - Employment Status"
+          "Mastertable - Employment Status"
         ]
       }
     },
-    "/v1/masterstable/employment_status/{id}": {
+    "/v1/mastertable/employment_status/{id}": {
       "get": {
         "operationId": "EmploymentStatusControllerV1_getEmployeeStat_v1",
         "parameters": [
@@ -388,7 +388,7 @@
         ],
         "summary": "Get an employment status.",
         "tags": [
-          "Masterstable - Employment Status"
+          "Mastertable - Employment Status"
         ]
       },
       "put": {
@@ -440,7 +440,7 @@
         ],
         "summary": "Updating employee status details.",
         "tags": [
-          "Masterstable - Employment Status"
+          "Mastertable - Employment Status"
         ]
       }
     },
@@ -1139,7 +1139,7 @@
         ]
       }
     },
-    "/v1/masterstable/positions": {
+    "/v1/mastertable/positions": {
       "get": {
         "operationId": "PositionControllerV1_getPositions_v1",
         "parameters": [
@@ -1220,7 +1220,7 @@
         ],
         "summary": "Get all positions",
         "tags": [
-          "Masterstable - Position"
+          "Mastertable - Position"
         ]
       },
       "post": {
@@ -1264,11 +1264,11 @@
         ],
         "summary": "Create a new position",
         "tags": [
-          "Masterstable - Position"
+          "Mastertable - Position"
         ]
       }
     },
-    "/v1/masterstable/positions/{id}": {
+    "/v1/mastertable/positions/{id}": {
       "get": {
         "operationId": "PositionControllerV1_getPosition_v1",
         "parameters": [
@@ -1308,7 +1308,7 @@
         ],
         "summary": "Get a position.",
         "tags": [
-          "Masterstable - Position"
+          "Mastertable - Position"
         ]
       },
       "put": {
@@ -1361,11 +1361,11 @@
         ],
         "summary": "Update a current position information",
         "tags": [
-          "Masterstable - Position"
+          "Mastertable - Position"
         ]
       }
     },
-    "/v1/masterstable/departments": {
+    "/v1/mastertable/departments": {
       "get": {
         "operationId": "DepartmentControllerV1_getDepartments_v1",
         "parameters": [
@@ -1441,7 +1441,7 @@
         },
         "summary": "Get all departments",
         "tags": [
-          "Masterstable - Department"
+          "Mastertable - Department"
         ]
       },
       "post": {
@@ -1480,11 +1480,11 @@
         },
         "summary": "Create a new department",
         "tags": [
-          "Masterstable - Department"
+          "Mastertable - Department"
         ]
       }
     },
-    "/v1/masterstable/departments/{id}": {
+    "/v1/mastertable/departments/{id}": {
       "get": {
         "operationId": "DepartmentControllerV1_getDepartment_v1",
         "parameters": [
@@ -1519,7 +1519,7 @@
         },
         "summary": "Get a department",
         "tags": [
-          "Masterstable - Department"
+          "Mastertable - Department"
         ]
       },
       "put": {
@@ -1567,11 +1567,11 @@
         },
         "summary": "Update a current department information",
         "tags": [
-          "Masterstable - Department"
+          "Mastertable - Department"
         ]
       }
     },
-    "/v1/masterstable/companies": {
+    "/v1/mastertable/companies": {
       "get": {
         "operationId": "CompanyControllerV1_getCompanies_v1",
         "parameters": [
@@ -1647,7 +1647,7 @@
         },
         "summary": "Get all companies",
         "tags": [
-          "Masterstable - Company"
+          "Mastertable - Company"
         ]
       },
       "post": {
@@ -1686,11 +1686,11 @@
         },
         "summary": "Create a new company",
         "tags": [
-          "Masterstable - Company"
+          "Mastertable - Company"
         ]
       }
     },
-    "/v1/masterstable/companies/{id}": {
+    "/v1/mastertable/companies/{id}": {
       "get": {
         "operationId": "CompanyControllerV1_getCompany_v1",
         "parameters": [
@@ -1725,7 +1725,7 @@
         },
         "summary": "Get a company",
         "tags": [
-          "Masterstable - Company"
+          "Mastertable - Company"
         ]
       },
       "put": {
@@ -1773,11 +1773,11 @@
         },
         "summary": "Update a current company information",
         "tags": [
-          "Masterstable - Company"
+          "Mastertable - Company"
         ]
       }
     },
-    "/v1/masterstable/divisions": {
+    "/v1/mastertable/divisions": {
       "get": {
         "operationId": "DivisionControllerV1_getDivisions_v1",
         "parameters": [
@@ -1858,7 +1858,7 @@
         ],
         "summary": "Get all divisions",
         "tags": [
-          "Masterstable - Division"
+          "Mastertable - Division"
         ]
       },
       "post": {
@@ -1902,11 +1902,11 @@
         ],
         "summary": "Create a new division",
         "tags": [
-          "Masterstable - Division"
+          "Mastertable - Division"
         ]
       }
     },
-    "/v1/masterstable/divisions/{id}": {
+    "/v1/mastertable/divisions/{id}": {
       "get": {
         "operationId": "DivisionControllerV1_getDivision_v1",
         "parameters": [
@@ -1946,7 +1946,7 @@
         ],
         "summary": "Get a division",
         "tags": [
-          "Masterstable - Division"
+          "Mastertable - Division"
         ]
       },
       "put": {
@@ -1999,7 +1999,7 @@
         ],
         "summary": "Update a current division information",
         "tags": [
-          "Masterstable - Division"
+          "Mastertable - Division"
         ]
       }
     },

@@ -14,7 +14,7 @@ import { SessionUser } from '../../../../utils/decorators/session-user.decorator
 import { CreateEmployeeStatusDto } from '../dto/create-emp-stat.dto';
 import { RequestUser } from '../../../../utils/types/request-user.interface';
 import { UpdateEmpStatusDto } from '../dto/update-emp-stat.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
@@ -26,8 +26,8 @@ import {
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 
-@ApiTags('Masterstable - Employment Status')
-@Controller({ path: 'masterstable', version: '2' })
+@ApiTags('Mastertable - Employment Status')
+@Controller({ path: 'mastertable', version: '2' })
 export class EmploymentStatusControllerV2 {
   constructor(private employmentStatusService: EmploymentStatusService) {}
 

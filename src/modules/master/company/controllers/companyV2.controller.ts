@@ -33,8 +33,8 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { CompanyService } from '../company.service';
 
 // @ApiCookieAuth('access-token')
-@ApiTags('Masterstable - Company')
-@Controller({ path: 'masterstable', version: '2' })
+@ApiTags('Mastertable - Company')
+@Controller({ path: 'mastertable', version: '2' })
 export class CompanyControllerV2 {
   constructor(private companyService: CompanyService) {}
 

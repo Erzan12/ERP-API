@@ -5,7 +5,7 @@ import { writeFileSync } from 'fs';
 import { setupAdminSwagger } from './admin/admin.swagger';
 import { setupHRISSwagger } from './hris/hris.swagger';
 import { setupManagerSwagger } from './manager/manager.swagger';
-import { setupMasterSwagger } from './masterstable/mastertables.swagger';
+import { setupMasterSwagger } from './mastertable/mastertable.swagger';
 import { AdministratorV1Module } from 'src/modules/administrator/administratorV1.module';
 import { AdministratorV2Module } from 'src/modules/administrator/administratorV2.module';
 import { HrV1Module } from 'src/modules/hris/hrV1.module';

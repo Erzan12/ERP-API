@@ -33,8 +33,8 @@ import { CreateDivisionDto, UpdateDivisionDto } from '../dto/division.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 // @ApiCookieAuth('access-token')
-@ApiTags('Masterstable - Division')
-@Controller({ path: 'masterstable', version: '2' })
+@ApiTags('Mastertable - Division')
+@Controller({ path: 'mastertable', version: '2' })
 export class DivisionControllerV2 {
   constructor(private divisionService: DivisionService) {}
 

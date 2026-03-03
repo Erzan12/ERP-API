@@ -28,8 +28,8 @@ import {
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
 
-@ApiTags('Masterstable - User Location')
-@Controller({ path: 'masterstable', version: '2' })
+@ApiTags('Mastertable - User Location')
+@Controller({ path: 'mastertable', version: '2' })
 export class UserLocationControllerV2 {
   constructor(private userLocationService: UserLocationService) {}
 

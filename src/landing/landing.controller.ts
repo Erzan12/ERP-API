@@ -20,10 +20,10 @@ export class LandingController {
           status: 'New',
         },
         {
-          title: 'Masterstable',
-          slug: 'masterstable',
-          swaggerLink: '/docs/masterstable',
-          icon: '/public/icons/masterstable.png',
+          title: 'Mastertable',
+          slug: 'mastertable',
+          swaggerLink: '/docs/mastertable',
+          icon: '/public/icons/mastertable.png',
           status: 'New',
         },
         {
