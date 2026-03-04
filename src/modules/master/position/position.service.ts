@@ -106,6 +106,18 @@ export class PositionService {
         where: {
           ...whereCondition,
         },
+        include: {
+          department: {
+            include: {
+              division: {
+                select: {
+                  id: true,
+                  name: true,
+                }
+              }
+            },
+          }
+        },
         skip,
         take: perPage,
         orderBy: {
