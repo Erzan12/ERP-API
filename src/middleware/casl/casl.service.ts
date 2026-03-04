@@ -1,6 +1,7 @@
 import { AbilityBuilder, AbilityClass, PureAbility } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 import { ACTION_MAP } from 'src/utils/constants/action-map';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @Injectable()
 export class CaslAbilityService {
@@ -11,36 +12,22 @@ export class CaslAbilityService {
   }
 
   //revamped version simplified
-  defineAbilitiesFor(
-    roles: {
-      id: string;
-      name: string;
-      permissions: {
-        action: string;
-        permission: { name: string };
-      }[];
-    }[],
-  ) {
+  defineAbilitiesFor(roles: RequestUser['roles']) {
     const { can, build } = new AbilityBuilder(this.Ability);
 
-    // const actionMap: Record<string, string[]> = {
-    //   manage: ['create', 'read', 'update', 'delete'],
-    // };
-
     for (const role of roles) {
-      if (!role.permissions) continue;
+      for (const subModule of role.sub_modules) {
+        const subject = subModule.name.toLowerCase().trim();
 
-      for (const perm of role.permissions) {
-        const rawAction = perm.action.toLowerCase().trim();
-        const subject = perm.permission.name.toLowerCase().trim() || '';
-
-        const actionsToGrant = ACTION_MAP[rawAction] ?? [rawAction];
-
-        for (const action of actionsToGrant) {
-          can(action, subject);
+        for (const rawAction of subModule.actions) {
+          const actionsToGrant = ACTION_MAP[rawAction] ?? [rawAction];
+          for (const action of actionsToGrant) {
+            can(action, subject);
+          }
         }
       }
     }
+
     return build();
   }
 }

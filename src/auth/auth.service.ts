@@ -12,6 +12,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { response } from 'express';
+import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-permisison.helper';
 
 @Injectable()
 export class AuthService {
@@ -147,14 +148,14 @@ export class AuthService {
       include: {
         employee: true,
         user_roles: {
+          where: { isActive: true },
           include: {
-            role: true,
-            user_permissions: {
+            role: {
               include: {
-                role_permission: {
+                role_permissions: {
+                  where: { stat: 1 },
                   include: {
                     sub_module: true,
-                    sub_module_permission: true,
                   },
                 },
               },
@@ -275,24 +276,9 @@ export class AuthService {
     const requestUser: RequestUser = {
       id: userValidate.id,
       email: userValidate.email,
-      // username: userValidate.username,
       department_id: userValidate.employee.department_id,
       security_clearance_level: userValidate.security_clearance_level ?? 0,
-      roles: userValidate.user_roles.map((ur) => ({
-        id: ur.role?.id ?? 0,
-        name: ur.role?.name ?? 'Unknown Role',
-        // module: {
-        //   id: ur.role.module?.id,
-        //   name: ur.role.module?.name,
-        // },
-        permissions: ur.user_permissions.map((up) => ({
-          action: up.role_permission?.action ?? 'unknown',
-          // status: true, // if you have a field for it, use it
-          permission: {
-            name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-          },
-        })),
-      })),
+      roles: mapRolesToRequestUser(userValidate.user_roles),
     };
 
     await this.auditService.logAuth(
@@ -366,18 +352,18 @@ export class AuthService {
           },
         },
         user_roles: {
+          where: { isActive: true },
           include: {
-            role: true,
-            user_permissions: {
+            role: {
               include: {
-                role_permission: {
+                role_permissions: {
+                  where: { stat: 1 },
                   include: {
                     sub_module: true,
-                    sub_module_permission: true,
                   },
                 },
               },
-            },
+            }
           },
         },
       },
@@ -428,14 +414,13 @@ export class AuthService {
         roles: user.user_roles.map((ur) => {
           const uniqueSubmodules = [
             ...new Map(
-              ur.user_permissions.map((up) => {
-                const name = up.role_permission?.sub_module?.name ?? 'unknown';
-                const id = up.role_permission?.sub_module?.id ?? 'unknown';
-
-                up.role_permission?.action ?? 'unknown';
-
-                return [name, { id, name }];
-              }),
+              ur.role.role_permissions.map((rp) => [
+                rp.sub_module.id,
+                {
+                  id: rp.sub_module.id,
+                  name: rp.sub_module.name,
+                },
+              ])
             ).values(),
           ];
           return {

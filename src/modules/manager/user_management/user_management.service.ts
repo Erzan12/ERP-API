@@ -337,10 +337,10 @@ export class UserManagementService {
   }
 
   async resendInvitation(
-    id: string,
+    dto: UserEmailResetTokenDto,
     user: RequestUser,
   ) {
-    const requestUser = await this.prisma.user.findUnique({
+    const actingUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
         employee: {
@@ -353,42 +353,42 @@ export class UserManagementService {
       },
     });
 
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+    if (!actingUser || !actingUser.employee || !actingUser.employee.person) {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const admin = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const adminPos = requestUser.employee.position.name;
+    const admin = `${actingUser.employee.person.first_name} ${actingUser.employee.person.last_name}`;
+    const adminPos = actingUser.employee.position.name;
 
      // scalable approach
     const allowedRoles = ['Administrator', 'Super Administrator', 'Manager']
-    const isAdmin = requestUser.user_roles.some(role => allowedRoles.includes(role.role_name))
+    const isAdmin = actingUser.user_roles.some(role => allowedRoles.includes(role.role_name))
 
      if (!isAdmin) {
       throw new ForbiddenException('User is not allowed create User Account');
     }
 
-    const newUser = await this.prisma.user.findUnique({
-      where: { id },
+    const invitedUser = await this.prisma.user.findUnique({
+      where: { email: dto.email },
     });
 
-    if (!newUser) {
+    if (!invitedUser) {
         throw new NotFoundException('User not found.');
       }
 
-    if (!newUser.require_reset) {
+    if (invitedUser.require_reset === 0) {
       throw new BadRequestException(
         'User has already completed account setup.',
       );
     }
 
     // Call Auth service to regenerate token
-    const resetToken = await this.authService.generateResetToken(newUser.id);
+    const resetToken = await this.authService.generateResetToken(invitedUser.id);
     // const { password_token } = token;
 
     await this.mailService.sendResetTokenEmail(
-      newUser.email,
-      newUser.username,
+      invitedUser.email,
+      invitedUser.username,
       // newUser.password,
       resetToken.token.password_token,
      );
@@ -396,8 +396,9 @@ export class UserManagementService {
     return {
       status: 'success',
       message: `Invitation resent to ${user.email}`,
-      user_id: user.id,
+      user_id: invitedUser.id,
       reset_token: resetToken.token,
+      user_name: invitedUser.username,
       updated_by: {
         name: admin,
         position: adminPos,
@@ -472,26 +473,26 @@ export class UserManagementService {
     const isAdmin = user.roles.some((role) => role.name === 'Administrator');
     const isManager = user.roles.some((role) => role.name === 'Manager');
 
-    const findUser = await this.prisma.user.findUnique({
+    const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
         employee: true,
       },
     });
 
-    if (!findUser) {
+    if (!requestUser) {
       throw new BadRequestException('User does not exist');
     }
 
     // Find the manager's department (if not admin)
     let departmentFilter = {};
     if (!isAdmin) {
-      const currentEmployee = await this.prisma.employee.findUnique({
-        where: { id: findUser.employee.id },
+      await this.prisma.employee.findUnique({
+        where: { id: requestUser.employee.id },
         select: { department_id: true },
       });
 
-      if (!currentEmployee) {
+      if (!requestUser) {
         throw new ForbiddenException(
           'User is not linked to an employee profile.',
         );
@@ -499,7 +500,7 @@ export class UserManagementService {
 
       // Only allow managers to view their own department
       if (isManager) {
-        departmentFilter = { department_id: currentEmployee.department_id };
+        departmentFilter = { department_id: requestUser.employee.department_id };
       } else {
         throw new ForbiddenException(
           'Only administrators or department managers can view new employees.',
@@ -532,7 +533,7 @@ export class UserManagementService {
 
     return {
       status: 'success',
-      message: findUser
+      message: requestUser
         ? 'All new employees without user accounts'
         : 'New employees in your department without user accounts',
       data: {
