@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Get, Put, Req, ParseUUIDPipe, Param } from '@nestjs/common';
+import { Controller, Body, Post, Get, Put, Req } from '@nestjs/common';
 import { UserManagementService } from '../user_management.service';
 import {
   ApiBody,
@@ -16,7 +16,6 @@ import {
 import { DeactivateUserAccountDto, ReactivateUserAccountDto, } from '../dto/user-account-status.dto';
 import { CreateUserWithRoleDto } from '../dto/create-user-with-role-permission.dto';
 import { UserEmailResetTokenDto } from '../dto/user-email.reset-token.dto';
-import { AddUserRolePermissionsDto } from '../../role-management/dto/add-user-role-permissions.dto';
 
 import {
   ACTION_READ,
@@ -85,11 +84,11 @@ export class UserManagementControllerV2 {
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_CREATE, subject: USER_TOKEN_KEY })
   newResetToken(
-    @Body() id: string,
+    @Body() dto: UserEmailResetTokenDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.userManagementService.resendInvitation(
-      id,
+      dto,
       user,
     );
   }

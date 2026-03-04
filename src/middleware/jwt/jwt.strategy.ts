@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Request }  from 'express';
+import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-permisison.helper';
 
 
 @Injectable()
@@ -13,17 +14,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!secret) {
       throw new Error('JWT_SECRET environment variable is not defined');
     }
-    // super({
-    //   // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    //   // secretOrKey: secret,
-
-    //   jwtFromRequest: ExtractJwt.fromExtractors([
-    //     (request: Request) => {
-    //       return request?.cookies?.access-token;
-    //     },
-    //   ]),
-    //   secretOrKey: secret,
-    // });
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => request?.cookies?.['accessToken'],
@@ -39,14 +29,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       include: {
         employee: true,
         user_roles: {
+          where: { isActive: true },
           include: {
-            role: true,
-            user_permissions: {
+            role: {
               include: {
-                role_permission: {
+                role_permissions: {
+                  where: { stat: 1 },
                   include: {
                     sub_module: true,
-                    sub_module_permission: true,
                   },
                 },
               },
@@ -57,7 +47,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
 
     if (!user || user.stat !== 1) {
-      // You can throw an Unauthorized or NotFound exception
       throw new UnauthorizedException('User not found or invalid token');
     }
 
@@ -65,24 +54,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Token has been invalidated');
     }
 
-    const employee = user.employee;
-
     return {
       id: user.id,
       email: user.email,
-      // username: user.username,
-      department_id: employee.department_id,
+      department_id: user.employee.department_id,
       security_clearance_level: user.security_clearance_level ?? 0,
-      roles: user.user_roles.map((ur) => ({
-        id: ur.role?.id ?? 0,
-        name: ur.role?.name ?? 'Unknown Role',
-        permissions: ur.user_permissions.map((up) => ({
-          action: up.role_permission?.action ?? 'unknown',
-          permission: {
-            name: up.role_permission?.sub_module?.name ?? 'unknown',
-          },
-        })),
-      })),
+      roles: mapRolesToRequestUser(user.user_roles),
     };
   }
 }

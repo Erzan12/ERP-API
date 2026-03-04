@@ -94,11 +94,11 @@ export class UserManagementControllerV1 {
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_CREATE, subject: USER_TOKEN_KEY })
   newResetToken(
-    @Body() id: string,
+    @Body() dto: UserEmailResetTokenDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.userManagementService.resendInvitation(
-      id,
+      dto,
       user,
     );
   }
