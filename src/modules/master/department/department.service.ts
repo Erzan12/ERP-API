@@ -89,6 +89,14 @@ export class DepartmentService {
         where: {
           ...whereCondition,
         },
+        include: {
+          division: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
         skip,
         take: perPage,
         orderBy: {
