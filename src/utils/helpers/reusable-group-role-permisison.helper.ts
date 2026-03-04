@@ -16,7 +16,7 @@ export function mapRolesToRequestUser(
   return userRoles.map((ur) => {
     const role = ur.role;
 
-    // Group actions by sub_module id
+    //group actions by sub_module id
     const subModuleMap = new Map<
       string,
       { id: string; name: string; actions: string[] }
