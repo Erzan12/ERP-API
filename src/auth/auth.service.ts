@@ -366,18 +366,18 @@ export class AuthService {
           },
         },
         user_roles: {
+          where: { isActive: true },
           include: {
-            role: true,
-            user_permissions: {
+            role: {
               include: {
-                role_permission: {
+                role_permissions: {
+                  where: { stat: 1 },
                   include: {
                     sub_module: true,
-                    sub_module_permission: true,
                   },
                 },
               },
-            },
+            }
           },
         },
       },
@@ -428,14 +428,13 @@ export class AuthService {
         roles: user.user_roles.map((ur) => {
           const uniqueSubmodules = [
             ...new Map(
-              ur.user_permissions.map((up) => {
-                const name = up.role_permission?.sub_module?.name ?? 'unknown';
-                const id = up.role_permission?.sub_module?.id ?? 'unknown';
-
-                up.role_permission?.action ?? 'unknown';
-
-                return [name, { id, name }];
-              }),
+              ur.role.role_permissions.map((rp) => [
+                rp.sub_module.id,
+                {
+                  id: rp.sub_module.id,
+                  name: rp.sub_module.name,
+                },
+              ])
             ).values(),
           ];
           return {

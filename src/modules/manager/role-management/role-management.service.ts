@@ -227,14 +227,11 @@ export class RoleManagementService {
     async addRoleUser(user: RequestUser, userId: string, roleName: string) {
         //find role
         const role = await this.prisma.role.findUnique({
-        where: { name: roleName },
-        include: {
-            role_permissions: true,
-        },
+            where: { name: roleName },
         });
 
         if (!role) {
-        throw new NotFoundException('Role not found');
+            throw new NotFoundException('Role not found');
         }
 
         const requestUser = await this.prisma.user.findUnique({
@@ -254,68 +251,49 @@ export class RoleManagementService {
         throw new BadRequestException(`User does not exist.`);
         }
 
-        const isAdmin = requestUser.user_roles.some(
-        (role) =>
-            // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-            role.role_name === 'Administrator' ||
-            'Super Administrator' ||
-            'Manager',
+        // FIX YOUR ADMIN CHECK (important!)
+        const allowedRoles = ['Administrator', 'Super Administrator', 'Manager'];
+
+        const isAdmin = requestUser.user_roles.some(r =>
+            allowedRoles.includes(r.role_name),
         );
 
         if (!isAdmin) {
-        throw new ForbiddenException(
+            throw new ForbiddenException(
             'User is not allowed to add role User Account.',
-        );
+            );
         }
 
-        //create UserRole (or use upsert)
+        // Only assign role
         const userRole = await this.prisma.userRole.upsert({
-        where: {
+            where: {
             user_id_role_id: {
-            user_id: userId,
-            role_id: role.id,
+                user_id: userId,
+                role_id: role.id,
             },
-        },
-        update: {},
-        create: {
+            },
+            update: { isActive: true },
+            create: {
             user_id: userId,
             role_id: role.id,
             role_name: role.name,
             isActive: true,
-        },
-        include: {
-            user: true,
-        },
-        });
-
-        //prepare UserPermissions from RolePermissions
-        const userPermissionsData = role.role_permissions.map((rp) => ({
-        user_id: userId,
-        user_role_id: userRole.id,
-        role_permission_id: rp.id,
-        action: rp.action,
-        }));
-
-        //insert UserPermissions (skip duplicates)
-        await this.prisma.userPermission.createMany({
-        data: userPermissionsData,
-        skipDuplicates: true,
+            },
         });
 
         const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
         const userPosition = requestUser.employee.position.name;
 
         return {
-        status: 'success',
-        message: `Role ${userRole.role_name} has been added to user ${userRole.user.username}`,
-        added_by: {
-            id: requestUser.id,
-            name: userName,
-            position: userPosition,
-        },
-        permissions: {
-            userPermissionsData,
-        },
+            status: 'success',
+            message: `Role ${userRole.role_name} has been added to user.`,
+            added_by: {
+                id: requestUser.id,
+                name: userName,
+                position: userPosition,
+            },
+            role: role.name,
+            user_role_id: userRole.id,
         };
     }
     //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
