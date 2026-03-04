@@ -72,7 +72,9 @@ export class PermissionsGuard implements CanActivate {
     //   `User ${user.email} permissions:\n` +
     //   user.roles.map(role =>
     //     `Role: ${role.name}\n` +
-    //     role.permissions.map(p => `  → ${p.action} on ${p.permission.name}`).join('\n')
+    //     role.sub_modules.map(sm =>
+    //       `  → [${sm.actions.join(', ')}] on ${sm.name}`
+    //     ).join('\n')
     //   ).join('\n')
     // );
 
