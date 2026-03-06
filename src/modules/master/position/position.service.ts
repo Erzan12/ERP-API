@@ -18,6 +18,30 @@ export class PositionService {
   async getPosition(positionId: string, user: RequestUser) {
     const position = await this.prisma.position.findUnique({
       where: { id: positionId },
+      include: {
+        createdBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        },
+        updatedBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        }
+      },
     });
 
     if (!position) {
@@ -116,6 +140,28 @@ export class PositionService {
                 }
               }
             },
+          },
+          createdBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
+          updatedBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
           }
         },
         skip,
@@ -210,7 +256,7 @@ export class PositionService {
         },
         createdBy: {
           connect: { id: user.id }
-        }
+        },
         // created_by: user.id, // scalar type approach -> column value direct column value from related table
       },
       include: {
