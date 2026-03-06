@@ -3471,7 +3471,7 @@
             "example": 2,
             "description": "Sorting number of the position"
           },
-          "department": {
+          "department_id": {
             "type": "string",
             "example": "Department PK UUID",
             "description": "The Department where the position is available"
@@ -3482,7 +3482,7 @@
           "hierarchy",
           "job_description",
           "sorting",
-          "department"
+          "department_id"
         ]
       },
       "UpdatePositionDto": {

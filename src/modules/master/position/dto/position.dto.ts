@@ -35,7 +35,6 @@ export class CreatePositionDto {
 
   @IsUUID()
   @ApiProperty({
-    name: 'department',
     example: 'Department PK UUID',
     description: 'The Department where the position is available',
   })
