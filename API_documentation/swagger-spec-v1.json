@@ -289,7 +289,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Sub module permission updated successfully"
           },
           "400": {
@@ -514,7 +514,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Employee status details updated successfully."
           },
           "400": {
@@ -689,7 +689,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Module updated successfully"
           },
           "400": {
@@ -960,7 +960,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Permissions updated to role"
           },
           "400": {
@@ -1449,7 +1449,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Position updated successfully"
           },
           "400": {
@@ -1660,7 +1660,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Department updated successfully"
           },
           "400": {
@@ -1866,7 +1866,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Company updated successfully"
           },
           "400": {
@@ -2087,7 +2087,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Division updated successfully"
           },
           "400": {
@@ -2263,7 +2263,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Employee information updated successfully"
           },
           "400": {
@@ -2474,7 +2474,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Permissin Template has been updated."
           },
           "400": {
@@ -2861,31 +2861,42 @@
       "UpdatePositionDto": {
         "type": "object",
         "properties": {
-          "position_name": {
+          "name": {
             "type": "string",
             "example": "New Position name",
             "description": "If you want to update the Position Name"
+          },
+          "hierarchy": {
+            "type": "string",
+            "example": "Supervisor",
+            "description": "The hierarchy of this position"
+          },
+          "job_description": {
+            "type": "string",
+            "example": "Supervises the development and life cycle of systems",
+            "description": "The job description fit for this position"
           },
           "sorting": {
             "type": "number",
             "example": 2,
             "description": "Sorting number of the position"
           },
-          "department": {
+          "department_id": {
             "type": "string",
-            "example": "human resources, information technology, accounting",
+            "example": "Department PK UUID",
             "description": "The Department where the position is available"
           },
           "status": {
             "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
+            "example": "1 or 0"
           }
         },
         "required": [
-          "position_name",
+          "name",
+          "hierarchy",
+          "job_description",
           "sorting",
-          "department",
+          "department_id",
           "status"
         ]
       },

@@ -180,7 +180,7 @@ export class PositionService {
     createPositionDto: CreatePositionDto,
     user: RequestUser,
   ) {
-    const { name, sorting, hierarchy, job_description } = createPositionDto;
+    const { name } = createPositionDto;
 
     console.log('createPositionDto:', createPositionDto);
 
@@ -202,12 +202,12 @@ export class PositionService {
     const position = await this.prisma.position.create({
       data: {
         name,
+        hierarchy: createPositionDto.hierarchy ?? null,
+        job_description: createPositionDto.job_description ?? null,
+        sorting: createPositionDto.sorting ?? null,
         department: {
           connect: { id: createPositionDto.department_id }, // this links the foreign key -> relation type -> linked object use relation to get department id
         },
-        sorting: createPositionDto.sorting || undefined,
-        hierarchy: createPositionDto.hierarchy || undefined,
-        job_description: createPositionDto.job_description || undefined,
         createdBy: {
           connect: { id: user.id }
         }
@@ -240,13 +240,13 @@ export class PositionService {
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
       message: `${position.name} position has been created successfully!`,
       position,
-      created_by_user: `${userName} - ${userPos}`, 
+      created_by_user: `${userName} - ${userPosition}`, 
     };
   }
 
@@ -255,9 +255,8 @@ export class PositionService {
     updatePositionDto: UpdatePositionDto,
     user: RequestUser,
   ) {
-    const { position_name, department_id, stat } = updatePositionDto;
 
-    const position = await this.prisma.position.findUnique({
+    const existingPosition = await this.prisma.position.findUnique({
       where: { id: positionId },
       select: {
         id: true,
@@ -266,15 +265,15 @@ export class PositionService {
       },
     });
 
-    if (!position) {
+    if (!existingPosition) {
       throw new BadRequestException('Position not Found.');
     }
 
-    if (position.stat === 0) {
-      throw new ForbiddenException(
-        `${position.name} Position status is inactive!`,
-      );
-    }
+    // if (existingPosition.stat === 0) {
+    //   throw new ForbiddenException(
+    //     `${existingPosition.name} Position status is inactive!`,
+    //   );
+    // }
 
     if (updatePositionDto.department_id !== undefined) {
       const existingDept = await this.prisma.department.findFirst({
@@ -286,14 +285,26 @@ export class PositionService {
       }
     }
 
-    const updatePosition = await this.prisma.position.update({
+    const updateData: any = {
+      name: updatePositionDto.name ?? undefined,
+      hierarchy: updatePositionDto.hierarchy ?? undefined,
+      job_description: updatePositionDto.job_description ?? undefined,
+      sorting: updatePositionDto.sorting ?? undefined,
+      stat: updatePositionDto.stat ?? undefined,
+      updatedBy: {
+        connect: { id: user.id },
+      }
+    };
+
+    if (updatePositionDto.department_id !== undefined) {
+      updateData.department = {
+        connect: { id: updatePositionDto.department_id }
+      }
+    }
+
+    const position = await this.prisma.position.update({
       where: { id: positionId },
-      data: {
-        name: position_name,
-        sorting: updatePositionDto.sorting,
-        department_id,
-        stat,
-      },
+      data: updateData,
     });
 
     const requestUser = await this.prisma.user.findUnique({
@@ -317,13 +328,9 @@ export class PositionService {
 
     return {
       status: 'success',
-      message: `${position.name} Position has been updated successfully!`,
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPosition,
-      },
-      updatePosition,
+      message: `${position.name} position has been updated successfully!`,
+      position,
+      updated_by_user: `${userName} - ${userPosition}`
     };
   }
 }
