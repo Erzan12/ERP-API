@@ -162,9 +162,9 @@ export class ModuleService {
       }),
     ]);
 
-    if (modules.length === 0) {
-      throw new NotFoundException('No available modules found!');
-    }
+    // if (modules.length === 0) {
+    //   throw new NotFoundException('No available modules found!');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },

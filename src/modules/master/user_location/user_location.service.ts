@@ -81,9 +81,9 @@ export class UserLocationService {
       }),
     ]);
 
-    if (userLocations.length === 0) {
-      throw new BadRequestException('No available companies found.');
-    }
+    // if (userLocations.length === 0) {
+    //   throw new BadRequestException('No available companies found.');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },

@@ -484,7 +484,7 @@ export class UserManagementService {
       throw new BadRequestException('User does not exist');
     }
 
-    // Find the manager's department (if not admin)
+    // Find the manager's department (if not admin) -> if admin can view all employee from every dept without user account
     let departmentFilter = {};
     if (!isAdmin) {
       await this.prisma.employee.findUnique({

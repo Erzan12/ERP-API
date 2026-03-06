@@ -81,9 +81,9 @@ export class RoleService {
       }),
     ]);
 
-    if (roles.length === 0) {
-      throw new BadRequestException('No available or active roles exist!');
-    }
+    // if (roles.length === 0) {
+    //   throw new BadRequestException('No available or active roles exist!');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
