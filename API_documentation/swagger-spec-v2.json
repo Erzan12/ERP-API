@@ -3456,6 +3456,16 @@
             "example": "Software Engineer",
             "description": "The name of the position"
           },
+          "hierarchy": {
+            "type": "string",
+            "example": "Supervisor",
+            "description": "The hierarchy of this position"
+          },
+          "job_description": {
+            "type": "string",
+            "example": "Supervises the development and life cycle of systems",
+            "description": "The job description fit for this position"
+          },
           "sorting": {
             "type": "number",
             "example": 2,
@@ -3463,12 +3473,14 @@
           },
           "department": {
             "type": "string",
-            "example": "human resources = 1, information technology = 2, accounting = 6",
+            "example": "Department PK UUID",
             "description": "The Department where the position is available"
           }
         },
         "required": [
           "name",
+          "hierarchy",
+          "job_description",
           "sorting",
           "department"
         ]

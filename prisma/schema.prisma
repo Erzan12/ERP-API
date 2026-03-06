@@ -90,7 +90,9 @@ model User {
   employee                     Employee             @relation(fields: [employee_id], references: [id], onDelete: Cascade)
   person                       Person               @relation(fields: [person_id], references: [id], onDelete: Cascade)
   
-  // Implicit many-to-many relation with Role              
+  //linked user to createdby and updatedby columns
+  positionsCreated Position[] @relation("PositionCreatedBy")
+  positionsUpdated Position[] @relation("PositionUpdatedBy")           
 
   @@index([person_id])
   @@index([employee_id])
@@ -192,8 +194,17 @@ model Department {
 model Position {
   id                           String                         @id @default(uuid()) @db.Uuid
   name                         String                         @db.VarChar(255)
+  job_description              String?
+  hierarchy                    String?
   sorting                      Int?
   department_id                String                         @db.Uuid
+
+  created_by                   String?                        @db.Uuid
+  updated_by                   String?                        @db.Uuid
+
+  createdBy                    User?                          @relation("PositionCreatedBy", fields: [created_by], references: [id])
+  updatedBy                    User?                          @relation("PositionUpdatedBy", fields: [updated_by], references: [id])
+
   stat                         Int                            @default(1)
   created_at                   DateTime                       @default(now())
   updated_at                   DateTime                       @updatedAt

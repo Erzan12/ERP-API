@@ -180,7 +180,7 @@ export class PositionService {
     createPositionDto: CreatePositionDto,
     user: RequestUser,
   ) {
-    const { name, department_id } = createPositionDto;
+    const { name, sorting, hierarchy, job_description } = createPositionDto;
 
     console.log('createPositionDto:', createPositionDto);
 
@@ -199,15 +199,27 @@ export class PositionService {
     }
 
     //Create the new position
-    const createdPosition = await this.prisma.position.create({
+    const position = await this.prisma.position.create({
       data: {
         name,
         department: {
-          connect: { id: createPositionDto.department_id }, // this links the foreign key
+          connect: { id: createPositionDto.department_id }, // this links the foreign key -> relation type -> linked object use relation to get department id
         },
+        sorting: createPositionDto.sorting || undefined,
+        hierarchy: createPositionDto.hierarchy || undefined,
+        job_description: createPositionDto.job_description || undefined,
+        createdBy: {
+          connect: { id: user.id }
+        }
+        // created_by: user.id, // scalar type approach -> column value direct column value from related table
       },
       include: {
-        department: true,
+        department: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
       },
     });
 
@@ -232,16 +244,9 @@ export class PositionService {
 
     return {
       status: 'success',
-      message: `${createdPosition.name} Position has been created successfully!`,
-      created_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
-      data: {
-        position_id: createdPosition.id,
-        position_name: createdPosition.name,
-      },
+      message: `${position.name} position has been created successfully!`,
+      position,
+      created_by_user: `${userName} - ${userPos}`, 
     };
   }
 
