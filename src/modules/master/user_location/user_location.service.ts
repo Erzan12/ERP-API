@@ -12,7 +12,6 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { Prisma } from '@prisma/client';
-import { count } from 'console';
 
 @Injectable()
 export class UserLocationService {
@@ -72,6 +71,30 @@ export class UserLocationService {
       this.prisma.userLocation.findMany({
         where: {
           ...whereCondition,
+        },
+        include: {
+          createdBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
+          updatedBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          }
         },
         skip,
         take: perPage,
@@ -135,6 +158,30 @@ export class UserLocationService {
   async getUserLocation(userLocationId: string, user: RequestUser) {
     const user_location = await this.prisma.userLocation.findUnique({
       where: { id: userLocationId },
+      include: {
+        createdBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        },
+        updatedBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        }
+      }
     });
     if (!user_location) {
       throw new BadRequestException('User Location not found');
@@ -221,10 +268,11 @@ export class UserLocationService {
 
     console.log('Current user role', isAdmin);
 
-    const createUserLocation = await this.prisma.userLocation.create({
+    const userLocation = await this.prisma.userLocation.create({
       data: {
         locationName: locationName,
         address: address,
+        created_by: user.id
       },
     });
 
@@ -233,14 +281,9 @@ export class UserLocationService {
 
     return {
       status: 'success',
-      message: `${createUserLocation.locationName} User Location has been created successfully!`,
-      created_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPosition,
-      },
-      user_location_id: createUserLocation.id,
-      user_location_name: createUserLocation.locationName,
+      message: `${userLocation.locationName} User Location has been created successfully!`,
+      userLocation,
+      created_by_user: `${userName} - ${userPosition}`,
     };
   }
 
@@ -265,6 +308,7 @@ export class UserLocationService {
         locationName,
         address,
         stat,
+        updated_by: user.id,
       },
     });
 
@@ -303,12 +347,8 @@ export class UserLocationService {
     return {
       status: 'success',
       message: `${userLocation.locationName} User Location has been updated successfully!`,
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPosition,
-      },
       updateUserLocation,
+      updated_by: `${userName} - ${userPosition}`,
     };
   }
 }
