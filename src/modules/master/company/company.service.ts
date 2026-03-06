@@ -156,9 +156,9 @@ export class CompanyService {
       }),
     ]);
 
-    if (companies.length === 0) {
-      throw new BadRequestException('No available companies found.');
-    }
+    // if (companies.length === 0) {
+    //   throw new BadRequestException('No available companies found.');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },

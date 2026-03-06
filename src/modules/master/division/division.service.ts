@@ -130,9 +130,9 @@ export class DivisionService {
       }),
     ]);
 
-    if (divisions.length === 0) {
-      throw new BadRequestException('No available divisions found');
-    }
+    // if (divisions.length === 0) {
+    //   throw new BadRequestException('No available divisions found');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },

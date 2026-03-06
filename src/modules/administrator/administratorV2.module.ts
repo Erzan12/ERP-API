@@ -24,8 +24,6 @@ import { DbQueryService } from './db-query/db-query.service';
 import { SlackModule } from 'src/jobs/slack/slack.module';
 import { HttpModule } from '@nestjs/axios';
 import { SlackService } from 'src/jobs/slack/slack.service';
-import { UserService } from './user/user.service';
-import { UserController } from './user/user.controller';
 
 @Module({
   imports: [AuthModule, TerminusModule, SlackModule, HttpModule],
@@ -38,13 +36,11 @@ import { UserController } from './user/user.controller';
     AuditControllerV2,
     HealthController,
     DbQueryControllerV2,
-    UserController,
   ],
   providers: [
     JwtStrategy,
     JwtService,
     PrismaService,
-    UserService,
     MailService,
     SubModuleService,
     ModuleService,
@@ -55,7 +51,6 @@ import { UserController } from './user/user.controller';
     AuditService,
     DbQueryService,
     SlackService,
-    UserService,
   ],
   exports: [AdministratorV2Module],
 })

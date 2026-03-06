@@ -19,8 +19,6 @@ import { DashboardControllerv1 } from './dashboard/controllers/dashboardV1.contr
 import { ModuleControllerV1 } from './module/controllers/moduleV1.controller';
 import { SecurityClearanceControllerV1 } from './security_clearance/controllers/security-clearanceV1.controller';
 import { EmploymentStatusControllerV1 } from '../master/employment_status/controllers/employment_statusV1.controller';
-import { UserController } from './user/user.controller';
-import { UserService } from './user/user.service';
 
 @Module({
   imports: [AuthModule],
@@ -32,13 +30,11 @@ import { UserService } from './user/user.service';
     SecurityClearanceControllerV1,
     DashboardControllerv1,
     AuditControllerV1,
-    UserController,
   ],
   providers: [
     JwtStrategy,
     JwtService,
     PrismaService,
-    UserService,
     MailService,
     SubModuleService,
     ModuleService,

@@ -1253,42 +1253,6 @@
         ]
       }
     },
-    "/v2/administrator/user-access/{id}": {
-      "get": {
-        "operationId": "UserController_verify_v2",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User has been verified"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - User not found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Verify user",
-        "tags": [
-          "Administrator - User Access"
-        ]
-      }
-    },
     "/v1/mastertable/positions": {
       "get": {
         "operationId": "PositionControllerV1_getPositions_v1",

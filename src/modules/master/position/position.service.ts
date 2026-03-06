@@ -126,9 +126,9 @@ export class PositionService {
       }),
     ]);
 
-    if (positions.length === 0) {
-      throw new BadRequestException('No available departments found.');
-    }
+    // if (positions.length === 0) {
+    //   throw new BadRequestException('No available departments found.');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
