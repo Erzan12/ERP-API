@@ -292,7 +292,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Sub module permission updated successfully"
           },
           "400": {
@@ -435,12 +435,12 @@
         ]
       }
     },
-    "/v2/administrator/modules/{id}": {
+    "/v2/administrator/modules/{moduleId}": {
       "get": {
         "operationId": "ModuleControllerV2_getModule_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "moduleId",
             "required": true,
             "in": "path",
             "schema": {
@@ -472,7 +472,9 @@
         "tags": [
           "Administrator - Module"
         ]
-      },
+      }
+    },
+    "/v2/administrator/modules/{id}": {
       "put": {
         "operationId": "ModuleControllerV2_updateModule_v2",
         "parameters": [
@@ -497,7 +499,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Module updated successfully"
           },
           "400": {
@@ -679,6 +681,55 @@
         ]
       }
     },
+    "/v2/administrator/roles/{roleId}": {
+      "put": {
+        "operationId": "RoleControllerV2_updateRole_v2",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Role updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update current role",
+        "tags": [
+          "Administrator - Role"
+        ]
+      }
+    },
     "/v2/administrator/roles/role_permission": {
       "put": {
         "operationId": "RoleControllerV2_createRolePermission_v2",
@@ -743,7 +794,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Permissions updated to role"
           },
           "400": {
@@ -1307,42 +1358,6 @@
         ]
       }
     },
-    "/v2/administrator/user-access/{id}": {
-      "get": {
-        "operationId": "UserController_verify_v2",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User has been verified"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - User not found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Verify user",
-        "tags": [
-          "Administrator - User Access"
-        ]
-      }
-    },
     "/v2/mastertable/positions": {
       "get": {
         "operationId": "PositionControllerV2_getPositions_v2",
@@ -1524,7 +1539,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Position updated successfully"
           },
           "400": {
@@ -1730,7 +1745,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Department updated successfully"
           },
           "400": {
@@ -1936,7 +1951,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Company updated successfully"
           },
           "400": {
@@ -2142,7 +2157,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Division updated successfully"
           },
           "400": {
@@ -2341,13 +2356,13 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateEmpStatusDto"
+                "$ref": "#/components/schemas/UpdateEmployeeStatusDto"
               }
             }
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Employee status details updated successfully."
           },
           "400": {
@@ -2553,7 +2568,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "User Location updated successfully"
           },
           "400": {
@@ -2759,7 +2774,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Employee information updated successfully"
           },
           "400": {
@@ -2945,7 +2960,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Permissin Template has been updated."
           },
           "400": {
@@ -3383,6 +3398,25 @@
             "type": "string",
             "example": "Office staff for IT department",
             "description": "Description of the role"
+          }
+        },
+        "required": [
+          "name",
+          "description"
+        ]
+      },
+      "UpdateRoleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "IT Staff",
+            "description": "Name of the role"
+          },
+          "description": {
+            "type": "string",
+            "example": "Office staff for IT department",
+            "description": "Description of the role"
           },
           "status": {
             "type": "number",
@@ -3492,51 +3526,74 @@
             "example": "Software Engineer",
             "description": "The name of the position"
           },
+          "hierarchy": {
+            "type": "string",
+            "example": "Supervisor",
+            "description": "The hierarchy of this position"
+          },
+          "job_description": {
+            "type": "string",
+            "example": "Supervises the development and life cycle of systems",
+            "description": "The job description fit for this position"
+          },
           "sorting": {
             "type": "number",
             "example": 2,
             "description": "Sorting number of the position"
           },
-          "department": {
+          "department_id": {
             "type": "string",
-            "example": "human resources = 1, information technology = 2, accounting = 6",
+            "example": "Department PK UUID",
             "description": "The Department where the position is available"
           }
         },
         "required": [
           "name",
+          "hierarchy",
+          "job_description",
           "sorting",
-          "department"
+          "department_id"
         ]
       },
       "UpdatePositionDto": {
         "type": "object",
         "properties": {
-          "position_name": {
+          "name": {
             "type": "string",
             "example": "New Position name",
             "description": "If you want to update the Position Name"
+          },
+          "hierarchy": {
+            "type": "string",
+            "example": "Supervisor",
+            "description": "The hierarchy of this position"
+          },
+          "job_description": {
+            "type": "string",
+            "example": "Supervises the development and life cycle of systems",
+            "description": "The job description fit for this position"
           },
           "sorting": {
             "type": "number",
             "example": 2,
             "description": "Sorting number of the position"
           },
-          "department": {
+          "department_id": {
             "type": "string",
-            "example": "human resources, information technology, accounting",
+            "example": "Department PK UUID",
             "description": "The Department where the position is available"
           },
           "status": {
             "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
+            "example": "active or inactive"
           }
         },
         "required": [
-          "position_name",
+          "name",
+          "hierarchy",
+          "job_description",
           "sorting",
-          "department",
+          "department_id",
           "status"
         ]
       },
@@ -3553,16 +3610,16 @@
             "example": 2,
             "description": "Sorting number of the department"
           },
-          "division": {
+          "division_id": {
             "type": "string",
-            "example": "corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 4",
+            "example": "Division PK UUID",
             "description": "The Division where the department belongs to"
           }
         },
         "required": [
           "department_name",
           "sorting",
-          "division"
+          "division_id"
         ]
       },
       "UpdateDepartmentDto": {
@@ -3578,10 +3635,10 @@
             "example": 2,
             "description": "Sorting number of the department"
           },
-          "division": {
+          "division_id": {
             "type": "string",
-            "example": "corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 3",
-            "description": "The Division where the department belongs to"
+            "example": "Division PK UUID",
+            "description": "The division where the department belongs to"
           },
           "status": {
             "type": "number",
@@ -3592,7 +3649,7 @@
         "required": [
           "department_name",
           "sorting",
-          "division",
+          "division_id",
           "status"
         ]
       },
@@ -3740,11 +3797,37 @@
       },
       "CreateEmployeeStatusDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "TERMINATED",
+            "description": "The code of the employee status"
+          },
+          "label": {
+            "type": "string",
+            "example": "Terminated",
+            "description": "Proper label of the employee status code"
+          }
+        },
+        "required": [
+          "code",
+          "label"
+        ]
       },
-      "UpdateEmpStatusDto": {
+      "UpdateEmployeeStatusDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "TERMINATED",
+            "description": "The code of the employee status"
+          },
+          "label": {
+            "type": "string",
+            "example": "Terminated",
+            "description": "Proper label of the employee status code"
+          }
+        }
       },
       "CreateUserLocationDto": {
         "type": "object",

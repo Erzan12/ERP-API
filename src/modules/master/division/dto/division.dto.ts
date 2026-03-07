@@ -47,6 +47,7 @@ export class CreateDivisionDto {
 }
 
 export class UpdateDivisionDto {
+  @IsOptional()
   @IsString()
   @ApiProperty({
     example: 'New Division Name',
@@ -54,6 +55,7 @@ export class UpdateDivisionDto {
   })
   division_name?: string;
 
+  @IsOptional()
   @IsInt()
   @IsDefined()
   @Expose({ name: 'status' }) // maps "status" input field to this property
@@ -64,11 +66,12 @@ export class UpdateDivisionDto {
   })
   @Transform(({ value }) => {
     console.log('Transforming status:', value);
+    if (value === undefined || value === null) return undefined; // allow missing
     if (value === 'active') return 1;
     if (value === 'inactive') return 0;
     throw new BadRequestException(
       `Invalid status value: ${value}. Allowed values are "active" or "inactive".`,
     );
   })
-  stat: number;
+  stat?: number;
 }

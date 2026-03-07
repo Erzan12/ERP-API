@@ -12,9 +12,8 @@ import {
 import { EmploymentStatusService } from '../employment_status.service';
 import { Can } from '../../../../utils/decorators/can.decorator';
 import { SessionUser } from '../../../../utils/decorators/session-user.decorator';
-import { CreateEmployeeStatusDto } from '../dto/create-emp-stat.dto';
+import { CreateEmployeeStatusDto, UpdateEmployeeStatusDto } from '../dto/employee-status.dto';
 import { RequestUser } from '../../../../utils/types/request-user.interface';
-import { UpdateEmpStatusDto } from '../dto/update-emp-stat.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
@@ -87,12 +86,12 @@ export class EmploymentStatusControllerV2 {
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateEmployeeStatus(
     @Param('employeeStatusId', new ParseUUIDPipe()) employeeStatusId: string,
-    @Body() updateEmpStatusDto: UpdateEmpStatusDto,
+    @Body() updateEmployeeStatusDto: UpdateEmployeeStatusDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.employmentStatusService.updateEmployeeStatus(
       employeeStatusId,
-      updateEmpStatusDto,
+      updateEmployeeStatusDto,
       user,
     );
   }

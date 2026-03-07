@@ -92,7 +92,7 @@ export class DivisionControllerV2 {
   @ApiPatchResponse('Division updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateDivision(
-    @Param('divisionId', ParseIntPipe) divisionId: string,
+    @Param('divisionId', new ParseUUIDPipe()) divisionId: string,
     @Body() updateDivisiionDto: UpdateDivisionDto,
     @SessionUser() user: RequestUser,
   ) {

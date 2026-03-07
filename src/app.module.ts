@@ -37,7 +37,6 @@ import { PrismaService } from './config/prisma/prisma.service';
 import { DivisionService } from './modules/master/division/division.service';
 import { MailService } from './jobs/mail/mail.service';
 import { UserLocationService } from './modules/master/user_location/user_location.service';
-import { UserService } from './modules/administrator/user/user.service';
 
 import { AuditControllerV2 } from './modules/administrator/audit/controllers/auditV2.controller';
 // import { HealthCheckController } from './health-check/health-check.controller';
@@ -91,7 +90,6 @@ import { AuditControllerV2 } from './modules/administrator/audit/controllers/aud
     AuditService,
     MailService,
     EmployeeService,
-    UserService,
     PositionService,
     DepartmentService,
     CaslAbilityService,
