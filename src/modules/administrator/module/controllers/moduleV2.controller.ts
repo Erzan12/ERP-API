@@ -28,7 +28,6 @@ import { Can } from '../../../../utils/decorators/can.decorator';
 import { SessionUser } from '../../../../utils/decorators/session-user.decorator';
 import { RequestUser } from '../../../../utils/types/request-user.interface';
 
-import { Public } from 'src/utils/decorators/public.decorator';
 import { CreateModuleDto, UpdateModuleDto } from '../dto/module.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
@@ -55,27 +54,26 @@ export class ModuleControllerV2 {
     return this.moduleService.getModules(user, dto);
   }
 
-  @Get('modules/:id')
+  @Get('modules/:moduleId')
   @ApiOperation({ summary: 'Get a module' })
   @ApiGetResponse('Details of the module with submodules')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModule(
     @SessionUser() user: RequestUser,
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('moduleId', new ParseUUIDPipe()) moduleId: string,
   ) {
-    return this.moduleService.getModule(user, id); // 👈 pass the id to your service
+    return this.moduleService.getModule(user, moduleId); // 👈 pass the id to your service
   }
 
-  @Public()
   @Post('modules')
   @ApiOperation({ summary: 'Create a new Module' })
   @ApiPostResponse('Module created successfully')
   @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   createModule(
     @Body() createModuleDto: CreateModuleDto,
-    // @SessionUser() user: RequestUser,
+    @SessionUser() user: RequestUser,
   ) {
-    return this.moduleService.createModule(createModuleDto);
+    return this.moduleService.createModule(createModuleDto, user);
   }
 
   @Put('modules/:id')

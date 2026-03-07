@@ -18,6 +18,30 @@ export class PositionService {
   async getPosition(positionId: string, user: RequestUser) {
     const position = await this.prisma.position.findUnique({
       where: { id: positionId },
+      include: {
+        createdBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        },
+        updatedBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        }
+      },
     });
 
     if (!position) {
@@ -116,6 +140,28 @@ export class PositionService {
                 }
               }
             },
+          },
+          createdBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
+          updatedBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
           }
         },
         skip,
@@ -126,9 +172,9 @@ export class PositionService {
       }),
     ]);
 
-    if (positions.length === 0) {
-      throw new BadRequestException('No available departments found.');
-    }
+    // if (positions.length === 0) {
+    //   throw new BadRequestException('No available departments found.');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -180,7 +226,7 @@ export class PositionService {
     createPositionDto: CreatePositionDto,
     user: RequestUser,
   ) {
-    const { name, department_id } = createPositionDto;
+    const { name } = createPositionDto;
 
     console.log('createPositionDto:', createPositionDto);
 
@@ -199,95 +245,27 @@ export class PositionService {
     }
 
     //Create the new position
-    const createdPosition = await this.prisma.position.create({
+    const position = await this.prisma.position.create({
       data: {
         name,
+        hierarchy: createPositionDto.hierarchy ?? null,
+        job_description: createPositionDto.job_description ?? null,
+        sorting: createPositionDto.sorting ?? null,
         department: {
-          connect: { id: createPositionDto.department_id }, // this links the foreign key
+          connect: { id: createPositionDto.department_id }, // this links the foreign key -> relation type -> linked object use relation to get department id
         },
+        createdBy: {
+          connect: { id: user.id }
+        },
+        // created_by: user.id, // scalar type approach -> column value direct column value from related table
       },
       include: {
-        department: true,
-      },
-    });
-
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
+        department: {
+          select: {
+            id: true,
+            name: true,
+          }
         },
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
-
-    return {
-      status: 'success',
-      message: `${createdPosition.name} Position has been created successfully!`,
-      created_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
-      data: {
-        position_id: createdPosition.id,
-        position_name: createdPosition.name,
-      },
-    };
-  }
-
-  async updatePosition(
-    positionId: string,
-    updatePositionDto: UpdatePositionDto,
-    user: RequestUser,
-  ) {
-    const { position_name, department_id, stat } = updatePositionDto;
-
-    const position = await this.prisma.position.findUnique({
-      where: { id: positionId },
-      select: {
-        id: true,
-        name: true,
-        stat: true,
-      },
-    });
-
-    if (!position) {
-      throw new BadRequestException('Position not Found.');
-    }
-
-    if (position.stat === 0) {
-      throw new ForbiddenException(
-        `${position.name} Position status is inactive!`,
-      );
-    }
-
-    if (updatePositionDto.department_id !== undefined) {
-      const existingDept = await this.prisma.department.findFirst({
-        where: { id: updatePositionDto.department_id },
-      });
-
-      if (!existingDept) {
-        throw new BadRequestException('Department not found!');
-      }
-    }
-
-    const updatePosition = await this.prisma.position.update({
-      where: { id: positionId },
-      data: {
-        name: position_name,
-        sorting: updatePositionDto.sorting,
-        department_id,
-        stat,
       },
     });
 
@@ -312,13 +290,93 @@ export class PositionService {
 
     return {
       status: 'success',
-      message: `${position.name} Position has been updated successfully!`,
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPosition,
+      message: `${position.name} position has been created successfully!`,
+      position,
+      created_by_user: `${userName} - ${userPosition}`, 
+    };
+  }
+
+  async updatePosition(
+    positionId: string,
+    updatePositionDto: UpdatePositionDto,
+    user: RequestUser,
+  ) {
+
+    const existingPosition = await this.prisma.position.findUnique({
+      where: { id: positionId },
+      select: {
+        id: true,
+        name: true,
+        stat: true,
       },
-      updatePosition,
+    });
+
+    if (!existingPosition) {
+      throw new BadRequestException('Position not Found.');
+    }
+
+    // if (existingPosition.stat === 0) {
+    //   throw new ForbiddenException(
+    //     `${existingPosition.name} Position status is inactive!`,
+    //   );
+    // }
+
+    if (updatePositionDto.department_id !== undefined) {
+      const existingDept = await this.prisma.department.findFirst({
+        where: { id: updatePositionDto.department_id },
+      });
+
+      if (!existingDept) {
+        throw new BadRequestException('Department not found!');
+      }
+    }
+
+    const updateData: any = {
+      name: updatePositionDto.name ?? undefined,
+      hierarchy: updatePositionDto.hierarchy ?? undefined,
+      job_description: updatePositionDto.job_description ?? undefined,
+      sorting: updatePositionDto.sorting ?? undefined,
+      stat: updatePositionDto.stat ?? undefined,
+      updatedBy: {
+        connect: { id: user.id },
+      }
+    };
+
+    if (updatePositionDto.department_id !== undefined) {
+      updateData.department = {
+        connect: { id: updatePositionDto.department_id }
+      }
+    }
+
+    const position = await this.prisma.position.update({
+      where: { id: positionId },
+      data: updateData,
+    });
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    const userPosition = requestUser.employee.position.name;
+
+    return {
+      status: 'success',
+      message: `${position.name} position has been updated successfully!`,
+      position,
+      updated_by_user: `${userName} - ${userPosition}`
     };
   }
 }

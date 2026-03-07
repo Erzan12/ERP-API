@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
-import { IsString, IsInt, IsDefined } from 'class-validator';
+import { IsString, IsInt, IsDefined, IsUUID, IsOptional } from 'class-validator';
 
 export class CreateDepartmentDto {
   @IsString()
@@ -14,53 +14,21 @@ export class CreateDepartmentDto {
   })
   name: string;
 
+  @IsOptional()
   @IsInt()
   @ApiProperty({ example: 2, description: 'Sorting number of the department' })
   sorting?: number;
 
-  @IsInt()
-  @IsDefined()
-  @Expose({ name: 'division' })
+  @IsUUID()
   @ApiProperty({
-    name: 'division',
-    example:
-      'corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 4',
+    example:'Division PK UUID',
     description: 'The Division where the department belongs to',
   })
-  @Transform(({ value }) => {
-    console.log('Transforming status:', value);
-    if (value === 'corporate services')
-      return '233098f7-9f12-4faf-8131-2c3feb81698c';
-    if (value === 'asset management')
-      return '274a1a571-ed6b-4426-b2ee-893d3165e994';
-    if (value === 'marketing and operations') return '3';
-    if (value === 'cebu air inc') return '4';
-    throw new BadRequestException(
-      `Invalid division value: ${value}. Allowed values are "corporate services", "asset management", "marketing and operations", "cebu air inc".`,
-    );
-  })
-  division_id?: string;
-
-  // @IsInt()
-  // @IsDefined()
-  // @Expose({ name: 'status' }) // maps " status" input field to this property
-  // @ApiProperty({
-  //   name: 'status',
-  //   example: 'active or inactive',
-  //   description: 'active = 1, inactive = 0',
-  // })
-  // @Transform(({ value }) => {
-  //   console.log('Transforming status:', value);
-  //   if (value === 'active') return 1;
-  //   if (value === 'inactive') return 0;
-  //   throw new BadRequestException(
-  //     `Invalid status value ${value}. Allowed values are "active" or "inactive"`,
-  //   );
-  // })
-  // stat?: number;
+  division_id: string;
 }
 
 export class UpdateDepartmentDto {
+  @IsOptional()
   @IsString()
   @ApiProperty({
     example: 'New Department name',
@@ -68,33 +36,21 @@ export class UpdateDepartmentDto {
   })
   department_name?: string;
 
+  @IsOptional()
   @IsInt()
   @ApiProperty({ example: 2, description: 'Sorting number of the department' })
   sorting?: number;
 
-  @IsInt()
-  @IsDefined()
-  @Expose({ name: 'division' })
+  @IsOptional()
+  @IsUUID()
+  @IsOptional()
   @ApiProperty({
-    name: 'division',
-    example:
-      'corporate services = 1, asset management = 2, marketing and operations = 3, cebu air inc = 3',
-    description: 'The Division where the department belongs to',
-  })
-  @Transform(({ value }) => {
-    console.log('Transforming status:', value);
-    if (value === 'corporate services')
-      return '233098f7-9f12-4faf-8131-2c3feb81698c';
-    if (value === 'asset management')
-      return '74a1a571-ed6b-4426-b2ee-893d3165e994';
-    if (value === 'marketing and operations') return '3';
-    if (value === 'cebu air inc') return '4';
-    throw new BadRequestException(
-      `Invalid status value: ${value}. Allowed values are "corporate services", "asset management", "marketing and operations", "cebu air inc".`,
-    );
+    example: 'Division PK UUID',
+    description: 'The division where the department belongs to'
   })
   division_id?: string;
 
+  @IsOptional()
   @IsInt()
   @IsDefined()
   @Expose({ name: 'status' }) // maps "status" input field to this property
@@ -105,6 +61,7 @@ export class UpdateDepartmentDto {
   })
   @Transform(({ value }) => {
     console.log('Transforming status:', value);
+    if (value === undefined || value === null) return undefined; //allow missing
     if (value === 'active') return 1;
     if (value === 'inactive') return 0;
     throw new BadRequestException(

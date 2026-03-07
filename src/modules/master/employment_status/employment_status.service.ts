@@ -1,7 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateEmployeeStatusDto } from './dto/create-emp-stat.dto';
+import { CreateEmployeeStatusDto, UpdateEmployeeStatusDto } from './dto/employee-status.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { UpdateEmpStatusDto } from './dto/update-emp-stat.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { Prisma } from '@prisma/client';
@@ -45,7 +44,7 @@ export class EmploymentStatusService {
       sortBy;
     }
 
-    const [ total, employmentStats ] = await this.prisma.$transaction([
+    const [ total, employmentStatus ] = await this.prisma.$transaction([
       this.prisma.employmentStatus.count({
         where: {
           ...whereCondition,
@@ -55,6 +54,30 @@ export class EmploymentStatusService {
         where: {
           ...whereCondition,
         },
+        include: {
+          createdBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
+          updatedBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          }
+        },
         skip,
         take: perPage,
         orderBy: {
@@ -63,9 +86,9 @@ export class EmploymentStatusService {
       }),
     ])
 
-    if (employmentStats.length === 0) {
-      throw new BadRequestException('No available departments found.');
-    }
+    // if (employmentStats.length === 0) {
+    //   throw new BadRequestException('No available departments found.');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -108,26 +131,48 @@ export class EmploymentStatusService {
       count: total,
       page,
       perPage,
-      employmentStats,
+      employmentStatus,
     }
   }
 
   //get a single employee_status
   async getEmployeeStat(employeeStatusId: string, user: RequestUser) {
-    const employeeStatus = await this.prisma.employmentStatus.findUnique({
+    const employeeStat = await this.prisma.employmentStatus.findUnique({
       where: { id: employeeStatusId },
+      include: {
+        createdBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        },
+        updatedBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        }
+      }
     });
 
-    if (!employeeStatus) {
+    if (!employeeStat) {
       throw new BadRequestException('Employee status not found.');
     }
 
     return {
       status: 'success',
       message: 'Here is the Employee Status',
-      data: {
-        employeeStatus,
-      },
+      employeeStat,
     };
   }
 
@@ -135,7 +180,6 @@ export class EmploymentStatusService {
     empStatusDto: CreateEmployeeStatusDto,
     user: RequestUser,
   ) {
-    const { code, label } = empStatusDto;
 
     const existingEmpStat = await this.prisma.employmentStatus.findUnique({
       where: { code: empStatusDto.code },
@@ -145,28 +189,65 @@ export class EmploymentStatusService {
       throw new BadRequestException('Employee Status already exist');
     }
 
-    const createEmpStat = await this.prisma.employmentStatus.create({
+    const employeeStatus = await this.prisma.employmentStatus.create({
       data: {
         code: empStatusDto.code,
         label: empStatusDto.label,
+        created_by: user.id,
       },
     });
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
       mesage: 'Employment Status created successfully',
-      data: {
-        createEmpStat,
-      },
+      employeeStatus,
+      created_by_user: `${userName} - ${userPosition}`,
     };
   }
 
   async updateEmployeeStatus(
     employeeStatusId: string,
-    updateEmpStatusDto: UpdateEmpStatusDto,
+    updateEmployeeStatusDto: UpdateEmployeeStatusDto,
     user: RequestUser,
   ) {
-    const { code, label } = updateEmpStatusDto;
 
     const employment_status = await this.prisma.employmentStatus.findUnique({
       where: { id: employeeStatusId },
@@ -176,11 +257,14 @@ export class EmploymentStatusService {
       throw new BadRequestException('Employee status does not exist.');
     }
 
-    const updateEmployeeStatus = await this.prisma.employmentStatus.update({
+    const updatedEmployeeStatus = await this.prisma.employmentStatus.update({
       where: { id: employeeStatusId },
       data: {
-        code,
-        label,
+        code: updateEmployeeStatusDto.code ?? undefined,
+        label: updateEmployeeStatusDto.label ?? undefined,
+        updatedBy: {
+          connect: { id: user.id }
+        }
       },
     });
 
@@ -219,12 +303,13 @@ export class EmploymentStatusService {
     return {
       status: 'success',
       message: 'Employment Status updated successfully.',
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPosition,
-      },
-      updateEmployeeStatus,
+      // {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPosition,
+      // },
+      updatedEmployeeStatus,
+      updated_by_user: `${userName} - ${userPosition}`
     };
   }
 }
