@@ -4,7 +4,7 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateRoleDto } from './dto/create-role.dto';
+import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -73,6 +73,30 @@ export class RoleService {
         where: {
           ...whereCondition,
         },
+        include: {
+          createdBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
+          updatedBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          }
+        },
         skip,
         take: perPage,
         orderBy: {
@@ -133,6 +157,28 @@ export class RoleService {
       where: { id },
       include: {
         role_permissions: true,
+        createdBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        },
+        updatedBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        }
       },
     });
 
@@ -150,13 +196,13 @@ export class RoleService {
   }
 
   async createRole(createRoleDto: CreateRoleDto, user: RequestUser) {
-    const { name, description, stat } = createRoleDto;
+    const { name, description } = createRoleDto;
 
-    const role = await this.prisma.role.findUnique({
+    const existingRole = await this.prisma.role.findUnique({
       where: { name: createRoleDto.name },
     });
 
-    if (role) {
+    if (existingRole) {
       throw new BadRequestException('Role already exist! Try again');
     }
 
@@ -177,26 +223,77 @@ export class RoleService {
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userPosition = requestUser.employee.position.name;
 
-    const createdRole = await this.prisma.role.create({
+    const role = await this.prisma.role.create({
       data: {
         name,
         description,
-        stat,
+        created_by: user.id
       },
     });
 
     return {
       status: 'success',
       message: `Role have been successfully created!`,
-      created_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
+      // created_by: {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPos,
+      // },
+      role,
+      created_by_user: `${userName} - ${userPosition}`
+    };
+  }
+
+  async updateRole(dto: UpdateRoleDto, user: RequestUser, roleId: string) {
+
+    const existingRole = await this.prisma.role.findUnique({
+      where: { id: roleId },
+    });
+
+    if (!existingRole) {
+      throw new BadRequestException('Role does not exist!');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
       },
-      role_id: createdRole.id,
-      role_name: createdRole.name,
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    const userPosition = requestUser.employee.position.name;
+
+    const role = await this.prisma.role.update({
+      where: { id: roleId },
+      data: {
+        name: dto.name ?? undefined,
+        description: dto.description ?? undefined,
+        updated_by: user.id
+      },
+    });
+
+    return {
+      status: 'success',
+      message: `Role have been successfully created!`,
+      // created_by: {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPos,
+      // },
+      role,
+      updated_by_user: `${userName} - ${userPosition}`
     };
   }
 

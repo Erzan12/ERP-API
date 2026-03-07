@@ -12,7 +12,7 @@ import { RoleService } from '../role.service';
 import { Can } from '../../../../utils/decorators/can.decorator';
 import { SessionUser } from '../../../../utils/decorators/session-user.decorator';
 import { RequestUser } from '../../../../utils/types/request-user.interface';
-import { CreateRoleDto } from '../dto/create-role.dto';
+import { CreateRoleDto, UpdateRoleDto } from '../dto/role.dto';
 import { CreateRolePermissionDto } from '../dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from '../dto/update-role-permisisons.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -72,6 +72,19 @@ export class RoleControllerV2 {
     @SessionUser() user: RequestUser,
   ) {
     return this.roleService.createRole(createRoleDto, user);
+  }
+
+  //update role
+  @Put('roles/:roleId')
+  @ApiOperation({ summary: 'Update current role' })
+  @ApiPostResponse('Role updated successfully')
+  @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  updateRole(
+    @Body() dto: UpdateRoleDto,
+    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.roleService.updateRole(dto, user, roleId);
   }
 
   //add role permisison -> combining created role with submodule embedded permissions -> and this role permission can be assigned to a user
