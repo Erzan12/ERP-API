@@ -508,7 +508,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateEmpStatusDto"
+                "$ref": "#/components/schemas/UpdateEmployeeStatusDto"
               }
             }
           }
@@ -2698,11 +2698,37 @@
       },
       "CreateEmployeeStatusDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "TERMINATED",
+            "description": "The code of the employee status"
+          },
+          "label": {
+            "type": "string",
+            "example": "Terminated",
+            "description": "Proper label of the employee status code"
+          }
+        },
+        "required": [
+          "code",
+          "label"
+        ]
       },
-      "UpdateEmpStatusDto": {
+      "UpdateEmployeeStatusDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "TERMINATED",
+            "description": "The code of the employee status"
+          },
+          "label": {
+            "type": "string",
+            "example": "Terminated",
+            "description": "Proper label of the employee status code"
+          }
+        }
       },
       "CreateModuleDto": {
         "type": "object",
