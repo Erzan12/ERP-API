@@ -2765,17 +2765,11 @@
             "type": "string",
             "example": "Office staff for IT department",
             "description": "Description of the role"
-          },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active, inactive"
           }
         },
         "required": [
           "name",
-          "description",
-          "status"
+          "description"
         ]
       },
       "CreateRolePermissionDto": {
