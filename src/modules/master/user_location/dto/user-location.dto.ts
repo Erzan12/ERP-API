@@ -57,6 +57,7 @@ export class UpdateUserLocationDto {
   })
   @Transform(({ value }) => {
     console.log('Transforming status:', value);
+    if (value === undefined || value === null) return undefined; // allow missing
     if (value === 'active') return 1;
     if (value === 'inactive') return 0;
     throw new BadRequestException(

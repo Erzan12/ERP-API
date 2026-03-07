@@ -86,9 +86,9 @@ export class SubModuleService {
       }),
     ]);
 
-    if (subModules.length === 0) {
-      throw new BadRequestException('No available or active sub module exist!');
-    }
+    // if (subModules.length === 0) {
+    //   throw new BadRequestException('No available or active sub module exist!');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },

@@ -96,6 +96,28 @@ export class DepartmentService {
               name: true,
             },
           },
+          createdBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
+          updatedBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          }
         },
         skip,
         take: perPage,
@@ -105,9 +127,9 @@ export class DepartmentService {
       }),
     ]);
 
-    if (departments.length === 0) {
-      throw new BadRequestException('No available departments found.');
-    }
+    // if (departments.length === 0) {
+    //   throw new BadRequestException('No available departments found.');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -159,9 +181,33 @@ export class DepartmentService {
   async getDepartment(departmentId: string, user: RequestUser) {
     const department = await this.prisma.department.findUnique({
       where: { id: departmentId },
+      include: {
+        createdBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        },
+        updatedBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        }
+      }
     });
 
-    if (!department || department.stat === 0) {
+    if (!department) {
       throw new BadRequestException('Department not found or is inactive');
     }
 
@@ -249,28 +295,31 @@ export class DepartmentService {
       );
     }
 
-    const createDepartment = await this.prisma.department.create({
+    const department = await this.prisma.department.create({
       data: {
         name: createDepartmentDto.name,
         division: {
           connect: { id: createDepartmentDto.division_id },
         },
+        createdBy: {
+          connect: { id: user.id }
+        }
       },
     });
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
-      message: `${createDepartment.name} Department has been created successfully!`,
-      created_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
-      department_id: createDepartment.id,
-      department_name: createDepartment.name,
+      message: `${department.name} Department has been created successfully!`,
+      // created_by: {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPos,
+      // },
+      department,
+      created_by_user: `${userName} - ${userPosition}`
     };
   }
 
@@ -279,7 +328,6 @@ export class DepartmentService {
     updateDepartmentDto: UpdateDepartmentDto,
     user: RequestUser,
   ) {
-    const { department_name, sorting, division_id, stat } = updateDepartmentDto;
 
     const department = await this.prisma.department.findUnique({
       where: { id: departmentId },
@@ -295,13 +343,14 @@ export class DepartmentService {
       );
     }
 
-    const updateDepartment = await this.prisma.department.update({
+    const updatedDepartment = await this.prisma.department.update({
       where: { id: departmentId },
       data: {
-        name: department_name,
-        sorting,
-        division_id,
-        stat,
+        name: updateDepartmentDto.department_name ?? undefined,
+        sorting: updateDepartmentDto.sorting ?? undefined,
+        division_id: updateDepartmentDto.division_id ?? undefined,
+        stat: updateDepartmentDto.stat ?? undefined,
+        updated_by : user.id
         //will be added to department schema updated_by and updated_at fields
         // updated_by: user.id,           // optional: if you track who updated it
         // updated_at: new Date(),        // optional: if you track timestamps
@@ -336,17 +385,18 @@ export class DepartmentService {
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
-      message: `${updateDepartment.name} Department has been updated successfully!`,
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
-      updateDepartment,
+      message: `${updatedDepartment.name} Department has been updated successfully!`,
+      // updated_by: {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPos,
+      // },
+      updatedDepartment,
+      updated_by_user: `${userName} - ${userPosition}`
     };
   }
 }
