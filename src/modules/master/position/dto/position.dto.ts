@@ -85,7 +85,7 @@ export class UpdatePositionDto {
   @Expose({ name: 'status' })
   @ApiProperty({
     name: 'status', // -> maps status
-    example: '1 or 0',
+    example: 'active or inactive',
   })
   @Transform(({ value }) => {
     console.log('Transforming status:', value);

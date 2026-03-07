@@ -3515,7 +3515,7 @@
           },
           "status": {
             "type": "number",
-            "example": "1 or 0"
+            "example": "active or inactive"
           }
         },
         "required": [
