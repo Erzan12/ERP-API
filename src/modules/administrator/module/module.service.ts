@@ -14,7 +14,10 @@ import { Prisma } from '@prisma/client';
 export class ModuleService {
   constructor(private prisma: PrismaService) {}
   // validate if module already exist
-  async createModule(createModuleDto: CreateModuleDto) {
+  async createModule(
+    createModuleDto: CreateModuleDto,
+    user: RequestUser,
+  ) {
     const existingModule = await this.prisma.module.findFirst({
       where: {
         name: createModuleDto.name,
@@ -25,31 +28,50 @@ export class ModuleService {
       throw new BadRequestException('Module already exists!');
     }
 
-    // const requestUser = await this.prisma.user.findUnique({
-    //   where: { id: user.id },
-    //   include: {
-    //     employee: {
-    //       include: {
-    //         person: true,
-    //         position: true,
-    //       },
-    //     },
-    //   },
-    // });
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
 
-    // if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-    //   throw new BadRequestException(`User does not exist.`);
-    // }
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
 
-    // const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    // const userPos = requestUser.employee.position.name;
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not allowed to perform this action',
+      );
+    }
 
     const module = await this.prisma.module.create({
       data: {
         name: createModuleDto.name,
         //to be added field of stat for status active or inactive
+        createdBy: {
+          connect: { id: user.id }
+        }
       },
     });
+
+    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
@@ -60,10 +82,11 @@ export class ModuleService {
       //   position: userPos,
       // },
       module,
+      created_by_user: `${userName} - ${userPosition}`
     };
   }
 
-  async getModule(user: RequestUser, id: string) {
+  async getModule(user: RequestUser, moduleId: string) {
     const subModules = await this.prisma.subModule.findMany();
 
     if (subModules.length === 0) {
@@ -71,9 +94,37 @@ export class ModuleService {
     }
 
     const module = await this.prisma.module.findUnique({
-      where: { id },
+      where: { id: moduleId },
       include: {
-        sub_module: true,
+        sub_module: {
+          select: {
+            id: true,
+            name: true,
+            stat: true,
+          }
+        },
+        createdBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        },
+        updatedBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        }
       },
     });
 
@@ -151,9 +202,37 @@ export class ModuleService {
         where: {
           ...whereCondition,
         },
-        // include: {
-        //   sub_module: true,
-        // },
+        include: {
+          createdBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
+          updatedBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
+          sub_module: {
+            select: {
+              id: true,
+              name: true,
+              stat: true,
+            }
+          }
+        },
         skip,
         take: perPage,
         orderBy: {
@@ -162,9 +241,9 @@ export class ModuleService {
       }),
     ]);
 
-    if (modules.length === 0) {
-      throw new NotFoundException('No available modules found!');
-    }
+    // if (modules.length === 0) {
+    //   throw new NotFoundException('No available modules found!');
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -228,11 +307,12 @@ export class ModuleService {
       );
     }
 
-    const updateModule = await this.prisma.module.update({
+    const updatedModule = await this.prisma.module.update({
       where: { id },
       data: {
         name: updateModuleDto.name,
         //stat: to add stat field in the future,
+        updated_by: user.id
       },
     });
 
@@ -253,22 +333,18 @@ export class ModuleService {
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
       message: `Module has been updated successfully!`,
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
-      data: {
-        module_id: updateModule.id,
-        module_name: updateModule.name,
-      },
+      // updated_by: {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPos,
+      // },
+      updatedModule,
+      updated_by_user: `${userName} - ${userPosition}`
     };
   }
-
-  // async to edit/update the module
 }

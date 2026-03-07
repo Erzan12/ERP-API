@@ -24,7 +24,7 @@ import { RoleService } from '../role.service';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateRoleDto } from '../dto/create-role.dto';
+import { CreateRoleDto } from '../dto/role.dto';
 import { CreateRolePermissionDto } from '../dto/create-role-permission.dto';
 import { UpdateRolePermissionsDto } from '../dto/update-role-permisisons.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
