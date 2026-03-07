@@ -9,7 +9,6 @@ import { RequestUser } from '../../../utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { Prisma } from '@prisma/client';
-import { connect } from 'http2';
 
 @Injectable()
 export class DepartmentService {

@@ -435,12 +435,12 @@
         ]
       }
     },
-    "/v2/administrator/modules/{id}": {
+    "/v2/administrator/modules/{moduleId}": {
       "get": {
         "operationId": "ModuleControllerV2_getModule_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "moduleId",
             "required": true,
             "in": "path",
             "schema": {
@@ -472,7 +472,9 @@
         "tags": [
           "Administrator - Module"
         ]
-      },
+      }
+    },
+    "/v2/administrator/modules/{id}": {
       "put": {
         "operationId": "ModuleControllerV2_updateModule_v2",
         "parameters": [
