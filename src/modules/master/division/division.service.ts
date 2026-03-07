@@ -9,7 +9,6 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { Prisma } from '@prisma/client';
-import { count } from 'console';
 
 @Injectable()
 export class DivisionService {
@@ -19,10 +18,34 @@ export class DivisionService {
   async getDivision(divisionId: string, user: RequestUser) {
     const division = await this.prisma.division.findUnique({
       where: { id: divisionId },
+      include: {
+        createdBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        },
+        updatedBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        }
+      }
     });
 
-    if (!division || division.stat === 0) {
-      throw new BadRequestException('Division not found or is inactive!');
+    if (!division) {
+      throw new BadRequestException('Division not found!');
     }
 
     const requestUser = await this.prisma.user.findUnique({
@@ -122,6 +145,30 @@ export class DivisionService {
         where: {
           ...whereCondition,
         },
+        include: {
+          createdBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
+          updatedBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          }
+        },
         skip,
         take: perPage,
         orderBy: {
@@ -197,10 +244,11 @@ export class DivisionService {
       throw new ConflictException('Division already exists!');
     }
 
-    const createDivision = await this.prisma.division.create({
+    const division = await this.prisma.division.create({
       data: {
         name,
-        division_head_id
+        division_head_id,
+        created_by: user.id
       },
     });
 
@@ -225,14 +273,13 @@ export class DivisionService {
 
     return {
       status: 'success',
-      message: `${createDivision.name} Division has been created successfully!`,
+      message: `${division.name} Division has been created successfully!`,
       created_by: {
         id: requestUser.id,
         name: userName,
         position: userPos,
       },
-      division_id: createDivision.id,
-      division_name: createDivision.name,
+      division: division,
     };
   }
 
@@ -241,7 +288,6 @@ export class DivisionService {
     updateDivisionDto: UpdateDivisionDto,
     user: RequestUser,
   ) {
-    const { division_name, stat } = updateDivisionDto;
 
     const division = await this.prisma.division.findUnique({
       where: { id: divisionId },
@@ -251,17 +297,18 @@ export class DivisionService {
       },
     });
 
-    if (!division || division.stat === 0) {
+    if (!division) {
       throw new BadRequestException(
-        'Department does not exist or is inactive!',
+        'Department does not exist!',
       );
     }
 
     const updateDivision = await this.prisma.division.update({
       where: { id: divisionId },
       data: {
-        name: division_name,
-        stat,
+        name: updateDivisionDto.division_name ?? undefined,
+        stat: updateDivisionDto.stat ?? undefined,
+        updated_by: user.id
       },
     });
 
@@ -282,17 +329,18 @@ export class DivisionService {
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
       message: `${updateDivision.name} Division has been updated successfully`,
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
+      // updated_by: {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPos,
+      // },
       updateDivision,
+      updated_by_user: `${userName} - ${userPosition}`
     };
   }
 }
