@@ -96,21 +96,23 @@ export class CreateCompanyDto {
 }
 
 export class UpdateCompanyDto {
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
     example: 'Avega Bros. Integrated Shipping Corp',
     description: 'Update current company name',
   })
-  name: string;
+  name?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
     example: 'Cebu City, Cebu',
     description: 'Update current company location',
   })
-  address: string;
+  address?: string;
 
   @IsString()
   @IsOptional()
@@ -137,7 +139,6 @@ export class UpdateCompanyDto {
   company_tin?: string;
 
   @IsInt()
-  @IsDefined()
   @IsOptional()
   @Expose({ name: 'is_top_20000' })
   @ApiProperty({
@@ -146,6 +147,7 @@ export class UpdateCompanyDto {
   })
   @Transform(({ value }) => {
     console.log('Transforming status:', value);
+    if ( value === undefined || value === null) return undefined; //allow missing
     if (value === 'yes') return 1;
     if (value === 'no') return 0;
     throw new BadRequestException(
@@ -161,7 +163,7 @@ export class UpdateCompanyDto {
     example: 'ABISC',
     description: 'Update current company abbreviation',
   })
-  abbreviation: string;
+  abbreviation?: string;
 
   @IsInt()
   @IsDefined()
@@ -173,6 +175,7 @@ export class UpdateCompanyDto {
   })
   @Transform(({ value }) => {
     console.log('Transforming status:', value);
+    if (value === undefined || value === null ) return undefined; //allow missing
     if (value === 'active') return 1;
     if (value === 'inactive') return 0;
     throw new BadRequestException(

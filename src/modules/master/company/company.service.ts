@@ -22,9 +22,33 @@ export class CompanyService {
   async getCompany(companyId: string, user: RequestUser) {
     const company = await this.prisma.company.findUnique({
       where: { id: companyId },
+      include: {
+        createdBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        },
+        updatedBy: {
+          select: {
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            }
+          }
+        }
+      }
     });
 
-    if (!company || company.stat === 0) {
+    if (!company) {
       throw new BadRequestException('Company not found or is inactive.');
     }
 
@@ -148,6 +172,30 @@ export class CompanyService {
         where: {
           ...whereCondition,
         },
+        include: {
+          createdBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
+          updatedBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          }
+        },
         skip,
         take: perPage,
         orderBy: {
@@ -254,7 +302,7 @@ export class CompanyService {
       throw new ForbiddenException('User is not allowed to view Companies');
     }
 
-    const createCompany = await this.prisma.company.create({
+    const company = await this.prisma.company.create({
       data: {
         name,
         address,
@@ -263,22 +311,23 @@ export class CompanyService {
         company_tin,
         abbreviation,
         is_top_20000,
+        created_by: user.id
       },
     });
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
-      message: `${createCompany.name} Company has been createad successfully!`,
-      created_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
-      company_id: createCompany.id,
-      company_name: createCompany.name,
+      message: `${company.name} company has been createad successfully!`,
+      // created_by: {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPos,
+      // },
+      company,
+      created_by_user: `${userName} - ${userPosition}`
     };
   }
 
@@ -287,17 +336,6 @@ export class CompanyService {
     updateCompanyDto: UpdateCompanyDto,
     user: RequestUser,
   ) {
-    const {
-      name,
-      address,
-      telephone_no,
-      fax_no,
-      company_tin,
-      is_top_20000,
-      abbreviation,
-      stat,
-    } = updateCompanyDto;
-
     const company = await this.prisma.company.findUnique({
       where: { id: companyId },
       select: {
@@ -306,21 +344,22 @@ export class CompanyService {
       },
     });
 
-    if (!company || company.stat === 0) {
+    if (!company) {
       throw new NotFoundException('Company does not exist or inactive!');
     }
 
-    const updateCompany = await this.prisma.company.update({
+    const updatedCompany = await this.prisma.company.update({
       where: { id: companyId },
       data: {
-        name,
-        address,
-        telephone_no,
-        fax_no,
-        company_tin,
-        is_top_20000,
-        abbreviation,
-        stat,
+        name: updateCompanyDto.name ?? undefined,
+        address: updateCompanyDto.address ?? undefined,
+        telephone_no: updateCompanyDto.telephone_no ?? undefined,
+        fax_no: updateCompanyDto.fax_no ?? undefined,
+        company_tin: updateCompanyDto.company_tin ?? undefined,
+        is_top_20000: updateCompanyDto.is_top_20000 ?? undefined,
+        abbreviation: updateCompanyDto.abbreviation ?? undefined,
+        stat: updateCompanyDto.stat ?? undefined,
+        updated_by: user.id
       },
     });
 
@@ -352,17 +391,18 @@ export class CompanyService {
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
-      message: `${updateCompany.name} Company has been updated successfully!`,
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
-      updateCompany,
+      message: `${updatedCompany.name} company has been updated successfully!`,
+      // updated_by: {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPos,
+      // },
+      updatedCompany,
+      updated_by_user: `${userName} - ${userPosition}`
     };
   }
 }
