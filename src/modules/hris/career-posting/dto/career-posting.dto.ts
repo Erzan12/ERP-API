@@ -1,12 +1,11 @@
 import { 
-    IsBoolean, 
     IsEnum, 
     IsInt, 
     IsNotEmpty, 
-    IsString 
+    IsString, 
+    IsUUID
 } from "class-validator";
-import { 
-    CareerPostingStatus, 
+import {  
     EmployeeType, 
     EmploymentType 
 } from "src/utils/decorators/global.enums.decorator";
@@ -14,13 +13,13 @@ import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateCareerPostingDto {
-    @IsInt()
+    @IsUUID()
     @IsNotEmpty()
     @ApiProperty({
         example: 'Position PK UUID',
         description: 'The PK uuid of the position',
     })
-    position_id: number;
+    position_id: string;
 
     @IsInt()
     @IsNotEmpty()
@@ -38,13 +37,13 @@ export class CreateCareerPostingDto {
     })
     job_description: string;
 
-    @IsInt()
+    @IsUUID()
     @IsNotEmpty()
     @ApiProperty({
         example: 'Deparment PK UUID',
         description: 'The PK uuid of the department',
     })
-    department_id: number;
+    department_id: string;
 
     @IsString()
     @IsEnum(EmployeeType, { message: 'Employment type must be land_based or sea_based'})
@@ -66,11 +65,11 @@ export class CreateCareerPostingDto {
     })
     employment_type: EmploymentType;
 
-    @IsInt()
+    @IsString()
     @IsNotEmpty()
     @ApiProperty({
         example: 'User Location PK UUID',
         description: 'The PK uuid of the user location',
     })
-    user_location_id: number;
+    user_location_id: string;
 }
