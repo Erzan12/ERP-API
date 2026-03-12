@@ -13,6 +13,45 @@ datasource db {
 }
 
 ////////////////////////////////////////
+// ENUMS
+////////////////////////////////////////
+
+enum Gender {
+  male
+  female
+}
+
+enum CivilStatus {
+  single
+  married
+  separated
+  widowed
+}
+
+enum StatusEnum {
+  active
+  inactive
+}
+
+enum CareerPosingStatus {
+  draft
+  submitted
+  verified
+  approved
+  rejected
+}
+
+enum EmploymentType {
+  full_time
+  part_time
+}
+
+enum EmployeeType {
+  land_based
+  sea_based
+}
+
+////////////////////////////////////////
 // CORE IDENTITY
 ////////////////////////////////////////
 
@@ -501,7 +540,7 @@ model UserPermission {
 model CareerPosting {
   id                  String      @id @default(uuid()) @db.Uuid
   position_id         String      @db.Uuid
-  slots               String      
+  slots               Int      
   job_description     String
   department_id       String      @db.Uuid
   user_location_id    String      @db.Uuid
