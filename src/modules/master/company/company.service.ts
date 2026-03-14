@@ -49,7 +49,7 @@ export class CompanyService {
     });
 
     if (!company) {
-      throw new BadRequestException('Company not found or is inactive.');
+      throw new NotFoundException('Company not found or is inactive.');
     }
 
     const requestUser = await this.prisma.user.findUnique({
