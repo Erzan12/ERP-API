@@ -2829,6 +2829,212 @@
         ]
       }
     },
+    "/v2/hris/recruitments": {
+      "get": {
+        "operationId": "CareerPostingV2Controller_getCareerPostings_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "id",
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of employees"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all job/career postings",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      },
+      "post": {
+        "operationId": "CareerPostingV2Controller_createCareerPosting_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create a job/careeer posting",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCareerPostingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Career posted successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Job/Career posting",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
+    "/v2/hris/recruitments/{careerPostingId}": {
+      "get": {
+        "operationId": "CareerPostingV2Controller_getCareerPosting_v2",
+        "parameters": [
+          {
+            "name": "careerPostingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get a job/career posting"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a Job/Career posting",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      },
+      "put": {
+        "operationId": "CareerPostingV2Controller_updateCareerPosting_v2",
+        "parameters": [
+          {
+            "name": "careerPostingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update career posting",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCareerPostingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Career Posting updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current company information",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -4154,6 +4360,132 @@
         "required": [
           "person",
           "employee"
+        ]
+      },
+      "CreateCareerPostingDto": {
+        "type": "object",
+        "properties": {
+          "position_id": {
+            "type": "string",
+            "example": "Position PK UUID",
+            "description": "The PK uuid of the position"
+          },
+          "slots": {
+            "type": "number",
+            "example": 5,
+            "description": "The number of slots for this position"
+          },
+          "job_description": {
+            "type": "string",
+            "example": "Manages the development team",
+            "description": "The description of the position"
+          },
+          "department_id": {
+            "type": "string",
+            "example": "Deparment PK UUID",
+            "description": "The PK uuid of the department"
+          },
+          "employee_type": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ],
+            "example": "land_based",
+            "description": "The employee type of this career posting"
+          },
+          "employment_type": {
+            "type": "string",
+            "enum": [
+              "full_time",
+              "part_time"
+            ],
+            "example": "full_time",
+            "description": "The employment type of this career posting"
+          },
+          "user_location_id": {
+            "type": "string",
+            "example": "User Location PK UUID",
+            "description": "The PK uuid of the user location"
+          }
+        },
+        "required": [
+          "position_id",
+          "slots",
+          "job_description",
+          "department_id",
+          "employee_type",
+          "employment_type",
+          "user_location_id"
+        ]
+      },
+      "UpdateCareerPostingDto": {
+        "type": "object",
+        "properties": {
+          "position_id": {
+            "type": "string",
+            "example": "Position PK UUID",
+            "description": "The PK uuid of the position"
+          },
+          "slots": {
+            "type": "number",
+            "example": 5,
+            "description": "The number of slots for this position"
+          },
+          "job_description": {
+            "type": "string",
+            "example": "Manages the development team",
+            "description": "The description of the position"
+          },
+          "department_id": {
+            "type": "string",
+            "example": "Deparment PK UUID",
+            "description": "The PK uuid of the department"
+          },
+          "employee_type": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ],
+            "example": "land_based",
+            "description": "The employee type of this career posting"
+          },
+          "isPublished": {
+            "type": "boolean",
+            "example": "true or false",
+            "description": "true if want to published and false if unpublished"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": "true or false",
+            "description": "true if active and false if set to inactive"
+          },
+          "employment_type": {
+            "type": "string",
+            "enum": [
+              "full_time",
+              "part_time"
+            ],
+            "example": "full_time",
+            "description": "The employment type of this career posting"
+          },
+          "user_location_id": {
+            "type": "string",
+            "example": "User Location PK UUID",
+            "description": "The PK uuid of the user location"
+          }
+        },
+        "required": [
+          "position_id",
+          "slots",
+          "job_description",
+          "department_id",
+          "employee_type",
+          "isPublished",
+          "isActive",
+          "employment_type",
+          "user_location_id"
         ]
       },
       "CreatePermissionTemplateDto": {
