@@ -1,11 +1,11 @@
-import { Controller, Post, Body, Get, Query } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, ParseUUIDPipe, Param, Put } from '@nestjs/common';
 import {  ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
+import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 
-import { ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
+import { ACTION_READ, ACTION_UPDATE, EMPLOYEE_MASTERLIST, MASTERTABLES } from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
 
-import { CreateCareerPostingDto } from '../dto/career-posting.dto';
+import { CreateCareerPostingDto, UpdateCareerPostingDto } from '../dto/career-posting.dto';
 import { CareerPostingService } from '../career-posting.service';
 
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
@@ -20,7 +20,7 @@ export class CareerPostingV2Controller {
     @ApiOperation({ summary: 'List of all job/career postings' })
     @ApiGetResponse('List of employees')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-    getEmployees(
+    getCareerPostings(
         @SessionUser() user: RequestUser,
         @Query() dto: PaginationDto,
         @Query('page') page = 1,
@@ -30,6 +30,17 @@ export class CareerPostingV2Controller {
         @Query('order') order: 'asc' | 'desc' = 'asc',
     ) {
     return this.careerPostingService.getCareerPostings(user,dto);
+    }
+
+    @Get('recruitments/:careerPostingId')
+    @ApiOperation({ summary: 'Get a Job/Career posting' })
+    @ApiGetResponse('Get a job/career posting')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getCareerPosting(
+        @Param('careerPostingId', new ParseUUIDPipe()) careerPostingId: string,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.careerPostingService.getCareerPosting(careerPostingId, user)
     }
     
     @Post('recruitments')
@@ -45,5 +56,18 @@ export class CareerPostingV2Controller {
         @SessionUser() user: RequestUser,
     ) {
         return this.careerPostingService.createCareerPosting(dto, user)
+    }
+
+    @Put('recruitments/:careerPostingId')
+    @ApiBody({ type: UpdateCareerPostingDto, description: 'Payload to update career posting' })
+    @ApiOperation({ summary: 'Update a current company information' })
+    @ApiPatchResponse('Career Posting updated successfully')
+    @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
+    updateCareerPosting(
+        @Param('careerPostingId', new ParseUUIDPipe()) careerPostingId: string,
+        @Body() updateCareerPostingDto: UpdateCareerPostingDto,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.careerPostingService.updateCareerPosting(careerPostingId, updateCareerPostingDto, user)
     }
 }

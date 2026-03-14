@@ -2,9 +2,10 @@ import {
     BadRequestException, 
     ConflictException, 
     ForbiddenException, 
-    Injectable 
+    Injectable, 
+    NotFoundException
 } from '@nestjs/common';
-import { CreateCareerPostingDto } from './dto/career-posting.dto';
+import { CreateCareerPostingDto, UpdateCareerPostingDto } from './dto/career-posting.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
@@ -13,6 +14,84 @@ import { Prisma } from '@prisma/client';
 @Injectable()
 export class CareerPostingService {
     constructor(private prisma: PrismaService) {}
+
+    //get career posting
+    async getCareerPosting(
+        careerPostingId: string,
+        user: RequestUser
+    ) {
+        const careerPosting = await this.prisma.careerPosting.findUnique({
+            where: { id: careerPostingId },
+            include: {
+                department: {
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                },
+                position: {
+                    select: {
+                        id: true,
+                        name: true,
+                    }
+                },
+                user_location: {
+                    select: {
+                        id: true,
+                        locationName: true,
+                    }
+                },
+                createdBy: {
+                    select: {
+                        person: {
+                            select: {
+                                first_name: true,
+                                middle_name: true,
+                                last_name: true,
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!careerPosting) {
+            throw new NotFoundException('Career Posting not found');
+        }
+
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+
+        const isAdmin = requestUser.user_roles.some(
+            (role) =>
+            // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+             role.role_name === 'Administrator' || 'Super Administrator',
+        );
+
+        if (!isAdmin) {
+            throw new ForbiddenException('User is not allowed to view a Company');
+        }
+
+        return {
+            status: 'success',
+            message: 'Here is the Company.',
+            careerPosting,
+        };
+    }
 
     //get career postings
     async getCareerPostings(
@@ -291,5 +370,89 @@ export class CareerPostingService {
             careerPosting,
             created_by_user: `${userName} - ${userPosition}`
         }
+    }
+
+    async updateCareerPosting(
+       careerPostingId: string,
+       updateCareerPostingDto: UpdateCareerPostingDto,
+       user: RequestUser, 
+    ) {
+
+        const careerPosting = await this.prisma.careerPosting.findUnique({
+            where: { id: careerPostingId },
+        })
+
+        if (!careerPosting) {
+            throw new NotFoundException('Job/Career posting not found');
+        }
+
+        let publishDate: Date | undefined = undefined;
+
+        if (
+        updateCareerPostingDto.isPublished === true &&
+        !careerPosting.published_on
+        ) {
+        publishDate = new Date();
+        }
+
+        const updatedCareerPosting = await this.prisma.careerPosting.update({
+            where: { id: careerPostingId },
+            data: {
+                position_id: updateCareerPostingDto.position_id ?? undefined,
+                slots: updateCareerPostingDto.slots ?? undefined,
+                job_description: updateCareerPostingDto.job_description ?? undefined,
+                department_id: updateCareerPostingDto.department_id ?? undefined,
+                user_location_id: updateCareerPostingDto.user_location_id ?? undefined,
+                isPublished: updateCareerPostingDto.isPublished ?? undefined,
+                published_on: publishDate,
+                isActive: updateCareerPostingDto.isActive ?? undefined,
+                employment_type: updateCareerPostingDto.employment_type ?? undefined,
+                employee_type: updateCareerPostingDto.employee_type ?? undefined,
+                updated_by: user.id
+            }
+        })
+
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+
+        const isAdmin = requestUser.user_roles.some(
+            (role) =>
+                // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+                role.role_name === 'Administrator' ||
+                role.role_name === 'Super Administrator',
+        );
+
+        if (!isAdmin) {
+            throw new ForbiddenException('User is not allowed to view Companies');
+        }
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+            status: 'success',
+            message: `Job/Career posting has been updated successfully!`,
+            // updated_by: {
+            //   id: requestUser.id,
+            //   name: userName,
+            //   position: userPos,
+            // },
+            updatedCareerPosting,
+            updated_by_user: `${userName} - ${userPosition}`
+        };
     }
 }
