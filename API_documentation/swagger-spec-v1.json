@@ -2684,16 +2684,16 @@
             "example": "view, create, update, note, delete",
             "description": "if you want to update the current actions"
           },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
+          "isActive": {
+            "type": "boolean",
+            "example": "true or false",
             "description": "If you want to update the status of the action "
           }
         },
         "required": [
           "sub_module_permission_id",
           "action",
-          "status"
+          "isActive"
         ]
       },
       "CreateEmployeeStatusDto": {
@@ -2963,17 +2963,17 @@
             "example": "Division PK UUID",
             "description": "The division where the department belongs to"
           },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
+          "isActive": {
+            "type": "boolean",
+            "example": "true or false",
+            "description": "Update the status of a department"
           }
         },
         "required": [
           "name",
           "sorting",
           "division_id",
-          "status"
+          "isActive"
         ]
       },
       "CreateCompanyDto": {
@@ -3063,9 +3063,9 @@
             "example": "ABISC",
             "description": "Update current company abbreviation"
           },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
+          "isActive": {
+            "type": "boolean",
+            "example": "true or false",
             "description": "Update current company status"
           }
         },
@@ -3077,7 +3077,7 @@
           "company_tin",
           "is_top_20000",
           "abbreviation",
-          "status"
+          "isActive"
         ]
       },
       "CreateDivisionDto": {
@@ -3107,15 +3107,15 @@
             "example": "New Division Name",
             "description": "If you want to update the Division name"
           },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active = 1, inactive = 0"
+          "isActive": {
+            "type": "boolean",
+            "example": "true or false",
+            "description": "Update the status of the division"
           }
         },
         "required": [
           "name",
-          "status"
+          "isActive"
         ]
       },
       "CreatePersonDto": {

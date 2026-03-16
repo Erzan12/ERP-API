@@ -52,22 +52,16 @@ export class DepartmentService {
       });
 
       //boolean search 
-      // if ( search === 'true' || search === 'false' ) {
-      //   orConditions.push({
-      //     stat: search === 'true',
-      //   })
-      // }
+      if ( search === 'true' || search === 'false' ) {
+        orConditions.push({
+          isActive: search === 'true',
+        })
+      }
 
       // number search
       if (!isNaN(Number(search))) {
         orConditions.push({
           sorting: Number(search),
-        });
-      }
-
-      if (!isNaN(Number(search))) {
-        orConditions.push({
-          stat: Number(search),
         });
       }
 
@@ -333,11 +327,11 @@ export class DepartmentService {
       where: { id: departmentId },
       select: {
         name: true,
-        stat: true,
+        isActive: true,
       },
     });
 
-    if (!department || department.stat === 0) {
+    if (!department || department.isActive === false) {
       throw new BadRequestException(
         'Department does not exist or is inactive!',
       );
@@ -349,7 +343,7 @@ export class DepartmentService {
         name: updateDepartmentDto.name ?? undefined,
         sorting: updateDepartmentDto.sorting ?? undefined,
         division_id: updateDepartmentDto.division_id ?? undefined,
-        stat: updateDepartmentDto.stat ?? undefined,
+        isActive: updateDepartmentDto.isActive ?? undefined,
         updated_by : user.id
         //will be added to department schema updated_by and updated_at fields
         // updated_by: user.id,           // optional: if you track who updated it
