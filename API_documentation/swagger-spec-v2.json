@@ -3806,7 +3806,7 @@
       "CreateDepartmentDto": {
         "type": "object",
         "properties": {
-          "department_name": {
+          "name": {
             "type": "string",
             "example": "Human Resources",
             "description": "The name of the department"
@@ -3823,7 +3823,7 @@
           }
         },
         "required": [
-          "department_name",
+          "name",
           "sorting",
           "division_id"
         ]
@@ -3831,7 +3831,7 @@
       "UpdateDepartmentDto": {
         "type": "object",
         "properties": {
-          "department_name": {
+          "name": {
             "type": "string",
             "example": "New Department name",
             "description": "If you want to update the Department name"
@@ -3853,7 +3853,7 @@
           }
         },
         "required": [
-          "department_name",
+          "name",
           "sorting",
           "division_id",
           "status"
@@ -3985,7 +3985,7 @@
       "UpdateDivisionDto": {
         "type": "object",
         "properties": {
-          "division_name": {
+          "name": {
             "type": "string",
             "example": "New Division Name",
             "description": "If you want to update the Division name"
@@ -3997,7 +3997,7 @@
           }
         },
         "required": [
-          "division_name",
+          "name",
           "status"
         ]
       },
