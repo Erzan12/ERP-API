@@ -292,7 +292,7 @@ export class UserLocationService {
     updateUserLocationDto: UpdateUserLocationDto,
     user: RequestUser,
   ) {
-    const { locationName, address, stat } = updateUserLocationDto;
+    const { locationName, address, isActive } = updateUserLocationDto;
 
     const userLocation = await this.prisma.userLocation.findUnique({
       where: { id: userLocationId },
@@ -307,7 +307,7 @@ export class UserLocationService {
       data: {
         locationName,
         address,
-        stat,
+        isActive,
         updated_by: user.id,
       },
     });

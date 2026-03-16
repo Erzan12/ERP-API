@@ -100,7 +100,7 @@ export class ModuleService {
           select: {
             id: true,
             name: true,
-            stat: true,
+            isActive: true,
           }
         },
         createdBy: {
@@ -170,18 +170,10 @@ export class ModuleService {
       });
 
       //boolean search
-      // if ( search === 'true' || search === 'false' ) {
-      //   orConditions.push({
-      //     stat or isActive: search === 'true',
-      //   })
-      // }
-
-      // number search
-      // Search by stat (number) — only if search is numeric
-      if (!isNaN(Number(search))) {
+      if ( search === 'true' || search === 'false' ) {
         orConditions.push({
-          stat: Number(search),
-        });
+          isActive: search === 'true',
+        })
       }
 
       whereCondition.OR = orConditions;
@@ -229,7 +221,7 @@ export class ModuleService {
             select: {
               id: true,
               name: true,
-              stat: true,
+              isActive: true,
             }
           }
         },

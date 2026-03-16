@@ -44,7 +44,7 @@ export class AuthService {
     }
 
     // Check if token was already used
-    if (passwordResetToken.is_used) {
+    if (passwordResetToken.isUsed) {
       throw new BadRequestException('Reset token has already been used.');
     }
 
@@ -90,7 +90,7 @@ export class AuthService {
     await this.prisma.passwordResetToken.update({
       where: { id: passwordResetToken.id },
       data: {
-        is_used: true,
+        isUsed: true,
       },
     });
 
@@ -116,7 +116,7 @@ export class AuthService {
     await this.prisma.passwordResetToken.deleteMany({
       where: {
         user_id: userId,
-        is_used: false,
+        isUsed: false,
       },
     });
 
@@ -153,7 +153,7 @@ export class AuthService {
             role: {
               include: {
                 role_permissions: {
-                  where: { stat: 1 },
+                  where: { isActive: true },
                   include: {
                     sub_module: true,
                   },
@@ -229,7 +229,7 @@ export class AuthService {
       );
     }
 
-    if (userValidate.stat !== 1) {
+    if (userValidate.isActive !== true) {
       throw new BadRequestException('Your account was deactivated.');
     }
 
@@ -357,7 +357,7 @@ export class AuthService {
             role: {
               include: {
                 role_permissions: {
-                  where: { stat: 1 },
+                  where: { isActive: true },
                   include: {
                     sub_module: true,
                   },
@@ -369,7 +369,7 @@ export class AuthService {
       },
     });
 
-    if (!user || user.stat !== 1) {
+    if (!user || user.isActive !== true) {
       throw new UnauthorizedException('User not found or invalid token');
     }
 
