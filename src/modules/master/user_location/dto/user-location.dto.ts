@@ -1,13 +1,11 @@
 import {
+  IsBoolean,
   IsDefined,
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
 } from 'class-validator';
-import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Transform } from 'class-transformer';
 
 export class CreateUserLocationDto {
   @IsString()
@@ -46,23 +44,12 @@ export class UpdateUserLocationDto {
   })
   address?: string;
 
-  @IsInt()
+  @IsBoolean()
   @IsOptional()
   @IsDefined()
-  @Expose({ name: 'status' }) //maps "status" input field to this property
   @ApiProperty({
-    name: 'status',
-    example: 'active or inactive',
-    description: 'active = 1, inactive = 0',
+    example: 'true or false',
+    description: 'Update the status for the user location',
   })
-  @Transform(({ value }) => {
-    console.log('Transforming status:', value);
-    if (value === undefined || value === null) return undefined; // allow missing
-    if (value === 'active') return 1;
-    if (value === 'inactive') return 0;
-    throw new BadRequestException(
-      `Invalid status value: ${value}. Allowed vales are "active" or "inactive".`,
-    );
-  })
-  stat?: number;
+  isActive?: boolean;
 }
