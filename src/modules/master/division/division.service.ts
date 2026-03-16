@@ -114,17 +114,10 @@ export class DivisionService {
       );
 
       //boolean search
-      // if ( search === 'true' || search === 'false' ) {
-      //   orConditions.push({
-      //     stat: search === 'true',
-      //   })
-      // }
-
-      //number search 
-      if (!isNaN(Number(search))) {
+      if ( search === 'true' || search === 'false' ) {
         orConditions.push({
-          stat: Number(search),
-        });
+          isActive: search === 'true',
+        })
       }
 
       whereCondition.OR = orConditions;
@@ -293,7 +286,7 @@ export class DivisionService {
       where: { id: divisionId },
       select: {
         name: true,
-        stat: true,
+        isActive: true,
       },
     });
 
@@ -307,7 +300,7 @@ export class DivisionService {
       where: { id: divisionId },
       data: {
         name: updateDivisionDto.name ?? undefined,
-        stat: updateDivisionDto.stat ?? undefined,
+        isActive: updateDivisionDto.isActive ?? undefined,
         updated_by: user.id
       },
     });

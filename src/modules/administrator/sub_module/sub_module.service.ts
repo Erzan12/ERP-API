@@ -279,7 +279,7 @@ export class SubModuleService {
     user: RequestUser,
     id: string,
   ) {
-    const { sub_module_permission_id, action, stat } = dto;
+    const { sub_module_permission_id, action, isActive } = dto;
 
     const existingSubModulePermission =
       await this.prisma.subModuleAction.findFirst({
@@ -299,7 +299,7 @@ export class SubModuleService {
       data: {
         id: existingSubModulePermission.id,
         action,
-        stat,
+        isActive,
       },
     });
 
@@ -379,7 +379,7 @@ export class SubModuleService {
         action: {
           in: action,
         },
-        stat: 1,
+        isActive: true,
       },
     });
 
