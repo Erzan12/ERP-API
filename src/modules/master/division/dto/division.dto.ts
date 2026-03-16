@@ -53,7 +53,7 @@ export class UpdateDivisionDto {
     example: 'New Division Name',
     description: 'If you want to update the Division name',
   })
-  division_name?: string;
+  name: string;
 
   @IsOptional()
   @IsInt()
