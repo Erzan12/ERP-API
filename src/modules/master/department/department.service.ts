@@ -346,7 +346,7 @@ export class DepartmentService {
     const updatedDepartment = await this.prisma.department.update({
       where: { id: departmentId },
       data: {
-        name: updateDepartmentDto.department_name ?? undefined,
+        name: updateDepartmentDto.name ?? undefined,
         sorting: updateDepartmentDto.sorting ?? undefined,
         division_id: updateDepartmentDto.division_id ?? undefined,
         stat: updateDepartmentDto.stat ?? undefined,
