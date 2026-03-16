@@ -46,7 +46,7 @@ export class UserManagementService {
             role_name: true,
           },
         },
-        stat: true,
+        isActive: true,
       },
     });
     return {
@@ -146,7 +146,7 @@ export class UserManagementService {
             username: createUserWithRoleDto.user_details.username,
             email: createUserWithRoleDto.user_details.email,
             password: hashedPassword,
-            stat: 1,
+            isActive: true,
             require_reset: 1,
             created_by: admin,
             created_at: new Date(),
@@ -236,7 +236,7 @@ export class UserManagementService {
           const role = await tx.role.findFirst({
             where: {
               name: createUserWithRoleDto.role_name,
-              stat: 1,
+              isActive: true,
             },
           });
 
@@ -248,7 +248,7 @@ export class UserManagementService {
           const rolePermissions = await tx.rolePermission.findMany({
             where: {
               role_id: role.id,
-              stat: 1,
+              isActive: true,
             },
           });
 
@@ -418,7 +418,7 @@ export class UserManagementService {
       throw new BadRequestException('User not found');
     }
 
-    if (existingUser.stat === 0) {
+    if (existingUser.isActive === false) {
       throw new ForbiddenException('User account is already deactivated');
     }
 
@@ -426,7 +426,7 @@ export class UserManagementService {
     await this.prisma.user.update({
       where: { id: deactivateUserAccountDto.user_id },
       data: {
-        stat: 0,
+        isActive: false,
         // is_active: false,
       },
     });
@@ -450,14 +450,14 @@ export class UserManagementService {
       throw new BadRequestException('Deactivated User not found');
     }
 
-    if (existingDeactivatedUser.stat === 1) {
+    if (existingDeactivatedUser.isActive === true) {
       throw new ConflictException('User Account is still active');
     }
 
     await this.prisma.user.update({
       where: { id: reactivateUserAccountDto.user_id },
       data: {
-        stat: 1,
+        isActive: true,
         // is_active: true,
       },
     });

@@ -121,7 +121,7 @@ model User {
   username                 String   @unique
   password                 String
   email                    String   @unique
-  stat                     Int      @default(1)
+  isActive                 Boolean      @default(true)
   password_reset           String?
   require_reset            Int      @default(1)
   reports_to               Int?
@@ -209,7 +209,7 @@ model UserLocation {
   id           String  @id @default(uuid()) @db.Uuid
   locationName String?
   address      String
-  stat         Int     @default(1)
+  isActive     Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -230,7 +230,7 @@ model UserToken {
   id         String  @id @default(uuid()) @db.Uuid
   user_id    String  @db.Uuid
   user_token String  @unique
-  status     Boolean @default(false)
+  isUsed     Boolean @default(false)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -251,7 +251,7 @@ model PasswordResetToken {
   user_id        String   @db.Uuid
   expires_at     DateTime
   password_token String   @unique
-  is_used        Boolean  @default(false)
+  isUsed         Boolean  @default(false)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -279,7 +279,7 @@ model Company {
   company_tin  String?
   abbreviation String  @unique
   is_top_20000 Int     @default(0)
-  stat         Int     @default(1)
+  isActive     Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -299,7 +299,7 @@ model Division {
   id               String  @id @default(uuid()) @db.Uuid
   name             String
   division_head_id String?
-  stat             Int     @default(1)
+  isActive         Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -321,7 +321,7 @@ model Department {
   name               String
   division_id        String  @db.Uuid
   sorting            Int?
-  stat               Int     @default(1)
+  isActive           Boolean @default(true)
   department_head_id String?
 
   created_by String? @db.Uuid
@@ -358,7 +358,7 @@ model Position {
   createdBy User? @relation("PositionCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("PositionUpdatedBy", fields: [updated_by], references: [id])
 
-  stat       Int      @default(1)
+  isActive   Boolean  @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -415,6 +415,8 @@ model EmploymentStatus {
   code  String @unique
   label String
 
+  isActive   Boolean @default(true)
+
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
 
@@ -435,7 +437,7 @@ model Role {
   id          String @id @default(uuid()) @db.Uuid
   name        String @unique
   description String
-  stat        Int    @default(1)
+  isActive   Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -484,7 +486,7 @@ model RolePermission {
   sub_module_id            String  @db.Uuid
   department_id            String  @db.Uuid
   position_id              String? @db.Uuid
-  stat                     Int     @default(1)
+  isActive                 Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -648,7 +650,7 @@ model AdminDBQueryLog {
 model Module {
   id   String @id @default(uuid()) @db.Uuid
   name String
-  stat Int    @default(1)
+  isActive   Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -668,7 +670,7 @@ model SubModule {
   id        String @id @default(uuid()) @db.Uuid
   name      String
   module_id String @db.Uuid
-  stat      Int    @default(1)
+  isActive  Boolean  @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -699,7 +701,7 @@ model SubModuleAction {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  stat                  Int                   @default(1)
+  isActive   Boolean  @default(true)
   sub_module_permission SubModulePermission[]
 }
 
@@ -733,7 +735,7 @@ model PermissionTemplate {
   id            String @id @default(uuid()) @db.Uuid
   name          String
   department_id String @db.Uuid
-  stat          Int    @default(1)
+  isActive      Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid

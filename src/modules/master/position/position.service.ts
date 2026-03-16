@@ -93,22 +93,16 @@ export class PositionService {
       });
 
       //boolean search 
-      // if ( search === 'true' || search === 'false' ) {
-      //   orConditions.push({
-      //     stat: search === 'true',
-      //   })
-      // }
+      if ( search === 'true' || search === 'false' ) {
+        orConditions.push({
+          isActive: search === 'true',
+        })
+      }
 
       // number search
       if (!isNaN(Number(search))) {
         orConditions.push({
           sorting: Number(search),
-        });
-      }
-
-      if (!isNaN(Number(search))) {
-        orConditions.push({
-          stat: Number(search),
         });
       }
 
@@ -236,7 +230,7 @@ export class PositionService {
       select: {
         name: true,
         department: true,
-        stat: true,
+        isActive: true,
       },
     });
 
@@ -307,7 +301,7 @@ export class PositionService {
       select: {
         id: true,
         name: true,
-        stat: true,
+        isActive: true,
       },
     });
 

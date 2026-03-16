@@ -1,7 +1,5 @@
-import { IsString, IsInt, IsNotEmpty, IsDefined } from 'class-validator';
+import { IsString, IsInt, IsNotEmpty, IsDefined, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Transform } from 'class-transformer';
-import { BadRequestException } from '@nestjs/common';
 
 export class UpdateSubModulePermisisonDto {
   @IsInt()
@@ -19,21 +17,11 @@ export class UpdateSubModulePermisisonDto {
   })
   action?: string;
 
-  @IsInt()
+  @IsBoolean()
   @IsDefined()
-  @Expose({ name: 'status' }) // maps " status" input field to this property
   @ApiProperty({
-    name: 'status',
-    example: 'active or inactive',
+    example: 'true or false',
     description: 'If you want to update the status of the action ',
   })
-  @Transform(({ value }) => {
-    console.log('Transforming status:', value);
-    if (value === 'active') return 1;
-    if (value === 'inactive') return 0;
-    throw new BadRequestException(
-      `Invalid status value ${value}. Allowed values are "active" or "inactive"`,
-    );
-  })
-  stat?: number;
+  isActive?: boolean;
 }

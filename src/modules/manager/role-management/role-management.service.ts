@@ -14,7 +14,7 @@ export class RoleManagementService {
     //Add Get Role -> to query the roles available
     async getRoles(user: RequestUser) {
         const existingRoles = await this.prisma.role.findMany({
-            where: { stat: 1 },
+            where: { isActive: true },
             include: {
             role_permissions: true,
             },

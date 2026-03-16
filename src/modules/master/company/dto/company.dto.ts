@@ -7,6 +7,7 @@ import {
   IsNotEmpty,
   IsDefined,
   IsOptional,
+  IsBoolean,
 } from 'class-validator';
 
 export class CreateCompanyDto {
@@ -165,22 +166,11 @@ export class UpdateCompanyDto {
   })
   abbreviation?: string;
 
-  @IsInt()
+  @IsBoolean()
   @IsDefined()
-  @Expose({ name: 'status' })
   @ApiProperty({
-    name: 'status',
-    example: 'active or inactive',
+    example: 'true or false',
     description: 'Update current company status',
   })
-  @Transform(({ value }) => {
-    console.log('Transforming status:', value);
-    if (value === undefined || value === null ) return undefined; //allow missing
-    if (value === 'active') return 1;
-    if (value === 'inactive') return 0;
-    throw new BadRequestException(
-      `Invalid status value ${value}. Allowed values are "active" or inactive"`,
-    );
-  })
-  stat?: number;
+  isActive?: boolean;
 }
