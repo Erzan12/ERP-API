@@ -141,17 +141,10 @@ export class CompanyService {
       }
 
       //boolean search
-      // if ( search === 'true' || search === 'false' ) {
-      //   orConditions.push({
-      //     stat or isActive: search === 'true',
-      //   })
-      // }
-
-      // number search
-      if (!isNaN(Number(search))) {
+      if ( search === 'true' || search === 'false' ) {
         orConditions.push({
-          stat: Number(search),
-        });
+          isActive: search === 'true',
+        })
       }
 
       whereCondition.OR = orConditions;
@@ -340,7 +333,7 @@ export class CompanyService {
       where: { id: companyId },
       select: {
         name: true,
-        stat: true,
+        isActive: true,
       },
     });
 
@@ -358,7 +351,7 @@ export class CompanyService {
         company_tin: updateCompanyDto.company_tin ?? undefined,
         is_top_20000: updateCompanyDto.is_top_20000 ?? undefined,
         abbreviation: updateCompanyDto.abbreviation ?? undefined,
-        stat: updateCompanyDto.stat ?? undefined,
+        isActive: updateCompanyDto.isActive ?? undefined,
         updated_by: user.id
       },
     });

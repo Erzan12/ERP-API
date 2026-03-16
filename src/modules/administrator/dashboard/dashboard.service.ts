@@ -8,8 +8,8 @@ export class DashboardService {
 
   async getAdminDashboardStats(user: RequestUser) {
     const totalUsers = await this.prisma.user.count();
-    const activeUsers = await this.prisma.user.count({ where: { stat: 1 } });
-    const inActiceUsers = await this.prisma.user.count({ where: { stat: 0 } });
+    const activeUsers = await this.prisma.user.count({ where: { isActive: true } });
+    const inActiceUsers = await this.prisma.user.count({ where: { isActive: false } });
 
     const roles = await this.prisma.role.findMany({
       include: {
