@@ -228,7 +228,7 @@ export class PositionService {
   ) {
     const { name } = createPositionDto;
 
-    console.log('createPositionDto:', createPositionDto);
+    // console.log('createPositionDto:', createPositionDto);
 
     //Check for duplicate position name
     const existingPosition = await this.prisma.position.findFirst({

@@ -6,9 +6,9 @@ import { IsString, IsInt, IsDefined, IsUUID, IsOptional } from 'class-validator'
 export class CreateDepartmentDto {
   @IsString()
   @IsDefined()
-  @Expose({ name: 'department_name' })
+  // @Expose({ name: 'department_name' })
   @ApiProperty({
-    name: 'department_name',
+    // name: 'department_name',
     example: 'Human Resources',
     description: 'The name of the department',
   })
@@ -34,7 +34,7 @@ export class UpdateDepartmentDto {
     example: 'New Department name',
     description: 'If you want to update the Department name',
   })
-  department_name?: string;
+  name?: string;
 
   @IsOptional()
   @IsInt()
