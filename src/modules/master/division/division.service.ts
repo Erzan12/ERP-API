@@ -306,7 +306,7 @@ export class DivisionService {
     const updateDivision = await this.prisma.division.update({
       where: { id: divisionId },
       data: {
-        name: updateDivisionDto.division_name ?? undefined,
+        name: updateDivisionDto.name ?? undefined,
         stat: updateDivisionDto.stat ?? undefined,
         updated_by: user.id
       },
