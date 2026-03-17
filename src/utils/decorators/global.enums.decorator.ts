@@ -33,3 +33,20 @@ export enum EmployeeType {
   SEA_BASED = 'sea_based',
 }
 
+export enum ApplicationSource {
+  COMPANY_WEBSITE = 'company_website',
+  WALK_IN = 'walk_in',
+  REFERRAL = 'referral',
+  LINKEDIN  = 'linkedIn',
+  JOBSTREET = 'jobstreet',
+}
+
+export enum ApplicationStatus {
+  APPLIED = 'applied',
+  SCREENING = 'screening',
+  FOR_INTERVIEW = 'for_interview',
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
+  ONBOARDING = 'onboarding',
+}
+

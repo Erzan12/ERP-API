@@ -3035,6 +3035,214 @@
         ]
       }
     },
+    "/v2/hris/hiring-pipelines/{applicantId}": {
+      "get": {
+        "operationId": "HiringPipelineV2Controller_getCareerPosting_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get a Applicant"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a Applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
+    "/v2/hris/hiring-pipelines": {
+      "get": {
+        "operationId": "HiringPipelineV2Controller_getCareerPostings_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "id",
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of employees"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all applicant posted",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      },
+      "post": {
+        "operationId": "HiringPipelineV2Controller_createApplicant_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Applicant",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApplicantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Applicant posted successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Applicant posting",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
+    "/v2/hris/recruitments/{applicationId}": {
+      "put": {
+        "operationId": "HiringPipelineV2Controller_updateCareerPosting_v2",
+        "parameters": [
+          {
+            "name": "applicationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update career posting",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateApplicantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Career Posting updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current company information",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -4486,6 +4694,164 @@
           "isActive",
           "employment_type",
           "user_location_id"
+        ]
+      },
+      "CreateApplicantDto": {
+        "type": "object",
+        "properties": {
+          "career_id": {
+            "type": "string",
+            "example": "Job/Career posting PK UUID",
+            "description": "UUID of career posting"
+          },
+          "first_name": {
+            "type": "string",
+            "example": "Juan",
+            "description": "First name of applicant"
+          },
+          "middle_name": {
+            "type": "string",
+            "example": "Doe",
+            "description": "Middlename can be optional"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "Dee",
+            "description": "Last name of the applicant"
+          },
+          "email": {
+            "type": "string",
+            "example": "juandoe@gmail.com",
+            "description": "Email of the applicant"
+          },
+          "mobile_number": {
+            "type": "string",
+            "example": "09633416290",
+            "description": "Mobile no. of the applicant"
+          },
+          "application_source": {
+            "type": "string",
+            "enum": [
+              "company_website",
+              "walk_in",
+              "referral",
+              "linkedIn",
+              "jobstreet"
+            ],
+            "example": "company_website",
+            "description": "The application source of the applicant"
+          },
+          "application_status": {
+            "type": "string",
+            "enum": [
+              "applied",
+              "screening",
+              "for_interview",
+              "accepted",
+              "rejected",
+              "onboarding"
+            ],
+            "example": "for_interview",
+            "description": "The status of application of the applicant"
+          },
+          "date_applied": {
+            "type": "string",
+            "example": "2026-03-05",
+            "description": "The date of application of the applicant"
+          }
+        },
+        "required": [
+          "career_id",
+          "first_name",
+          "middle_name",
+          "last_name",
+          "email",
+          "mobile_number",
+          "application_source",
+          "application_status",
+          "date_applied"
+        ]
+      },
+      "UpdateApplicantDto": {
+        "type": "object",
+        "properties": {
+          "career_id": {
+            "type": "string",
+            "example": "Job/Career posting PK UUID",
+            "description": "UUID of career posting"
+          },
+          "first_name": {
+            "type": "string",
+            "example": "Juan",
+            "description": "First name of applicant"
+          },
+          "middle_name": {
+            "type": "string",
+            "example": "Doe",
+            "description": "Middlename can be optional"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "Dee",
+            "description": "Last name of the applicant"
+          },
+          "email": {
+            "type": "string",
+            "example": "juandoe@gmail.com",
+            "description": "Email of the applicant"
+          },
+          "mobile_number": {
+            "type": "string",
+            "example": "09633416290",
+            "description": "Mobile no. of the applicant"
+          },
+          "application_source": {
+            "type": "string",
+            "enum": [
+              "company_website",
+              "walk_in",
+              "referral",
+              "linkedIn",
+              "jobstreet"
+            ],
+            "example": "company_website",
+            "description": "The application source of the applicant"
+          },
+          "application_status": {
+            "type": "string",
+            "enum": [
+              "applied",
+              "screening",
+              "for_interview",
+              "accepted",
+              "rejected",
+              "onboarding"
+            ],
+            "example": "for_interview",
+            "description": "The status of application of the applicant"
+          },
+          "date_applied": {
+            "type": "string",
+            "example": "2026-03-05",
+            "description": "The date of application of the applicant"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": "true or false",
+            "description": "If this application is active"
+          }
+        },
+        "required": [
+          "career_id",
+          "first_name",
+          "middle_name",
+          "last_name",
+          "email",
+          "mobile_number",
+          "application_source",
+          "application_status",
+          "date_applied",
+          "isActive"
         ]
       },
       "CreatePermissionTemplateDto": {
