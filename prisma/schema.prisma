@@ -51,6 +51,23 @@ enum EmployeeType {
   sea_based
 }
 
+enum ApplicationSource {
+  company_website
+  walk_in
+  referral
+  linkedIn
+  jobstreet
+}
+
+enum ApplicationStatus {
+  applied
+  screening
+  for_interview
+  accepted
+  rejected
+  onboarding
+}
+
 ////////////////////////////////////////
 // CORE IDENTITY
 ////////////////////////////////////////
@@ -121,7 +138,7 @@ model User {
   username                 String   @unique
   password                 String
   email                    String   @unique
-  isActive                 Boolean      @default(true)
+  isActive                 Boolean  @default(true)
   password_reset           String?
   require_reset            Int      @default(1)
   reports_to               Int?
@@ -199,7 +216,15 @@ model User {
   permissionTemplateRolePermissionsCreated PermissionTemplateRolePermission[] @relation("PermissionTemplateRolePermissionCreatedBy")
   permissionTemplateRolePermissionsUpdated PermissionTemplateRolePermission[] @relation("PermissionTemplateRolePermissionUpdatedBy")
   careerPostingCreated                     CareerPosting[]                    @relation("CareerPostingCreatedBy")
-  careerPostingtUpdated                    CareerPosting[]                    @relation("CareerPostingUpdatedBy")
+  careerPostingUpdated                     CareerPosting[]                    @relation("CareerPostingUpdatedBy")
+  applicantCreated                         Applicant[]                        @relation("ApplicantCreatedBy")
+  applicantUpdated                         Applicant[]                        @relation("ApplicantUpdatedBy")
+  applicantDocumentCreated                 ApplicantDocument[]                @relation("ApplicantDocumentCreatedBy")
+  applicantDocumentUpdated                 ApplicantDocument[]                @relation("ApplicantDocumentUpdatedBy")
+  InterviewerCreatedBy                     Interviewer[]                      @relation("InterviewerCreatedBy")
+  InterviewerUpdatedBy                     Interviewer[]                      @relation("InterviewerUpdatedBy")
+  ExaminationRatingCreatedBy               ExaminationRating[]                @relation("ExaminationRatingCreatedBy")
+  ExaminationRatingUpdatedBy               ExaminationRating[]                @relation("ExaminationRatingUpdatedBy")
 
   @@index([person_id])
   @@index([employee_id])
@@ -220,7 +245,7 @@ model UserLocation {
   created_at DateTime @default(now())
   updated_at DateTime @default(now())
 
-  careerPosting   CareerPosting[]
+  careerPosting CareerPosting[]
 
   @@index([locationName])
   @@index([address])
@@ -398,7 +423,7 @@ model Employee {
   other_employee_data Json?
   corporate_rank_id   Int?
 
-  employment_status   EmploymentStatus @relation(fields: [employment_status_id], references: [id])
+  employment_status EmploymentStatus @relation(fields: [employment_status_id], references: [id])
   company           Company          @relation(fields: [company_id], references: [id])
   department        Department       @relation(fields: [department_id], references: [id])
   person            Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
@@ -415,7 +440,7 @@ model EmploymentStatus {
   code  String @unique
   label String
 
-  isActive   Boolean @default(true)
+  isActive Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -426,7 +451,7 @@ model EmploymentStatus {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  employees     Employee[]
+  employees Employee[]
 }
 
 ////////////////////////////////////////
@@ -434,10 +459,10 @@ model EmploymentStatus {
 ////////////////////////////////////////
 
 model Role {
-  id          String @id @default(uuid()) @db.Uuid
-  name        String @unique
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
   description String
-  isActive   Boolean @default(true)
+  isActive    Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -540,36 +565,123 @@ model UserPermission {
 ////////////////////////////////////////
 
 model CareerPosting {
-  id                  String      @id @default(uuid()) @db.Uuid
-  position_id         String      @db.Uuid
-  slots               Int      
-  job_description     String
-  department_id       String      @db.Uuid
-  user_location_id    String      @db.Uuid
-  isPublished         Boolean     @default(false)
-  published_on        DateTime?
-  employment_type     String
-  employee_type       String
-  status              String      @default("draft")      
-  isActive            Boolean     @default(true)
+  id               String    @id @default(uuid()) @db.Uuid
+  position_id      String    @db.Uuid
+  slots            Int
+  job_description  String
+  department_id    String    @db.Uuid
+  user_location_id String    @db.Uuid
+  isPublished      Boolean   @default(false)
+  published_on     DateTime?
+  employment_type  String
+  employee_type    String
+  status           String    @default("draft")
+  isActive         Boolean   @default(true)
 
-  created_by          String?     @db.Uuid
-  updated_by          String?     @db.Uuid
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
-  createdBy           User?       @relation("CareerPostingCreatedBy", fields: [created_by], references: [id])
-  updatedBy           User?       @relation("CareerPostingUpdatedBy", fields: [updated_by], references: [id])
+  createdBy User? @relation("CareerPostingCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("CareerPostingUpdatedBy", fields: [updated_by], references: [id])
 
-  created_at          DateTime    @default(now())
-  updated_at          DateTime    @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  position            Position        @relation(fields: [position_id], references: [id])
-  department          Department      @relation(fields: [department_id], references: [id])
-  user_location       UserLocation    @relation(fields: [user_location_id], references: [id])
+  position      Position     @relation(fields: [position_id], references: [id])
+  department    Department   @relation(fields: [department_id], references: [id])
+  user_location UserLocation @relation(fields: [user_location_id], references: [id])
+  applicant     Applicant[]
 
   @@index([position_id])
   @@index([department_id])
   @@index([user_location_id])
-}    
+}
+
+model Applicant {
+  id                 String   @id @default(uuid()) @db.Uuid
+  careers_id         String   @db.Uuid
+  first_name         String
+  middle_name        String?
+  last_name          String
+  email              String   @unique
+  mobile_number      String
+  application_source String
+  application_status String
+  date_applied       DateTime
+  isActive           Boolean  @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("ApplicantCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("ApplicantUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  careerPosting CareerPosting       @relation(fields: [careers_id], references: [id])
+  applicant     ApplicantDocument[]
+  interviewer   Interviewer[]
+}
+
+model ApplicantDocument {
+  id            String @id @default(uuid()) @db.Uuid
+  applicant_id  String @db.Uuid
+  document_type String
+  file_name     String
+  file_path     String
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("ApplicantDocumentCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("ApplicantDocumentUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  applicant Applicant @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+}
+
+model Interviewer {
+  id                String    @id @default(uuid()) @db.Uuid
+  employee_id       String    @db.Uuid
+  applicant_id      String    @db.Uuid
+  date_of_interview DateTime?
+  remarks           String
+  total_points      Int
+  recommendations   String
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("InterviewerCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("InterviewerUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  examinationRating ExaminationRating[]
+  applicant         Applicant           @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+}
+
+model ExaminationRating {
+  id             String @id @default(uuid()) @db.Uuid
+  interviewer_id String @db.Uuid
+  exam_name      String
+  remarks        String
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("ExaminationRatingCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("ExaminationRatingUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+  interviewer   Interviewer? @relation(fields: [interviewerId], references: [id])
+  interviewerId String?      @db.Uuid
+}
 
 ////////////////////////////////////////
 // AUDIT TRAIL & DATABASE CONTROL
@@ -648,9 +760,9 @@ model AdminDBQueryLog {
 ////////////////////////////////////////
 
 model Module {
-  id   String @id @default(uuid()) @db.Uuid
-  name String
-  isActive   Boolean @default(true)
+  id       String  @id @default(uuid()) @db.Uuid
+  name     String
+  isActive Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -667,10 +779,10 @@ model Module {
 }
 
 model SubModule {
-  id        String @id @default(uuid()) @db.Uuid
+  id        String  @id @default(uuid()) @db.Uuid
   name      String
-  module_id String @db.Uuid
-  isActive  Boolean  @default(true)
+  module_id String  @db.Uuid
+  isActive  Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -701,7 +813,7 @@ model SubModuleAction {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  isActive   Boolean  @default(true)
+  isActive              Boolean               @default(true)
   sub_module_permission SubModulePermission[]
 }
 
@@ -732,9 +844,9 @@ model SubModulePermission {
 ////////////////////////////////////////
 
 model PermissionTemplate {
-  id            String @id @default(uuid()) @db.Uuid
+  id            String  @id @default(uuid()) @db.Uuid
   name          String
-  department_id String @db.Uuid
+  department_id String  @db.Uuid
   isActive      Boolean @default(true)
 
   created_by String? @db.Uuid
