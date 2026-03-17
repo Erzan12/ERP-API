@@ -48,6 +48,7 @@ export class CreateCareerPostingDto {
     department_id: string;
 
     @IsString()
+    @IsNotEmpty()
     @IsEnum(EmployeeType, { message: 'Employment type must be land_based or sea_based'})
     @Type(() => String)
     @ApiProperty({
@@ -58,16 +59,7 @@ export class CreateCareerPostingDto {
     employee_type: EmployeeType;
 
     @IsString()
-    @IsEnum(EmploymentType, { message: 'Employment type must be full_time or part_time'})
-    @Type(() => String)
-    @ApiProperty({
-        enum: EmploymentType,
-        example: EmploymentType.FULL_TIME,
-        description: 'The employment type of this career posting'
-    })
-    employment_type: EmploymentType;
-
-    @IsString()
+    @IsNotEmpty()
     @IsNotEmpty()
     @ApiProperty({
         example: 'User Location PK UUID',
