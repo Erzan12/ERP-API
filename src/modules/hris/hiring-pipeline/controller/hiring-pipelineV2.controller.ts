@@ -1,0 +1,72 @@
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { HiringPipelineService } from '../hiring-pipeline.service';
+import { CreateApplicantDto, UpdateApplicantDto } from '../dto/applicant.dto';
+import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
+import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
+import { SessionUser } from 'src/utils/decorators/session-user.decorator';
+import { RequestUser } from 'src/utils/types/request-user.interface';
+import { Can } from 'src/utils/decorators/can.decorator';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+
+@ApiTags('Human Resources - Recruitment and Onboarding')
+@Controller({path: 'hris', version: '2'})
+export class HiringPipelineV2Controller {
+    constructor(private readonly hiringPipelineService: HiringPipelineService) {}
+
+    @Get('hiring-pipelines/:applicantId')
+    @ApiOperation({ summary: 'Get a Applicant' })
+    @ApiGetResponse('Get a Applicant')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getCareerPosting(
+        @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.hiringPipelineService.getApplicant(applicantId, user)
+    }
+    
+
+    @Get('hiring-pipelines')
+    @ApiOperation({ summary: 'List of all applicant posted' })
+    @ApiGetResponse('List of employees')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getCareerPostings(
+        @SessionUser() user: RequestUser,
+        @Query() dto: PaginationDto,
+        @Query('page') page = 1,
+        @Query('perPage') perPage = 10,
+        @Query('search') search?: string,
+        @Query('sortBy') sortBy: string = 'created_at',
+        @Query('order') order: 'asc' | 'desc' = 'asc',
+    ) {
+    return this.hiringPipelineService.getApplicants(user,dto);
+    }
+
+    @Post('hiring-pipelines')
+    @ApiBody({
+        type: CreateApplicantDto,
+        description: 'Payload to create Applicant',
+    })
+    @ApiOperation({ summary: 'Applicant posting' })
+    @ApiPostResponse('Applicant posted successfully')
+    @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
+    createApplicant(
+        @Body() dto: CreateApplicantDto,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.hiringPipelineService.createApplicant(dto,user)
+    }
+
+    @Put('recruitments/:applicationId')
+    @ApiBody({ type: UpdateApplicantDto, description: 'Payload to update career posting' })
+    @ApiOperation({ summary: 'Update a current company information' })
+    @ApiPatchResponse('Career Posting updated successfully')
+    @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+    updateCareerPosting(
+        @Param('applicationId', new ParseUUIDPipe()) applicationId: string,
+        @Body() updateApplicantDto: UpdateApplicantDto,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.hiringPipelineService.updateApplicant(applicationId, updateApplicantDto, user)
+    }
+}

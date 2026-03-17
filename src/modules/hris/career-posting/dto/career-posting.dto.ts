@@ -48,6 +48,7 @@ export class CreateCareerPostingDto {
     department_id: string;
 
     @IsString()
+    @IsNotEmpty()
     @IsEnum(EmployeeType, { message: 'Employment type must be land_based or sea_based'})
     @Type(() => String)
     @ApiProperty({
@@ -68,6 +69,7 @@ export class CreateCareerPostingDto {
     employment_type: EmploymentType;
 
     @IsString()
+    @IsNotEmpty()
     @IsNotEmpty()
     @ApiProperty({
         example: 'User Location PK UUID',
