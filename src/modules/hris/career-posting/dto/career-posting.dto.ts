@@ -59,6 +59,16 @@ export class CreateCareerPostingDto {
     employee_type: EmployeeType;
 
     @IsString()
+    @IsEnum(EmploymentType, { message: 'Employment type must be full_time or part_time'})
+    @Type(() => String)
+    @ApiProperty({
+        enum: EmploymentType,
+        example: EmploymentType.FULL_TIME,
+        description: 'The employment type of this career posting'
+    })
+    employment_type: EmploymentType;
+
+    @IsString()
     @IsNotEmpty()
     @IsNotEmpty()
     @ApiProperty({
