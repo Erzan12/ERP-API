@@ -14,7 +14,19 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 export class HiringPipelineV2Controller {
     constructor(private readonly hiringPipelineService: HiringPipelineService) {}
 
-    @Get('hiring-pipeline')
+    @Get('hiring-pipelines/:applicantId')
+    @ApiOperation({ summary: 'Get a Applicant' })
+    @ApiGetResponse('Get a Applicant')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getCareerPosting(
+        @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.hiringPipelineService.getApplicant(applicantId, user)
+    }
+    
+
+    @Get('hiring-pipelines')
     @ApiOperation({ summary: 'List of all applicant posted' })
     @ApiGetResponse('List of employees')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
@@ -30,7 +42,7 @@ export class HiringPipelineV2Controller {
     return this.hiringPipelineService.getApplicants(user,dto);
     }
 
-    @Post('hiring-pipeline')
+    @Post('hiring-pipelines')
     @ApiBody({
         type: CreateApplicantDto,
         description: 'Payload to create Applicant',
