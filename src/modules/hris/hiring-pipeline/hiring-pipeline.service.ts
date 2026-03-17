@@ -8,6 +8,100 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 export class HiringPipelineService {
     constructor(private prisma: PrismaService) {}
 
+    async getApplicant(
+        applicantId: string,
+        user: RequestUser,
+    ) {
+        const applicant = await this.prisma.applicant.findUnique({
+            where: { id: applicantId },
+            include: {
+                careerPosting: {
+                    select: {
+                        id: true,
+                        position: {
+                            select: {
+                                name: true,
+                            }
+                        },
+                        user_location: {
+                            select: {
+                                locationName: true,
+                            }
+                        }
+                    }
+
+                },
+                createdBy: {
+                    select: {
+                        person: {
+                            select: {
+                                first_name: true,
+                                middle_name: true,
+                                last_name: true,
+                            }
+                        }
+                    }
+                },
+                updatedBy: {
+                    select: {
+                        person: {
+                            select: {
+                                first_name: true,
+                                middle_name: true,
+                                last_name: true,
+                            }
+                        }
+                    }
+                },
+            }
+        });
+
+        if (!applicant) {
+            throw new NotFoundException('Applicant not found');
+        }
+
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+
+        const allowedRoles = [
+            'Administrator',
+            'Super Administrator',
+            'HR Manager',
+            'HR Clerk',
+            'HR Staff',
+        ];
+
+        const canView = requestUser.user_roles.some((role) =>
+            allowedRoles.includes(role.role_name),
+        );
+
+        if (!canView) {
+            throw new ForbiddenException(
+                'You are not authorized to perform this action',
+            );
+        }
+
+        return {
+            status: 'success',
+            message: 'Here is the Applicant.',
+            applicant,
+        };
+    }
+
     async getApplicants(
         user: RequestUser,
         dto: PaginationDto,
@@ -224,8 +318,8 @@ export class HiringPipelineService {
         createApplicantDto: CreateApplicantDto,
         user: RequestUser,
     ) {
-
         const { career_id } = createApplicantDto;
+
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
             include: {
@@ -345,15 +439,22 @@ export class HiringPipelineService {
             throw new BadRequestException(`User does not exist.`);
         }
 
-        const isAdmin = requestUser.user_roles.some(
-            (role) =>
-                // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-                role.role_name === 'Administrator' ||
-                role.role_name === 'Super Administrator',
+        const allowedRoles = [
+            'Administrator',
+            'Super Administrator',
+            'HR Manager',
+            'HR Clerk',
+            'HR Staff',
+        ];
+
+        const canView = requestUser.user_roles.some((role) =>
+            allowedRoles.includes(role.role_name),
         );
 
-        if (!isAdmin) {
-            throw new ForbiddenException('User is not allowed to view Companies');
+        if (!canView) {
+            throw new ForbiddenException(
+                'You are not authorized to perform this action',
+            );
         }
 
         const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
