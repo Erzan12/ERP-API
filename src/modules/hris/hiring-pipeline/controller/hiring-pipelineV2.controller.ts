@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HiringPipelineService } from '../hiring-pipeline.service';
-import { CreateApplicantDto } from '../dto/applicant.dto';
-import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
-import { ACTION_CREATE, ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
+import { CreateApplicantDto, UpdateApplicantDto } from '../dto/applicant.dto';
+import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
+import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Can } from 'src/utils/decorators/can.decorator';
@@ -15,7 +15,7 @@ export class HiringPipelineV2Controller {
     constructor(private readonly hiringPipelineService: HiringPipelineService) {}
 
     @Get('hiring-pipeline')
-    @ApiOperation({ summary: 'List of all job/career postings' })
+    @ApiOperation({ summary: 'List of all applicant posted' })
     @ApiGetResponse('List of employees')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getCareerPostings(
@@ -43,5 +43,18 @@ export class HiringPipelineV2Controller {
         @SessionUser() user: RequestUser,
     ) {
         return this.hiringPipelineService.createApplicant(dto,user)
+    }
+
+    @Put('recruitments/:applicationId')
+    @ApiBody({ type: UpdateApplicantDto, description: 'Payload to update career posting' })
+    @ApiOperation({ summary: 'Update a current company information' })
+    @ApiPatchResponse('Career Posting updated successfully')
+    @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+    updateCareerPosting(
+        @Param('applicationId', new ParseUUIDPipe()) applicationId: string,
+        @Body() updateApplicantDto: UpdateApplicantDto,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.hiringPipelineService.updateApplicant(applicationId, updateApplicantDto, user)
     }
 }
