@@ -51,7 +51,18 @@ export class CareerPostingService {
                             }
                         }
                     }
-                }
+                },
+                updatedBy: {
+                    select: {
+                        person: {
+                            select: {
+                                first_name: true,
+                                middle_name: true,
+                                last_name: true,
+                            }
+                        }
+                    }
+                },
             }
         });
 
@@ -76,14 +87,22 @@ export class CareerPostingService {
             throw new BadRequestException(`User does not exist.`);
         }
 
-        const isAdmin = requestUser.user_roles.some(
-            (role) =>
-            // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-             role.role_name === 'Administrator' || 'Super Administrator',
+        const allowedRoles = [
+            'Administrator',
+            'Super Administrator',
+            'HR Manager',
+            'HR Clerk',
+            'HR Staff',
+        ];
+
+        const canView = requestUser.user_roles.some((role) =>
+            allowedRoles.includes(role.role_name),
         );
 
-        if (!isAdmin) {
-            throw new ForbiddenException('User is not allowed to view a Company');
+        if (!canView) {
+            throw new ForbiddenException(
+                'You are not authorized to perform this action',
+            );
         }
 
         return {
@@ -424,15 +443,22 @@ export class CareerPostingService {
             throw new BadRequestException(`User does not exist.`);
         }
 
-        const isAdmin = requestUser.user_roles.some(
-            (role) =>
-                // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-                role.role_name === 'Administrator' ||
-                role.role_name === 'Super Administrator',
+        const allowedRoles = [
+            'Administrator',
+            'Super Administrator',
+            'HR Manager',
+            'HR Clerk',
+            'HR Staff',
+        ];
+
+        const canView = requestUser.user_roles.some((role) =>
+            allowedRoles.includes(role.role_name),
         );
 
-        if (!isAdmin) {
-            throw new ForbiddenException('User is not allowed to view Companies');
+        if (!canView) {
+            throw new ForbiddenException(
+                'You are not authorized to perform this action',
+            );
         }
 
         const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
