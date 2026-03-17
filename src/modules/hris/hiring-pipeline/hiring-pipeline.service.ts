@@ -1,45 +1,35 @@
-import { 
-    BadRequestException, 
-    ConflictException, 
-    ForbiddenException, 
-    Injectable, 
-    NotFoundException
-} from '@nestjs/common';
-import { CreateCareerPostingDto, UpdateCareerPostingDto } from './dto/career-posting.dto';
-import { RequestUser } from 'src/utils/types/request-user.interface';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
-export class CareerPostingService {
+export class HiringPipelineService {
     constructor(private prisma: PrismaService) {}
 
-    //get career posting
-    async getCareerPosting(
-        careerPostingId: string,
-        user: RequestUser
+    async getApplicant(
+        applicantId: string,
+        user: RequestUser,
     ) {
-        const careerPosting = await this.prisma.careerPosting.findUnique({
-            where: { id: careerPostingId },
+        const applicant = await this.prisma.applicant.findUnique({
+            where: { id: applicantId },
             include: {
-                department: {
+                careerPosting: {
                     select: {
                         id: true,
-                        name: true,
+                        position: {
+                            select: {
+                                name: true,
+                            }
+                        },
+                        user_location: {
+                            select: {
+                                locationName: true,
+                            }
+                        }
                     }
-                },
-                position: {
-                    select: {
-                        id: true,
-                        name: true,
-                    }
-                },
-                user_location: {
-                    select: {
-                        id: true,
-                        locationName: true,
-                    }
+
                 },
                 createdBy: {
                     select: {
@@ -66,8 +56,8 @@ export class CareerPostingService {
             }
         });
 
-        if (!careerPosting) {
-            throw new NotFoundException('Career Posting not found');
+        if (!applicant) {
+            throw new NotFoundException('Applicant not found');
         }
 
         const requestUser = await this.prisma.user.findUnique({
@@ -107,17 +97,15 @@ export class CareerPostingService {
 
         return {
             status: 'success',
-            message: 'Here is the Company.',
-            careerPosting,
+            message: 'Here is the Applicant.',
+            applicant,
         };
     }
 
-    //get career postings
-    async getCareerPostings(
+    async getApplicants(
         user: RequestUser,
         dto: PaginationDto,
     ) {
-
         const { search, sortBy, order, page, perPage } = dto;
 
         //pagination area
@@ -127,8 +115,7 @@ export class CareerPostingService {
             isActive: true,
         };
 
-        const positionFields = ['name'];
-        const departmentFields = ['name'];
+        const careerFields = ['name'];
         const userLocationFields = ['locationName'];
 
         let whereConditions: any = {};
@@ -136,38 +123,60 @@ export class CareerPostingService {
         if (search) {
             whereConditions = {
                 OR: [
-                    ...positionFields.map((field) => ({
-                        position: {
-                            [field]: {
-                                contains: search,
-                                mode: 'insensitive',
+                    ...careerFields.map((field) => ({
+                        //useful query if searching for columns under a table that only posesses a FK like career_id -> position(relation column)
+                        careerPosting: {
+                            position: {
+                                [field]: {
+                                    contains: search,
+                                    mode: 'insensitive',
+                                },
                             },
-                        },
-                    })),
-                    ...departmentFields.map((field) => ({
-                        department: {
-                            [field]: {
-                                contains: search,
-                                mode: 'insensitive',
-                            },
-                        },
+                        }
                     })),
                     ...userLocationFields.map((field) => ({
-                        user_location: {
-                            [field]: {
-                                contains: search,
-                                mode: 'insensitive',
-                            },
-                        },
+                        //useful query if searching for columns under a table that only posesses a FK like career_id -> user_location(relation column)
+                        careerPosting: {
+                            user_location:{ 
+                                [field]: {
+                                    contains: search,
+                                    mode: 'insensitive',
+                                },
+                            }
+                        }
                     })),
                     {
-                       employment_type: {
+                       first_name: {
                         contains: search,
                         mode: 'insensitive',
                        },
                     },
                     {
-                        employee_type: {
+                       middle_name: {
+                        contains: search,
+                        mode: 'insensitive',
+                       },
+                    },
+                    {
+                       last_name: {
+                        contains: search,
+                        mode: 'insensitive',
+                       },
+                    },
+                    {
+                       email: {
+                        contains: search,
+                        mode: 'insensitive',
+                       },
+                    },
+                    {
+                       application_source: {
+                        contains: search,
+                        mode: 'insensitive',
+                       },
+                    },
+                    {
+                        application_status: {
                             contains: search,
                             mode: 'insensitive',
                         },
@@ -177,56 +186,53 @@ export class CareerPostingService {
         }
 
         const allowSortFeilds = [
-            'position_id',
-            'slots',
-            'department_id',
-            'user_location_id',
-            'employment_type',
-            'employee_type',
+            'career_id',
+            'application_source',
+            'applicaiton_status',
+            'date_applied',
         ];
+
         if (!allowSortFeilds.includes(sortBy)) {
             sortBy;
         }
 
-        const [total, careerPostings] = await this.prisma.$transaction([
-            this.prisma.careerPosting.count({
+        const [total, applicants] = await this.prisma.$transaction([
+            this.prisma.applicant.count({
                 where: {
                     ...whereCondition,
                     ...whereConditions
                 },
             }),
-            this.prisma.careerPosting.findMany({
+            this.prisma.applicant.findMany({
                 where: {
                     ...whereCondition,
                     ...whereConditions,
                 },
                 select: {
                     id: true,
-                    position: {
+                    careerPosting: {
                         select: {
                             id: true,
-                            name: true,
-                        }
+                            position: {
+                                select: {
+                                    name: true
+                                }
+                            },
+                            user_location: {
+                                select: {
+                                    locationName: true,
+                                }
+                            }
+                        },
                     },
-                    slots: true,
-                    job_description: true,
-                    department: {
-                        select: {
-                            id: true,
-                            name: true,
-                        }
-                    },
-                    user_location: {
-                        select: {
-                            id: true,
-                            locationName: true,
-                        }
-                    },
-                    isPublished: true,
-                    published_on: true,
-                    employment_type: true,
-                    employee_type: true,
-                    status: true,
+                    first_name: true,
+                    middle_name: true,
+                    last_name: true,
+                    email: true,
+                    mobile_number: true,
+                    application_source: true,
+                    application_status: true,
+                    date_applied: true,
                     isActive: true,
                     created_at: true,
                     updated_at: true,
@@ -298,20 +304,22 @@ export class CareerPostingService {
 
         return {
             status: 'success',
-            message: 'List of Career Posting',
+            message: 'List of Applicant Posting',
             count: total,
             page,
             perPage,
             // totalPage: Math.ceil(total / perPage),
-            careerPostings,
+            applicants,
         };
     }
 
-    //create career posting
-    async createCareerPosting(
-        createCareerPosting: CreateCareerPostingDto,
+    //create applicant
+    async createApplicant(
+        createApplicantDto: CreateApplicantDto,
         user: RequestUser,
     ) {
+        const { career_id } = createApplicantDto;
+
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
             include: {
@@ -347,81 +355,69 @@ export class CareerPostingService {
             );
         } 
 
-        const position = await this.prisma.position.findUnique({
+        await this.prisma.careerPosting.findUnique({
             where: {
-                id: createCareerPosting.position_id,
+                id: career_id,
             },
             select: {
-                job_description: true,
-            },
+                user_location: {
+                    select: {
+                        locationName: true,
+                    }
+                }
+            }
         });
 
-        const combinedJobDescription = `
-        ${position?.job_description ?? ''}
-        
-        Additional Information: 
-        ${createCareerPosting.job_description ?? ''}
-        `;
-        
-        const careerPosting = await this.prisma.careerPosting.create({
+        const applicant = await this.prisma.applicant.create({
             data: {
-                position_id: createCareerPosting.position_id,
-                slots: createCareerPosting.slots,
-                job_description: combinedJobDescription,
+                career_id: career_id,
+                first_name: createApplicantDto.first_name,
+                middle_name: createApplicantDto.middle_name ?? undefined,
+                last_name: createApplicantDto.last_name,
+                email: createApplicantDto.email,
+                mobile_number: createApplicantDto.mobile_number,
+                application_source: createApplicantDto.application_source,
+                application_status: createApplicantDto.application_status,
+                date_applied: new Date(),
                 created_by: user.id,
-                department_id: createCareerPosting.department_id,
-                employee_type: createCareerPosting.employee_type,
-                employment_type: createCareerPosting.employment_type,
-                user_location_id: createCareerPosting.user_location_id,
-            },
-        });
+            }
+        })
 
         const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
         const userPosition = requestUser.employee.position.name;
 
         return {
             status: 'success',
-            message: `Career has been created successfully`,
-            careerPosting,
+            message: `Applicant has been created successfully`,
+            applicant,
             created_by_user: `${userName} - ${userPosition}`
         }
     }
 
-    async updateCareerPosting(
-       careerPostingId: string,
-       updateCareerPostingDto: UpdateCareerPostingDto,
-       user: RequestUser, 
+    async updateApplicant(
+        applicantId: string,
+        updateApplicantDto: UpdateApplicantDto,
+        user: RequestUser
     ) {
-        const careerPosting = await this.prisma.careerPosting.findUnique({
-            where: { id: careerPostingId },
+        const applicant = await this.prisma.applicant.findUnique({
+            where: { id: applicantId },
         })
 
-        if (!careerPosting) {
-            throw new NotFoundException('Job/Career posting not found');
+        if (!applicantId) {
+            throw new NotFoundException('Applicant not found')
         }
 
-        let publishDate: Date | undefined = undefined;
-
-        if (
-        updateCareerPostingDto.isPublished === true &&
-        !careerPosting.published_on
-        ) {
-        publishDate = new Date();
-        }
-
-        const updatedCareerPosting = await this.prisma.careerPosting.update({
-            where: { id: careerPostingId },
+        const updatedApplication = await this.prisma.applicant.update({
+            where: { id: applicantId },
             data: {
-                position_id: updateCareerPostingDto.position_id ?? undefined,
-                slots: updateCareerPostingDto.slots ?? undefined,
-                job_description: updateCareerPostingDto.job_description ?? undefined,
-                department_id: updateCareerPostingDto.department_id ?? undefined,
-                user_location_id: updateCareerPostingDto.user_location_id ?? undefined,
-                isPublished: updateCareerPostingDto.isPublished ?? undefined,
-                published_on: publishDate,
-                isActive: updateCareerPostingDto.isActive ?? undefined,
-                employment_type: updateCareerPostingDto.employment_type ?? undefined,
-                employee_type: updateCareerPostingDto.employee_type ?? undefined,
+                career_id: updateApplicantDto.career_id ?? undefined,
+                first_name: updateApplicantDto.first_name ?? undefined,
+                middle_name: updateApplicantDto.middle_name ?? undefined,
+                last_name: updateApplicantDto.last_name ?? undefined,
+                email: updateApplicantDto.email ?? undefined,
+                mobile_number: updateApplicantDto.mobile_number ?? undefined,
+                application_source: updateApplicantDto.application_source ?? undefined,
+                application_status: updateApplicantDto.application_status ?? undefined,
                 updated_by: user.id
             }
         })
@@ -472,7 +468,7 @@ export class CareerPostingService {
             //   name: userName,
             //   position: userPos,
             // },
-            updatedCareerPosting,
+            updatedApplication,
             updated_by_user: `${userName} - ${userPosition}`
         };
     }
