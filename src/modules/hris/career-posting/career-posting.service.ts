@@ -293,10 +293,6 @@ export class CareerPostingService {
         createCareerPosting: CreateCareerPostingDto,
         user: RequestUser,
     ) {
-        // const existingCareerPosting = await this.prisma.careerPosting.findFirst({
-        //     where: 
-        // })
-
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
             include: {
@@ -377,7 +373,6 @@ export class CareerPostingService {
        updateCareerPostingDto: UpdateCareerPostingDto,
        user: RequestUser, 
     ) {
-
         const careerPosting = await this.prisma.careerPosting.findUnique({
             where: { id: careerPostingId },
         })
