@@ -1,6 +1,6 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { CreateApplicantDto } from './dto/applicant.dto';
+import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
@@ -22,7 +22,7 @@ export class HiringPipelineService {
         };
 
         const careerFields = ['name'];
-        const userLocationFields = ['name'];
+        const userLocationFields = ['locationName'];
 
         let whereConditions: any = {};
 
@@ -30,21 +30,51 @@ export class HiringPipelineService {
             whereConditions = {
                 OR: [
                     ...careerFields.map((field) => ({
+                        //useful query if searching for columns under a table that only posesses a FK like career_id -> position(relation column)
                         careerPosting: {
-                            [field]: {
-                                contains: search,
-                                mode: 'insensitive',
+                            position: {
+                                [field]: {
+                                    contains: search,
+                                    mode: 'insensitive',
+                                },
                             },
-                        },
+                        }
                     })),
                     ...userLocationFields.map((field) => ({
-                        userLocation: {
-                            [field]: {
-                                contains: search,
-                                mode: 'insensitive',
-                            },
-                        },
+                        //useful query if searching for columns under a table that only posesses a FK like career_id -> user_location(relation column)
+                        careerPosting: {
+                            user_location:{ 
+                                [field]: {
+                                    contains: search,
+                                    mode: 'insensitive',
+                                },
+                            }
+                        }
                     })),
+                    {
+                       first_name: {
+                        contains: search,
+                        mode: 'insensitive',
+                       },
+                    },
+                    {
+                       middle_name: {
+                        contains: search,
+                        mode: 'insensitive',
+                       },
+                    },
+                    {
+                       last_name: {
+                        contains: search,
+                        mode: 'insensitive',
+                       },
+                    },
+                    {
+                       email: {
+                        contains: search,
+                        mode: 'insensitive',
+                       },
+                    },
                     {
                        application_source: {
                         contains: search,
@@ -92,6 +122,11 @@ export class HiringPipelineService {
                             position: {
                                 select: {
                                     name: true
+                                }
+                            },
+                            user_location: {
+                                select: {
+                                    locationName: true,
                                 }
                             }
                         },
@@ -263,5 +298,77 @@ export class HiringPipelineService {
             applicant,
             created_by_user: `${userName} - ${userPosition}`
         }
+    }
+
+    async updateApplicant(
+        applicantId: string,
+        updateApplicantDto: UpdateApplicantDto,
+        user: RequestUser
+    ) {
+        const applicant = await this.prisma.applicant.findUnique({
+            where: { id: applicantId },
+        })
+
+        if (!applicantId) {
+            throw new NotFoundException('Applicant not found')
+        }
+
+        const updatedApplication = await this.prisma.applicant.update({
+            where: { id: applicantId },
+            data: {
+                career_id: updateApplicantDto.career_id ?? undefined,
+                first_name: updateApplicantDto.first_name ?? undefined,
+                middle_name: updateApplicantDto.middle_name ?? undefined,
+                last_name: updateApplicantDto.last_name ?? undefined,
+                email: updateApplicantDto.email ?? undefined,
+                mobile_number: updateApplicantDto.mobile_number ?? undefined,
+                application_source: updateApplicantDto.application_source ?? undefined,
+                application_status: updateApplicantDto.application_status ?? undefined,
+                updated_by: user.id
+            }
+        })
+
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+
+        const isAdmin = requestUser.user_roles.some(
+            (role) =>
+                // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+                role.role_name === 'Administrator' ||
+                role.role_name === 'Super Administrator',
+        );
+
+        if (!isAdmin) {
+            throw new ForbiddenException('User is not allowed to view Companies');
+        }
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+            status: 'success',
+            message: `Job/Career posting has been updated successfully!`,
+            // updated_by: {
+            //   id: requestUser.id,
+            //   name: userName,
+            //   position: userPos,
+            // },
+            updatedApplication,
+            updated_by_user: `${userName} - ${userPosition}`
+        };
     }
 }
