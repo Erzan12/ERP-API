@@ -9,7 +9,8 @@ import { CreateCareerPostingDto, UpdateCareerPostingDto } from './dto/career-pos
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-import { Prisma } from '@prisma/client';
+import { CareerPosingStatus, Prisma } from '@prisma/client';
+import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
 
 @Injectable()
 export class CareerPostingService {
@@ -17,11 +18,11 @@ export class CareerPostingService {
 
     //get career posting
     async getCareerPosting(
-        careerPostingId: string,
+        recruitmentId: string,
         user: RequestUser
     ) {
-        const careerPosting = await this.prisma.careerPosting.findUnique({
-            where: { id: careerPostingId },
+        const recruitment = await this.prisma.careerPosting.findUnique({
+            where: { id: recruitmentId },
             include: {
                 department: {
                     select: {
@@ -66,7 +67,7 @@ export class CareerPostingService {
             }
         });
 
-        if (!careerPosting) {
+        if (!recruitment) {
             throw new NotFoundException('Career Posting not found');
         }
 
@@ -108,23 +109,27 @@ export class CareerPostingService {
         return {
             status: 'success',
             message: 'Here is the Company.',
-            careerPosting,
+            recruitment,
         };
     }
 
     //get career postings
     async getCareerPostings(
         user: RequestUser,
-        dto: PaginationDto,
+        dto: RecruitmentPaginationDto,
     ) {
 
-        const { search, sortBy, order, page, perPage } = dto;
+        const { search, status, sortBy, order, page, perPage } = dto;
 
         //pagination area
         const skip = (page - 1) * perPage;
 
+        //with status params filter
         const whereCondition: any = {
             isActive: true,
+            ...(status && {
+                status: status as CareerPosingStatus,
+            }),
         };
 
         const positionFields = ['name'];
@@ -188,7 +193,7 @@ export class CareerPostingService {
             sortBy;
         }
 
-        const [total, careerPostings] = await this.prisma.$transaction([
+        const [total, recruiments] = await this.prisma.$transaction([
             this.prisma.careerPosting.count({
                 where: {
                     ...whereCondition,
@@ -303,7 +308,7 @@ export class CareerPostingService {
             page,
             perPage,
             // totalPage: Math.ceil(total / perPage),
-            careerPostings,
+            recruiments,
         };
     }
 
@@ -363,7 +368,7 @@ export class CareerPostingService {
         ${createCareerPosting.job_description ?? ''}
         `;
         
-        const careerPosting = await this.prisma.careerPosting.create({
+        const recruitment = await this.prisma.careerPosting.create({
             data: {
                 position_id: createCareerPosting.position_id,
                 slots: createCareerPosting.slots,
@@ -382,18 +387,18 @@ export class CareerPostingService {
         return {
             status: 'success',
             message: `Career has been created successfully`,
-            careerPosting,
+            recruitment,
             created_by_user: `${userName} - ${userPosition}`
         }
     }
 
     async updateCareerPosting(
-       careerPostingId: string,
+       recruitmentId: string,
        updateCareerPostingDto: UpdateCareerPostingDto,
        user: RequestUser, 
     ) {
         const careerPosting = await this.prisma.careerPosting.findUnique({
-            where: { id: careerPostingId },
+            where: { id: recruitmentId },
         })
 
         if (!careerPosting) {
@@ -409,8 +414,8 @@ export class CareerPostingService {
         publishDate = new Date();
         }
 
-        const updatedCareerPosting = await this.prisma.careerPosting.update({
-            where: { id: careerPostingId },
+        const recruitment = await this.prisma.careerPosting.update({
+            where: { id: recruitmentId },
             data: {
                 position_id: updateCareerPostingDto.position_id ?? undefined,
                 slots: updateCareerPostingDto.slots ?? undefined,
@@ -472,7 +477,7 @@ export class CareerPostingService {
             //   name: userName,
             //   position: userPos,
             // },
-            updatedCareerPosting,
+            recruitment,
             updated_by_user: `${userName} - ${userPosition}`
         };
     }
