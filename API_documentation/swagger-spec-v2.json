@@ -2957,12 +2957,12 @@
         ]
       }
     },
-    "/v2/hris/recruitments/{careerPostingId}": {
+    "/v2/hris/recruitments/{recruitmentId}": {
       "get": {
         "operationId": "CareerPostingV2Controller_getCareerPosting_v2",
         "parameters": [
           {
-            "name": "careerPostingId",
+            "name": "recruitmentId",
             "required": true,
             "in": "path",
             "schema": {
@@ -2999,7 +2999,7 @@
         "operationId": "CareerPostingV2Controller_updateCareerPosting_v2",
         "parameters": [
           {
-            "name": "careerPostingId",
+            "name": "recruitmentId",
             "required": true,
             "in": "path",
             "schema": {

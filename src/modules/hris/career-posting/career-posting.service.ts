@@ -18,11 +18,11 @@ export class CareerPostingService {
 
     //get career posting
     async getCareerPosting(
-        careerPostingId: string,
+        recruitmentId: string,
         user: RequestUser
     ) {
         const recruitment = await this.prisma.careerPosting.findUnique({
-            where: { id: careerPostingId },
+            where: { id: recruitmentId },
             include: {
                 department: {
                     select: {
@@ -393,12 +393,12 @@ export class CareerPostingService {
     }
 
     async updateCareerPosting(
-       careerPostingId: string,
+       recruitmentId: string,
        updateCareerPostingDto: UpdateCareerPostingDto,
        user: RequestUser, 
     ) {
         const careerPosting = await this.prisma.careerPosting.findUnique({
-            where: { id: careerPostingId },
+            where: { id: recruitmentId },
         })
 
         if (!careerPosting) {
@@ -415,7 +415,7 @@ export class CareerPostingService {
         }
 
         const recruitment = await this.prisma.careerPosting.update({
-            where: { id: careerPostingId },
+            where: { id: recruitmentId },
             data: {
                 position_id: updateCareerPostingDto.position_id ?? undefined,
                 slots: updateCareerPostingDto.slots ?? undefined,

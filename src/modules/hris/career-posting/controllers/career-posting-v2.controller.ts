@@ -34,15 +34,15 @@ export class CareerPostingV2Controller {
     return this.careerPostingService.getCareerPostings(user,dto);
     }
 
-    @Get('recruitments/:careerPostingId')
+    @Get('recruitments/:recruitmentId')
     @ApiOperation({ summary: 'Get a Job/Career posting' })
     @ApiGetResponse('Get a job/career posting')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getCareerPosting(
-        @Param('careerPostingId', new ParseUUIDPipe()) careerPostingId: string,
+        @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
         @SessionUser() user: RequestUser,
     ) {
-        return this.careerPostingService.getCareerPosting(careerPostingId, user)
+        return this.careerPostingService.getCareerPosting(recruitmentId, user)
     }
     
     @Post('recruitments')
@@ -60,16 +60,16 @@ export class CareerPostingV2Controller {
         return this.careerPostingService.createCareerPosting(dto, user)
     }
 
-    @Put('recruitments/:careerPostingId')
+    @Put('recruitments/:recruitmentId')
     @ApiBody({ type: UpdateCareerPostingDto, description: 'Payload to update career posting' })
     @ApiOperation({ summary: 'Update a current company information' })
     @ApiPatchResponse('Career Posting updated successfully')
     @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
     updateCareerPosting(
-        @Param('careerPostingId', new ParseUUIDPipe()) careerPostingId: string,
+        @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
         @Body() updateCareerPostingDto: UpdateCareerPostingDto,
         @SessionUser() user: RequestUser,
     ) {
-        return this.careerPostingService.updateCareerPosting(careerPostingId, updateCareerPostingDto, user)
+        return this.careerPostingService.updateCareerPosting(recruitmentId, updateCareerPostingDto, user)
     }
 }
