@@ -3044,7 +3044,7 @@
         ]
       }
     },
-    "/v2/hris/hiring-pipelines/{applicantId}": {
+    "/v2/hris/applicants/{applicantId}": {
       "get": {
         "operationId": "HiringPipelineV2Controller_getCareerPosting_v2",
         "parameters": [
@@ -3083,7 +3083,7 @@
         ]
       }
     },
-    "/v2/hris/hiring-pipelines": {
+    "/v2/hris/applicants": {
       "get": {
         "operationId": "HiringPipelineV2Controller_getCareerPostings_v2",
         "parameters": [
@@ -3202,7 +3202,7 @@
         ]
       }
     },
-    "/v2/hris/recruitments/{applicationId}": {
+    "/v2/hris/applicants/{applicationId}": {
       "put": {
         "operationId": "HiringPipelineV2Controller_updateCareerPosting_v2",
         "parameters": [
