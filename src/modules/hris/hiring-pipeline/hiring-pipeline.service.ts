@@ -3,6 +3,8 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
+import { ApplicationStatus } from 'src/utils/decorators/global.enums.decorator';
 
 @Injectable()
 export class HiringPipelineService {
@@ -104,15 +106,18 @@ export class HiringPipelineService {
 
     async getApplicants(
         user: RequestUser,
-        dto: PaginationDto,
+        dto: RecruitmentPaginationDto,
     ) {
-        const { search, sortBy, order, page, perPage } = dto;
+        const { search, status, sortBy, order, page, perPage } = dto;
 
         //pagination area
         const skip = (page - 1) * perPage;
 
         const whereCondition: any = {
             isActive: true,
+            ...(status && {
+                application_status: status as ApplicationStatus,
+            })
         };
 
         const careerFields = ['name'];
