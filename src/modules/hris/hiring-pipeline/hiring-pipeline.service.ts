@@ -399,15 +399,15 @@ export class HiringPipelineService {
         updateApplicantDto: UpdateApplicantDto,
         user: RequestUser
     ) {
-        const applicant = await this.prisma.applicant.findUnique({
+        const exisitngApplicant = await this.prisma.applicant.findUnique({
             where: { id: applicantId },
         })
 
-        if (!applicantId) {
+        if (!exisitngApplicant) {
             throw new NotFoundException('Applicant not found')
         }
 
-        const updatedApplication = await this.prisma.applicant.update({
+        const applicant = await this.prisma.applicant.update({
             where: { id: applicantId },
             data: {
                 career_id: updateApplicantDto.career_id ?? undefined,
@@ -468,7 +468,7 @@ export class HiringPipelineService {
             //   name: userName,
             //   position: userPos,
             // },
-            updatedApplication,
+            applicant,
             updated_by_user: `${userName} - ${userPosition}`
         };
     }

@@ -14,7 +14,7 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 export class HiringPipelineV2Controller {
     constructor(private readonly hiringPipelineService: HiringPipelineService) {}
 
-    @Get('hiring-pipelines/:applicantId')
+    @Get('applicants/:applicantId')
     @ApiOperation({ summary: 'Get a Applicant' })
     @ApiGetResponse('Get a Applicant')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
@@ -26,7 +26,7 @@ export class HiringPipelineV2Controller {
     }
     
 
-    @Get('hiring-pipelines')
+    @Get('applicants')
     @ApiOperation({ summary: 'List of all applicant posted' })
     @ApiGetResponse('List of employees')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
@@ -42,7 +42,7 @@ export class HiringPipelineV2Controller {
     return this.hiringPipelineService.getApplicants(user,dto);
     }
 
-    @Post('hiring-pipelines')
+    @Post('applicants')
     @ApiBody({
         type: CreateApplicantDto,
         description: 'Payload to create Applicant',
@@ -57,7 +57,7 @@ export class HiringPipelineV2Controller {
         return this.hiringPipelineService.createApplicant(dto,user)
     }
 
-    @Put('recruitments/:applicationId')
+    @Put('applicants/:applicationId')
     @ApiBody({ type: UpdateApplicantDto, description: 'Payload to update career posting' })
     @ApiOperation({ summary: 'Update a current company information' })
     @ApiPatchResponse('Career Posting updated successfully')
