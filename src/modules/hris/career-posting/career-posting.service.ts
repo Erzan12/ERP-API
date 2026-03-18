@@ -21,7 +21,7 @@ export class CareerPostingService {
         careerPostingId: string,
         user: RequestUser
     ) {
-        const careerPosting = await this.prisma.careerPosting.findUnique({
+        const recruitment = await this.prisma.careerPosting.findUnique({
             where: { id: careerPostingId },
             include: {
                 department: {
@@ -67,7 +67,7 @@ export class CareerPostingService {
             }
         });
 
-        if (!careerPosting) {
+        if (!recruitment) {
             throw new NotFoundException('Career Posting not found');
         }
 
@@ -109,7 +109,7 @@ export class CareerPostingService {
         return {
             status: 'success',
             message: 'Here is the Company.',
-            careerPosting,
+            recruitment,
         };
     }
 
@@ -368,7 +368,7 @@ export class CareerPostingService {
         ${createCareerPosting.job_description ?? ''}
         `;
         
-        const careerPosting = await this.prisma.careerPosting.create({
+        const recruitment = await this.prisma.careerPosting.create({
             data: {
                 position_id: createCareerPosting.position_id,
                 slots: createCareerPosting.slots,
@@ -387,7 +387,7 @@ export class CareerPostingService {
         return {
             status: 'success',
             message: `Career has been created successfully`,
-            careerPosting,
+            recruitment,
             created_by_user: `${userName} - ${userPosition}`
         }
     }
@@ -414,7 +414,7 @@ export class CareerPostingService {
         publishDate = new Date();
         }
 
-        const updatedCareerPosting = await this.prisma.careerPosting.update({
+        const recruitment = await this.prisma.careerPosting.update({
             where: { id: careerPostingId },
             data: {
                 position_id: updateCareerPostingDto.position_id ?? undefined,
@@ -477,7 +477,7 @@ export class CareerPostingService {
             //   name: userName,
             //   position: userPos,
             // },
-            updatedCareerPosting,
+            recruitment,
             updated_by_user: `${userName} - ${userPosition}`
         };
     }
