@@ -28,7 +28,7 @@ export class UserLocationService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: any = {
-      stat: 1,
+      isActive: true,
     };
 
     const stringFields = ['locationName', 'address'] as const;
