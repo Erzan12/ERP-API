@@ -98,7 +98,7 @@ export class CompanyService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: any = {
-      stat: 1,
+      isActive: true,
     };
 
     const stringFields  = ['name', 'abbreviation', 'address', 'company_tin', 'fax_no', 'telephone_no'] as const;
