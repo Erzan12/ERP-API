@@ -66,7 +66,7 @@ export class PositionService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: any = {
-      stat: 1,
+      isActive: true,
     };
 
     if (search) {
