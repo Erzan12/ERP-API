@@ -9,7 +9,8 @@ import { CreateCareerPostingDto, UpdateCareerPostingDto } from './dto/career-pos
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-import { Prisma } from '@prisma/client';
+import { CareerPosingStatus, Prisma } from '@prisma/client';
+import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
 
 @Injectable()
 export class CareerPostingService {
@@ -115,16 +116,20 @@ export class CareerPostingService {
     //get career postings
     async getCareerPostings(
         user: RequestUser,
-        dto: PaginationDto,
+        dto: RecruitmentPaginationDto,
     ) {
 
-        const { search, sortBy, order, page, perPage } = dto;
+        const { search, status, sortBy, order, page, perPage } = dto;
 
         //pagination area
         const skip = (page - 1) * perPage;
 
+        //with status params filter
         const whereCondition: any = {
             isActive: true,
+            ...(status && {
+                status: status as CareerPosingStatus,
+            }),
         };
 
         const positionFields = ['name'];
@@ -188,7 +193,7 @@ export class CareerPostingService {
             sortBy;
         }
 
-        const [total, careerPostings] = await this.prisma.$transaction([
+        const [total, recruiments] = await this.prisma.$transaction([
             this.prisma.careerPosting.count({
                 where: {
                     ...whereCondition,
@@ -303,7 +308,7 @@ export class CareerPostingService {
             page,
             perPage,
             // totalPage: Math.ceil(total / perPage),
-            careerPostings,
+            recruiments,
         };
     }
 
