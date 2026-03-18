@@ -193,7 +193,7 @@ export class CareerPostingService {
             sortBy;
         }
 
-        const [total, recruiments] = await this.prisma.$transaction([
+        const [total, recruitments] = await this.prisma.$transaction([
             this.prisma.careerPosting.count({
                 where: {
                     ...whereCondition,
@@ -308,7 +308,7 @@ export class CareerPostingService {
             page,
             perPage,
             // totalPage: Math.ceil(total / perPage),
-            recruiments,
+            recruitments,
         };
     }
 
