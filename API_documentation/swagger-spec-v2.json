@@ -3044,51 +3044,21 @@
         ]
       }
     },
-    "/v2/hris/applicants/{applicantId}": {
-      "get": {
-        "operationId": "HiringPipelineV2Controller_getCareerPosting_v2",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Get a Applicant"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get a Applicant",
-        "tags": [
-          "Human Resources - Recruitment and Onboarding"
-        ]
-      }
-    },
     "/v2/hris/applicants": {
       "get": {
         "operationId": "HiringPipelineV2Controller_getCareerPostings_v2",
         "parameters": [
           {
             "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
             "required": false,
             "in": "query",
             "schema": {
@@ -3197,6 +3167,45 @@
           }
         },
         "summary": "Applicant posting",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}": {
+      "get": {
+        "operationId": "HiringPipelineV2Controller_getCareerPosting_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get a Applicant"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a Applicant",
         "tags": [
           "Human Resources - Recruitment and Onboarding"
         ]

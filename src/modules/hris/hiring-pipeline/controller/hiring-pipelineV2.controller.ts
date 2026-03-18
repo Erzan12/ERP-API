@@ -8,11 +8,29 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
 
 @ApiTags('Human Resources - Recruitment and Onboarding')
 @Controller({path: 'hris', version: '2'})
 export class HiringPipelineV2Controller {
     constructor(private readonly hiringPipelineService: HiringPipelineService) {}
+
+    @Get('applicants')
+    @ApiOperation({ summary: 'List of all applicant posted' })
+    @ApiGetResponse('List of employees')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getCareerPostings(
+        @SessionUser() user: RequestUser,
+        @Query() dto: RecruitmentPaginationDto,
+        @Query('page') page = 1,
+        @Query('perPage') perPage = 10,
+        @Query('search') search?: string,
+        @Query('status') status?: string,
+        @Query('sortBy') sortBy: string = 'created_at',
+        @Query('order') order: 'asc' | 'desc' = 'asc',
+    ) {
+    return this.hiringPipelineService.getApplicants(user,dto);
+    }
 
     @Get('applicants/:applicantId')
     @ApiOperation({ summary: 'Get a Applicant' })
@@ -23,23 +41,6 @@ export class HiringPipelineV2Controller {
         @SessionUser() user: RequestUser,
     ) {
         return this.hiringPipelineService.getApplicant(applicantId, user)
-    }
-    
-
-    @Get('applicants')
-    @ApiOperation({ summary: 'List of all applicant posted' })
-    @ApiGetResponse('List of employees')
-    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-    getCareerPostings(
-        @SessionUser() user: RequestUser,
-        @Query() dto: PaginationDto,
-        @Query('page') page = 1,
-        @Query('perPage') perPage = 10,
-        @Query('search') search?: string,
-        @Query('sortBy') sortBy: string = 'created_at',
-        @Query('order') order: 'asc' | 'desc' = 'asc',
-    ) {
-    return this.hiringPipelineService.getApplicants(user,dto);
     }
 
     @Post('applicants')
