@@ -3,6 +3,8 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
+import { ApplicationSource, ApplicationStatus } from 'src/utils/decorators/global.enums.decorator';
 
 @Injectable()
 export class HiringPipelineService {
@@ -104,15 +106,18 @@ export class HiringPipelineService {
 
     async getApplicants(
         user: RequestUser,
-        dto: PaginationDto,
+        dto: RecruitmentPaginationDto,
     ) {
-        const { search, sortBy, order, page, perPage } = dto;
+        const { search, status, sortBy, order, page, perPage } = dto;
 
         //pagination area
         const skip = (page - 1) * perPage;
 
         const whereCondition: any = {
             isActive: true,
+            ...(status && {
+                application_status: status as ApplicationStatus,
+            })
         };
 
         const careerFields = ['name'];
@@ -318,7 +323,17 @@ export class HiringPipelineService {
         createApplicantDto: CreateApplicantDto,
         user: RequestUser,
     ) {
-        const { career_id } = createApplicantDto;
+        const { career_id, application_source, application_status } = createApplicantDto;
+
+        if (!Object.values(ApplicationSource).includes(application_source)) {
+            throw new ForbiddenException('Error! Please use male or female');
+        }
+
+        if (!Object.values(ApplicationStatus).includes(application_status)) {
+            throw new ForbiddenException(
+                'Error! Please use single, married, separated, or widowed',
+            );
+        }
 
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
@@ -376,9 +391,11 @@ export class HiringPipelineService {
                 last_name: createApplicantDto.last_name,
                 email: createApplicantDto.email,
                 mobile_number: createApplicantDto.mobile_number,
-                application_source: createApplicantDto.application_source,
-                application_status: createApplicantDto.application_status,
-                date_applied: new Date(),
+                application_source,
+                application_status,
+                date_applied: new Date(
+                    createApplicantDto.date_applied
+                ),
                 created_by: user.id,
             }
         })
@@ -399,15 +416,15 @@ export class HiringPipelineService {
         updateApplicantDto: UpdateApplicantDto,
         user: RequestUser
     ) {
-        const applicant = await this.prisma.applicant.findUnique({
+        const exisitngApplicant = await this.prisma.applicant.findUnique({
             where: { id: applicantId },
         })
 
-        if (!applicantId) {
+        if (!exisitngApplicant) {
             throw new NotFoundException('Applicant not found')
         }
 
-        const updatedApplication = await this.prisma.applicant.update({
+        const applicant = await this.prisma.applicant.update({
             where: { id: applicantId },
             data: {
                 career_id: updateApplicantDto.career_id ?? undefined,
@@ -468,7 +485,7 @@ export class HiringPipelineService {
             //   name: userName,
             //   position: userPos,
             // },
-            updatedApplication,
+            applicant,
             updated_by_user: `${userName} - ${userPosition}`
         };
     }
