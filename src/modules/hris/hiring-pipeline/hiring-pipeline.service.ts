@@ -4,7 +4,7 @@ import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
-import { ApplicationStatus } from 'src/utils/decorators/global.enums.decorator';
+import { ApplicationSource, ApplicationStatus } from 'src/utils/decorators/global.enums.decorator';
 
 @Injectable()
 export class HiringPipelineService {
@@ -323,7 +323,17 @@ export class HiringPipelineService {
         createApplicantDto: CreateApplicantDto,
         user: RequestUser,
     ) {
-        const { career_id } = createApplicantDto;
+        const { career_id, application_source, application_status } = createApplicantDto;
+
+        if (!Object.values(ApplicationSource).includes(application_source)) {
+            throw new ForbiddenException('Error! Please use male or female');
+        }
+
+        if (!Object.values(ApplicationStatus).includes(application_status)) {
+            throw new ForbiddenException(
+                'Error! Please use single, married, separated, or widowed',
+            );
+        }
 
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
@@ -381,9 +391,11 @@ export class HiringPipelineService {
                 last_name: createApplicantDto.last_name,
                 email: createApplicantDto.email,
                 mobile_number: createApplicantDto.mobile_number,
-                application_source: createApplicantDto.application_source,
-                application_status: createApplicantDto.application_status,
-                date_applied: new Date(),
+                application_source,
+                application_status,
+                date_applied: new Date(
+                    createApplicantDto.date_applied
+                ),
                 created_by: user.id,
             }
         })
