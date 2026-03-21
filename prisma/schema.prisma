@@ -68,6 +68,12 @@ enum ApplicationStatus {
   onboarding
 }
 
+enum InterviewStage {
+  initial
+  second
+  final
+}
+
 ////////////////////////////////////////
 // CORE IDENTITY
 ////////////////////////////////////////
@@ -647,6 +653,8 @@ model Interviewer {
   id                String    @id @default(uuid()) @db.Uuid
   employee_id       String    @db.Uuid
   applicant_id      String    @db.Uuid
+  stage             InterviewStage   //ADD THIs -> for enums
+
   date_of_interview DateTime?
   remarks           String
   total_points      Int
@@ -662,7 +670,7 @@ model Interviewer {
   updated_at DateTime @updatedAt
 
   examinationRating ExaminationRating[]
-  applicant         Applicant           @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+  applicant         Applicant @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
 }
 
 model ExaminationRating {
