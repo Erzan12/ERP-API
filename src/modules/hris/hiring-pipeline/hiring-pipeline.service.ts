@@ -4,7 +4,7 @@ import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
-import { ApplicationSource, ApplicationStatus } from 'src/utils/decorators/global.enums.decorator';
+import { ApplicationSource, ApplicationStatus, InterviewStage } from 'src/utils/decorators/global.enums.decorator';
 
 @Injectable()
 export class HiringPipelineService {
@@ -488,5 +488,52 @@ export class HiringPipelineService {
             applicant,
             updated_by_user: `${userName} - ${userPosition}`
         };
+    }
+
+    async assignInterviewer(user: RequestUser, dto: {
+        applicant_id: string;
+        interviewers: string[]; // [initial, second, third]
+    }) {
+        const { applicant_id, interviewers } = dto;
+
+        // Optional: validate length (must be 3)
+        if (interviewers.length !== 3) {
+            throw new Error('You must assign exactly 3 interviewers');
+        }
+
+        if (!Object.values(InterviewStage)) {
+            throw new ForbiddenException('Error! Please use initial, second, third');
+        }
+
+        // // Create records
+        // const dataToCreate = interviewers.map((employee_id, index) => ({
+        //     employee_id,
+        //     applicant_id,
+        //     remarks: '',
+        //     total_points: 0,
+        //     recommendations: '',
+        //     created_by: user.id,
+
+        //     // Optional: track stage
+        //     // stage: ['INITIAL', 'SECOND', 'FINAL'][index]
+        // }));
+
+        const stages = ['INITIAL', 'SECOND', 'FINAL'];
+
+        const dataToCreate = interviewers.map((employee_id, index) => ({
+            employee_id,
+            applicant_id,
+            stage: stages[index],
+            remarks: '',
+            total_points: 0,
+            recommendations: '',
+            created_by: user.id,
+        }));
+
+        return await this.prisma.$transaction(
+            dataToCreate.map(data =>
+            this.prisma.interviewer.create({ data })
+            )
+        );
     }
 }
