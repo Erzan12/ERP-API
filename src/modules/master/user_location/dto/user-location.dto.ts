@@ -15,16 +15,49 @@ export class CreateUserLocationDto {
     example: 'Tayud',
     description: 'The name of the place the user located',
   })
-  locationName: string;
+  location_name: string;
 
   @IsString()
   @IsNotEmpty()
   @IsDefined()
   @ApiProperty({
     example: 'Consolacion',
-    description: 'The address of the location',
+    description: 'The address_line_1 of the location',
   })
-  address: string;
+  address_line_1: string;
+
+  @IsString()
+  @IsOptional()
+  @IsDefined()
+  @ApiProperty({
+    example: 'Tayud',
+    description: 'The address_line_2 of the location',
+  })
+  address_line_2?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'Cebu City',
+    description: 'City of the location',
+  })
+  city: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'Province of Cebu',
+    description: 'Province of the location',
+  })
+  province: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'Philippines',
+    description: 'Country of location',
+  })
+  country: string;
 }
 
 export class UpdateUserLocationDto {
@@ -34,15 +67,49 @@ export class UpdateUserLocationDto {
     example: 'New User Location',
     description: 'If you want to update the User Location name',
   })
-  locationName?: string;
+  location_name?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsDefined()
+  @ApiProperty({
+    example: 'Consolacion',
+    description: 'The address_line_1 of the location',
+  })
+  address_line_1?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsDefined()
+  @ApiProperty({
+    example: 'Tayud',
+    description: 'The address_line_2 of the location',
+  })
+  address_line_2?: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty({
-    example: 'New User Location address',
-    description: 'If you want to update the User Location address',
+    example: 'Cebu City',
+    description: 'City of the location',
   })
-  address?: string;
+  city?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({
+    example: 'Province of Cebu',
+    description: 'Province of the location',
+  })
+  province?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({
+    example: 'Philippines',
+    description: 'Country of location',
+  })
+  country?: string;
 
   @IsBoolean()
   @IsOptional()
