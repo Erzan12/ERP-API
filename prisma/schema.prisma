@@ -684,6 +684,7 @@ model ExaminationRating {
   id             String @id @default(uuid()) @db.Uuid
   interviewer_id String @db.Uuid
   exam_name      String
+  result         String?
   remarks        String
 
   created_by String? @db.Uuid

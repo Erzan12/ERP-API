@@ -3286,6 +3286,40 @@
         ]
       }
     },
+    "/v2/hris/applicants/assess-interview/{interviewerId}": {
+      "patch": {
+        "operationId": "HiringPipelineV2Controller_assessInterview_v2",
+        "parameters": [
+          {
+            "name": "interviewerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessInterviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Submit assessment for a specific interview stage",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -4948,6 +4982,11 @@
       "BulkAssignInterviewDto": {
         "type": "object",
         "properties": {
+          "applicant_id": {
+            "type": "string",
+            "example": "Applicant uuid",
+            "description": "The uuid of the applicant"
+          },
           "interviewer_ids": {
             "example": [
               "uuid-1",
@@ -4958,10 +4997,86 @@
             "items": {
               "type": "string"
             }
+          },
+          "date_of_interview": {
+            "type": "string",
+            "example": "",
+            "description": "The date of interview of the applicant"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "",
+            "description": "The interviewees personal remark"
           }
         },
         "required": [
-          "interviewer_ids"
+          "applicant_id",
+          "interviewer_ids",
+          "date_of_interview",
+          "remarks"
+        ]
+      },
+      "ExaminationRatingDto": {
+        "type": "object",
+        "properties": {
+          "exam_name": {
+            "type": "string",
+            "example": "Written Exam",
+            "description": "The name of the exam"
+          },
+          "result": {
+            "type": "string",
+            "example": "",
+            "description": "The result of the exam"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "",
+            "description": "The remarks of the interviewer to the applicant"
+          }
+        },
+        "required": [
+          "exam_name",
+          "result",
+          "remarks"
+        ]
+      },
+      "AssessInterviewDto": {
+        "type": "object",
+        "properties": {
+          "interviewer_id": {
+            "type": "string",
+            "example": "",
+            "description": "The interviewers uuid"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Interviewer remarks",
+            "description": "The remark of the interviewer"
+          },
+          "total_points": {
+            "type": "number",
+            "example": "Points",
+            "description": "total points of the applicant"
+          },
+          "recommendations": {
+            "type": "string",
+            "example": "Recommendations",
+            "description": "What are the recommendations from interviewer"
+          },
+          "ratings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExaminationRatingDto"
+            }
+          }
+        },
+        "required": [
+          "interviewer_id",
+          "remarks",
+          "total_points",
+          "recommendations",
+          "ratings"
         ]
       },
       "CreatePermissionTemplateDto": {
