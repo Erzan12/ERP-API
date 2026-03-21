@@ -39,7 +39,7 @@ export class CareerPostingService {
                 user_location: {
                     select: {
                         id: true,
-                        locationName: true,
+                        location_name: true,
                     }
                 },
                 createdBy: {
@@ -134,7 +134,7 @@ export class CareerPostingService {
 
         const positionFields = ['name'];
         const departmentFields = ['name'];
-        const userLocationFields = ['locationName'];
+        const userLocationFields = ['location_name'];
 
         let whereConditions: any = {};
 
@@ -224,7 +224,7 @@ export class CareerPostingService {
                     user_location: {
                         select: {
                             id: true,
-                            locationName: true,
+                            location_name: true,
                         }
                     },
                     isPublished: true,
