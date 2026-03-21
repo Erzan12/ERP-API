@@ -3261,6 +3261,31 @@
         ]
       }
     },
+    "/v2/hris/applicants/assign-interview-panel": {
+      "post": {
+        "operationId": "HiringPipelineV2Controller_assignInterviewer_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkAssignInterviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Assign the full interview panel to an applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -4264,34 +4289,78 @@
       "CreateUserLocationDto": {
         "type": "object",
         "properties": {
-          "locationName": {
+          "location_name": {
             "type": "string",
             "example": "Tayud",
             "description": "The name of the place the user located"
           },
-          "address": {
+          "address_line_1": {
             "type": "string",
             "example": "Consolacion",
-            "description": "The address of the location"
+            "description": "The address_line_1 of the location"
+          },
+          "address_line_2": {
+            "type": "string",
+            "example": "Tayud",
+            "description": "The address_line_2 of the location"
+          },
+          "city": {
+            "type": "string",
+            "example": "Cebu City",
+            "description": "City of the location"
+          },
+          "province": {
+            "type": "string",
+            "example": "Province of Cebu",
+            "description": "Province of the location"
+          },
+          "country": {
+            "type": "string",
+            "example": "Philippines",
+            "description": "Country of location"
           }
         },
         "required": [
-          "locationName",
-          "address"
+          "location_name",
+          "address_line_1",
+          "address_line_2",
+          "city",
+          "province",
+          "country"
         ]
       },
       "UpdateUserLocationDto": {
         "type": "object",
         "properties": {
-          "locationName": {
+          "location_name": {
             "type": "string",
             "example": "New User Location",
             "description": "If you want to update the User Location name"
           },
-          "address": {
+          "address_line_1": {
             "type": "string",
-            "example": "New User Location address",
-            "description": "If you want to update the User Location address"
+            "example": "Consolacion",
+            "description": "The address_line_1 of the location"
+          },
+          "address_line_2": {
+            "type": "string",
+            "example": "Tayud",
+            "description": "The address_line_2 of the location"
+          },
+          "city": {
+            "type": "string",
+            "example": "Cebu City",
+            "description": "City of the location"
+          },
+          "province": {
+            "type": "string",
+            "example": "Province of Cebu",
+            "description": "Province of the location"
+          },
+          "country": {
+            "type": "string",
+            "example": "Philippines",
+            "description": "Country of location"
           },
           "isActive": {
             "type": "boolean",
@@ -4300,8 +4369,12 @@
           }
         },
         "required": [
-          "locationName",
-          "address",
+          "location_name",
+          "address_line_1",
+          "address_line_2",
+          "city",
+          "province",
+          "country",
           "isActive"
         ]
       },
@@ -4870,6 +4943,25 @@
           "application_status",
           "date_applied",
           "isActive"
+        ]
+      },
+      "BulkAssignInterviewDto": {
+        "type": "object",
+        "properties": {
+          "interviewer_ids": {
+            "example": [
+              "uuid-1",
+              "uuid-2",
+              "uuid-3"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "interviewer_ids"
         ]
       },
       "CreatePermissionTemplateDto": {
