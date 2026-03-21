@@ -50,3 +50,9 @@ export enum ApplicationStatus {
   ONBOARDING = 'onboarding',
 }
 
+export enum InterviewStage {
+  INITIAL = 'initial',
+  SECOND = 'second',
+  FINAL = 'final',
+}
+

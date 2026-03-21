@@ -68,6 +68,12 @@ enum ApplicationStatus {
   onboarding
 }
 
+enum InterviewStage {
+  initial
+  second
+  final
+}
+
 ////////////////////////////////////////
 // CORE IDENTITY
 ////////////////////////////////////////
@@ -231,10 +237,14 @@ model User {
 }
 
 model UserLocation {
-  id           String  @id @default(uuid()) @db.Uuid
-  locationName String?
-  address      String
-  isActive     Boolean @default(true)
+  id                 String  @id @default(uuid()) @db.Uuid
+  location_name      String
+  address_line_1     String
+  address_line_2     String?
+  city               String
+  province           String
+  country            String
+  isActive           Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -247,8 +257,11 @@ model UserLocation {
 
   careerPosting CareerPosting[]
 
-  @@index([locationName])
-  @@index([address])
+  @@index([location_name])
+  @@index([address_line_1])
+  @@index([province])
+  @@index([country])
+  @@index([city])
 }
 
 model UserToken {
@@ -647,10 +660,12 @@ model Interviewer {
   id                String    @id @default(uuid()) @db.Uuid
   employee_id       String    @db.Uuid
   applicant_id      String    @db.Uuid
+  stage             InterviewStage   //ADD THIs -> for enums
+
   date_of_interview DateTime?
-  remarks           String
-  total_points      Int
-  recommendations   String
+  remarks           String?
+  total_points      Int?
+  recommendations   String?
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -662,13 +677,14 @@ model Interviewer {
   updated_at DateTime @updatedAt
 
   examinationRating ExaminationRating[]
-  applicant         Applicant           @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+  applicant         Applicant @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
 }
 
 model ExaminationRating {
   id             String @id @default(uuid()) @db.Uuid
   interviewer_id String @db.Uuid
   exam_name      String
+  result         String?
   remarks        String
 
   created_by String? @db.Uuid
@@ -677,10 +693,9 @@ model ExaminationRating {
   createdBy User? @relation("ExaminationRatingCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("ExaminationRatingUpdatedBy", fields: [updated_by], references: [id])
 
-  created_at    DateTime     @default(now())
-  updated_at    DateTime     @updatedAt
-  interviewer   Interviewer? @relation(fields: [interviewerId], references: [id])
-  interviewerId String?      @db.Uuid
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @updatedAt
+  interviewer    Interviewer? @relation(fields: [interviewer_id], references: [id])
 }
 
 ////////////////////////////////////////

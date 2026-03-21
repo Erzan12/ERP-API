@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HiringPipelineService } from '../hiring-pipeline.service';
 import { CreateApplicantDto, UpdateApplicantDto } from '../dto/applicant.dto';
@@ -9,6 +9,9 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
+import { AssignInterviewerDto } from '../dto/assign-interviewer.dto';
+import { BulkAssignInterviewDto } from '../dto/bulk-assign-interviewer.dto';
+import { AssessInterviewDto } from '../dto/assess-interviewer.dto';
 
 @ApiTags('Human Resources - Recruitment and Onboarding')
 @Controller({path: 'hris', version: '2'})
@@ -69,5 +72,38 @@ export class HiringPipelineV2Controller {
         @SessionUser() user: RequestUser,
     ) {
         return this.hiringPipelineService.updateApplicant(applicationId, updateApplicantDto, user)
+    }
+
+    /**
+     * PHASE 1: ASSIGNMENT
+     * Creates the 3 interview slots (Initial, Second, Final)
+     */
+    @Post('applicants/assign-interview-panel') // post for creation
+    @ApiOperation({ summary: 'Assign the full interview panel to an applicant' })
+    @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+    assignInterviewer(
+        @Body() dto: BulkAssignInterviewDto,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.hiringPipelineService.assignInterviewPanel(user, dto)
+    }
+
+    /**
+     * PHASE 2: ASSESSMENT
+     * Updates one specific interview slot with results and exam ratings
+     */
+    @Patch('applicants/assess-interview/:interviewerId')
+    @ApiOperation({ summary: 'Submit assessment for a specific interview stage' })
+    @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+    async assessInterview(
+        @Param('interviewerId', new ParseUUIDPipe()) interviewerId: string,
+        @Body() dto: AssessInterviewDto,
+        @SessionUser() user: RequestUser,
+    ) {
+        // We pass the ID from the URL into the DTO or directly to the service
+        return this.hiringPipelineService.assessInterviewPanel(user, {
+            ...dto,
+            interviewer_id: interviewerId 
+        });
     }
 }
