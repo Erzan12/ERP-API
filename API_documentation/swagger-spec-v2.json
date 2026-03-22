@@ -3261,6 +3261,65 @@
         ]
       }
     },
+    "/v2/hris/applicants/assign-interview-panel": {
+      "post": {
+        "operationId": "HiringPipelineV2Controller_assignInterviewer_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkAssignInterviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Assign the full interview panel to an applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
+    "/v2/hris/applicants/assess-interview/{interviewerId}": {
+      "patch": {
+        "operationId": "HiringPipelineV2Controller_assessInterview_v2",
+        "parameters": [
+          {
+            "name": "interviewerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessInterviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Submit assessment for a specific interview stage",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -4264,34 +4323,78 @@
       "CreateUserLocationDto": {
         "type": "object",
         "properties": {
-          "locationName": {
+          "location_name": {
             "type": "string",
             "example": "Tayud",
             "description": "The name of the place the user located"
           },
-          "address": {
+          "address_line_1": {
             "type": "string",
             "example": "Consolacion",
-            "description": "The address of the location"
+            "description": "The address_line_1 of the location"
+          },
+          "address_line_2": {
+            "type": "string",
+            "example": "Tayud",
+            "description": "The address_line_2 of the location"
+          },
+          "city": {
+            "type": "string",
+            "example": "Cebu City",
+            "description": "City of the location"
+          },
+          "province": {
+            "type": "string",
+            "example": "Province of Cebu",
+            "description": "Province of the location"
+          },
+          "country": {
+            "type": "string",
+            "example": "Philippines",
+            "description": "Country of location"
           }
         },
         "required": [
-          "locationName",
-          "address"
+          "location_name",
+          "address_line_1",
+          "address_line_2",
+          "city",
+          "province",
+          "country"
         ]
       },
       "UpdateUserLocationDto": {
         "type": "object",
         "properties": {
-          "locationName": {
+          "location_name": {
             "type": "string",
             "example": "New User Location",
             "description": "If you want to update the User Location name"
           },
-          "address": {
+          "address_line_1": {
             "type": "string",
-            "example": "New User Location address",
-            "description": "If you want to update the User Location address"
+            "example": "Consolacion",
+            "description": "The address_line_1 of the location"
+          },
+          "address_line_2": {
+            "type": "string",
+            "example": "Tayud",
+            "description": "The address_line_2 of the location"
+          },
+          "city": {
+            "type": "string",
+            "example": "Cebu City",
+            "description": "City of the location"
+          },
+          "province": {
+            "type": "string",
+            "example": "Province of Cebu",
+            "description": "Province of the location"
+          },
+          "country": {
+            "type": "string",
+            "example": "Philippines",
+            "description": "Country of location"
           },
           "isActive": {
             "type": "boolean",
@@ -4300,8 +4403,12 @@
           }
         },
         "required": [
-          "locationName",
-          "address",
+          "location_name",
+          "address_line_1",
+          "address_line_2",
+          "city",
+          "province",
+          "country",
           "isActive"
         ]
       },
@@ -4870,6 +4977,106 @@
           "application_status",
           "date_applied",
           "isActive"
+        ]
+      },
+      "BulkAssignInterviewDto": {
+        "type": "object",
+        "properties": {
+          "applicant_id": {
+            "type": "string",
+            "example": "Applicant uuid",
+            "description": "The uuid of the applicant"
+          },
+          "interviewer_ids": {
+            "example": [
+              "uuid-1",
+              "uuid-2",
+              "uuid-3"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "date_of_interview": {
+            "type": "string",
+            "example": "",
+            "description": "The date of interview of the applicant"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "",
+            "description": "The interviewees personal remark"
+          }
+        },
+        "required": [
+          "applicant_id",
+          "interviewer_ids",
+          "date_of_interview",
+          "remarks"
+        ]
+      },
+      "ExaminationRatingDto": {
+        "type": "object",
+        "properties": {
+          "exam_name": {
+            "type": "string",
+            "example": "Written Exam",
+            "description": "The name of the exam"
+          },
+          "result": {
+            "type": "string",
+            "example": "",
+            "description": "The result of the exam"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "",
+            "description": "The remarks of the interviewer to the applicant"
+          }
+        },
+        "required": [
+          "exam_name",
+          "result",
+          "remarks"
+        ]
+      },
+      "AssessInterviewDto": {
+        "type": "object",
+        "properties": {
+          "interviewer_id": {
+            "type": "string",
+            "example": "",
+            "description": "The interviewers uuid"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Interviewer remarks",
+            "description": "The remark of the interviewer"
+          },
+          "total_points": {
+            "type": "number",
+            "example": "Points",
+            "description": "total points of the applicant"
+          },
+          "recommendations": {
+            "type": "string",
+            "example": "Recommendations",
+            "description": "What are the recommendations from interviewer"
+          },
+          "ratings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExaminationRatingDto"
+            }
+          }
+        },
+        "required": [
+          "interviewer_id",
+          "remarks",
+          "total_points",
+          "recommendations",
+          "ratings"
         ]
       },
       "CreatePermissionTemplateDto": {

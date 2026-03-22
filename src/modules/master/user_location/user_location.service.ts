@@ -226,11 +226,11 @@ export class UserLocationService {
     createUserLocationDto: CreateUserLocationDto,
     user: RequestUser,
   ) {
-    const { locationName, address } = createUserLocationDto;
+    const { location_name, address_line_1, address_line_2, city, province, country } = createUserLocationDto;
 
     const existingUserLocation = await this.prisma.userLocation.findFirst({
       where: {
-        locationName: createUserLocationDto.locationName,
+        location_name: createUserLocationDto.location_name,
       },
     });
     if (existingUserLocation) {
@@ -270,8 +270,12 @@ export class UserLocationService {
 
     const userLocation = await this.prisma.userLocation.create({
       data: {
-        locationName: locationName,
-        address: address,
+        location_name,
+        address_line_1,
+        address_line_2,
+        city,
+        province,
+        country,
         created_by: user.id
       },
     });
@@ -281,7 +285,7 @@ export class UserLocationService {
 
     return {
       status: 'success',
-      message: `${userLocation.locationName} User Location has been created successfully!`,
+      message: `${userLocation.location_name} User Location has been created successfully!`,
       userLocation,
       created_by_user: `${userName} - ${userPosition}`,
     };
@@ -292,7 +296,7 @@ export class UserLocationService {
     updateUserLocationDto: UpdateUserLocationDto,
     user: RequestUser,
   ) {
-    const { locationName, address, isActive } = updateUserLocationDto;
+    const { location_name, address_line_1, address_line_2, city, province, country } = updateUserLocationDto;
 
     const userLocation = await this.prisma.userLocation.findUnique({
       where: { id: userLocationId },
@@ -305,9 +309,12 @@ export class UserLocationService {
     const updateUserLocation = await this.prisma.userLocation.update({
       where: { id: userLocationId },
       data: {
-        locationName,
-        address,
-        isActive,
+        location_name: updateUserLocationDto.location_name ?? undefined,
+        address_line_1: updateUserLocationDto.address_line_1 ?? undefined,
+        address_line_2: updateUserLocationDto.address_line_2 ?? undefined,
+        city: updateUserLocationDto.city ?? undefined,
+        province: updateUserLocationDto.province ?? undefined,
+        country: updateUserLocationDto.country ?? undefined,
         updated_by: user.id,
       },
     });
@@ -346,7 +353,7 @@ export class UserLocationService {
 
     return {
       status: 'success',
-      message: `${userLocation.locationName} User Location has been updated successfully!`,
+      message: `${userLocation.location_name} User Location has been updated successfully!`,
       updateUserLocation,
       updated_by: `${userName} - ${userPosition}`,
     };
