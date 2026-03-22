@@ -4,7 +4,9 @@ import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
-import { ApplicationSource, ApplicationStatus } from 'src/utils/decorators/global.enums.decorator';
+import { ApplicationSource, ApplicationStatus, InterviewStage } from 'src/utils/decorators/global.enums.decorator';
+import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
+import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 
 @Injectable()
 export class HiringPipelineService {
@@ -27,7 +29,7 @@ export class HiringPipelineService {
                         },
                         user_location: {
                             select: {
-                                locationName: true,
+                                location_name: true,
                             }
                         }
                     }
@@ -121,7 +123,7 @@ export class HiringPipelineService {
         };
 
         const careerFields = ['name'];
-        const userLocationFields = ['locationName'];
+        const userLocationFields = ['location_name'];
 
         let whereConditions: any = {};
 
@@ -225,7 +227,7 @@ export class HiringPipelineService {
                             },
                             user_location: {
                                 select: {
-                                    locationName: true,
+                                    location_name: true,
                                 }
                             }
                         },
@@ -377,7 +379,7 @@ export class HiringPipelineService {
             select: {
                 user_location: {
                     select: {
-                        locationName: true,
+                        location_name: true,
                     }
                 }
             }
@@ -488,5 +490,97 @@ export class HiringPipelineService {
             applicant,
             updated_by_user: `${userName} - ${userPosition}`
         };
+    }
+
+    async assignInterviewPanel(
+        user: RequestUser,  
+        dto: BulkAssignInterviewDto
+    ) {
+        const { applicant_id, interviewer_ids, date_of_interview } = dto;
+        const stages = [InterviewStage.INITIAL, InterviewStage.SECOND, InterviewStage.FINAL];
+
+        //map the ids to the data structure
+        const dataToCreate = interviewer_ids.map((employee_id, index) => ({
+            employee_id,
+            applicant_id,
+            stage: stages[index],
+            remarks: '',
+            date_of_interview: date_of_interview,
+            // total_points: 0,
+            // recommendations: '',
+            created_by: user.id,
+        }));
+
+        // Optional: validate length (must be 3)
+        // if (interviewers.length !== 3) {
+        //     throw new Error('You must assign exactly 3 interviewers');
+        // }
+
+        // if (!Object.values(InterviewStage)) {
+        //     throw new ForbiddenException('Error! Please use initial, second, third');
+        // }
+
+        //using createmany for better perfomance than mapping multi create calls
+        return await this.prisma.interviewer.createMany({
+            data: dataToCreate,
+        });
+    }
+
+    async assessInterviewPanel(user: RequestUser, dto: AssessInterviewDto) {
+        const { interviewer_id, ratings, ...assessmentData } = dto;
+
+        // 1. Fetch current interviewer and their stage
+        const currentInterviewer = await this.prisma.interviewer.findUnique({
+            where: { id: interviewer_id },
+        });
+
+        if (!currentInterviewer) throw new NotFoundException('Interviewer record not found');
+
+        // 2. Sequential Logic Check
+        if (currentInterviewer.stage !== InterviewStage.INITIAL) {
+            const previousStage = 
+                currentInterviewer.stage === InterviewStage.FINAL 
+                ? InterviewStage.SECOND 
+                : InterviewStage.INITIAL;
+
+            const prevAssessment = await this.prisma.interviewer.findFirst({
+                where: {
+                    applicant_id: currentInterviewer.applicant_id,
+                    stage: previousStage
+                }
+            });
+
+            // Check if previous stage is "done" (e.g., total_points is still 0 or recommendations is empty)
+            if (!prevAssessment || prevAssessment.total_points === 0) {
+                throw new ForbiddenException(
+                    `Cannot assess the ${currentInterviewer.stage} stage until the ${previousStage} stage is completed.`
+                );
+            }
+        }
+
+        // 3. Transaction: Update Interviewer + Create Ratings
+        return await this.prisma.$transaction(async (tx) => {
+            // Update the interviewer record
+            const updated = await tx.interviewer.update({
+                where: { id: interviewer_id },
+                data: {
+                    ...assessmentData,
+                    updated_by: user.id,
+                },
+            });
+
+            // Create the exam ratings
+            if (ratings.length > 0) {
+                await tx.examinationRating.createMany({
+                    data: ratings.map(r => ({
+                        ...r,
+                        interviewer_id: interviewer_id,
+                        created_by: user.id
+                    }))
+                });
+            }
+
+            return updated;
+        });
     }
 }
