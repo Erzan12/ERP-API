@@ -10,7 +10,7 @@ import { CareerPostingService } from '../career-posting.service';
 
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
+import { RecruitmentPaginationDto, StatusCountDto } from 'src/utils/dtos/recruitment-pagination.dto';
 
 @ApiTags('Human Resources - Recruitment and Onboarding')
 @Controller({path: 'hris', version: '2'})
@@ -19,7 +19,7 @@ export class CareerPostingV2Controller {
 
     @Get('recruitments')
     @ApiOperation({ summary: 'List of all job/career postings' })
-    @ApiGetResponse('List of employees')
+    @ApiGetResponse('List of job/career postings')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getCareerPostings(
         @SessionUser() user: RequestUser,
@@ -31,7 +31,18 @@ export class CareerPostingV2Controller {
         @Query('sortBy') sortBy: string = 'created_at',
         @Query('order') order: 'asc' | 'desc' = 'asc',
     ) {
-    return this.careerPostingService.getCareerPostings(user,dto);
+        return this.careerPostingService.getCareerPostings(user,dto);
+    }
+
+    @Get('recruitments/status-count')
+    @ApiOperation({ summary: 'List of all job/career postings status' })
+    @ApiGetResponse('List of job/career postings status')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getStatusCountActive(
+        @SessionUser() user: RequestUser,
+        @Query() dto: StatusCountDto,
+    ) {
+        return this.careerPostingService.statusCount(user,dto);
     }
 
     @Get('recruitments/:recruitmentId')
