@@ -16,6 +16,7 @@ export enum StatusEnum {
 }
 
 export enum CareerPostingStatus {
+  ALL = 'all',
   DRAFT = 'draft',
   SUBMITTED = 'submitted',
   VERIFIED = 'verified',

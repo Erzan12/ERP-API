@@ -256,7 +256,7 @@ async function main() {
   const defaultActions = ['create', 'read', 'update', 'delete', 'note', 'verify', 'approve'];
 
   await prisma.subModuleAction.createMany({
-    data: defaultActions.map(action => ({ action, stat: 1 })),
+    data: defaultActions.map(action => ({ action, isActive: true })),
     skipDuplicates: true,
   });
 
@@ -598,25 +598,25 @@ async function main() {
         password_token: uuidv4(),
         user_id: hrUser.id,
         expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
-        is_used: false,
+        isUsed: false,
       },
       {
         password_token: uuidv4(),
         user_id: itUser.id,
         expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
-        is_used: false,
+        isUsed: false,
       },
       {
         password_token: uuidv4(),
         user_id: adminUser.id,
         expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
-        is_used: false,
+        isUsed: false,
       },
       {
         password_token: uuidv4(),
         user_id: superAdminUser.id,
         expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
-        is_used: false,
+        isUsed: false,
       },
     ],
   });
@@ -627,22 +627,22 @@ async function main() {
       {
         user_token: uuidv4(),
         user_id: hrUser.id,
-        status: false,
+        isUsed: false,
       },
       {
         user_token: uuidv4(),
         user_id: itUser.id,
-        status: false,
+        isUsed: false,
       },
       {
         user_token: uuidv4(),
         user_id: adminUser.id,
-        status: false,
+        isUsed: false,
       },
       {
         user_token: uuidv4(),
         user_id: superAdminUser.id,
-        status: false,
+        isUsed: false,
       },
     ],
   });
