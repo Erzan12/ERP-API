@@ -581,7 +581,7 @@ model CareerPosting {
   id               String    @id @default(uuid()) @db.Uuid
   position_id      String    @db.Uuid
   slots            Int
-  job_description  String
+  job_description  String?
   department_id    String    @db.Uuid
   user_location_id String    @db.Uuid
   isPublished      Boolean   @default(false)
