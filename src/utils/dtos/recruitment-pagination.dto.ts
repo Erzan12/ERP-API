@@ -35,3 +35,10 @@ export class RecruitmentPaginationDto {
   @ApiPropertyOptional({ example: 10, default: 10 })
   perPage: number = 10;
 }
+
+export class StatusCountDto {
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ default: "" })
+  filter?: string;
+}

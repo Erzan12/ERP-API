@@ -10,7 +10,8 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { CareerPosingStatus, Prisma } from '@prisma/client';
-import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
+import { RecruitmentPaginationDto, StatusCountDto } from 'src/utils/dtos/recruitment-pagination.dto';
+import { connect } from 'http2';
 
 @Injectable()
 export class CareerPostingService {
@@ -34,12 +35,15 @@ export class CareerPostingService {
                     select: {
                         id: true,
                         name: true,
+                        job_description: true,
                     }
                 },
                 user_location: {
                     select: {
                         id: true,
                         location_name: true,
+                        city: true,
+                        province: true,
                     }
                 },
                 createdBy: {
@@ -211,6 +215,7 @@ export class CareerPostingService {
                         select: {
                             id: true,
                             name: true,
+                            job_description: true,
                         }
                     },
                     slots: true,
@@ -225,6 +230,8 @@ export class CareerPostingService {
                         select: {
                             id: true,
                             location_name: true,
+                            city: true,
+                            country: true,
                         }
                     },
                     isPublished: true,
@@ -352,27 +359,32 @@ export class CareerPostingService {
             );
         } 
 
-        const position = await this.prisma.position.findUnique({
+        const posting = await this.prisma.position.findUnique({
             where: {
                 id: createCareerPosting.position_id,
             },
             select: {
+                id:true,
                 job_description: true,
             },
         });
 
-        const combinedJobDescription = `
-        ${position?.job_description ?? ''}
+        if (!posting) {
+            throw new Error('Position not found')
+        }
+
+        // const combinedJobDescription = `
+        // ${position?.job_description ?? ''}
         
-        Additional Information: 
-        ${createCareerPosting.job_description ?? ''}
-        `;
+        // Additional Information: 
+        // ${createCareerPosting.job_description ?? ''}
+        // `;
         
         const recruitment = await this.prisma.careerPosting.create({
             data: {
                 position_id: createCareerPosting.position_id,
                 slots: createCareerPosting.slots,
-                job_description: combinedJobDescription,
+                // job_description: posting.job_description || '',
                 created_by: user.id,
                 department_id: createCareerPosting.department_id,
                 employee_type: createCareerPosting.employee_type,
@@ -480,5 +492,57 @@ export class CareerPostingService {
             recruitment,
             updated_by_user: `${userName} - ${userPosition}`
         };
+    }
+
+    async statusCount(user: RequestUser, dto: StatusCountDto) {
+        const { filter } = dto;
+
+        // 1. Initialize an empty where object
+        const whereCondition: any = {};
+
+        // 2. Only apply isActive filter if the user specifically asked for 'active'
+        if (filter === 'active') {
+            whereCondition.isActive = true;
+        }
+
+        // 3. Execute queries
+        const [counts, totalActiveCount] = await Promise.all([
+            this.prisma.careerPosting.groupBy({
+                by: ['status'],
+                where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
+                _count: { _all: true },
+            }),
+            this.prisma.careerPosting.count({
+                where: { isActive: true } // We always want this count regardless of the filter
+            })
+        ]);
+
+        // 4. Build the response object with defaults
+        const result = {
+            all: 0,
+            draft: 0,
+            submitted: 0,
+            verified: 0,
+            approved: 0,
+            rejected: 0,
+            // isActive: totalActiveCount,
+        };
+
+        // 5. Populate the result based on the DB response
+        counts.forEach((item) => {
+            const statusKey = item.status.toLowerCase();
+
+            // Check if the key exists in our object
+            if (Object.prototype.hasOwnProperty.call(result, statusKey)) {
+                // Cast the string to a valid key type
+                const key = statusKey as keyof typeof result;
+                
+                const countValue = item._count._all;
+                result[key] = countValue;
+                result.all += countValue;
+            }
+        });
+
+        return result;
     }
 }
