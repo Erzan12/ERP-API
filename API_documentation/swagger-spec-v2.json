@@ -2894,7 +2894,7 @@
         ],
         "responses": {
           "200": {
-            "description": "List of employees"
+            "description": "List of job/career postings"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -2952,6 +2952,46 @@
           }
         },
         "summary": "Job/Career posting",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
+    "/v2/hris/recruitments/status-count": {
+      "get": {
+        "operationId": "CareerPostingV2Controller_getStatusCountActive_v2",
+        "parameters": [
+          {
+            "name": "filter",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of job/career postings status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all job/career postings status",
         "tags": [
           "Human Resources - Recruitment and Onboarding"
         ]
@@ -4708,11 +4748,6 @@
             "example": 5,
             "description": "The number of slots for this position"
           },
-          "job_description": {
-            "type": "string",
-            "example": "Manages the development team",
-            "description": "The description of the position"
-          },
           "department_id": {
             "type": "string",
             "example": "Deparment PK UUID",
@@ -4745,7 +4780,6 @@
         "required": [
           "position_id",
           "slots",
-          "job_description",
           "department_id",
           "employee_type",
           "employment_type",

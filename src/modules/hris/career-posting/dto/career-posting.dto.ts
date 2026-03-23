@@ -31,13 +31,13 @@ export class CreateCareerPostingDto {
     })
     slots: number;
 
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty({
-        example: 'Manages the development team',
-        description: 'The description of the position'
-    })
-    job_description: string;
+    // @IsString()
+    // @IsNotEmpty()
+    // @ApiProperty({
+    //     example: 'Manages the development team',
+    //     description: 'The description of the position'
+    // })
+    // job_description: string;
 
     @IsUUID()
     @IsNotEmpty()
