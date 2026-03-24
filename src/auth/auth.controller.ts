@@ -1,6 +1,6 @@
-import { Body, Controller, Post, Query, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Query, Get, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiOperation, ApiBearerAuth, ApiTags, ApiCookieAuth } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiLoginResponse,
   ApiPostResponse,
@@ -11,9 +11,7 @@ import { Public } from 'src/utils/decorators/public.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request, response } from 'express';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
-import { Authenticated } from 'src/utils/decorators/auth-guard.decorator';
 import { Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Authentication')
 @Controller({ path: 'auth', version: '2' })
@@ -32,11 +30,7 @@ export class AuthController {
     const ipAddress = req.ip || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
 
-    const result = await this.authService.login(
-      loginDto,
-      ipAddress,
-      userAgent,
-    );
+    const result = await this.authService.login(loginDto, ipAddress, userAgent);
 
     res.cookie('accessToken', result.token, {
       httpOnly: true,

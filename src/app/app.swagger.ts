@@ -18,15 +18,20 @@ import { setupUserSwagger } from './user-management/user-management.swagger';
 
 function setupAppSwagger(app: INestApplication): void {
   // All APIs docs
-  const optionsV1 = new DocumentBuilder()
-    .setTitle('ABAS v3 API v1')
-    .setVersion('1.0')
-    // .addCookieAuth('access-token')
-    .build();
+  // const optionsV1 = new DocumentBuilder()
+  //   .setTitle('ABAS v3 API v1')
+  //   .setVersion('1.0')
+  //   // .addCookieAuth('access-token')
+  //   .build();
 
-  const documentV1 = SwaggerModule.createDocument(app, optionsV1, {
-    include: [AdministratorV1Module, HrV1Module, ManagerV1Module, MasterV1Module]
-  });
+  // const documentV1 = SwaggerModule.createDocument(app, optionsV1, {
+  //   include: [
+  //     AdministratorV1Module,
+  //     HrV1Module,
+  //     ManagerV1Module,
+  //     MasterV1Module,
+  //   ],
+  // });
 
   const optionsV2 = new DocumentBuilder()
     .setTitle('ABAS v3 API v2')
@@ -35,10 +40,15 @@ function setupAppSwagger(app: INestApplication): void {
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
-    include: [AdministratorV2Module, HrV2Module, ManagerV2Module, MasterV2Module]
+    include: [
+      AdministratorV2Module,
+      HrV2Module,
+      ManagerV2Module,
+      MasterV2Module,
+    ],
   });
 
-  SwaggerModule.setup('docs/v1', app, documentV1);
+  // SwaggerModule.setup('docs/v1', app, documentV1);
   SwaggerModule.setup('docs/v2', app, documentV2);
 
   SwaggerModule.setup('docs', app, documentV2, {
@@ -53,10 +63,10 @@ function setupAppSwagger(app: INestApplication): void {
     },
   });
 
-  writeFileSync(
-    './API_documentation/swagger-spec-v1.json',
-    JSON.stringify(documentV1, null, 2),
-  );
+  // writeFileSync(
+  //   './API_documentation/swagger-spec-v1.json',
+  //   JSON.stringify(documentV1, null, 2),
+  // );
   writeFileSync(
     './API_documentation/swagger-spec-v2.json',
     JSON.stringify(documentV2, null, 2),

@@ -8,12 +8,12 @@ import {
   Put,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { PermissionTemplateService } from '../permission_template.service';
+import { PermissionTemplateService } from './permission_template.service';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreatePermissionTemplateDto } from '../dto/create-permission-template.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
+import { CreatePermissionTemplateDto } from './dto/create-permission-template.dto';
+import { ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
@@ -25,13 +25,12 @@ import {
   ACTION_UPDATE,
   PERMISSION_TEMPLATE,
 } from 'src/utils/constants/ability.constant';
-import { AssignTemplateDto } from '../dto/assign-template.dto';
-import { UpdatePermissionTemplateDto } from '../dto/update-permission-template.dto';
+import { AssignTemplateDto } from './dto/assign-template.dto';
+import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';
 
-@ApiBearerAuth('access-token')
 @ApiTags('Manager - Permission Template')
-@Controller({ path: 'manager', version: '1' })
-export class PermissionTemplateControllerV1 {
+@Controller({ path: 'manager', version: '2' })
+export class PermissionTemplateControllerV2 {
   constructor(private permissionTemplateService: PermissionTemplateService) {}
 
   //get permission templates

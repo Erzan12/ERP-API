@@ -9,12 +9,15 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { EmploymentStatusService } from '../employment_status.service';
-import { Can } from '../../../../utils/decorators/can.decorator';
-import { SessionUser } from '../../../../utils/decorators/session-user.decorator';
-import { CreateEmployeeStatusDto, UpdateEmployeeStatusDto } from '../dto/employee-status.dto';
-import { RequestUser } from '../../../../utils/types/request-user.interface';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { EmploymentStatusService } from './employment_status.service';
+import { Can } from '../../../utils/decorators/can.decorator';
+import { SessionUser } from '../../../utils/decorators/session-user.decorator';
+import {
+  CreateEmployeeStatusDto,
+  UpdateEmployeeStatusDto,
+} from './dto/employee-status.dto';
+import { RequestUser } from '../../../utils/types/request-user.interface';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
@@ -27,14 +30,13 @@ import {
 } from 'src/utils/constants/ability.constant';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
-@ApiBearerAuth('access-token')
 @ApiTags('Mastertable - Employment Status')
-@Controller({ path: 'mastertable', version: '1' })
-export class EmploymentStatusControllerV1 {
+@Controller({ path: 'mastertable', version: '2' })
+export class EmploymentStatusControllerV2 {
   constructor(private employmentStatusService: EmploymentStatusService) {}
 
   //get all employment_status
-  @Get('employment_status/')
+  @Get('employment_status')
   @ApiOperation({ summary: 'Get all employment status' })
   @ApiGetResponse('Here are the list of available employment status')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
@@ -47,19 +49,19 @@ export class EmploymentStatusControllerV1 {
     @Query('sortBy') sortBy: string = 'created_at',
     @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
-    return this.employmentStatusService.getEmployeeStats(user,dto);
+    return this.employmentStatusService.getEmployeeStats(user, dto);
   }
 
   //get only one employment_status
-  @Get('employment_status/:id')
+  @Get('employment_status/:employeeStatusId')
   @ApiOperation({ summary: 'Get an employment status.' })
   @ApiGetResponse('Here is the employment status.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getEmployeeStat(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('employeeStatusId', new ParseUUIDPipe()) employeeStatusId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employmentStatusService.getEmployeeStat(id, user);
+    return this.employmentStatusService.getEmployeeStat(employeeStatusId, user);
   }
 
   //created new employee status
@@ -81,17 +83,17 @@ export class EmploymentStatusControllerV1 {
     );
   }
 
-  @Put('employment_status/:id')
+  @Put('employment_status/:employeeStatusId')
   @ApiOperation({ summary: 'Updating employee status details.' })
   @ApiPatchResponse('Employee status details updated successfully.')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateEmployeeStatus(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('employeeStatusId', new ParseUUIDPipe()) employeeStatusId: string,
     @Body() updateEmployeeStatusDto: UpdateEmployeeStatusDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.employmentStatusService.updateEmployeeStatus(
-      id,
+      employeeStatusId,
       updateEmployeeStatusDto,
       user,
     );

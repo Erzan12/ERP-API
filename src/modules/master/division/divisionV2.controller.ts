@@ -10,7 +10,13 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { ApiBearerAuth, ApiBody, ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiCookieAuth,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
@@ -24,12 +30,12 @@ import {
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 
-import { DivisionService } from '../division.service';
+import { DivisionService } from './division.service';
 
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
-import { CreateDivisionDto, UpdateDivisionDto } from '../dto/division.dto';
+import { CreateDivisionDto, UpdateDivisionDto } from './dto/division.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 // @ApiCookieAuth('access-token')
@@ -96,6 +102,10 @@ export class DivisionControllerV2 {
     @Body() updateDivisiionDto: UpdateDivisionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.divisionService.updateDivision(divisionId, updateDivisiionDto, user);
+    return this.divisionService.updateDivision(
+      divisionId,
+      updateDivisiionDto,
+      user,
+    );
   }
 }

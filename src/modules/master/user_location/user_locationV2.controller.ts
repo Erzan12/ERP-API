@@ -8,12 +8,12 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { UserLocationService } from '../user_location.service';
+import { UserLocationService } from './user_location.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CreateUserLocationDto,
   UpdateUserLocationDto,
-} from '../dto/user-location.dto';
+} from './dto/user-location.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { Can } from 'src/utils/decorators/can.decorator';

@@ -28,10 +28,10 @@ import {
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 
-import { CreatePositionDto, UpdatePositionDto } from '../dto/position.dto';
+import { CreatePositionDto, UpdatePositionDto } from './dto/position.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
-import { PositionService } from '../position.service';
+import { PositionService } from './position.service';
 
 // @ApiCookieAuth('access-token')
 @ApiTags('Mastertable - Position')
@@ -96,6 +96,10 @@ export class PositionControllerV2 {
     @Body() updatePositionDto: UpdatePositionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.positionService.updatePosition(positionId, updatePositionDto, user);
+    return this.positionService.updatePosition(
+      positionId,
+      updatePositionDto,
+      user,
+    );
   }
 }
