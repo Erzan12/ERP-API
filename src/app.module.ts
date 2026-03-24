@@ -14,7 +14,7 @@ import { ManagerV2Module } from './modules/manager/managerV2.module';
 import { MasterV1Module } from './modules/master/masterV1.module';
 import { MasterV2Module } from './modules/master/masterV2.module';
 import { UserManagementV1Module } from './modules/manager/user_management/modules/user_managementV1.module';
-import { UserManagementV2Module } from './modules/manager/user_management/modules/user_managementV2.module';
+import { UserManagementV2Module } from './modules/manager/user_management/user_managementV2.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
 import { CustomJwtAuthGuard } from './middleware/jwt/jwt.auth.guard';
@@ -37,12 +37,6 @@ import { PrismaService } from './config/prisma/prisma.service';
 import { DivisionService } from './modules/master/division/division.service';
 import { MailService } from './jobs/mail/mail.service';
 import { UserLocationService } from './modules/master/user_location/user_location.service';
-
-import { AuditControllerV2 } from './modules/administrator/audit/controllers/auditV2.controller';
-// import { HealthCheckController } from './health-check/health-check.controller';
-// import { HealthCheckService } from './health-check/health-check.service';
-// import { HealthCheckModule } from './health-check/health-check.module';
-// import { HealthModule } from './modules/administrator/health/health.module';
 
 @Module({
   imports: [

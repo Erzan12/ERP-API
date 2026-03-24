@@ -1,10 +1,6 @@
 import { Controller, Body, Post, Get, Put, Req } from '@nestjs/common';
-import { UserManagementService } from '../user_management.service';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { UserManagementService } from './user_management.service';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPostResponse,
@@ -13,9 +9,12 @@ import {
   ApiActivateResponse,
 } from 'src/utils/helpers/swagger-response.helper';
 
-import { DeactivateUserAccountDto, ReactivateUserAccountDto, } from '../dto/user-account-status.dto';
-import { CreateUserWithRoleDto } from '../dto/create-user-with-role-permission.dto';
-import { UserEmailResetTokenDto } from '../dto/user-email.reset-token.dto';
+import {
+  DeactivateUserAccountDto,
+  ReactivateUserAccountDto,
+} from './dto/user-account-status.dto';
+import { CreateUserWithRoleDto } from './dto/create-user-with-role-permission.dto';
+import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
 
 import {
   ACTION_READ,
@@ -87,10 +86,7 @@ export class UserManagementControllerV2 {
     @Body() dto: UserEmailResetTokenDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.userManagementService.resendInvitation(
-      dto,
-      user,
-    );
+    return this.userManagementService.resendInvitation(dto, user);
   }
 
   //first login password reset token

@@ -1,10 +1,10 @@
 import {
   Body,
   Controller,
-  Post,
-  Put,
   Get,
   Param,
+  Put,
+  Post,
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
@@ -22,28 +22,28 @@ import {
   ACTION_UPDATE,
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
-
 import { Can } from 'src/utils/decorators/can.decorator';
 
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 
-import { CreateDepartmentDto, UpdateDepartmentDto } from '../dto/department.dto';
+import { CreateCompanyDto, UpdateCompanyDto } from './dto/company.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
-import { DepartmentService } from '../department.service';
+import { CompanyService } from './company.service';
 
 // @ApiCookieAuth('access-token')
-@ApiTags('Mastertable - Department')
+@ApiTags('Mastertable - Company')
 @Controller({ path: 'mastertable', version: '2' })
-export class DepartmentControllerV2 {
-  constructor(private departmentService: DepartmentService) {}
+export class CompanyControllerV2 {
+  constructor(private companyService: CompanyService) {}
 
-  @Get('departments')
-  @ApiOperation({ summary: 'Get all departments' })
-  @ApiGetResponse('List of departments available')
+  //get all available companies
+  @Get('companies')
+  @ApiOperation({ summary: 'Get all companies' })
+  @ApiGetResponse('List of companies retrieved')
   @Can({ action: ACTION_READ, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  getDepartments(
+  getCompanies(
     @SessionUser() user: RequestUser,
     @Query() dto: PaginationDto,
     @Query('page') page = 1,
@@ -52,48 +52,43 @@ export class DepartmentControllerV2 {
     @Query('sortBy') sortBy: string = 'created_at',
     @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
-    return this.departmentService.getDepartments(user,dto);
+    return this.companyService.getCompanies(user, dto);
   }
 
-  @Get('departments/:departmentId')
-  @ApiOperation({ summary: 'Get a department' })
-  @ApiGetResponse('Here is the department')
+  //get a single company
+  @Get('companies/:companyId')
+  @ApiOperation({ summary: 'Get a company' })
+  @ApiGetResponse('Here is the company')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  getDepartment(
-    @Param('departmentId', new ParseUUIDPipe()) departmentId: string,
+  getCompany(
+    @Param('companyId', new ParseUUIDPipe()) companyId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.departmentService.getDepartment(departmentId, user);
+    return this.companyService.getCompany(companyId, user);
   }
 
-  @Post('departments')
-  @ApiBody({
-    type: CreateDepartmentDto,
-    description: 'Payload to create Department',
-  })
-  @ApiOperation({ summary: 'Create a new department' })
-  @ApiPostResponse('Department created successfully')
+  @Post('companies')
+  @ApiBody({ type: CreateCompanyDto, description: 'Payload to create company' })
+  @ApiOperation({ summary: 'Create a new company' })
+  @ApiPostResponse('Company created successfully')
   @Can({ action: ACTION_CREATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  createDepartment(
-    @Body() createDepartmentDto: CreateDepartmentDto,
+  createCompany(
+    @Body() createCompanyDto: CreateCompanyDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.departmentService.createDepartment(createDepartmentDto, user);
+    return this.companyService.createCompany(createCompanyDto, user);
   }
 
-  @Put('departments/:departmentId')
-  @ApiBody({
-    type: UpdateDepartmentDto,
-    description: 'Payload to update department',
-  })
-  @ApiOperation({ summary: 'Update a current department information' })
-  @ApiPatchResponse('Department updated successfully')
+  @Put('companies/:companyId')
+  @ApiBody({ type: UpdateCompanyDto, description: 'Payload to update company' })
+  @ApiOperation({ summary: 'Update a current company information' })
+  @ApiPatchResponse('Company updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
-  updateDepartment(
-    @Param('departmentId', new ParseUUIDPipe()) departmentId: string,
-    @Body() updateDeptDto: UpdateDepartmentDto,
+  updateCompany(
+    @Param('companyId', new ParseUUIDPipe()) companyId: string,
+    @Body() updateCompanyDto: UpdateCompanyDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.departmentService.updateDepartment(departmentId, updateDeptDto, user);
+    return this.companyService.updateCompany(companyId, updateCompanyDto, user);
   }
 }

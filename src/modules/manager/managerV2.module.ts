@@ -22,7 +22,7 @@ import { RoleManagementService } from './role-management/role-management.service
     MailService,
     PermissionTemplateService,
     AuditService,
-    RoleManagementService
+    RoleManagementService,
   ],
   exports: [AuthService, RoleManagementService],
 })

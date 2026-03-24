@@ -26,7 +26,7 @@ import {
 import {
   CreateEmployeeWithDetailsDto,
   UpdateEmployeeWithDetailsDto,
-} from '../dto/employee-person.dto';
+} from './dto/employee-person.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 import { Can } from 'src/utils/decorators/can.decorator';
@@ -34,7 +34,7 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
-import { EmployeeService } from '../employee.service';
+import { EmployeeService } from './employee.service';
 
 // @ApiCookieAuth('access-token')
 @ApiTags('Human Resources - Employees')
@@ -55,7 +55,7 @@ export class EmployeeControllerV2 {
     @Query('sortBy') sortBy: string = 'created_at',
     @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
-    return this.employeeService.getEmployees(user,dto);
+    return this.employeeService.getEmployees(user, dto);
   }
 
   //get a single employee profile or view

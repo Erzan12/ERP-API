@@ -47,12 +47,14 @@ export class SubModuleControllerV2 {
     @Query('sortBy') sortBy: string = 'created_at',
     @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
-    return this.subModuleService.getSubModules(user,dto);
+    return this.subModuleService.getSubModules(user, dto);
   }
 
   @Get('sub-modules/permissions')
   @ApiOperation({ summary: 'Get Submodule actions/permissions' })
-  @ApiGetResponse('Here are the list of Submodule actions/permissions available')
+  @ApiGetResponse(
+    'Here are the list of Submodule actions/permissions available',
+  )
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getSubModuleActions(@SessionUser() user: RequestUser) {
     return this.subModuleService.getSubModuleActions(user);
@@ -90,7 +92,10 @@ export class SubModuleControllerV2 {
     type: AddSubModulePermissionDto,
     description: 'Payload to create permissions for submodule',
   })
-  @ApiOperation({ summary: 'Create a new permissions/actions for submodule(acts as inventory of actions for submodules)' })
+  @ApiOperation({
+    summary:
+      'Create a new permissions/actions for submodule(acts as inventory of actions for submodules)',
+  })
   @ApiPostResponse('Permission created successfully')
   @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   createPermission(
