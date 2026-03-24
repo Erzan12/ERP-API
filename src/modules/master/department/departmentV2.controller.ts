@@ -28,10 +28,7 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 
-import {
-  CreateDepartmentDto,
-  UpdateDepartmentDto,
-} from './dto/department.dto';
+import { CreateDepartmentDto, UpdateDepartmentDto } from './dto/department.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 import { DepartmentService } from './department.service';
