@@ -5,15 +5,10 @@ import { CaslModule } from './middleware/casl/casl.module';
 import { LandingModule } from './landing/landing.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
-import { AdministratorV1Module } from 'src/modules/administrator/administratorV1.module';
 import { AdministratorV2Module } from './modules/administrator/administratorV2.module';
-import { HrV1Module } from './modules/hris/hrV1.module';
 import { HrV2Module } from './modules/hris/hrV2.module';
-import { ManagerV1Module } from './modules/manager/managerV1.module';
 import { ManagerV2Module } from './modules/manager/managerV2.module';
-import { MasterV1Module } from './modules/master/masterV1.module';
 import { MasterV2Module } from './modules/master/masterV2.module';
-import { UserManagementV1Module } from './modules/manager/user_management/modules/user_managementV1.module';
 import { UserManagementV2Module } from './modules/manager/user_management/user_managementV2.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
@@ -48,16 +43,11 @@ import { UserLocationService } from './modules/master/user_location/user_locatio
     LandingModule,
     AuthModule,
     JwtModule,
-    AdministratorV1Module,
     AdministratorV2Module,
-    MasterV1Module,
     MasterV2Module,
     CaslModule,
-    HrV1Module,
     HrV2Module,
-    ManagerV1Module,
     ManagerV2Module,
-    UserManagementV1Module,
     UserManagementV2Module,
     PrismaModule,
     // HealthCheckModule,

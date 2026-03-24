@@ -5,7 +5,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ACTION_READ, DASHBOARD } from 'src/utils/constants/ability.constant';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
-import { DashboardService } from '../dashboard.service';
+import { DashboardService } from './dashboard.service';
 
 @ApiTags('Administrator - Dashboard')
 @Controller({ path: 'administrator', version: '2' })

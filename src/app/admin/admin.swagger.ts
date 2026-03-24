@@ -1,7 +1,6 @@
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
-import { AdministratorV1Module } from 'src/modules/administrator/administratorV1.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { AdministratorV2Module } from 'src/modules/administrator/administratorV2.module';
 

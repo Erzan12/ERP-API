@@ -8,20 +8,20 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { Can } from '../../../../utils/decorators/can.decorator';
-import { CreateSubModuleDto } from '../dto/create-sub-module.dto';
-import { AssignSubModulePermissionDto } from '../dto/assign-sub-module-permission.dto';
-import { SessionUser } from '../../../../utils/decorators/session-user.decorator';
-import { RequestUser } from '../../../../utils/types/request-user.interface';
-import { SubModuleService } from '../sub_module.service';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AddSubModulePermissionDto } from '../dto/add-sub-module-permission.dto';
+import { Can } from '../../../utils/decorators/can.decorator';
+import { CreateSubModuleDto } from './dto/create-sub-module.dto';
+import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
+import { SessionUser } from '../../../utils/decorators/session-user.decorator';
+import { RequestUser } from '../../../utils/types/request-user.interface';
+import { SubModuleService } from './sub_module.service';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
 import {
   ApiPatchResponse,
   ApiPostResponse,
   ApiGetResponse,
 } from 'src/utils/helpers/swagger-response.helper';
-import { UpdateSubModulePermisisonDto } from '../dto/update-sub-module-permisison.dto';
+import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
 import {
   ACTION_READ,
   SYSTEM_MANAGEMENT,
