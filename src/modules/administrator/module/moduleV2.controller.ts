@@ -23,15 +23,15 @@ import {
   SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
 
-import { Can } from '../../../../utils/decorators/can.decorator';
+import { Can } from '../../../utils/decorators/can.decorator';
 
-import { SessionUser } from '../../../../utils/decorators/session-user.decorator';
-import { RequestUser } from '../../../../utils/types/request-user.interface';
+import { SessionUser } from '../../../utils/decorators/session-user.decorator';
+import { RequestUser } from '../../../utils/types/request-user.interface';
 
-import { CreateModuleDto, UpdateModuleDto } from '../dto/module.dto';
+import { CreateModuleDto, UpdateModuleDto } from './dto/module.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
-import { ModuleService } from '../module.service';
+import { ModuleService } from './module.service';
 
 @ApiTags('Administrator - Module')
 @Controller({ path: 'administrator', version: '2' })

@@ -1,8 +1,8 @@
 import { Body, Param, Put, Controller, ParseUUIDPipe } from '@nestjs/common';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { UpdateSecurityClearanceDto } from '../dto/update-security-clearance.dto';
+import { UpdateSecurityClearanceDto } from './dto/update-security-clearance.dto';
 import { Can } from 'src/utils/decorators/can.decorator';
-import { SecurityClearanceService } from '../security-clearance.service';
+import { SecurityClearanceService } from './security-clearance.service';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import {
   ACTION_UPDATE,
@@ -11,7 +11,7 @@ import {
 } from 'src/utils/constants/ability.constant';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { ApiSecurityClearance } from 'src/utils/helpers/swagger-response.helper';
-import { ApiBearerAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Administrator - Security Clearance')
 @Controller({ path: 'administrator', version: '2' })

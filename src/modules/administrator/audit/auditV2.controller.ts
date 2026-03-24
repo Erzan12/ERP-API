@@ -6,8 +6,8 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { AuditService } from '../audit.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuditService } from './audit.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';

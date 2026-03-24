@@ -8,13 +8,13 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { RoleService } from '../role.service';
-import { Can } from '../../../../utils/decorators/can.decorator';
-import { SessionUser } from '../../../../utils/decorators/session-user.decorator';
-import { RequestUser } from '../../../../utils/types/request-user.interface';
-import { CreateRoleDto, UpdateRoleDto } from '../dto/role.dto';
-import { CreateRolePermissionDto } from '../dto/create-role-permission.dto';
-import { UpdateRolePermissionsDto } from '../dto/update-role-permisisons.dto';
+import { RoleService } from './role.service';
+import { Can } from '../../../utils/decorators/can.decorator';
+import { SessionUser } from '../../../utils/decorators/session-user.decorator';
+import { RequestUser } from '../../../utils/types/request-user.interface';
+import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
+import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
+import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,

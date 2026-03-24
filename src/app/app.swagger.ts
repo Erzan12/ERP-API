@@ -6,14 +6,10 @@ import { setupAdminSwagger } from './admin/admin.swagger';
 import { setupHRISSwagger } from './hris/hris.swagger';
 import { setupManagerSwagger } from './manager/manager.swagger';
 import { setupMasterSwagger } from './mastertable/mastertable.swagger';
-import { AdministratorV1Module } from 'src/modules/administrator/administratorV1.module';
 import { AdministratorV2Module } from 'src/modules/administrator/administratorV2.module';
-import { HrV1Module } from 'src/modules/hris/hrV1.module';
 import { HrV2Module } from 'src/modules/hris/hrV2.module';
-import { ManagerV1Module } from 'src/modules/manager/managerV1.module';
 import { ManagerV2Module } from 'src/modules/manager/managerV2.module';
 import { MasterV2Module } from 'src/modules/master/masterV2.module';
-import { MasterV1Module } from 'src/modules/master/masterV1.module';
 import { setupUserSwagger } from './user-management/user-management.swagger';
 
 function setupAppSwagger(app: INestApplication): void {

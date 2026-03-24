@@ -2,7 +2,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { HrV1Module } from 'src/modules/hris/hrV1.module';
 import { HrV2Module } from 'src/modules/hris/hrV2.module';
 
 export function setupHRISSwagger(app: INestApplication): void {

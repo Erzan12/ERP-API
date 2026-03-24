@@ -2,7 +2,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { UserManagementV1Module } from 'src/modules/manager/user_management/modules/user_managementV1.module';
 import { UserManagementV2Module } from 'src/modules/manager/user_management/user_managementV2.module';
 
 export function setupUserSwagger(app: INestApplication): void {
