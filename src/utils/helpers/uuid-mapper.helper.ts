@@ -11,10 +11,13 @@ export function MapFriendlyNameToUUID(
   map: Record<string, string>,
   propertyName?: string,
 ) {
-  return Transform(({ value }) => {
-    if (!value)
+  return Transform(({ value }: { value: unknown }) => {
+    if (typeof value !== 'string' || !value) {
       throw new BadRequestException(`${propertyName || 'value'} is required`);
-    if (map[value]) return map[value];
+    }
+
+    if (value in map) return map[value];
+
     throw new BadRequestException(
       `Invalid ${propertyName || 'value'}: ${value}. Allowed values: ${Object.keys(map).join(', ')}`,
     );

@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
@@ -8,8 +12,12 @@ export class DashboardService {
 
   async getAdminDashboardStats(user: RequestUser) {
     const totalUsers = await this.prisma.user.count();
-    const activeUsers = await this.prisma.user.count({ where: { isActive: true } });
-    const inActiceUsers = await this.prisma.user.count({ where: { isActive: false } });
+    const activeUsers = await this.prisma.user.count({
+      where: { isActive: true },
+    });
+    const inActiceUsers = await this.prisma.user.count({
+      where: { isActive: false },
+    });
 
     const roles = await this.prisma.role.findMany({
       include: {
@@ -36,6 +44,35 @@ export class DashboardService {
         last_login: true,
       },
     });
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'You are not allowed to perform this action',
+      );
+    }
 
     return {
       status: 'success',

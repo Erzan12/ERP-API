@@ -5,9 +5,9 @@ export interface AuditLogData {
   action: string;
   resource: string;
   resource_id?: string;
-  old_values?: any;
-  new_values?: any;
-  changed_fields?: string[]; //new: explicit field tracking
+  old_values?: Record<string, unknown>;
+  new_values?: Record<string, unknown>;
+  changed_fields?: string[];
   ip_address?: string;
   user_agent?: string;
   endpoint?: string;
@@ -15,9 +15,9 @@ export interface AuditLogData {
   status_code?: number;
   success?: boolean;
   error_message?: string;
-  department_id?: string; //new: department tracking
+  department_id?: string;
   session_id?: string;
-  request_id?: string; //new: correlate operations
-  severity?: 'INFO' | 'WARNING' | 'CRITICAL'; //new: severity levels
-  compliance_flag?: boolean; //new: compliance tracking
+  request_id?: string;
+  severity?: 'INFO' | 'WARNING' | 'CRITICAL';
+  compliance_flag?: boolean;
 }

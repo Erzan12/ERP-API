@@ -6,7 +6,7 @@ export class CreateEmployeeStatusDto {
   @IsNotEmpty()
   @ApiProperty({
     example: 'TERMINATED',
-    description: 'The code of the employee status'
+    description: 'The code of the employee status',
   })
   code: string;
 
@@ -14,9 +14,11 @@ export class CreateEmployeeStatusDto {
   @IsNotEmpty()
   @ApiProperty({
     example: 'Terminated',
-    description: 'Proper label of the employee status code'
+    description: 'Proper label of the employee status code',
   })
   label: string;
 }
 
-export class UpdateEmployeeStatusDto extends PartialType(CreateEmployeeStatusDto) {}
+export class UpdateEmployeeStatusDto extends PartialType(
+  CreateEmployeeStatusDto,
+) {}

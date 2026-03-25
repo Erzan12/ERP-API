@@ -1,21 +1,21 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsInt, IsOptional, IsString } from "class-validator";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class RecruitmentPaginationDto {
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ default: "" })
+  @ApiPropertyOptional({ default: '' })
   search?: string;
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ default: "" })
+  @ApiPropertyOptional({ default: '' })
   status?: string;
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'id', default: 'id'})
+  @ApiPropertyOptional({ example: 'id', default: 'id' })
   sortBy: string = 'id';
 
   @IsOptional()
@@ -39,6 +39,6 @@ export class RecruitmentPaginationDto {
 export class StatusCountDto {
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ default: "" })
+  @ApiPropertyOptional({ default: '' })
   filter?: string;
 }

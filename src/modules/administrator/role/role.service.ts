@@ -17,17 +17,13 @@ export class RoleService {
   constructor(private prisma: PrismaService) {}
 
   //Add Get Role -> to query the roles available
-  async getRoles(
-    user: RequestUser,
-    dto: PaginationDto,
-  ) {
-
+  async getRoles(user: RequestUser, dto: PaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
 
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = {
-      stat: 1,
+    const whereCondition: Prisma.RoleWhereInput = {
+      isActive: true,
     };
 
     if (search) {
@@ -58,10 +54,14 @@ export class RoleService {
     }
 
     //prevent sorting by invalid fields(very important)
-    const allowSortFeilds = ['id', 'name', 'created_at', 'updated_at', 'stat'];
-    if (!allowSortFeilds.includes(sortBy)) {
-      sortBy;
-    }
+    const allowSortFields = [
+      'id',
+      'name',
+      'created_at',
+      'updated_at',
+      'isActive',
+    ];
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, roles] = await this.prisma.$transaction([
       this.prisma.role.count({
@@ -81,9 +81,9 @@ export class RoleService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           updatedBy: {
             select: {
@@ -92,15 +92,15 @@ export class RoleService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
         skip,
         take: perPage,
         orderBy: {
-          [sortBy]: order,
+          [safeSortBy]: order,
         },
       }),
     ]);
@@ -126,10 +126,7 @@ export class RoleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-    ];
+    const allowedRoles = ['Administrator', 'Super Administrator'];
 
     const canView = requestUser.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
@@ -164,9 +161,9 @@ export class RoleService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         updatedBy: {
           select: {
@@ -175,15 +172,44 @@ export class RoleService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       },
     });
 
     if (!role) {
       throw new NotFoundException('Role does not exist');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator'];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     return {
@@ -229,7 +255,7 @@ export class RoleService {
       data: {
         name,
         description,
-        created_by: user.id
+        created_by: user.id,
       },
     });
 
@@ -242,12 +268,11 @@ export class RoleService {
       //   position: userPos,
       // },
       role,
-      created_by_user: `${userName} - ${userPosition}`
+      created_by_user: `${userName} - ${userPosition}`,
     };
   }
 
   async updateRole(dto: UpdateRoleDto, user: RequestUser, roleId: string) {
-
     const existingRole = await this.prisma.role.findUnique({
       where: { id: roleId },
     });
@@ -280,7 +305,7 @@ export class RoleService {
       data: {
         name: dto.name ?? undefined,
         description: dto.description ?? undefined,
-        updated_by: user.id
+        updated_by: user.id,
       },
     });
 
@@ -293,7 +318,7 @@ export class RoleService {
       //   position: userPos,
       // },
       role,
-      updated_by_user: `${userName} - ${userPosition}`
+      updated_by_user: `${userName} - ${userPosition}`,
     };
   }
 

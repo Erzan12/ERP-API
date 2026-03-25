@@ -26,9 +26,9 @@ export class DivisionService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         updatedBy: {
           select: {
@@ -37,11 +37,11 @@ export class DivisionService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!division) {
@@ -72,7 +72,9 @@ export class DivisionService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException('User is not allowed to view a Company');
+      throw new ForbiddenException(
+        'User is not allowed to perform this action',
+      );
     }
 
     return {
@@ -83,21 +85,17 @@ export class DivisionService {
   }
 
   //query all available divisions
-  async getDivisions(
-    user: RequestUser,
-    dto: PaginationDto,
-  ) {
-
+  async getDivisions(user: RequestUser, dto: PaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
 
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = {
+    const whereCondition: Prisma.DivisionWhereInput = {
       isActive: true,
     };
 
     //for string type search columns
-    const stringFields = ['name', 'division_head_id']
+    const stringFields = ['name', 'division_head_id'];
 
     if (search) {
       //handle int and boolean search
@@ -110,29 +108,36 @@ export class DivisionService {
             contains: search,
             mode: 'insensitive',
           },
-        }))
+        })),
       );
 
       //boolean search
-      if ( search === 'true' || search === 'false' ) {
+      if (search === 'true' || search === 'false') {
         orConditions.push({
           isActive: search === 'true',
-        })
+        });
       }
 
       whereCondition.OR = orConditions;
     }
 
-    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'name', 'division_head_id'];
-    if (!allowSortFeilds.includes(sortBy)) {
-      sortBy;
-    }
+    const allowSortFeilds = [
+      'id',
+      'created_at',
+      'updated_at',
+      'name',
+      'division_head_id',
+    ];
+    // if (!allowSortFeilds.includes(sortBy)) {
+    //   sortBy;
+    // }
+    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
 
-    const [ total, divisions ] = await this.prisma.$transaction([
+    const [total, divisions] = await this.prisma.$transaction([
       this.prisma.division.count({
         where: {
           ...whereCondition,
-        }
+        },
       }),
       this.prisma.division.findMany({
         where: {
@@ -146,9 +151,9 @@ export class DivisionService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           updatedBy: {
             select: {
@@ -157,15 +162,15 @@ export class DivisionService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
         skip,
         take: perPage,
         orderBy: {
-          [sortBy]: order,
+          [safeSortBy]: order,
         },
       }),
     ]);
@@ -216,7 +221,7 @@ export class DivisionService {
       page,
       perPage,
       // totalPages: Math.ceil( total / perPage),
-      divisions
+      divisions,
     };
   }
 
@@ -241,7 +246,7 @@ export class DivisionService {
       data: {
         name,
         division_head_id,
-        created_by: user.id
+        created_by: user.id,
       },
     });
 
@@ -281,7 +286,6 @@ export class DivisionService {
     updateDivisionDto: UpdateDivisionDto,
     user: RequestUser,
   ) {
-
     const division = await this.prisma.division.findUnique({
       where: { id: divisionId },
       select: {
@@ -291,9 +295,7 @@ export class DivisionService {
     });
 
     if (!division) {
-      throw new BadRequestException(
-        'Department does not exist!',
-      );
+      throw new BadRequestException('Department does not exist!');
     }
 
     const updateDivision = await this.prisma.division.update({
@@ -301,7 +303,7 @@ export class DivisionService {
       data: {
         name: updateDivisionDto.name ?? undefined,
         isActive: updateDivisionDto.isActive ?? undefined,
-        updated_by: user.id
+        updated_by: user.id,
       },
     });
 
@@ -333,7 +335,7 @@ export class DivisionService {
       //   position: userPos,
       // },
       updateDivision,
-      updated_by_user: `${userName} - ${userPosition}`
+      updated_by_user: `${userName} - ${userPosition}`,
     };
   }
 }

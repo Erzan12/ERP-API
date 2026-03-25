@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsInt, IsDefined, IsUUID, IsOptional, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsInt,
+  IsDefined,
+  IsUUID,
+  IsOptional,
+  IsBoolean,
+} from 'class-validator';
 
 export class CreateDepartmentDto {
   @IsString()
@@ -19,7 +26,7 @@ export class CreateDepartmentDto {
 
   @IsUUID()
   @ApiProperty({
-    example:'Division PK UUID',
+    example: 'Division PK UUID',
     description: 'The Division where the department belongs to',
   })
   division_id: string;
@@ -44,7 +51,7 @@ export class UpdateDepartmentDto {
   @IsOptional()
   @ApiProperty({
     example: 'Division PK UUID',
-    description: 'The division where the department belongs to'
+    description: 'The division where the department belongs to',
   })
   division_id?: string;
 

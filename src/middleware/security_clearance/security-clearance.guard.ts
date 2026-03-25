@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { SECURITY_CLEARANCE_KEY } from './security-clearance.decorator';
+import { AuthenticatedRequest } from 'src/utils/types/interface';
 
 @Injectable()
 export class SecurityClearanceGuard implements CanActivate {
@@ -20,7 +21,7 @@ export class SecurityClearanceGuard implements CanActivate {
     // If the route does not declare @SecurityClearance()
     if (!requiredLevel) return true;
 
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const user = request.user;
 
     if (!user) {
