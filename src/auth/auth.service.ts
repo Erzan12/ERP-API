@@ -11,7 +11,6 @@ import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { response } from 'express';
 import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-permisison.helper';
 
 @Injectable()
@@ -138,7 +137,7 @@ export class AuthService {
       status: 'success',
       message: 'Reset Token generated successfully',
       token,
-    }
+    };
   }
 
   //v3 log in with validateUser - to validate the user log in request if the user is a valid user and existed in the database if yes then jwt token will be generated
@@ -308,7 +307,6 @@ export class AuthService {
     ipAddress?: string,
     userAgent?: string,
   ) {
-    
     await this.prisma.user.update({
       where: { id: requestUser.id },
       data: {
@@ -363,7 +361,7 @@ export class AuthService {
                   },
                 },
               },
-            }
+            },
           },
         },
       },
@@ -420,7 +418,7 @@ export class AuthService {
                   id: rp.sub_module.id,
                   name: rp.sub_module.name,
                 },
-              ])
+              ]),
             ).values(),
           ];
           return {

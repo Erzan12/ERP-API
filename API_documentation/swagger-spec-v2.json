@@ -3558,16 +3558,7 @@
     "/v2/manager/permission-template/user/{id}": {
       "post": {
         "operationId": "PermissionTemplateControllerV2_assignPermTemplate_v2",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "description": "Payload to assign permission template to user",
@@ -3608,7 +3599,57 @@
     "/v2/manager/roles": {
       "get": {
         "operationId": "RoleManagementControllerV2_getRoles_v2",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "id",
+              "example": "id",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Here are the list of Roles"
@@ -3872,11 +3913,6 @@
       "UpdateSubModulePermisisonDto": {
         "type": "object",
         "properties": {
-          "sub_module_permission_id": {
-            "type": "string",
-            "example": "UUID",
-            "description": "ID of the sub module permission you want to update"
-          },
           "action": {
             "type": "string",
             "example": "view, create, update, note, delete",
@@ -3889,7 +3925,6 @@
           }
         },
         "required": [
-          "sub_module_permission_id",
           "action",
           "isActive"
         ]
@@ -5088,6 +5123,16 @@
             "example": "Interviewer remarks",
             "description": "The remark of the interviewer"
           },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "initial",
+              "second",
+              "final"
+            ],
+            "example": "initial",
+            "description": "The interview stage for the interviewer"
+          },
           "total_points": {
             "type": "number",
             "example": "Points",
@@ -5108,6 +5153,7 @@
         "required": [
           "interviewer_id",
           "remarks",
+          "stage",
           "total_points",
           "recommendations",
           "ratings"

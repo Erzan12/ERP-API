@@ -3,6 +3,8 @@ import { AuditLogData } from './types/audit-log-data.interface';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Request } from 'express';
+import { NewUserData } from 'src/utils/types/types';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AuditService {
@@ -33,11 +35,15 @@ export class AuditService {
           resource: data.resource,
           resource_id: data.resource_id,
           old_values: data.old_values
-            ? JSON.parse(JSON.stringify(data.old_values))
-            : null,
+            ? (JSON.parse(
+                JSON.stringify(data.old_values),
+              ) as Prisma.InputJsonValue)
+            : Prisma.JsonNull, // use Prisma.JsonNull instead of null
           new_values: data.new_values
-            ? JSON.parse(JSON.stringify(data.new_values))
-            : null,
+            ? (JSON.parse(
+                JSON.stringify(data.new_values),
+              ) as Prisma.InputJsonValue)
+            : Prisma.JsonNull,
           change_fields: changedFields,
           ip_address: data.ip_address,
           user_agent: data.user_agent,
@@ -60,9 +66,12 @@ export class AuditService {
           `CRITICAL AUDIT: ${data.action} on ${data.resource} by user ${data.user?.email}`,
         );
       }
-    } catch (error) {
-      //never fail the main request due to audit logging errors
-      this.logger.error('Failed to create audit log:', error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        this.logger.error('Failed to create audit log:', error.message);
+      } else {
+        this.logger.error('Failed to create audit log:', error);
+      }
     }
   }
 
@@ -76,13 +85,20 @@ export class AuditService {
         select: { employee_id: true },
       });
       return user?.employee_id || null;
-    } catch (error) {
+    } catch (error: unknown) {
+      this.logger.error(
+        'Failed to fetch employee ID:',
+        error instanceof Error ? error.message : String(error),
+      );
       return null;
     }
   }
 
   //detect which fields chage between old and new values
-  private detectChangedFields(oldValues?: any, newValues?: any): string[] {
+  private detectChangedFields<T extends object>(
+    oldValues?: T,
+    newValues?: T,
+  ): string[] {
     if (!oldValues || !newValues) return [];
 
     const changed: string[] = [];
@@ -92,7 +108,10 @@ export class AuditService {
     ]);
 
     for (const key of allKeys) {
-      if (JSON.stringify(oldValues[key]) !== JSON.stringify(newValues[key])) {
+      if (
+        JSON.stringify(oldValues[key as keyof T]) !==
+        JSON.stringify(newValues[key as keyof T])
+      ) {
         changed.push(key);
       }
     }
@@ -178,41 +197,87 @@ export class AuditService {
   }
 
   //log user account creation
+  // async logUserCreation({
+  //   actorUserId, //the user performing the action
+  //   actorEmail, //email of the actor
+  //   newUser, // the create user object
+  //   req, //express request to get ip, user-agent
+  // }: {
+  //   actorUserId?: string;
+  //   actorEmail?: string;
+  //   newUser: {
+  //     id: string;
+  //     employee_id?: string | null;
+  //     [key: string]: any;
+  //   }; //user entity
+  //   req: Request;
+  // }) {
+  //   try {
+  //     return await this.prisma.auditTrail.create({
+  //       data: {
+  //         user_id: actorUserId ?? null,
+  //         user_email: actorEmail ?? null,
+  //         employee_id: newUser.employee_id ?? null,
+  //         action: 'CREATE',
+  //         resource: 'user_account',
+  //         resource_id: newUser.id,
+  //         old_values: undefined,
+  //         new_values: newUser,
+  //         change_fields: Object.keys(newUser),
+  //         ip_address: req.ip ?? undefined,
+  //         user_agent: req?.headers['user-agent'] ?? null,
+  //         endpoint: req ? `${req.method} ${req.originalUrl}` : null,
+  //         http_method: req?.method ?? null,
+  //         status_code: 201,
+  //         success: true,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     console.error('Failed to log audit trail:', error);
+  //   }
+  // }
+
   async logUserCreation({
-    actorUserId,    //the user performing the action
-    actorEmail,     //email of the actor
-    newUser,        // the create user object
-    req,            //express request to get ip, user-agent
+    actorUserId,
+    actorEmail,
+    newUser,
+    req,
   }: {
     actorUserId?: string;
     actorEmail?: string;
-    newUser: any;   //user entity
+    newUser: NewUserData;
     req: Request;
   }) {
-   try {
-    return await this.prisma.auditTrail.create({
-      data: {
-        user_id: actorUserId ?? null,
-        user_email: actorEmail ?? null,
-        employee_id: newUser.employee_id ?? null,
-        action: 'CREATE',
-        resource: 'user_account',
-        resource_id: newUser.id,
-        old_values: undefined,
-        new_values: newUser,
-        change_fields: Object.keys(newUser),
-        ip_address: req.ip ?? undefined,
-        user_agent: req?.headers['user-agent'] ?? null,
-        endpoint: req ? `${req.method} ${req.originalUrl}` : null,
-        http_method: req?.method ?? null,
-        status_code: 201,
-        success: true,
-      },
-    });
-   } catch (error) {
-    console.error('Failed to log audit trail:', error);
-   }
-  } 
+    try {
+      return await this.prisma.auditTrail.create({
+        data: {
+          user_id: actorUserId ?? null,
+          user_email: actorEmail ?? null,
+          employee_id: newUser.employee_id ?? null,
+          action: 'CREATE',
+          resource: 'user_account',
+          resource_id: newUser.id,
+          old_values: undefined,
+          new_values: JSON.parse(
+            JSON.stringify(newUser),
+          ) as Prisma.InputJsonValue, // ensures type safety
+          change_fields: Object.keys(newUser),
+          ip_address: req.ip ?? undefined,
+          user_agent: req.headers['user-agent'] ?? null,
+          endpoint: `${req.method} ${req.originalUrl}`,
+          http_method: req.method,
+          status_code: 201,
+          success: true,
+        },
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        this.logger.error('Failed to create audit log:', error.message);
+      } else {
+        this.logger.error('Failed to create audit log:', error);
+      }
+    }
+  }
 
   // log permission denials
   async logPermissionDenied(
