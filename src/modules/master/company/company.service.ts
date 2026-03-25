@@ -30,9 +30,9 @@ export class CompanyService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         updatedBy: {
           select: {
@@ -41,11 +41,11 @@ export class CompanyService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!company) {
@@ -76,7 +76,9 @@ export class CompanyService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException('User is not allowed to view a Company');
+      throw new ForbiddenException(
+        'You are not allowed to perform this action',
+      );
     }
 
     return {
@@ -87,21 +89,24 @@ export class CompanyService {
   }
 
   //query all company available
-  async getCompanies(
-    user: RequestUser,
-    dto: PaginationDto,
-  ) {
-
+  async getCompanies(user: RequestUser, dto: PaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
 
     //PAGINATION AREA
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = {
+    const whereCondition: Prisma.CompanyWhereInput = {
       isActive: true,
     };
 
-    const stringFields  = ['name', 'abbreviation', 'address', 'company_tin', 'fax_no', 'telephone_no'] as const;
+    const stringFields = [
+      'name',
+      'abbreviation',
+      'address',
+      'company_tin',
+      'fax_no',
+      'telephone_no',
+    ] as const;
 
     if (search) {
       //handle int and boolean search
@@ -123,7 +128,7 @@ export class CompanyService {
             contains: search,
             mode: 'insensitive',
           },
-        }))
+        })),
       );
 
       //boolean search
@@ -141,25 +146,32 @@ export class CompanyService {
       }
 
       //boolean search
-      if ( search === 'true' || search === 'false' ) {
+      if (search === 'true' || search === 'false') {
         orConditions.push({
           isActive: search === 'true',
-        })
+        });
       }
 
       whereCondition.OR = orConditions;
     }
 
-    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'name', 'abbreviation'];
-    if (!allowSortFeilds.includes(sortBy)) {
-      sortBy;
-    }
+    const allowSortFeilds = [
+      'id',
+      'created_at',
+      'updated_at',
+      'name',
+      'abbreviation',
+    ];
+    // if (!allowSortFeilds.includes(sortBy)) {
+    //   sortBy;
+    // }
+    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
 
-    const [ total, companies ] = await this.prisma.$transaction([
+    const [total, companies] = await this.prisma.$transaction([
       this.prisma.company.count({
         where: {
           ...whereCondition,
-        }
+        },
       }),
       this.prisma.company.findMany({
         where: {
@@ -173,9 +185,9 @@ export class CompanyService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           updatedBy: {
             select: {
@@ -184,15 +196,15 @@ export class CompanyService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
         skip,
         take: perPage,
         orderBy: {
-          [sortBy]: order,
+          [safeSortBy]: order,
         },
       }),
     ]);
@@ -304,7 +316,7 @@ export class CompanyService {
         company_tin,
         abbreviation,
         is_top_20000,
-        created_by: user.id
+        created_by: user.id,
       },
     });
 
@@ -320,7 +332,7 @@ export class CompanyService {
       //   position: userPos,
       // },
       company,
-      created_by_user: `${userName} - ${userPosition}`
+      created_by_user: `${userName} - ${userPosition}`,
     };
   }
 
@@ -352,7 +364,7 @@ export class CompanyService {
         is_top_20000: updateCompanyDto.is_top_20000 ?? undefined,
         abbreviation: updateCompanyDto.abbreviation ?? undefined,
         isActive: updateCompanyDto.isActive ?? undefined,
-        updated_by: user.id
+        updated_by: user.id,
       },
     });
 
@@ -395,7 +407,7 @@ export class CompanyService {
       //   position: userPos,
       // },
       updatedCompany,
-      updated_by_user: `${userName} - ${userPosition}`
+      updated_by_user: `${userName} - ${userPosition}`,
     };
   }
 }

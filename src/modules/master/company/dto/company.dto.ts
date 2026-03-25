@@ -78,22 +78,22 @@ export class CreateCompanyDto {
   })
   abbreviation: string;
 
-//   @IsInt()
-//   @IsDefined()
-//   @Expose({ name: 'status' }) // maps " status" input field to this property
-//   @ApiProperty({
-//     example: 'active or inactive',
-//     description: 'active = 1, inactive = 0',
-//   })
-//   @Transform(({ value }) => {
-//     console.log('Transforming status:', value);
-//     if (value === 'active') return 1;
-//     if (value === 'inactive') return 0;
-//     throw new BadRequestException(
-//       `Invalid status value ${value}. Allowed values are "active" or "inactive"`,
-//     );
-//   })
-//   stat?: number;
+  //   @IsInt()
+  //   @IsDefined()
+  //   @Expose({ name: 'status' }) // maps " status" input field to this property
+  //   @ApiProperty({
+  //     example: 'active or inactive',
+  //     description: 'active = 1, inactive = 0',
+  //   })
+  //   @Transform(({ value }) => {
+  //     console.log('Transforming status:', value);
+  //     if (value === 'active') return 1;
+  //     if (value === 'inactive') return 0;
+  //     throw new BadRequestException(
+  //       `Invalid status value ${value}. Allowed values are "active" or "inactive"`,
+  //     );
+  //   })
+  //   stat?: number;
 }
 
 export class UpdateCompanyDto {
@@ -148,7 +148,7 @@ export class UpdateCompanyDto {
   })
   @Transform(({ value }) => {
     console.log('Transforming status:', value);
-    if ( value === undefined || value === null) return undefined; //allow missing
+    if (value === undefined || value === null) return undefined; //allow missing
     if (value === 'yes') return 1;
     if (value === 'no') return 0;
     throw new BadRequestException(

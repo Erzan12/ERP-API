@@ -1,9 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { CreatePermissionTemplateDto } from 'src/modules/manager/permission_template/dto/create-permission-template.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AssignTemplateDto } from './dto/assign-template.dto';
 import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class PermissionTemplateService {
@@ -17,6 +22,41 @@ export class PermissionTemplateService {
     if (existingPermTemplate.length === 0) {
       throw new BadRequestException(
         'No available permission templates available',
+      );
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
       );
     }
 
@@ -37,6 +77,41 @@ export class PermissionTemplateService {
 
     if (!permissionTemplate) {
       throw new BadRequestException('Permission Template not found.');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     return {
@@ -107,7 +182,7 @@ export class PermissionTemplateService {
 
   //update existing permission template
   async updatePermissionTemplate(
-    id: string,
+    permissionTemplateId: string,
     dto: UpdatePermissionTemplateDto,
     user: RequestUser,
   ) {
@@ -115,7 +190,7 @@ export class PermissionTemplateService {
       const { name, department_id, position_id, role_permission_ids } = dto;
 
       const existing = await tx.permissionTemplate.findUnique({
-        where: { id },
+        where: { id: permissionTemplateId },
         include: {
           departments: true,
           role_permissions: true,
@@ -129,7 +204,7 @@ export class PermissionTemplateService {
       // Prevent duplicate names
       if (name && name !== existing.name) {
         const duplicate = await tx.permissionTemplate.findFirst({
-          where: { name, NOT: { id } },
+          where: { name, NOT: { id: permissionTemplateId } },
         });
 
         if (duplicate) {
@@ -141,7 +216,7 @@ export class PermissionTemplateService {
 
       // 1. Update template base info
       const updatedTemplate = await tx.permissionTemplate.update({
-        where: { id },
+        where: { id: permissionTemplateId },
         data: {
           name,
           department_id,
@@ -151,7 +226,7 @@ export class PermissionTemplateService {
       // 2. Handle department/position record
       // Remove old dept/position associations
       await tx.permissionTemplateDepartment.deleteMany({
-        where: { permission_template_id: id },
+        where: { permission_template_id: permissionTemplateId },
       });
 
       //default the existing values of posId and deptId
@@ -163,7 +238,7 @@ export class PermissionTemplateService {
 
       const ptDept = await tx.permissionTemplateDepartment.create({
         data: {
-          permission_template_id: id,
+          permission_template_id: permissionTemplateId,
           department_id: departmentIdToUse,
           position_id: positionIdToUse,
           user_id: user.id,
@@ -173,7 +248,7 @@ export class PermissionTemplateService {
       // 3. Remove old role-permission relations
       await tx.permissionTemplateRolePermission.deleteMany({
         where: {
-          permission_template_id: id,
+          permission_template_id: permissionTemplateId,
         },
       });
 
@@ -190,7 +265,7 @@ export class PermissionTemplateService {
       for (const rp of rolePermissions) {
         await tx.permissionTemplateRolePermission.create({
           data: {
-            permission_template_id: id,
+            permission_template_id: permissionTemplateId,
             role_permission_id: rp.id,
             permission_template_department_id: ptDept.id,
           },
@@ -205,10 +280,10 @@ export class PermissionTemplateService {
     });
   }
 
-  async assignTemplateToUser(dto: AssignTemplateDto, manager: RequestUser) {
+  async assignTemplateToUser(dto: AssignTemplateDto, user: RequestUser) {
     const { user_id, template_id } = dto;
     return this.prisma.$transaction(async (tx) => {
-      const user = await tx.user.findUnique({
+      const existingUser = await tx.user.findUnique({
         where: { id: user_id },
         include: {
           employee: {
@@ -222,7 +297,7 @@ export class PermissionTemplateService {
         },
       });
 
-      if (!user || !user.employee) {
+      if (!existingUser || !existingUser.employee) {
         throw new BadRequestException('User or employee not found');
       }
 
@@ -230,9 +305,9 @@ export class PermissionTemplateService {
       const templateDept = await tx.permissionTemplateDepartment.findFirst({
         where: {
           permission_template_id: template_id,
-          department_id: user.employee.department_id,
+          department_id: existingUser.employee.department_id,
           OR: [
-            { position_id: user.employee.position_id },
+            { position_id: existingUser.employee.position_id },
             { position_id: null }, // fallback to template for all positions in dept
           ],
         },
@@ -249,7 +324,7 @@ export class PermissionTemplateService {
         );
       }
 
-      const userRolesMap = new Map<string, any>();
+      const userRolesMap = new Map<string, UserRole>();
 
       for (const ptrp of templateDept.permission_template_role_permissions) {
         const rp = ptrp.role_permissions;
@@ -258,20 +333,26 @@ export class PermissionTemplateService {
         let userRole = userRolesMap.get(key);
 
         if (!userRole) {
-          userRole = await tx.userRole.findFirst({
+          const existing = await tx.userRole.findFirst({
             where: {
               user_id: user.id,
               role_id: rp.role_id,
             },
+            include: { role: true },
           });
 
-          if (!userRole) {
+          if (existing) {
+            userRole = existing;
+          } else {
             userRole = await tx.userRole.create({
               data: {
                 user_id: user.id,
                 role_id: rp.role_id,
                 role_name: rp.role_name,
                 created_at: new Date(),
+              },
+              include: {
+                role: true,
               },
             });
           }
@@ -297,6 +378,39 @@ export class PermissionTemplateService {
             },
           });
         }
+      }
+
+      const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+          employee: {
+            include: {
+              person: true,
+              position: true,
+            },
+          },
+          user_roles: true,
+        },
+      });
+
+      if (
+        !requestUser ||
+        !requestUser.employee ||
+        !requestUser.employee.person
+      ) {
+        throw new BadRequestException(`User does not exist.`);
+      }
+
+      const isAdmin = requestUser.user_roles.some(
+        (role) =>
+          role.role_name === 'Administrator' ||
+          role.role_name === 'Super Administrator',
+      );
+
+      if (!isAdmin) {
+        throw new ForbiddenException(
+          'You are not allowed to perform this action',
+        );
       }
 
       return {
@@ -328,24 +442,60 @@ export class PermissionTemplateService {
       );
     }
 
-    return this.prisma.permissionTemplate.findMany({
-      where: {
-        department_id,
-        departments: {
-          some: {
-            department_id,
-            OR: [{ position_id }, { position_id: null }],
+    const userPermissionTemplate =
+      await this.prisma.permissionTemplate.findMany({
+        where: {
+          department_id,
+          departments: {
+            some: {
+              department_id,
+              OR: [{ position_id }, { position_id: null }],
+            },
           },
         },
-      },
+        include: {
+          departments: true,
+          role_permissions: {
+            include: {
+              role_permissions: true,
+            },
+          },
+        },
+      });
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
       include: {
-        departments: true,
-        role_permissions: {
+        employee: {
           include: {
-            role_permissions: true,
+            person: true,
+            position: true,
           },
         },
+        user_roles: true,
       },
     });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'You are not allowed to perform this action',
+      );
+    }
+
+    return {
+      status: 'success',
+      message: 'Here is the Users Permission Template.',
+      userPermissionTemplate,
+    };
   }
 }

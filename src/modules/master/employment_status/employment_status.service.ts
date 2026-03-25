@@ -1,5 +1,13 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateEmployeeStatusDto, UpdateEmployeeStatusDto } from './dto/employee-status.dto';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  CreateEmployeeStatusDto,
+  UpdateEmployeeStatusDto,
+} from './dto/employee-status.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
@@ -10,17 +18,13 @@ export class EmploymentStatusService {
   constructor(private prisma: PrismaService) {}
 
   //get all employee_status
-  async getEmployeeStats(
-    user: RequestUser,
-    dto: PaginationDto,
-  ) {
-
+  async getEmployeeStats(user: RequestUser, dto: PaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
 
     //pagination area
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = {};
+    const whereCondition: Prisma.EmploymentStatusWhereInput = {};
 
     const stringFields = ['label', 'code'] as const;
 
@@ -33,22 +37,23 @@ export class EmploymentStatusService {
             contains: search,
             mode: 'insensitive',
           },
-        }))
+        })),
       );
 
       whereCondition.OR = orConditions;
     }
 
-    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'code', 'label']
-    if (!allowSortFeilds.includes(sortBy)) {
-      sortBy;
-    }
+    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'code', 'label'];
+    // if (!allowSortFeilds.includes(sortBy)) {
+    //   sortBy;
+    // }
+    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
 
-    const [ total, employmentStatus ] = await this.prisma.$transaction([
+    const [total, employmentStatus] = await this.prisma.$transaction([
       this.prisma.employmentStatus.count({
         where: {
           ...whereCondition,
-        }
+        },
       }),
       this.prisma.employmentStatus.findMany({
         where: {
@@ -62,9 +67,9 @@ export class EmploymentStatusService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           updatedBy: {
             select: {
@@ -73,18 +78,18 @@ export class EmploymentStatusService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
         skip,
         take: perPage,
         orderBy: {
-          [sortBy]: order,
+          [safeSortBy]: order,
         },
       }),
-    ])
+    ]);
 
     // if (employmentStats.length === 0) {
     //   throw new BadRequestException('No available departments found.');
@@ -132,7 +137,7 @@ export class EmploymentStatusService {
       page,
       perPage,
       employmentStatus,
-    }
+    };
   }
 
   //get a single employee_status
@@ -147,9 +152,9 @@ export class EmploymentStatusService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         updatedBy: {
           select: {
@@ -158,15 +163,44 @@ export class EmploymentStatusService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!employeeStat) {
       throw new BadRequestException('Employee status not found.');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to perform this action',
+      );
     }
 
     return {
@@ -180,7 +214,6 @@ export class EmploymentStatusService {
     empStatusDto: CreateEmployeeStatusDto,
     user: RequestUser,
   ) {
-
     const existingEmpStat = await this.prisma.employmentStatus.findUnique({
       where: { code: empStatusDto.code },
     });
@@ -248,7 +281,6 @@ export class EmploymentStatusService {
     updateEmployeeStatusDto: UpdateEmployeeStatusDto,
     user: RequestUser,
   ) {
-
     const employment_status = await this.prisma.employmentStatus.findUnique({
       where: { id: employeeStatusId },
     });
@@ -263,8 +295,8 @@ export class EmploymentStatusService {
         code: updateEmployeeStatusDto.code ?? undefined,
         label: updateEmployeeStatusDto.label ?? undefined,
         updatedBy: {
-          connect: { id: user.id }
-        }
+          connect: { id: user.id },
+        },
       },
     });
 
@@ -309,7 +341,7 @@ export class EmploymentStatusService {
       //   position: userPosition,
       // },
       updatedEmployeeStatus,
-      updated_by_user: `${userName} - ${userPosition}`
+      updated_by_user: `${userName} - ${userPosition}`,
     };
   }
 }

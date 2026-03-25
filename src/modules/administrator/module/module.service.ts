@@ -14,10 +14,7 @@ import { Prisma } from '@prisma/client';
 export class ModuleService {
   constructor(private prisma: PrismaService) {}
   // validate if module already exist
-  async createModule(
-    createModuleDto: CreateModuleDto,
-    user: RequestUser,
-  ) {
+  async createModule(createModuleDto: CreateModuleDto, user: RequestUser) {
     const existingModule = await this.prisma.module.findFirst({
       where: {
         name: createModuleDto.name,
@@ -45,10 +42,7 @@ export class ModuleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-    ];
+    const allowedRoles = ['Administrator', 'Super Administrator'];
 
     const canView = requestUser.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
@@ -65,8 +59,8 @@ export class ModuleService {
         name: createModuleDto.name,
         //to be added field of stat for status active or inactive
         createdBy: {
-          connect: { id: user.id }
-        }
+          connect: { id: user.id },
+        },
       },
     });
 
@@ -82,7 +76,7 @@ export class ModuleService {
       //   position: userPos,
       // },
       module,
-      created_by_user: `${userName} - ${userPosition}`
+      created_by_user: `${userName} - ${userPosition}`,
     };
   }
 
@@ -101,7 +95,7 @@ export class ModuleService {
             id: true,
             name: true,
             isActive: true,
-          }
+          },
         },
         createdBy: {
           select: {
@@ -110,9 +104,9 @@ export class ModuleService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         updatedBy: {
           select: {
@@ -121,10 +115,10 @@ export class ModuleService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       },
     });
 
@@ -142,22 +136,17 @@ export class ModuleService {
   }
 
   // with pagination
-  async getModules(
-    user: RequestUser,
-    dto: PaginationDto,
-  ) {
-
+  async getModules(user: RequestUser, dto: PaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
 
     //PAGINATION AREA
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = {
-      stat: 1,
+    const whereCondition: Prisma.ModuleWhereInput = {
+      isActive: true,
     };
 
     if (search) {
-
       //handle int and boolean search
       const orConditions: Prisma.ModuleWhereInput[] = [];
 
@@ -170,19 +159,17 @@ export class ModuleService {
       });
 
       //boolean search
-      if ( search === 'true' || search === 'false' ) {
+      if (search === 'true' || search === 'false') {
         orConditions.push({
           isActive: search === 'true',
-        })
+        });
       }
 
       whereCondition.OR = orConditions;
     }
     //prevent sorting by invalied fields (very important)
-    const allowSortFeilds = ['name', 'created_at', 'updated_at', 'stat'];
-    if (!allowSortFeilds.includes(sortBy)) {
-      sortBy;
-    }
+    const allowSortFeilds = ['name', 'created_at', 'updated_at', 'isActive'];
+    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, modules] = await this.prisma.$transaction([
       this.prisma.module.count({
@@ -202,9 +189,9 @@ export class ModuleService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           updatedBy: {
             select: {
@@ -213,22 +200,22 @@ export class ModuleService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           sub_module: {
             select: {
               id: true,
               name: true,
               isActive: true,
-            }
-          }
+            },
+          },
         },
         skip,
         take: perPage,
         orderBy: {
-          [sortBy]: order,
+          [safeSortBy]: order,
         },
       }),
     ]);
@@ -254,10 +241,7 @@ export class ModuleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-    ];
+    const allowedRoles = ['Administrator', 'Super Administrator'];
 
     const canView = requestUser.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
@@ -276,7 +260,7 @@ export class ModuleService {
       page,
       perPage,
       // totalPages: Math.ceil( total / perPage),
-      data: modules,
+      modules,
     };
   }
 
@@ -304,7 +288,7 @@ export class ModuleService {
       data: {
         name: updateModuleDto.name,
         //stat: to add stat field in the future,
-        updated_by: user.id
+        updated_by: user.id,
       },
     });
 
@@ -336,7 +320,7 @@ export class ModuleService {
       //   position: userPos,
       // },
       updatedModule,
-      updated_by_user: `${userName} - ${userPosition}`
+      updated_by_user: `${userName} - ${userPosition}`,
     };
   }
 }

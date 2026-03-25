@@ -1,14 +1,5 @@
-import {
-  IsString,
-  IsInt,
-  IsNotEmpty,
-  IsDefined,
-  IsArray,
-  ArrayNotEmpty,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, ArrayNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Transform } from 'class-transformer';
-import { BadRequestException } from '@nestjs/common';
 
 export class AddSubModulePermissionDto {
   @IsArray()

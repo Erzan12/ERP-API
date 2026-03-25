@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsNotEmpty, IsUUID } from 'class-validator';
+import { IsString, IsNotEmpty, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSubModuleDto {
@@ -12,6 +12,9 @@ export class CreateSubModuleDto {
 
   @IsUUID()
   @IsNotEmpty()
-  @ApiProperty({ example: 'PK UUID', description: 'Module ID of the submodule ' })
+  @ApiProperty({
+    example: 'PK UUID',
+    description: 'Module ID of the submodule ',
+  })
   module_id: string;
 }
