@@ -1,0 +1,937 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+////////////////////////////////////////
+// ENUMS
+////////////////////////////////////////
+
+enum Gender {
+  male
+  female
+}
+
+enum CivilStatus {
+  single
+  married
+  separated
+  widowed
+}
+
+enum StatusEnum {
+  active
+  inactive
+}
+
+enum CareerPosingStatus {
+  draft
+  submitted
+  verified
+  approved
+  rejected
+}
+
+enum EmploymentType {
+  full_time
+  part_time
+}
+
+enum EmployeeType {
+  land_based
+  sea_based
+}
+
+enum ApplicationSource {
+  company_website
+  walk_in
+  referral
+  linkedIn
+  jobstreet
+}
+
+enum ApplicationStatus {
+  applied
+  screening
+  for_interview
+  accepted
+  rejected
+  onboarding
+}
+
+enum InterviewStage {
+  initial
+  second
+  final
+}
+
+////////////////////////////////////////
+// CORE IDENTITY
+////////////////////////////////////////
+
+model Person {
+  id                        String   @id @default(uuid()) @db.Uuid
+  first_name                String
+  last_name                 String
+  middle_name               String?
+  suffix                    String?
+  date_of_birth             DateTime
+  gender                    String?
+  email                     String?  @unique // Added unique for faster lookup
+  contact_no                String?
+  civil_status              String   @default("single")
+  home_address              String?
+  city_provice              String?
+  nationality               String?
+  country                   String?
+  zip_code                  String?
+  emergency_contact_person  String?
+  emergency_contact_number  String?
+  anonymization_preferences Json?
+  other_person_data         Json?
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("PersonCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("PersonUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  email_addresses EmailAddress[]
+  employee        Employee?      @relation("PersonEmployee")
+  users           User[]
+
+  @@index([last_name, first_name]) // Faster search for people by name
+}
+
+model EmailAddress {
+  id            String  @id @default(uuid()) @db.Uuid
+  person_id     String  @db.Uuid
+  email_address String
+  email_type    String
+  is_primary    Boolean
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("EmailAddressCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("EmailAddressUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  person Person @relation(fields: [person_id], references: [id], onDelete: Cascade)
+
+  @@index([person_id])
+}
+
+model User {
+  id                       String   @id @default(uuid()) @db.Uuid
+  token_version            Int      @default(0)
+  employee_id              String   @unique @db.Uuid
+  person_id                String   @db.Uuid
+  username                 String   @unique
+  password                 String
+  email                    String   @unique
+  isActive                 Boolean  @default(true)
+  password_reset           String?
+  require_reset            Int      @default(1)
+  reports_to               Int?
+  last_login               DateTime @default(now())
+  security_questions       Json?
+  security_clearance_level Int?
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("UserCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("UserUpdatedBy", fields: [updated_by], references: [id])
+
+  //self-relations for createdBy and updatedBy
+  usersCreated User[] @relation("UserCreatedBy")
+  usersUpdated User[] @relation("UserUpdatedBy")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Cascade delete tokens when user is removed
+  password_reset_token         PasswordResetToken[]
+  user_token                   UserToken[]
+  user_roles                   UserRole[]
+  user_permission              UserPermission[]
+  PermissionTemplateDepartment PermissionTemplateDepartment[]
+  audit_trail                  AuditTrail[]
+
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  person   Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
+
+  //linked user to createdby and updatedby columns
+  positionsCreated                         Position[]                         @relation("PositionCreatedBy")
+  positionsUpdated                         Position[]                         @relation("PositionUpdatedBy")
+  divisionsCreated                         Division[]                         @relation("DivisionCreatedBy")
+  divisionsUpdated                         Division[]                         @relation("DivisionUpdatedBy")
+  peopleCreated                            Person[]                           @relation("PersonCreatedBy")
+  peopleUpdated                            Person[]                           @relation("PersonUpdatedBy")
+  emailAddressesCreated                    EmailAddress[]                     @relation("EmailAddressCreatedBy")
+  emailAddressesUpdated                    EmailAddress[]                     @relation("EmailAddressUpdatedBy")
+  userLocationsCreated                     UserLocation[]                     @relation("UserLocationCreatedBy")
+  userLocationsUpdated                     UserLocation[]                     @relation("UserLocationUpdatedBy")
+  userTokensCreated                        UserToken[]                        @relation("UserTokenCreatedBy")
+  userTokensUpdated                        UserToken[]                        @relation("UserTokenUpdatedBy")
+  passwordResetTokensCreated               PasswordResetToken[]               @relation("PasswordResetTokenCreatedBy")
+  passwordResetTokensUpdated               PasswordResetToken[]               @relation("PasswordResetTokenUpdatedBy")
+  companiesCreated                         Company[]                          @relation("CompanyCreatedBy")
+  companiesUpdated                         Company[]                          @relation("CompanyUpdatedBy")
+  departmentsCreated                       Department[]                       @relation("DepartmentCreatedBy")
+  departmentsUpdated                       Department[]                       @relation("DepartmentUpdatedBy")
+  employeesCreated                         Employee[]                         @relation("EmployeeCreatedBy")
+  employeesUpdated                         Employee[]                         @relation("EmployeeUpdatedBy")
+  employmentStatusCreated                  EmploymentStatus[]                 @relation("EmploymentStatusCreatedBy")
+  employmentStatusUpdated                  EmploymentStatus[]                 @relation("EmploymentStatusUpdatedBy")
+  rolesCreated                             Role[]                             @relation("RoleCreatedBy")
+  rolesUpdated                             Role[]                             @relation("RoleUpdatedBy")
+  userRolesCreated                         UserRole[]                         @relation("UserRoleCreatedBy")
+  userRolesUpdated                         UserRole[]                         @relation("UserRoleUpdatedBy")
+  rolePermissionsCreated                   RolePermission[]                   @relation("RolePermissionCreatedBy")
+  rolePermissionsUpdated                   RolePermission[]                   @relation("RolePermissionUpdatedBy")
+  userPermissionsCreated                   UserPermission[]                   @relation("UserPermissionCreatedBy")
+  userPermissionsUpdated                   UserPermission[]                   @relation("UserPermissionUpdatedBy")
+  modulesCreated                           Module[]                           @relation("ModuleCreatedBy")
+  modulesUpdated                           Module[]                           @relation("ModuleUpdatedBy")
+  subModulesCreated                        SubModule[]                        @relation("SubModuleCreatedBy")
+  subModulesUpdated                        SubModule[]                        @relation("SubModuleUpdatedBy")
+  subModuleActionsCreated                  SubModuleAction[]                  @relation("SubModuleActionCreatedBy")
+  subModuleActionsUpdated                  SubModuleAction[]                  @relation("SubModuleActionUpdatedBy")
+  subModulePermissionsCreated              SubModulePermission[]              @relation("SubModulePermissionCreatedBy")
+  subModulePermissionsUpdated              SubModulePermission[]              @relation("SubModulePermissionUpdatedBy")
+  permissionTemplatesCreated               PermissionTemplate[]               @relation("PermissionTemplateCreatedBy")
+  permissionTemplatesUpdated               PermissionTemplate[]               @relation("PermissionTemplateUpdatedBy")
+  permissionTemplateDepartmentsCreated     PermissionTemplateDepartment[]     @relation("PermissionTemplateDepartmentCreatedBy")
+  permissionTemplateDepartmentsUpdated     PermissionTemplateDepartment[]     @relation("PermissionTemplateDepartmentUpdatedBy")
+  permissionTemplateRolePermissionsCreated PermissionTemplateRolePermission[] @relation("PermissionTemplateRolePermissionCreatedBy")
+  permissionTemplateRolePermissionsUpdated PermissionTemplateRolePermission[] @relation("PermissionTemplateRolePermissionUpdatedBy")
+  careerPostingCreated                     CareerPosting[]                    @relation("CareerPostingCreatedBy")
+  careerPostingUpdated                     CareerPosting[]                    @relation("CareerPostingUpdatedBy")
+  applicantCreated                         Applicant[]                        @relation("ApplicantCreatedBy")
+  applicantUpdated                         Applicant[]                        @relation("ApplicantUpdatedBy")
+  applicantDocumentCreated                 ApplicantDocument[]                @relation("ApplicantDocumentCreatedBy")
+  applicantDocumentUpdated                 ApplicantDocument[]                @relation("ApplicantDocumentUpdatedBy")
+  InterviewerCreatedBy                     Interviewer[]                      @relation("InterviewerCreatedBy")
+  InterviewerUpdatedBy                     Interviewer[]                      @relation("InterviewerUpdatedBy")
+  ExaminationRatingCreatedBy               ExaminationRating[]                @relation("ExaminationRatingCreatedBy")
+  ExaminationRatingUpdatedBy               ExaminationRating[]                @relation("ExaminationRatingUpdatedBy")
+
+  @@index([person_id])
+  @@index([employee_id])
+}
+
+model UserLocation {
+  id                 String  @id @default(uuid()) @db.Uuid
+  location_name      String
+  address_line_1     String?   
+  address_line_2     String?   
+  city               String?   
+  province           String?   
+  country            String?
+  isActive           Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("UserLocationCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("UserLocationUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  careerPosting CareerPosting[]
+
+  @@index([location_name])
+  @@index([address_line_1])
+  @@index([province])
+  @@index([country])
+  @@index([city])
+}
+
+model UserToken {
+  id         String  @id @default(uuid()) @db.Uuid
+  user_id    String  @db.Uuid
+  user_token String  @unique
+  isUsed     Boolean @default(false)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("UserTokenCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("UserTokenUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model PasswordResetToken {
+  id             String   @id @default(uuid()) @db.Uuid
+  user_id        String   @db.Uuid
+  expires_at     DateTime
+  password_token String   @unique
+  isUsed         Boolean  @default(false)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("PasswordResetTokenCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("PasswordResetTokenUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+////////////////////////////////////////
+// ORGANIZATION STRUCTURE
+////////////////////////////////////////
+
+model Company {
+  id           String  @id @default(uuid()) @db.Uuid
+  name         String
+  address      String?
+  telephone_no String?
+  fax_no       String?
+  company_tin  String?
+  abbreviation String  @unique
+  is_top_20000 Int     @default(0)
+  isActive     Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("CompanyCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("CompanyUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  employee   Employee[]
+
+  @@index([name])
+  @@index([abbreviation])
+}
+
+model Division {
+  id               String  @id @default(uuid()) @db.Uuid
+  name             String
+  division_head_id String?
+  isActive         Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("DivisionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("DivisionUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+  employee    Employee[]
+  departments Department[]
+
+  @@index([name])
+  @@index([division_head_id])
+}
+
+model Department {
+  id                 String  @id @default(uuid()) @db.Uuid
+  name               String
+  division_id        String  @db.Uuid
+  sorting            Int?
+  isActive           Boolean @default(true)
+  department_head_id String?
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("DepartmentCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("DepartmentUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  division                        Division                       @relation(fields: [division_id], references: [id])
+  employees                       Employee[]
+  positions                       Position[]
+  role_permissions                RolePermission[]
+  permission_templates            PermissionTemplate[]
+  careerPosting                   CareerPosting[]
+  permission_template_departments PermissionTemplateDepartment[]
+
+  @@index([division_id])
+}
+
+model Position {
+  id              String  @id @default(uuid()) @db.Uuid
+  name            String  @db.VarChar(255)
+  job_description String?
+  hierarchy       String?
+  sorting         Int?
+  department_id   String  @db.Uuid
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("PositionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("PositionUpdatedBy", fields: [updated_by], references: [id])
+
+  isActive   Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  employee                     Employee[]
+  careerPosting                CareerPosting[]
+  department                   Department                     @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  RolePermission               RolePermission[]
+  PermissionTemplateDepartment PermissionTemplateDepartment[]
+
+  @@index([department_id])
+}
+
+model Employee {
+  id                        String   @id @default(uuid()) @db.Uuid
+  company_id                String   @db.Uuid
+  person_id                 String   @unique @db.Uuid
+  employee_id               String   @unique
+  department_id             String   @db.Uuid
+  position_id               String   @db.Uuid
+  division_id               String   @db.Uuid
+  hire_date                 DateTime
+  salary                    Decimal
+  pay_frequency             String
+  employment_status_id      String   @db.Uuid
+  monthly_equivalent_salary Decimal
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("EmployeeCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("EmployeeUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  archive_date        DateTime?
+  other_employee_data Json?
+  corporate_rank_id   Int?
+
+  employment_status EmploymentStatus @relation(fields: [employment_status_id], references: [id])
+  company           Company          @relation(fields: [company_id], references: [id])
+  department        Department       @relation(fields: [department_id], references: [id])
+  person            Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
+  position          Position         @relation(fields: [position_id], references: [id])
+  division          Division         @relation(fields: [division_id], references: [id])
+  user              User?
+
+  @@index([department_id])
+  @@index([company_id])
+}
+
+model EmploymentStatus {
+  id    String @id @default(uuid()) @db.Uuid
+  code  String @unique
+  label String
+
+  isActive Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("EmploymentStatusCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("EmploymentStatusUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  employees Employee[]
+}
+
+////////////////////////////////////////
+// ACCESS CONTROL / AUTHZ
+////////////////////////////////////////
+
+model Role {
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique
+  description String
+  isActive    Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("RoleCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("RoleUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  role_permissions    RolePermission[]
+  user_roles          UserRole[]
+  permission_template PermissionTemplate[]
+}
+
+model UserRole {
+  id        String  @id @default(uuid()) @db.Uuid
+  user_id   String  @db.Uuid
+  role_id   String  @db.Uuid
+  role_name String
+  isActive  Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("UserRoleCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("UserRoleUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user_permissions UserPermission[]
+  role             Role             @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  user             User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, role_id])
+  @@index([user_id])
+}
+
+model RolePermission {
+  id                       String  @id @default(uuid()) @db.Uuid
+  role_id                  String  @db.Uuid
+  role_name                String
+  action                   String
+  sub_module_permission_id String  @db.Uuid
+  sub_module_id            String  @db.Uuid
+  department_id            String  @db.Uuid
+  position_id              String? @db.Uuid
+  isActive                 Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("RolePermissionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("RolePermissionUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  department            Department          @relation(fields: [department_id], references: [id])
+  position              Position?           @relation(fields: [position_id], references: [id])
+  role                  Role                @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  sub_module_permission SubModulePermission @relation(fields: [sub_module_permission_id], references: [id], onDelete: Cascade)
+  sub_module            SubModule           @relation(fields: [sub_module_id], references: [id])
+
+  permission_template_links PermissionTemplateRolePermission[]
+  user_permission           UserPermission[]
+
+  @@unique([role_id, sub_module_permission_id, action], map: "unique_role_permission")
+  @@index([role_id])
+  @@index([department_id])
+}
+
+model UserPermission {
+  id                 String @id @default(uuid()) @db.Uuid
+  action             String
+  user_id            String @db.Uuid
+  user_role_id       String @db.Uuid
+  role_permission_id String @db.Uuid
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("UserPermissionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("UserPermissionUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  role_permission RolePermission? @relation(fields: [role_permission_id], references: [id], onDelete: Cascade)
+  user            User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_role       UserRole        @relation(fields: [user_role_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_role_id, role_permission_id])
+  @@index([user_id])
+}
+
+////////////////////////////////////////
+// RECRUITMENT AND ONBOARDING
+////////////////////////////////////////
+
+model CareerPosting {
+  id               String    @id @default(uuid()) @db.Uuid
+  position_id      String    @db.Uuid
+  slots            Int
+  job_description  String?
+  department_id    String    @db.Uuid
+  user_location_id String    @db.Uuid
+  isPublished      Boolean   @default(false)
+  published_on     DateTime?
+  employment_type  String
+  employee_type    String
+  status           String    @default("draft")
+  isActive         Boolean   @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("CareerPostingCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("CareerPostingUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  position      Position     @relation(fields: [position_id], references: [id])
+  department    Department   @relation(fields: [department_id], references: [id])
+  user_location UserLocation @relation(fields: [user_location_id], references: [id])
+  applicant     Applicant[]
+
+  @@index([position_id])
+  @@index([department_id])
+  @@index([user_location_id])
+}
+
+model Applicant {
+  id                 String   @id @default(uuid()) @db.Uuid
+  career_id         String   @db.Uuid
+  first_name         String
+  middle_name        String?
+  last_name          String
+  email              String   @unique
+  mobile_number      String
+  application_source String
+  application_status String
+  date_applied       DateTime
+  isActive           Boolean  @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("ApplicantCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("ApplicantUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  careerPosting CareerPosting       @relation(fields: [career_id], references: [id])
+  applicant     ApplicantDocument[]
+  interviewer   Interviewer[]
+}
+
+model ApplicantDocument {
+  id            String @id @default(uuid()) @db.Uuid
+  applicant_id  String @db.Uuid
+  document_type String
+  file_name     String
+  file_path     String
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("ApplicantDocumentCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("ApplicantDocumentUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  applicant Applicant @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+}
+
+model Interviewer {
+  id                String    @id @default(uuid()) @db.Uuid
+  employee_id       String    @db.Uuid
+  applicant_id      String    @db.Uuid
+  stage             InterviewStage   //ADD THIs -> for enums
+
+  date_of_interview DateTime?
+  remarks           String?
+  total_points      Int?
+  recommendations   String?
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("InterviewerCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("InterviewerUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  examinationRating ExaminationRating[]
+  applicant         Applicant @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+}
+
+model ExaminationRating {
+  id             String @id @default(uuid()) @db.Uuid
+  interviewer_id String @db.Uuid
+  exam_name      String
+  result         String?
+  remarks        String
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("ExaminationRatingCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("ExaminationRatingUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @updatedAt
+  interviewer    Interviewer? @relation(fields: [interviewer_id], references: [id])
+}
+
+////////////////////////////////////////
+// AUDIT TRAIL & DATABASE CONTROL
+////////////////////////////////////////
+
+model AuditTrail {
+  id          String  @id @default(uuid()) @db.Uuid
+  //who performed the action
+  user_id     String? @db.Uuid
+  user_email  String?
+  employee_id String? //link to employee for better tracking
+  user        User?   @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+  //what action was performed
+  action      String //'CREATE','READ','UPDATE','DELETE','LOGIN','LOGOUT', 'PERMISSION_DENIED', etc.
+  resource    String //'user_account','employee','salary','role_permisison', etc.
+  resource_id String? @db.Uuid //ID of the affected record (if applicable)
+
+  //details of the change
+  old_values    Json? //previos state (for UPDATE/DELETE)
+  new_values    Json? //new State (for CREATE/UPDATE)
+  change_fields String[] @default([]) //array of the field names that change_fields
+
+  //context
+  ip_address  String?
+  user_agent  String?
+  endpoint    String? //e.g., 'POST /api/users'
+  http_method String? //GET,POST,PUT,DELETE
+  status_code Int? //200,403,500, etc.
+
+  //result
+  success       Boolean @default(true)
+  error_message String? @db.Text //use text for longer error messages
+
+  //metadata
+  department_id String? @db.Uuid //track which department the action relates to
+  session_id    String? //track user sessions
+  request_id    String? //for correlating related operations
+
+  //compliance & security
+  severity        String? @default("INFO") //INFO, WARNING, CRITICAL
+  compliance_flag Boolean @default(false) //flag for compliance-critical change_fields
+
+  //timestamp
+  created_at DateTime @default(now())
+
+  //indexes for performance
+  @@index([user_id])
+  @@index([employee_id])
+  @@index([resource, resource_id])
+  @@index([created_at])
+  @@index([action])
+  @@index([department_id])
+  @@index([session_id])
+  @@index([success])
+  @@map("AuditTrail")
+}
+
+//important notice we will not be using this module for schema migration only for logging
+model AdminDBQueryLog {
+  id            String   @id @default(uuid()) @db.Uuid
+  adminId       String
+  sql           String
+  purpose       String
+  executedAt    DateTime @default(now())
+  executionMs   Int
+  success       Boolean
+  error_message String?
+
+  @@index([adminId])
+  @@index([executedAt])
+}
+
+////////////////////////////////////////
+// MODULES & PERMISSIONS
+////////////////////////////////////////
+
+model Module {
+  id       String  @id @default(uuid()) @db.Uuid
+  name     String
+  isActive Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("ModuleCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("ModuleUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  sub_module SubModule[]
+
+  @@index([name])
+}
+
+model SubModule {
+  id        String  @id @default(uuid()) @db.Uuid
+  name      String
+  module_id String  @db.Uuid
+  isActive  Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("SubModuleCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("SubModuleUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  module                 Module                @relation(fields: [module_id], references: [id], onDelete: Cascade)
+  role_permission        RolePermission[]
+  sub_module_permissions SubModulePermission[]
+
+  @@index([module_id])
+}
+
+model SubModuleAction {
+  id     String @id @default(uuid()) @db.Uuid
+  action String
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("SubModuleActionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("SubModuleActionUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  isActive              Boolean               @default(true)
+  sub_module_permission SubModulePermission[]
+}
+
+model SubModulePermission {
+  id                   String @id @default(uuid()) @db.Uuid
+  action               String
+  sub_module_action_id String @db.Uuid
+  sub_module_id        String @db.Uuid
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("SubModulePermissionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("SubModulePermissionUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  role_permissions  RolePermission[]
+  sub_module        SubModule        @relation(fields: [sub_module_id], references: [id], onDelete: Cascade)
+  sub_module_action SubModuleAction  @relation(fields: [sub_module_action_id], references: [id], onDelete: Cascade)
+
+  @@index([sub_module_id])
+}
+
+////////////////////////////////////////
+// PERMISSION TEMPLATES
+////////////////////////////////////////
+
+model PermissionTemplate {
+  id            String  @id @default(uuid()) @db.Uuid
+  name          String
+  department_id String  @db.Uuid
+  isActive      Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("PermissionTemplateCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("PermissionTemplateUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  department Department @relation(fields: [department_id], references: [id])
+
+  departments      PermissionTemplateDepartment[] // includes user + department scope
+  role_permissions PermissionTemplateRolePermission[]
+  role             Role[]
+
+  @@index([name])
+}
+
+model PermissionTemplateDepartment {
+  id                     String  @id @default(uuid()) @db.Uuid
+  permission_template_id String  @db.Uuid
+  user_id                String  @db.Uuid
+  department_id          String  @db.Uuid
+  position_id            String? @db.Uuid
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("PermissionTemplateDepartmentCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("PermissionTemplateDepartmentUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  position            Position?          @relation(fields: [position_id], references: [id])
+  department          Department         @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  permission_template PermissionTemplate @relation(fields: [permission_template_id], references: [id])
+  user                User               @relation(fields: [user_id], references: [id])
+
+  permission_template_role_permissions PermissionTemplateRolePermission[]
+
+  @@unique([permission_template_id, department_id])
+  @@index([permission_template_id])
+  @@index([position_id])
+  @@index([user_id])
+}
+
+model PermissionTemplateRolePermission {
+  id                                String @id @default(uuid()) @db.Uuid
+  permission_template_id            String @db.Uuid
+  role_permission_id                String @db.Uuid
+  permission_template_department_id String @db.Uuid
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("PermissionTemplateRolePermissionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("PermissionTemplateRolePermissionUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  permission_template            PermissionTemplate           @relation(fields: [permission_template_id], references: [id], onDelete: Cascade)
+  role_permissions               RolePermission               @relation(fields: [role_permission_id], references: [id])
+  permission_template_department PermissionTemplateDepartment @relation(fields: [permission_template_department_id], references: [id], onDelete: Cascade)
+
+  @@unique([permission_template_id, role_permission_id, permission_template_department_id])
+  @@index([permission_template_id])
+  @@index([permission_template_department_id])
+  @@index([role_permission_id])
+}

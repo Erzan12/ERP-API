@@ -1,0 +1,245 @@
+body {
+  font-family: system-ui, sans-serif;
+  font-size: small;
+  margin: 0;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+header {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+/* .version-toggle {
+  margin-top: 1rem;
+}
+
+.version-btn {
+  background: #1e293b;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 6px;
+  margin: 0 5px;
+  transition: all 0.2s ease;
+}
+
+.version-btn:hover {
+  background: #334155;
+}
+
+.version-btn.active {
+  background: #22c55e;
+  color: white;
+  border-color: #22c55e;
+} */
+
+/* Center everything and create 34 columns */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(4, 145px);
+  gap: 1.5rem;
+
+  justify-content: center;   /* centers the whole grid */
+  
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.badge {
+    background: linear-gradient(45deg, #ff9800, #ff5722);
+}
+
+.card-link {
+  position: relative;      /* REQUIRED */
+  overflow: hidden;        /* keeps ribbon inside */
+
+  background: rgb(125,158,142);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 150px;
+  height: 180px;           /* better than inherit */
+
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+  border-radius: 8px;
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-link:hover {
+  background: rgb(153, 196, 175);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+.card-icon {
+  width: 40px;       /* adjust as needed */
+  height: 40px;      /* adjust as needed */
+  margin-bottom: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.coming-soon-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.back-btn {
+  margin-top: 20px;
+  text-decoration: none;
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border-radius: 6px;
+}
+
+.back-btn:hover {
+  background-color: #4b4a4a;
+  transform: translateY(-4px);
+  /* border-color: #38bdf8; */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
+.open-btn {
+  margin-top: 20px;
+  text-decoration: none;
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border-radius: 6px;
+  
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.open-btn:hover {
+  background-color: #4b4a4a;
+  transform: translateY(-4px);
+  /* border-color: #38bdf8; */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Small hint under the card */
+.click-hint {
+  font-size: 0.8rem;
+  color: #a5b4fc;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+.click-link {
+  font-size: 0.8rem;
+  color: #a5b4fc;
+  margin-top: 0.5rem;
+  display: inline-block;
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+/* ribbons "coming soon, new, beta, deprecated, internal */
+/* "Coming Soon"
+Not ready yet
+Orange
+Warning / In progress 
+*/
+/* "Deprecated"
+Avoid / Phase out
+Red
+Danger / Stop
+*/
+/* "New"
+Recently added
+Green
+Success / Positive
+*/
+/* "Beta"
+Testing / Experimental
+Purple
+Innovation / Preview
+*/
+/* "Internal"
+Private / Restricted
+Blue / Gray
+Neutral / System
+*/
+
+/* Ribbon container */
+.ribbon {
+    position: absolute;
+    top: 15px;
+    right: -45px;
+    width: 150px;
+    text-align: center;
+    transform: rotate(45deg);
+    z-index: 10;
+}
+
+/* Ribbon text */
+.ribbon span {
+    display: block;
+    background: linear-gradient(45deg, #ff9800, #ff5722);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 6px 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+/*  set ribbon styles */
+.ribbon span[data-status="Coming Soon"] {
+  background: linear-gradient(45deg, #ff9800, #ff5722);
+}
+
+.ribbon span[data-status="Deprecated"] {
+  background: linear-gradient(45deg, #f44336, #b71c1c);
+}
+
+.ribbon span[data-status="New"] {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+}
+
+.ribbon span[data-status="Beta"] {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+}
+
+.ribbon span[data-status="Internal"] {
+  background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+}
+
+footer {
+  text-align: center;
+  padding: 2rem;
+}
+
+
+/* Make it responsive: 2 columns on medium screens */
+@media (max-width: 992px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 145px);
+  }
+}
+
+@media (max-width: 600px) {
+  .grid-container {
+    grid-template-columns: repeat(1, 145px);
+  }
+}
