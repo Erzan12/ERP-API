@@ -35,7 +35,7 @@ export class DbQueryService {
     const start = Date.now();
     let success = true;
     let errorMessage: string | null = null;
-    let result: any = null;
+    let result: unknown = null;
 
     try {
       result = await this.prisma.$queryRawUnsafe(dto.sql);
@@ -80,7 +80,7 @@ export class DbQueryService {
 
     return {
       executionMs,
-      result,
+      result: result as Record<string, unknown>[],
     };
   }
 

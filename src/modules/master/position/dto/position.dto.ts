@@ -1,7 +1,12 @@
-import { Expose, Transform } from 'class-transformer';
-import { IsDefined, IsNotEmpty, IsString, IsInt, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsInt,
+  IsOptional,
+  IsUUID,
+  IsBoolean,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { BadRequestException } from '@nestjs/common';
 
 export class CreatePositionDto {
   @IsNotEmpty()
@@ -80,21 +85,10 @@ export class UpdatePositionDto {
   department_id?: string;
 
   @IsOptional()
-  @IsInt()
-  @IsDefined()
-  @Expose({ name: 'status' })
+  @IsBoolean()
   @ApiProperty({
-    name: 'status', // -> maps status
-    example: 'active or inactive',
+    example: 'true or false',
+    description: 'true if active and false if set to inactive',
   })
-  @Transform(({ value }) => {
-    console.log('Transforming status:', value);
-    if (value === undefined || value === null) return undefined; // allow missing
-    if (value === 'active') return 1;
-    if (value === 'inactive') return 0;
-    throw new BadRequestException(
-      `Invalid status value ${value}. Allowed values are "active" or "inactive"`,
-    );
-  })
-  stat?: number;
+  isActive: boolean;
 }

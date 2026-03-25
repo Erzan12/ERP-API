@@ -1,5 +1,5 @@
 // A reusable helper to group role_permissions into sub_modules with actions[]
-import { RequestUser } from "../types/request-user.interface";
+import { RequestUser } from '../types/request-user.interface';
 
 export function mapRolesToRequestUser(
   userRoles: Array<{

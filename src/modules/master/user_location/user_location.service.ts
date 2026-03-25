@@ -18,20 +18,23 @@ export class UserLocationService {
   constructor(private prisma: PrismaService) {}
 
   //query all available user locations
-  async getUserLocations(
-    user: RequestUser,
-    dto: PaginationDto,
-  ) {
-
+  async getUserLocations(user: RequestUser, dto: PaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
 
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = {
+    const whereCondition: Prisma.UserLocationWhereInput = {
       isActive: true,
     };
 
-    const stringFields = ['locationName', 'address'] as const;
+    const stringFields = [
+      'location_name',
+      'address_line_1',
+      'address_line_2',
+      'city',
+      'province',
+      'country',
+    ] as const;
 
     if (search) {
       //handle init and boolean search
@@ -44,7 +47,7 @@ export class UserLocationService {
             contains: search,
             mode: 'insensitive',
           },
-        }))
+        })),
       );
 
       //boolean search
@@ -57,16 +60,24 @@ export class UserLocationService {
       whereCondition.OR = orConditions;
     }
 
-    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'locationName', 'address'];
-    if (allowSortFeilds.includes(sortBy)) {
-      sortBy;
-    }
+    const allowSortFeilds = [
+      'id',
+      'created_at',
+      'updated_at',
+      'location_name',
+      'province',
+      'city',
+    ];
+    // if (allowSortFeilds.includes(sortBy)) {
+    //   sortBy;
+    // }
+    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
 
-    const [ total, userLocations ] = await this.prisma.$transaction([
+    const [total, userLocations] = await this.prisma.$transaction([
       this.prisma.userLocation.count({
         where: {
           ...whereCondition,
-        }
+        },
       }),
       this.prisma.userLocation.findMany({
         where: {
@@ -80,9 +91,9 @@ export class UserLocationService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           updatedBy: {
             select: {
@@ -91,15 +102,15 @@ export class UserLocationService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
         skip,
         take: perPage,
         orderBy: {
-          [sortBy]: order,
+          [safeSortBy]: order,
         },
       }),
     ]);
@@ -166,9 +177,9 @@ export class UserLocationService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         updatedBy: {
           select: {
@@ -177,12 +188,13 @@ export class UserLocationService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
+
     if (!user_location) {
       throw new BadRequestException('User Location not found');
     }
@@ -211,7 +223,9 @@ export class UserLocationService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException('User is not allowed to view a Company');
+      throw new ForbiddenException(
+        'You are not allowed to perform this action',
+      );
     }
 
     return {
@@ -226,7 +240,14 @@ export class UserLocationService {
     createUserLocationDto: CreateUserLocationDto,
     user: RequestUser,
   ) {
-    const { location_name, address_line_1, address_line_2, city, province, country } = createUserLocationDto;
+    const {
+      location_name,
+      address_line_1,
+      address_line_2,
+      city,
+      province,
+      country,
+    } = createUserLocationDto;
 
     const existingUserLocation = await this.prisma.userLocation.findFirst({
       where: {
@@ -276,7 +297,7 @@ export class UserLocationService {
         city,
         province,
         country,
-        created_by: user.id
+        created_by: user.id,
       },
     });
 
@@ -296,8 +317,6 @@ export class UserLocationService {
     updateUserLocationDto: UpdateUserLocationDto,
     user: RequestUser,
   ) {
-    const { location_name, address_line_1, address_line_2, city, province, country } = updateUserLocationDto;
-
     const userLocation = await this.prisma.userLocation.findUnique({
       where: { id: userLocationId },
     });

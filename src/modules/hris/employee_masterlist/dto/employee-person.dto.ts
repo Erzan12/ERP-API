@@ -1,7 +1,7 @@
 import { CreateEmployeeDto, UpdateEmployeeDto } from './employee.dto';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { CreatePersonDto, UpdatePersonDto } from './person.dto';
 
 export class CreateEmployeeWithDetailsDto {

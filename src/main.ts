@@ -8,9 +8,9 @@ import { PrismaPg } from '@prisma/adapter-pg';
 
 import { setupAppSwagger } from './app/app.swagger';
 import { setupGlobalPrefix } from './utils/helpers/global-prefix.helper';
-import cookieParser = require('cookie-parser');
+// import cookieParser = require('cookie-parser');
+import cookieParser from 'cookie-parser';
 
-import { AllExceptionsFilter } from './utils/filters/all-exceptions.filter';
 import { PrismaExceptionFilter } from './utils/filters/prisma-exception.filter';
 
 async function bootstrap() {
@@ -29,7 +29,7 @@ async function bootstrap() {
 
   app.enableCors({
     // origin: ['https://www.example.com'], // specify allowed domains
-    origin:['http://localhost:3002', 'http://localhost:3003'],
+    origin: ['http://localhost:3002', 'http://localhost:3003'],
     methods: 'GET,POST,PUT,PATCH,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,

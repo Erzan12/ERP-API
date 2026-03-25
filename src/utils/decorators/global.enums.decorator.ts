@@ -38,7 +38,7 @@ export enum ApplicationSource {
   COMPANY_WEBSITE = 'company_website',
   WALK_IN = 'walk_in',
   REFERRAL = 'referral',
-  LINKEDIN  = 'linkedIn',
+  LINKEDIN = 'linkedIn',
   JOBSTREET = 'jobstreet',
 }
 
@@ -56,4 +56,3 @@ export enum InterviewStage {
   SECOND = 'second',
   FINAL = 'final',
 }
-
