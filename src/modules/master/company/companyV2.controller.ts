@@ -32,7 +32,6 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 import { CompanyService } from './company.service';
 
-// @ApiCookieAuth('access-token')
 @ApiTags('Mastertable - Company')
 @Controller({ path: 'mastertable', version: '2' })
 export class CompanyControllerV2 {
@@ -46,11 +45,11 @@ export class CompanyControllerV2 {
   getCompanies(
     @SessionUser() user: RequestUser,
     @Query() dto: PaginationDto,
-    @Query('page') page = 1,
-    @Query('perPage') perPage = 10,
-    @Query('search') search?: string,
-    @Query('sortBy') sortBy: string = 'created_at',
-    @Query('order') order: 'asc' | 'desc' = 'asc',
+    // @Query('page') page = 1,
+    // @Query('perPage') perPage = 10,
+    // @Query('search') search?: string,
+    // @Query('sortBy') sortBy: string = 'created_at',
+    // @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
     return this.companyService.getCompanies(user, dto);
   }

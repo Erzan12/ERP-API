@@ -15,16 +15,12 @@ export class DepartmentService {
   constructor(private prisma: PrismaService) {}
 
   //query all available departments
-  async getDepartments(
-    user: RequestUser,
-    dto: PaginationDto,
-  ) {
-
+  async getDepartments(user: RequestUser, dto: PaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
 
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = {
+    const whereCondition: Prisma.DepartmentWhereInput = {
       isActive: true,
     };
 
@@ -51,11 +47,11 @@ export class DepartmentService {
         },
       });
 
-      //boolean search 
-      if ( search === 'true' || search === 'false' ) {
+      //boolean search
+      if (search === 'true' || search === 'false') {
         orConditions.push({
           isActive: search === 'true',
-        })
+        });
       }
 
       // number search
@@ -68,16 +64,24 @@ export class DepartmentService {
       whereCondition.OR = orConditions;
     }
 
-    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'name', 'division_id', 'sorting'];
-    if (!allowSortFeilds.includes(sortBy)) {
-      sortBy;
-    }
+    const allowSortFeilds = [
+      'id',
+      'created_at',
+      'updated_at',
+      'name',
+      'division_id',
+      'sorting',
+    ];
+    // if (!allowSortFeilds.includes(sortBy)) {
+    //   sortBy;
+    // }
+    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
 
-    const [ total, departments ] = await this.prisma.$transaction([
+    const [total, departments] = await this.prisma.$transaction([
       this.prisma.department.count({
         where: {
           ...whereCondition,
-        }
+        },
       }),
       this.prisma.department.findMany({
         where: {
@@ -97,9 +101,9 @@ export class DepartmentService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           updatedBy: {
             select: {
@@ -108,15 +112,15 @@ export class DepartmentService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
         skip,
         take: perPage,
         orderBy: {
-          [sortBy]: order,
+          [safeSortBy]: order,
         },
       }),
     ]);
@@ -183,9 +187,9 @@ export class DepartmentService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         updatedBy: {
           select: {
@@ -194,11 +198,11 @@ export class DepartmentService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!department) {
@@ -229,7 +233,7 @@ export class DepartmentService {
     );
 
     if (!isAdmin) {
-      throw new ForbiddenException('User is not allowed to view a Department');
+      throw new ForbiddenException('You are not allowed perform this action');
     }
 
     return {
@@ -284,9 +288,7 @@ export class DepartmentService {
     );
 
     if (!canView) {
-      throw new ForbiddenException(
-        'You are not allowed to create department',
-      );
+      throw new ForbiddenException('You are not allowed to create department');
     }
 
     const department = await this.prisma.department.create({
@@ -296,8 +298,8 @@ export class DepartmentService {
           connect: { id: createDepartmentDto.division_id },
         },
         createdBy: {
-          connect: { id: user.id }
-        }
+          connect: { id: user.id },
+        },
       },
     });
 
@@ -313,7 +315,7 @@ export class DepartmentService {
       //   position: userPos,
       // },
       department,
-      created_by_user: `${userName} - ${userPosition}`
+      created_by_user: `${userName} - ${userPosition}`,
     };
   }
 
@@ -322,7 +324,6 @@ export class DepartmentService {
     updateDepartmentDto: UpdateDepartmentDto,
     user: RequestUser,
   ) {
-
     const department = await this.prisma.department.findUnique({
       where: { id: departmentId },
       select: {
@@ -344,7 +345,7 @@ export class DepartmentService {
         sorting: updateDepartmentDto.sorting ?? undefined,
         division_id: updateDepartmentDto.division_id ?? undefined,
         isActive: updateDepartmentDto.isActive ?? undefined,
-        updated_by : user.id
+        updated_by: user.id,
         //will be added to department schema updated_by and updated_at fields
         // updated_by: user.id,           // optional: if you track who updated it
         // updated_at: new Date(),        // optional: if you track timestamps
@@ -390,7 +391,7 @@ export class DepartmentService {
       //   position: userPos,
       // },
       updatedDepartment,
-      updated_by_user: `${userName} - ${userPosition}`
+      updated_by_user: `${userName} - ${userPosition}`,
     };
   }
 }

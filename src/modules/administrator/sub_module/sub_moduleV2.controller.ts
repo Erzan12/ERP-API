@@ -41,11 +41,11 @@ export class SubModuleControllerV2 {
   getSubmodules(
     @SessionUser() user: RequestUser,
     @Query() dto: PaginationDto,
-    @Query('page') page = 1,
-    @Query('perPage') perPage = 10,
-    @Query('search') search?: string,
-    @Query('sortBy') sortBy: string = 'created_at',
-    @Query('order') order: 'asc' | 'desc' = 'asc',
+    // @Query('page') page = 1,
+    // @Query('perPage') perPage = 10,
+    // @Query('search') search?: string,
+    // @Query('sortBy') sortBy: string = 'created_at',
+    // @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
     return this.subModuleService.getSubModules(user, dto);
   }

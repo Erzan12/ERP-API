@@ -22,8 +22,14 @@ import {
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 
-import { RecruitmentPaginationDto, StatusCountDto } from 'src/utils/dtos/recruitment-pagination.dto';
-import { CreateCareerPostingDto, UpdateCareerPostingDto } from './dto/career-posting.dto';
+import {
+  RecruitmentPaginationDto,
+  StatusCountDto,
+} from 'src/utils/dtos/recruitment-pagination.dto';
+import {
+  CreateCareerPostingDto,
+  UpdateCareerPostingDto,
+} from './dto/career-posting.dto';
 
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
@@ -42,12 +48,12 @@ export class CareerPostingV2Controller {
   getCareerPostings(
     @SessionUser() user: RequestUser,
     @Query() dto: RecruitmentPaginationDto,
-    @Query('page') page = 1,
-    @Query('perPage') perPage = 10,
-    @Query('search') search?: string,
-    @Query('status') status?: string,
-    @Query('sortBy') sortBy: string = 'created_at',
-    @Query('order') order: 'asc' | 'desc' = 'asc',
+    // @Query('page') page = 1,
+    // @Query('perPage') perPage = 10,
+    // @Query('search') search?: string,
+    // @Query('status') status?: string,
+    // @Query('sortBy') sortBy: string = 'created_at',
+    // @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
     return this.careerPostingService.getCareerPostings(user, dto);
   }

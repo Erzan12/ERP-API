@@ -161,11 +161,14 @@ export class EmployeeService {
           status: 'success',
           message: 'Employee created',
           employee,
-          created_by_user: `${userName} - ${userPosition}`
+          created_by_user: `${userName} - ${userPosition}`,
         };
       } catch (error) {
         console.error('CREATE EMPLOYEE ERROR');
-        console.error('Message:', error instanceof Error ? error.message : String(error));
+        console.error(
+          'Message:',
+          error instanceof Error ? error.message : String(error),
+        );
         console.error('Stack:', error instanceof Error ? error.stack : 'N/A');
         console.error('Full error:', error);
         console.error('Transaction failed:', error);
@@ -258,7 +261,7 @@ export class EmployeeService {
     //PAGINATION AREA
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = {
+    const whereCondition: Prisma.EmployeeWhereInput = {
       employment_status: {
         //as long as its not terminated or resigned
         code: {
@@ -278,7 +281,7 @@ export class EmployeeService {
     const divisionFields = ['name'];
     const positionFields = ['name'];
 
-    let whereConditions: any = {};
+    let whereConditions: Prisma.EmployeeWhereInput = {};
 
     if (search) {
       whereConditions = {
@@ -341,7 +344,7 @@ export class EmployeeService {
       };
     }
 
-    const allowSortFeilds = [
+    const allowSortFields = [
       'department_id',
       'company_id',
       'employee_id',
@@ -349,9 +352,7 @@ export class EmployeeService {
       'created_at',
       'updated_at',
     ];
-    if (!allowSortFeilds.includes(sortBy)) {
-      sortBy;
-    }
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, employees] = await this.prisma.$transaction([
       // where: hrViewEmployee ? {} : { id: user.id },
@@ -411,9 +412,9 @@ export class EmployeeService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           updatedBy: {
             select: {
@@ -422,15 +423,15 @@ export class EmployeeService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
         skip,
         take: perPage,
         orderBy: {
-          [sortBy]: order,
+          [safeSortBy]: order,
         },
       }),
     ]);
@@ -494,9 +495,9 @@ export class EmployeeService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         updatedBy: {
           select: {
@@ -505,10 +506,10 @@ export class EmployeeService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       },
     });
 
@@ -531,7 +532,38 @@ export class EmployeeService {
     //   },
     // });
 
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'You are not allowed to perform this action',
+      );
+    }
+
     return {
+      status: 'success',
+      message: 'Here is the Employee.',
       employee,
       // person: personDetails,
     };
@@ -575,8 +607,8 @@ export class EmployeeService {
       const updatedPerson = UpdatePersonDto
         ? await prisma.person.update({
             where: { id: employee.person_id },
-            data: { 
-              ...UpdatePersonDto, 
+            data: {
+              ...UpdatePersonDto,
               updated_at: user.id ?? undefined,
             },
           })
@@ -586,7 +618,7 @@ export class EmployeeService {
       const updatedEmployee = UpdateEmployeeDto
         ? await prisma.employee.update({
             where: { id },
-            data: { 
+            data: {
               ...UpdateEmployeeDto,
               updated_at: user.id ?? undefined,
             },

@@ -26,9 +26,9 @@ export class PositionService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
         updatedBy: {
           select: {
@@ -37,15 +37,44 @@ export class PositionService {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       },
     });
 
     if (!position) {
       throw new BadRequestException('Position not found.');
+    }
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) =>
+        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+        role.role_name === 'Administrator' || 'Super Administrator',
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed to perform this action',
+      );
     }
 
     return {
@@ -56,16 +85,12 @@ export class PositionService {
   }
 
   //get all available and active positions
-  async getPositions(
-    user: RequestUser,
-    dto: PaginationDto,
-  ) {
-
+  async getPositions(user: RequestUser, dto: PaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
 
     const skip = (page - 1) * perPage;
 
-    const whereCondition: any = {
+    const whereCondition: Prisma.PositionWhereInput = {
       isActive: true,
     };
 
@@ -92,11 +117,11 @@ export class PositionService {
         },
       });
 
-      //boolean search 
-      if ( search === 'true' || search === 'false' ) {
+      //boolean search
+      if (search === 'true' || search === 'false') {
         orConditions.push({
           isActive: search === 'true',
-        })
+        });
       }
 
       // number search
@@ -109,16 +134,24 @@ export class PositionService {
       whereCondition.OR = orConditions;
     }
 
-    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'name', 'department_id', 'sorting'];
-    if (!allowSortFeilds.includes(sortBy)) {
-      sortBy;
-    }
+    const allowSortFeilds = [
+      'id',
+      'created_at',
+      'updated_at',
+      'name',
+      'department_id',
+      'sorting',
+    ];
+    // if (!allowSortFeilds.includes(sortBy)) {
+    //   sortBy;
+    // }
+    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
 
-    const [ total, positions ] = await this.prisma.$transaction([
+    const [total, positions] = await this.prisma.$transaction([
       this.prisma.position.count({
         where: {
           ...whereCondition,
-        }
+        },
       }),
       this.prisma.position.findMany({
         where: {
@@ -131,8 +164,8 @@ export class PositionService {
                 select: {
                   id: true,
                   name: true,
-                }
-              }
+                },
+              },
             },
           },
           createdBy: {
@@ -142,9 +175,9 @@ export class PositionService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           updatedBy: {
             select: {
@@ -153,15 +186,15 @@ export class PositionService {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
         skip,
         take: perPage,
         orderBy: {
-          [sortBy]: order,
+          [safeSortBy]: order,
         },
       }),
     ]);
@@ -212,7 +245,7 @@ export class PositionService {
       page,
       perPage,
       // totalPages: Math.ceil( total / perPage),
-      positions
+      positions,
     };
   }
 
@@ -249,7 +282,7 @@ export class PositionService {
           connect: { id: createPositionDto.department_id }, // this links the foreign key -> relation type -> linked object use relation to get department id
         },
         createdBy: {
-          connect: { id: user.id }
+          connect: { id: user.id },
         },
         // created_by: user.id, // scalar type approach -> column value direct column value from related table
       },
@@ -258,7 +291,7 @@ export class PositionService {
           select: {
             id: true,
             name: true,
-          }
+          },
         },
       },
     });
@@ -286,7 +319,7 @@ export class PositionService {
       status: 'success',
       message: `${position.name} position has been created successfully!`,
       position,
-      created_by_user: `${userName} - ${userPosition}`, 
+      created_by_user: `${userName} - ${userPosition}`,
     };
   }
 
@@ -295,7 +328,6 @@ export class PositionService {
     updatePositionDto: UpdatePositionDto,
     user: RequestUser,
   ) {
-
     const existingPosition = await this.prisma.position.findUnique({
       where: { id: positionId },
       select: {
@@ -325,21 +357,21 @@ export class PositionService {
       }
     }
 
-    const updateData: any = {
+    const updateData: Prisma.PositionUpdateInput = {
       name: updatePositionDto.name ?? undefined,
-      hierarchy: updatePositionDto.hierarchy ?? undefined,
+      hierarchy: updatePositionDto.hierarchy,
       job_description: updatePositionDto.job_description ?? undefined,
       sorting: updatePositionDto.sorting ?? undefined,
-      stat: updatePositionDto.stat ?? undefined,
+      isActive: updatePositionDto.isActive ?? undefined,
       updatedBy: {
         connect: { id: user.id },
-      }
+      },
     };
 
     if (updatePositionDto.department_id !== undefined) {
       updateData.department = {
-        connect: { id: updatePositionDto.department_id }
-      }
+        connect: { id: updatePositionDto.department_id },
+      };
     }
 
     const position = await this.prisma.position.update({
@@ -370,7 +402,7 @@ export class PositionService {
       status: 'success',
       message: `${position.name} position has been updated successfully!`,
       position,
-      updated_by_user: `${userName} - ${userPosition}`
+      updated_by_user: `${userName} - ${userPosition}`,
     };
   }
 }

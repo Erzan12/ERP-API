@@ -3,9 +3,9 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Request }  from 'express';
+import { Request } from 'express';
 import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-permisison.helper';
-
+import { JwtPayload } from 'src/utils/types/interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,14 +16,23 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => request?.cookies?.['accessToken'],
+        // (request: Request) => request?.cookies?.['accessToken'],
+        // (request: Request) =>
+        //   (request as Request & { cookies: Record<string, string> })
+        //     ?.cookies?.['accessToken']
+        // },
+        (request: Request): string | null => {
+          return typeof request.cookies?.['accessToken'] === 'string'
+            ? request.cookies['accessToken']
+            : null;
+        },
       ]),
       secretOrKey: secret,
     });
   }
 
   //to validate the user token when accessing apis if the user token is expired, missing or mispelled
-  async validate(payload: any): Promise<RequestUser> {
+  async validate(payload: JwtPayload): Promise<RequestUser> {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.userUUID },
       include: {

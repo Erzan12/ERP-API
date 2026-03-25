@@ -1,14 +1,14 @@
-import { IsString, IsInt, IsNotEmpty, IsDefined, IsBoolean } from 'class-validator';
+import { IsString, IsDefined, IsBoolean } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateSubModulePermisisonDto {
-  @IsInt()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 'UUID',
-    description: 'ID of the sub module permission you want to update',
-  })
-  sub_module_permission_id: string;
+  // @IsInt()
+  // @IsNotEmpty()
+  // @ApiProperty({
+  //   example: 'UUID',
+  //   description: 'ID of the sub module permission you want to update',
+  // })
+  // sub_module_permission_id: string;
 
   @IsString()
   @ApiProperty({

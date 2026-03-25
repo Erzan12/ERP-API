@@ -121,7 +121,7 @@ export class HiringPipelineService {
     //pagination area
     const skip = (page - 1) * perPage;
 
-    const whereCondition: Prisma.CareerPostingWhereInput = {
+    const whereCondition: Prisma.ApplicantWhereInput = {
       isActive: true,
       ...(status && {
         application_status: status as ApplicationStatus,
@@ -131,7 +131,7 @@ export class HiringPipelineService {
     const careerFields = ['name'];
     const userLocationFields = ['location_name'];
 
-    let whereConditions: any = {};
+    let whereConditions: Prisma.ApplicantWhereInput = {};
 
     if (search) {
       whereConditions = {
@@ -203,11 +203,13 @@ export class HiringPipelineService {
       'application_source',
       'applicaiton_status',
       'date_applied',
+      'created_by',
     ];
 
-    if (!allowSortFeilds.includes(sortBy)) {
-      sortBy;
-    }
+    // if (!allowSortFeilds.includes(sortBy)) {
+    //   sortBy;
+    // }
+    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, applicants] = await this.prisma.$transaction([
       this.prisma.applicant.count({
@@ -279,7 +281,7 @@ export class HiringPipelineService {
         skip,
         take: perPage,
         orderBy: {
-          [sortBy]: order,
+          [safeSortBy]: order,
         },
       }),
     ]);
@@ -548,9 +550,11 @@ export class HiringPipelineService {
       throw new NotFoundException('Interviewer record not found');
 
     // 2. Sequential Logic Check
-    if (currentInterviewer.stage !== InterviewStage.INITIAL) {
+    if (
+      (currentInterviewer.stage as InterviewStage) !== InterviewStage.INITIAL
+    ) {
       const previousStage =
-        currentInterviewer.stage === InterviewStage.FINAL
+        (currentInterviewer.stage as InterviewStage) === InterviewStage.FINAL
           ? InterviewStage.SECOND
           : InterviewStage.INITIAL;
 

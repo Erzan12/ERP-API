@@ -6,6 +6,7 @@ import {
   Post,
   Put,
   Body,
+  Query,
 } from '@nestjs/common';
 
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -29,6 +30,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { AddUserRolePermissionsDto } from './dto/add-user-role-permissions.dto';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Manager - Role Management')
 @Controller({ path: 'manager', version: '2' })
@@ -39,8 +41,8 @@ export class RoleManagementControllerV2 {
   @ApiOperation({ summary: 'Get All Roles' })
   @ApiGetResponse('Here are the list of Roles')
   @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
-  getRoles(@SessionUser() user: RequestUser) {
-    return this.roleManagementService.getRoles(user);
+  getRoles(@SessionUser() user: RequestUser, @Query() dto: PaginationDto) {
+    return this.roleManagementService.getRoles(user, dto);
   }
 
   @Get('roles/:roleId')
