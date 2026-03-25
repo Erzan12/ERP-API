@@ -9,7 +9,7 @@ import { LoginDto } from './dto/login.dto';
 import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
 import { Public } from 'src/utils/decorators/public.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { Request, response } from 'express';
+import { Request } from 'express';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { Response } from 'express';
 

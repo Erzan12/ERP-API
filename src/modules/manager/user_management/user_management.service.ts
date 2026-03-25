@@ -8,7 +8,6 @@ import {
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import { MailService } from 'src/jobs/mail/mail.service';
-import { CreatePermissionTemplateDto } from 'src/modules/manager/permission_template/dto/create-permission-template.dto';
 import { CreateUserWithRoleDto } from './dto/create-user-with-role-permission.dto';
 import {
   DeactivateUserAccountDto,
@@ -20,6 +19,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Request } from 'express';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { AuthService } from 'src/auth/auth.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserManagementService {
@@ -63,12 +63,11 @@ export class UserManagementService {
     createUserWithRoleDto: CreateUserWithRoleDto,
     user: RequestUser,
     req: Request,
-    actorUser: any
+    userId: string,
   ) {
     return this.prisma.$transaction(async (tx) => {
       try {
-        const plainPassword =
-          createUserWithRoleDto.user_details.password;
+        const plainPassword = createUserWithRoleDto.user_details.password;
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
         const existingUser = await this.prisma.user.findFirst({
@@ -113,11 +112,19 @@ export class UserManagementService {
         const adminPos = requestUser.employee.position.name;
 
         // scalable approach
-        const allowedRoles = ['Administrator', 'Super Administrator', 'Manager']
-        const isAdmin = requestUser.user_roles.some(role => allowedRoles.includes(role.role_name))
-        
+        const allowedRoles = [
+          'Administrator',
+          'Super Administrator',
+          'Manager',
+        ];
+        const isAdmin = requestUser.user_roles.some((role) =>
+          allowedRoles.includes(role.role_name),
+        );
+
         if (!isAdmin) {
-          throw new ForbiddenException('User is not allowed create User Account');
+          throw new ForbiddenException(
+            'User is not allowed create User Account',
+          );
         }
 
         const employee = await this.prisma.employee.findUnique({
@@ -253,9 +260,7 @@ export class UserManagementService {
           });
 
           if (!rolePermissions.length) {
-            throw new BadRequestException(
-              'No permissions found for this role',
-            );
+            throw new BadRequestException('No permissions found for this role');
           }
 
           // 3️⃣ Create UserRole (only once)
@@ -308,11 +313,15 @@ export class UserManagementService {
           tokenKey,
         );
 
+        const actorUser: User | null = await this.prisma.user.findUnique({
+          where: { id: userId },
+        });
+
         await this.auditService.logUserCreation({
           actorUserId: actorUser?.id,
           actorEmail: actorUser?.email,
           newUser,
-          req
+          req,
         });
 
         return {
@@ -336,10 +345,7 @@ export class UserManagementService {
     });
   }
 
-  async resendInvitation(
-    dto: UserEmailResetTokenDto,
-    user: RequestUser,
-  ) {
+  async resendInvitation(dto: UserEmailResetTokenDto, user: RequestUser) {
     const actingUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -360,11 +366,13 @@ export class UserManagementService {
     const admin = `${actingUser.employee.person.first_name} ${actingUser.employee.person.last_name}`;
     const adminPos = actingUser.employee.position.name;
 
-     // scalable approach
-    const allowedRoles = ['Administrator', 'Super Administrator', 'Manager']
-    const isAdmin = actingUser.user_roles.some(role => allowedRoles.includes(role.role_name))
+    // scalable approach
+    const allowedRoles = ['Administrator', 'Super Administrator', 'Manager'];
+    const isAdmin = actingUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
-     if (!isAdmin) {
+    if (!isAdmin) {
       throw new ForbiddenException('User is not allowed create User Account');
     }
 
@@ -373,8 +381,8 @@ export class UserManagementService {
     });
 
     if (!invitedUser) {
-        throw new NotFoundException('User not found.');
-      }
+      throw new NotFoundException('User not found.');
+    }
 
     if (invitedUser.require_reset === 0) {
       throw new BadRequestException(
@@ -383,7 +391,9 @@ export class UserManagementService {
     }
 
     // Call Auth service to regenerate token
-    const resetToken = await this.authService.generateResetToken(invitedUser.id);
+    const resetToken = await this.authService.generateResetToken(
+      invitedUser.id,
+    );
     // const { password_token } = token;
 
     await this.mailService.sendResetTokenEmail(
@@ -391,7 +401,7 @@ export class UserManagementService {
       invitedUser.username,
       // newUser.password,
       resetToken.token.password_token,
-     );
+    );
 
     return {
       status: 'success',
@@ -500,7 +510,9 @@ export class UserManagementService {
 
       // Only allow managers to view their own department
       if (isManager) {
-        departmentFilter = { department_id: requestUser.employee.department_id };
+        departmentFilter = {
+          department_id: requestUser.employee.department_id,
+        };
       } else {
         throw new ForbiddenException(
           'Only administrators or department managers can view new employees.',

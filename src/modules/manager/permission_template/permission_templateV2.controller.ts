@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Param,
-  ParseIntPipe,
   Put,
   ParseUUIDPipe,
 } from '@nestjs/common';
@@ -98,7 +97,6 @@ export class PermissionTemplateControllerV2 {
   assignPermTemplate(
     @Body() dto: AssignTemplateDto,
     @SessionUser() user: RequestUser,
-    @Param('id', ParseIntPipe) id: number,
   ) {
     return this.permissionTemplateService.assignTemplateToUser(dto, user);
   }

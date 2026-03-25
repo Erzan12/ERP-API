@@ -496,7 +496,7 @@ export class CareerPostingService {
     const { filter } = dto;
 
     // 1. Initialize an empty where object
-    const whereCondition: any = {};
+    const whereCondition: Prisma.CareerPostingWhereInput = {};
 
     // 2. Only apply isActive filter if the user specifically asked for 'active'
     if (filter === 'active') {

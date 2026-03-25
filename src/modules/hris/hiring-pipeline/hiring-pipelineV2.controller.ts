@@ -26,9 +26,7 @@ import {
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Can } from 'src/utils/decorators/can.decorator';
-import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
-import { AssignInterviewerDto } from './dto/assign-interviewer.dto';
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 

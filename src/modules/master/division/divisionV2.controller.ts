@@ -3,20 +3,13 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
   Put,
   Post,
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
 
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiCookieAuth,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
@@ -38,7 +31,6 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateDivisionDto, UpdateDivisionDto } from './dto/division.dto';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
-// @ApiCookieAuth('access-token')
 @ApiTags('Mastertable - Division')
 @Controller({ path: 'mastertable', version: '2' })
 export class DivisionControllerV2 {
@@ -52,11 +44,11 @@ export class DivisionControllerV2 {
   getDivisions(
     @SessionUser() user: RequestUser,
     @Query() dto: PaginationDto,
-    @Query('page') page = 1,
-    @Query('perPage') perPage = 10,
-    @Query('search') search?: string,
-    @Query('sortBy') sortBy: string = 'company_id',
-    @Query('order') order: 'asc' | 'desc' = 'asc',
+    // @Query('page') page = 1,
+    // @Query('perPage') perPage = 10,
+    // @Query('search') search?: string,
+    // @Query('sortBy') sortBy: string = 'company_id',
+    // @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
     return this.divisionService.getDivisions(user, dto);
   }

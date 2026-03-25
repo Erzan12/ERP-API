@@ -6,8 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { CaslAbilityService } from '../casl/casl.service';
-import { RequestUser } from 'src/utils/types/request-user.interface';
+import { AppAbility, CaslAbilityService } from '../casl/casl.service';
 import {
   PERMISSIONS_KEY,
   PermissionMetadata,
@@ -15,6 +14,7 @@ import {
 import { VALID_ACTIONS } from 'src/utils/constants/action-map';
 import { IS_PUBLIC_KEY } from 'src/utils/decorators/public.decorator';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
+import { AuthenticatedRequest } from 'src/utils/types/interface';
 
 //revamped version clean up and simplified
 @Injectable()
@@ -35,8 +35,8 @@ export class PermissionsGuard implements CanActivate {
 
     if (isPublic) return true;
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user as RequestUser;
+    const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
+    const user = request.user;
 
     if (!user) {
       throw new ForbiddenException('Please login to access this resource.');
@@ -45,7 +45,7 @@ export class PermissionsGuard implements CanActivate {
     const permission = this.reflector.get<PermissionMetadata>(
       PERMISSIONS_KEY,
       context.getHandler(),
-    );
+    ) as PermissionMetadata | undefined;
 
     if (!permission) {
       // throw new ForbiddenException('Access denied: no permission metadata.');
@@ -61,7 +61,9 @@ export class PermissionsGuard implements CanActivate {
       );
     }
 
-    const ability = this.caslAbilityService.defineAbilitiesFor(user.roles);
+    const ability: AppAbility = this.caslAbilityService.defineAbilitiesFor(
+      user.roles,
+    );
 
     this.logger.debug(
       'User roles structure: ' + JSON.stringify(user.roles, null, 2),
