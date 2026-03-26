@@ -4149,9 +4149,10 @@
             "example": "Department PK UUID",
             "description": "The Department where the position is available"
           },
-          "status": {
-            "type": "number",
-            "example": "active or inactive"
+          "isActive": {
+            "type": "boolean",
+            "example": "true or false",
+            "description": "true if active and false if set to inactive"
           }
         },
         "required": [
@@ -4160,7 +4161,7 @@
           "job_description",
           "sorting",
           "department_id",
-          "status"
+          "isActive"
         ]
       },
       "CreateDepartmentDto": {

@@ -62,6 +62,7 @@ CREATE TABLE "ExaminationRating" (
     "id" UUID NOT NULL,
     "interviewer_id" UUID NOT NULL,
     "exam_name" TEXT NOT NULL,
+    "result" TEXT,
     "remarks" TEXT NOT NULL,
     "created_by" UUID,
     "updated_by" UUID,
