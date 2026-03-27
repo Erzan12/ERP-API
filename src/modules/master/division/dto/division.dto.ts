@@ -58,5 +58,5 @@ export class UpdateDivisionDto {
     example: 'true or false',
     description: 'Update the status of the division',
   })
-  isActive?: boolean;
+  is_active?: boolean;
 }
