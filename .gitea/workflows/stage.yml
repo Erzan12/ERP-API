@@ -72,7 +72,13 @@ jobs:
         run: npx prisma generate
 
       - name: Build NestJS
-        run: nest build
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          echo "Checking dist folder..."
+          ls -la
+          ls -la dist || (echo "❌ dist folder missing!" && exit 1)
 
       - name: Upload to Staging Server
         env:
