@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Get, Put, Req } from '@nestjs/common';
+import { Controller, Body, Post, Get, Put, Req, Param, ParseUUIDPipe } from '@nestjs/common';
 import { UserManagementService } from './user_management.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -62,12 +62,13 @@ export class UserManagementControllerV2 {
     @Body() createUserWithRoleDto: CreateUserWithRoleDto,
     @SessionUser() user: RequestUser,
     @Req() req: Request,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
   ) {
     return this.userManagementService.createUserAccount(
       createUserWithRoleDto,
       user,
       req,
-      user,
+      userId,
     );
   }
 
@@ -92,24 +93,24 @@ export class UserManagementControllerV2 {
   //first login password reset token
   // view user tokens
   // to set up view user token keys in service
-  @Get('token_keys')
-  @ApiOperation({ summary: 'Get the token keys for this user' })
-  @ApiGetResponse('Here are all the token keys available for this user')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  @Can({ action: ACTION_READ, subject: USER_TOKEN_KEY })
-  viewUserKeys(
-    @Body() createUserWithTemplateDto: CreateUserWithRoleDto,
-    @SessionUser() user: RequestUser,
-    @Req() req: Request,
-  ) {
-    return this.userManagementService.createUserAccount(
-      createUserWithTemplateDto,
-      user,
-      req,
-      user,
-    );
-  }
+  // @Get('token_keys')
+  // @ApiOperation({ summary: 'Get the token keys for this user' })
+  // @ApiGetResponse('Here are all the token keys available for this user')
+  // @ApiSecurityClearance(SEC_LVL_5)
+  // @SecurityClearance(SEC_LVL_5)
+  // @Can({ action: ACTION_READ, subject: USER_TOKEN_KEY })
+  // viewUserKeys(
+  //   @Body() createUserWithTemplateDto: CreateUserWithRoleDto,
+  //   @SessionUser() user: RequestUser,
+  //   @Req() req: Request,
+
+  // ) {
+  //   return this.userManagementService.createUserAccount(
+  //     createUserWithTemplateDto,
+  //     user,
+  //     req,
+  //   );
+  // }
 
   @Put('deactivate')
   @ApiOperation({ summary: 'Deactivate the user account' })
