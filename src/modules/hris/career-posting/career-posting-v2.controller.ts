@@ -36,7 +36,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CareerPostingService } from './career-posting.service';
 
-@ApiTags('Human Resources - Recruitment and Onboarding')
+@ApiTags('Human Resources - Recruitment and Onboarding (Job/Career Posting)')
 @Controller({ path: 'hris', version: '2' })
 export class CareerPostingV2Controller {
   constructor(private readonly careerPostingService: CareerPostingService) {}
