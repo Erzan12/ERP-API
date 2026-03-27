@@ -1,0 +1,118 @@
+import { AuditService } from './audit.service';
+import { RequestUser } from 'src/utils/types/request-user.interface';
+export declare class AuditControllerV2 {
+    private auditService;
+    constructor(auditService: AuditService);
+    getAuditLogs(userId?: string, resource?: string, action?: string, startDate?: string, endDate?: string, success?: boolean, limit?: number, offset?: number): Promise<({
+        user: {
+            id: string;
+            employee_id: string;
+            email: string;
+        } | null;
+    } & {
+        id: string;
+        user_email: string | null;
+        employee_id: string | null;
+        action: string;
+        resource: string;
+        resource_id: string | null;
+        old_values: import("@prisma/client/runtime/client").JsonValue | null;
+        new_values: import("@prisma/client/runtime/client").JsonValue | null;
+        change_fields: string[];
+        ip_address: string | null;
+        user_agent: string | null;
+        endpoint: string | null;
+        http_method: string | null;
+        status_code: number | null;
+        success: boolean;
+        error_message: string | null;
+        department_id: string | null;
+        session_id: string | null;
+        request_id: string | null;
+        severity: string | null;
+        compliance_flag: boolean;
+        created_at: Date;
+        user_id: string | null;
+    })[]>;
+    getResourceHistory(resource: string, id: string): Promise<({
+        user: {
+            username: string;
+            id: string;
+            email: string;
+        } | null;
+    } & {
+        id: string;
+        user_email: string | null;
+        employee_id: string | null;
+        action: string;
+        resource: string;
+        resource_id: string | null;
+        old_values: import("@prisma/client/runtime/client").JsonValue | null;
+        new_values: import("@prisma/client/runtime/client").JsonValue | null;
+        change_fields: string[];
+        ip_address: string | null;
+        user_agent: string | null;
+        endpoint: string | null;
+        http_method: string | null;
+        status_code: number | null;
+        success: boolean;
+        error_message: string | null;
+        department_id: string | null;
+        session_id: string | null;
+        request_id: string | null;
+        severity: string | null;
+        compliance_flag: boolean;
+        created_at: Date;
+        user_id: string | null;
+    })[]>;
+    getUserActivity(userId: string, days?: number): Promise<{
+        id: string;
+        user_email: string | null;
+        employee_id: string | null;
+        action: string;
+        resource: string;
+        resource_id: string | null;
+        old_values: import("@prisma/client/runtime/client").JsonValue | null;
+        new_values: import("@prisma/client/runtime/client").JsonValue | null;
+        change_fields: string[];
+        ip_address: string | null;
+        user_agent: string | null;
+        endpoint: string | null;
+        http_method: string | null;
+        status_code: number | null;
+        success: boolean;
+        error_message: string | null;
+        department_id: string | null;
+        session_id: string | null;
+        request_id: string | null;
+        severity: string | null;
+        compliance_flag: boolean;
+        created_at: Date;
+        user_id: string | null;
+    }[]>;
+    getMyActivity(user: RequestUser, days?: number): Promise<{
+        id: string;
+        user_email: string | null;
+        employee_id: string | null;
+        action: string;
+        resource: string;
+        resource_id: string | null;
+        old_values: import("@prisma/client/runtime/client").JsonValue | null;
+        new_values: import("@prisma/client/runtime/client").JsonValue | null;
+        change_fields: string[];
+        ip_address: string | null;
+        user_agent: string | null;
+        endpoint: string | null;
+        http_method: string | null;
+        status_code: number | null;
+        success: boolean;
+        error_message: string | null;
+        department_id: string | null;
+        session_id: string | null;
+        request_id: string | null;
+        severity: string | null;
+        compliance_flag: boolean;
+        created_at: Date;
+        user_id: string | null;
+    }[]>;
+}
