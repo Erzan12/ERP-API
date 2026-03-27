@@ -7,7 +7,10 @@ import {
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { RecruitmentPaginationDto, StatusCountDto } from 'src/utils/dtos/recruitment-pagination.dto';
+import {
+  RecruitmentPaginationDto,
+  StatusCountDto,
+} from 'src/utils/dtos/recruitment-pagination.dto';
 import {
   ApplicationSource,
   ApplicationStatus,
@@ -129,11 +132,11 @@ export class HiringPipelineService {
     // };
 
     const whereCondition: Prisma.ApplicantWhereInput = {
-        ...(is_active !== undefined && { is_active }),
-        ...(status && {
-          application_status: status as ApplicationStatus,
-        }),
-      };
+      ...(is_active !== undefined && { is_active }),
+      ...(status && {
+        application_status: status as ApplicationStatus,
+      }),
+    };
 
     const careerFields = ['name'];
     const userLocationFields = ['location_name'];
@@ -510,6 +513,186 @@ export class HiringPipelineService {
     };
   }
 
+  async statusCount(user: RequestUser, dto: StatusCountDto) {
+    // Count per status and also if isActive is true or false
+    const { is_active } = dto;
+
+    const whereCondition: Prisma.ApplicantWhereInput = {
+      ...(is_active !== undefined && { is_active }),
+    };
+
+    // Execute queries
+    const [counts] = await Promise.all([
+      this.prisma.applicant.groupBy({
+        by: ['application_status'],
+        where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
+        _count: { _all: true },
+      }),
+      this.prisma.careerPosting.count({
+        where: { is_active: true }, // We always want this count regardless of the filter
+      }),
+    ]);
+
+    // Build the response object with defaults
+    const result = {
+      all: 0,
+      draft: 0,
+      submitted: 0,
+      verified: 0,
+      approved: 0,
+      rejected: 0,
+      // isActive: totalActiveCount,
+    };
+
+    // Populate the result based on the DB response
+    counts.forEach((item) => {
+      const statusKey = item.application_status.toLowerCase();
+
+      // Check if the key exists in our object
+      if (Object.prototype.hasOwnProperty.call(result, statusKey)) {
+        // Cast the string to a valid key type
+        const key = statusKey as keyof typeof result;
+
+        const countValue = item._count._all;
+        result[key] = countValue;
+        result.all += countValue;
+      }
+    });
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    return {
+      stauts: 'success',
+      message: 'Here is the status count',
+      result,
+    };
+  }
+}
+
+/**
+ * SCREENING SERVICE SECTION
+ */
+
+// export class ScreeningApplicantService {
+//   constructor(private prisma: PrismaService) {}
+
+//   async screenApplicant(applicantId: string, files: UploadedFileDto[], user: RequestUser) {
+//     const screenApplicant = await this.prisma.applicant.findUnique({
+//       where: { id: applicantId },
+//       include: {
+//         applicant: true,
+//         createdBy: {
+//           select: {
+//             person: {
+//               select: {
+//                 first_name: true,
+//                 middle_name: true,
+//                 last_name: true,
+//               }
+//             }
+//           }
+//         },
+//         updatedBy: {
+//           select: {
+//             person: {
+//               select: {
+//                 first_name: true,
+//                 middle_name: true,
+//                 last_name: true,
+//               }
+//             }
+//           }
+//         }
+//       }
+//     });
+
+//     if (!screenApplicant) {
+//       throw new NotFoundException('Applicant not found')
+//     }
+
+//     const requestUser = await this.prisma.user.findUnique({
+//       where: { id: user.id },
+//       include: {
+//         employee: {
+//           include: {
+//             person: true,
+//             position: true,
+//           },
+//         },
+//         user_roles: true,
+//       },
+//     });
+
+//     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+//       throw new BadRequestException(`User does not exist.`);
+//     }
+
+//     const allowedRoles = [
+//       'Administrator',
+//       'Super Administrator',
+//       'HR Manager',
+//       'HR Clerk',
+//       'HR Staff',
+//     ];
+
+//     const canView = requestUser.user_roles.some((role) =>
+//       allowedRoles.includes(role.role_name),
+//     );
+
+//     if (!canView) {
+//       throw new ForbiddenException(
+//         'You are not authorized to perform this action',
+//       );
+//     }
+
+//     return {
+//       status: 'success',
+//       message: 'Here is the Applicant.',
+//       screenApplicant,
+//     };
+//   }
+// }
+
+/**
+ * INTERVIEW SERVICE SECTION
+ */
+
+export class InterviewApplicantService {
+  constructor(private prisma: PrismaService) {}
+
   async assignInterviewPanel(user: RequestUser, dto: BulkAssignInterviewDto) {
     const { applicant_id, interviewer_ids, date_of_interview } = dto;
     const stages = [
@@ -605,93 +788,4 @@ export class HiringPipelineService {
       return updated;
     });
   }
-
-  async statusCount(user: RequestUser, dto: StatusCountDto) {
-  
-      // Count per status and also if isActive is true or false
-      const { is_active } = dto;
-  
-      const whereCondition: Prisma.ApplicantWhereInput = {
-        ...(is_active !== undefined && { is_active }),
-      };
-  
-      // Execute queries
-      const [counts] = await Promise.all([
-        this.prisma.applicant.groupBy({
-          by: ['application_status'],
-          where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
-          _count: { _all: true },
-        }),
-        this.prisma.careerPosting.count({
-          where: { is_active: true }, // We always want this count regardless of the filter
-        }),
-      ]);
-  
-      // Build the response object with defaults
-      const result = {
-        all: 0,
-        draft: 0,
-        submitted: 0,
-        verified: 0,
-        approved: 0,
-        rejected: 0,
-        // isActive: totalActiveCount,
-      };
-  
-      // Populate the result based on the DB response
-      counts.forEach((item) => {
-        const statusKey = item.application_status.toLowerCase();
-  
-        // Check if the key exists in our object
-        if (Object.prototype.hasOwnProperty.call(result, statusKey)) {
-          // Cast the string to a valid key type
-          const key = statusKey as keyof typeof result;
-  
-          const countValue = item._count._all;
-          result[key] = countValue;
-          result.all += countValue;
-        }
-      });
-  
-      const requestUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-          employee: {
-            include: {
-              person: true,
-              position: true,
-            },
-          },
-          user_roles: true,
-        },
-      });
-  
-      if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-        throw new BadRequestException(`User does not exist.`);
-      }
-  
-      const allowedRoles = [
-        'Administrator',
-        'Super Administrator',
-        'HR Manager',
-        'HR Clerk',
-        'HR Staff',
-      ];
-  
-      const canView = requestUser.user_roles.some((role) =>
-        allowedRoles.includes(role.role_name),
-      );
-  
-      if (!canView) {
-        throw new ForbiddenException(
-          'You are not authorized to perform this action',
-        );
-      }
-  
-      return {
-        stauts: 'success', 
-        message: 'Here is the status count', 
-        result,
-      };
-    }
 }
