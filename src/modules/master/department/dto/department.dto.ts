@@ -62,5 +62,5 @@ export class UpdateDepartmentDto {
     example: 'true or false',
     description: 'Update the status of a department',
   })
-  isActive?: boolean;
+  is_active?: boolean;
 }

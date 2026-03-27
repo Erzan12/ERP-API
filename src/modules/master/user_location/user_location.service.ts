@@ -24,7 +24,7 @@ export class UserLocationService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.UserLocationWhereInput = {
-      isActive: true,
+      is_active: true,
     };
 
     const stringFields = [
