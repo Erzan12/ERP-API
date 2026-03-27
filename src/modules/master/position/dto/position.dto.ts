@@ -90,5 +90,5 @@ export class UpdatePositionDto {
     example: 'true or false',
     description: 'true if active and false if set to inactive',
   })
-  isActive: boolean;
+  is_active: boolean;
 }

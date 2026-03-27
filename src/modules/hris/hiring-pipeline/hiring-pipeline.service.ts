@@ -7,7 +7,7 @@ import {
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
+import { RecruitmentPaginationDto, StatusCountDto } from 'src/utils/dtos/recruitment-pagination.dto';
 import {
   ApplicationSource,
   ApplicationStatus,
@@ -116,17 +116,24 @@ export class HiringPipelineService {
   }
 
   async getApplicants(user: RequestUser, dto: RecruitmentPaginationDto) {
-    const { search, status, sortBy, order, page, perPage } = dto;
+    const { search, status, is_active, sortBy, order, page, perPage } = dto;
 
     //pagination area
     const skip = (page - 1) * perPage;
 
+    // const whereCondition: Prisma.ApplicantWhereInput = {
+    //   isActive: true,
+    //   ...(status && {
+    //     application_status: status as ApplicationStatus,
+    //   }),
+    // };
+
     const whereCondition: Prisma.ApplicantWhereInput = {
-      isActive: true,
-      ...(status && {
-        application_status: status as ApplicationStatus,
-      }),
-    };
+        ...(is_active !== undefined && { is_active }),
+        ...(status && {
+          application_status: status as ApplicationStatus,
+        }),
+      };
 
     const careerFields = ['name'];
     const userLocationFields = ['location_name'];
@@ -182,18 +189,18 @@ export class HiringPipelineService {
               mode: 'insensitive',
             },
           },
-          {
-            application_source: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
-          {
-            application_status: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
+          // {
+          //   application_source: {
+          //     contains: search,
+          //     mode: 'insensitive',
+          //   },
+          // },
+          // {
+          //   application_status: {
+          //     contains: search,
+          //     mode: 'insensitive',
+          //   },
+          // },
         ],
       };
     }
@@ -252,7 +259,7 @@ export class HiringPipelineService {
           application_source: true,
           application_status: true,
           date_applied: true,
-          isActive: true,
+          is_active: true,
           created_at: true,
           updated_at: true,
           createdBy: {
@@ -598,4 +605,93 @@ export class HiringPipelineService {
       return updated;
     });
   }
+
+  async statusCount(user: RequestUser, dto: StatusCountDto) {
+  
+      // Count per status and also if isActive is true or false
+      const { is_active } = dto;
+  
+      const whereCondition: Prisma.ApplicantWhereInput = {
+        ...(is_active !== undefined && { is_active }),
+      };
+  
+      // Execute queries
+      const [counts] = await Promise.all([
+        this.prisma.applicant.groupBy({
+          by: ['application_status'],
+          where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
+          _count: { _all: true },
+        }),
+        this.prisma.careerPosting.count({
+          where: { is_active: true }, // We always want this count regardless of the filter
+        }),
+      ]);
+  
+      // Build the response object with defaults
+      const result = {
+        all: 0,
+        draft: 0,
+        submitted: 0,
+        verified: 0,
+        approved: 0,
+        rejected: 0,
+        // isActive: totalActiveCount,
+      };
+  
+      // Populate the result based on the DB response
+      counts.forEach((item) => {
+        const statusKey = item.application_status.toLowerCase();
+  
+        // Check if the key exists in our object
+        if (Object.prototype.hasOwnProperty.call(result, statusKey)) {
+          // Cast the string to a valid key type
+          const key = statusKey as keyof typeof result;
+  
+          const countValue = item._count._all;
+          result[key] = countValue;
+          result.all += countValue;
+        }
+      });
+  
+      const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+          employee: {
+            include: {
+              person: true,
+              position: true,
+            },
+          },
+          user_roles: true,
+        },
+      });
+  
+      if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+      }
+  
+      const allowedRoles = [
+        'Administrator',
+        'Super Administrator',
+        'HR Manager',
+        'HR Clerk',
+        'HR Staff',
+      ];
+  
+      const canView = requestUser.user_roles.some((role) =>
+        allowedRoles.includes(role.role_name),
+      );
+  
+      if (!canView) {
+        throw new ForbiddenException(
+          'You are not authorized to perform this action',
+        );
+      }
+  
+      return {
+        stauts: 'success', 
+        message: 'Here is the status count', 
+        result,
+      };
+    }
 }

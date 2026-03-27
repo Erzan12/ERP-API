@@ -22,7 +22,7 @@ export class RoleManagementService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.RoleWhereInput = {
-      isActive: true,
+      is_active: true,
     };
 
     if (search) {
@@ -434,12 +434,12 @@ export class RoleManagementService {
           role_id: role.id,
         },
       },
-      update: { isActive: true },
+      update: { is_active: true },
       create: {
         user_id: userId,
         role_id: role.id,
         role_name: role.name,
-        isActive: true,
+        is_active: true,
       },
     });
 
