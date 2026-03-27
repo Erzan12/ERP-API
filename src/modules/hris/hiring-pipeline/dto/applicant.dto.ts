@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsDateString,
   IsEmail,
@@ -9,11 +10,13 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  ValidateNested,
 } from 'class-validator';
 import {
   ApplicationSource,
   ApplicationStatus,
 } from 'src/utils/decorators/global.enums.decorator';
+import { ApplicantDocumentDto } from './applicant-document.dto';
 
 export class CreateApplicantDto {
   @IsUUID()
@@ -99,6 +102,15 @@ export class CreateApplicantDto {
     description: 'The date of application of the applicant',
   })
   date_applied: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ApplicantDocumentDto)
+  @ApiProperty({
+    type: [ApplicantDocumentDto],
+    description: 'List of applicant documents',
+  })
+  documents: ApplicantDocumentDto[];
 }
 
 export class UpdateApplicantDto {
