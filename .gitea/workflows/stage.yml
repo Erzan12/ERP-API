@@ -72,9 +72,7 @@ jobs:
         run: npx prisma generate
 
       - name: Build NestJS
-        run: 
-          rm -rf dist
-          npm run build
+        run: npm run build
 
       - name: Verify build output
         run: |
