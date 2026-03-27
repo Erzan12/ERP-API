@@ -3230,6 +3230,46 @@
         ]
       }
     },
+    "/v2/hris/applicants/status-count": {
+      "get": {
+        "operationId": "HiringPipelineV2Controller_getStatusCountActive_v2",
+        "parameters": [
+          {
+            "name": "is_active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all Applicants status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Applicants status",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding"
+        ]
+      }
+    },
     "/v2/hris/applicants/{applicantId}": {
       "get": {
         "operationId": "HiringPipelineV2Controller_getCareerPosting_v2",
