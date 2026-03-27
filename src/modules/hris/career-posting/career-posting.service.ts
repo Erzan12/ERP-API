@@ -500,7 +500,6 @@ export class CareerPostingService {
   }
 
   async statusCount(user: RequestUser, dto: StatusCountDto) {
-
     // Count per status and also if isActive is true or false
     const { is_active } = dto;
 
@@ -582,8 +581,8 @@ export class CareerPostingService {
     }
 
     return {
-      stauts: 'success', 
-      message: 'Here is the status count', 
+      stauts: 'success',
+      message: 'Here is the status count',
       result,
     };
   }

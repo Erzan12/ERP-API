@@ -13,8 +13,14 @@ import { AdministratorV2Module } from '../administrator/administratorV2.module';
 import { CareerPostingService } from './career-posting/career-posting.service';
 import { CareerPostingV2Controller } from './career-posting/career-posting-v2.controller';
 
-import { HiringPipelineService } from './hiring-pipeline/hiring-pipeline.service';
-import { HiringPipelineV2Controller } from './hiring-pipeline/hiring-pipelineV2.controller';
+import {
+  HiringPipelineService,
+  InterviewApplicantService,
+} from './hiring-pipeline/hiring-pipeline.service';
+import {
+  ApplicantsController,
+  InterviewApplicantController,
+} from './hiring-pipeline/hiring-pipelineV2.controller';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
@@ -24,12 +30,16 @@ import { HiringPipelineV2Controller } from './hiring-pipeline/hiring-pipelineV2.
     DashboardService,
     CareerPostingService,
     HiringPipelineService,
+    InterviewApplicantService,
+    // ScreeningApplicantService,
   ],
   controllers: [
     EmployeeControllerV2,
     DashboardControllerV2,
     CareerPostingV2Controller,
-    HiringPipelineV2Controller,
+    ApplicantsController,
+    // ScreeningApplicantController,
+    InterviewApplicantController,
   ],
   exports: [HrV2Module],
 })

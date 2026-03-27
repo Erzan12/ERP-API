@@ -2923,7 +2923,7 @@
         },
         "summary": "List of all job/career postings",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Job/Career Posting)"
         ]
       },
       "post": {
@@ -2962,7 +2962,7 @@
         },
         "summary": "Job/Career posting",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Job/Career Posting)"
         ]
       }
     },
@@ -3002,7 +3002,7 @@
         },
         "summary": "List of all job/career postings status",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Job/Career Posting)"
         ]
       }
     },
@@ -3041,7 +3041,7 @@
         },
         "summary": "Get a Job/Career posting",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Job/Career Posting)"
         ]
       },
       "put": {
@@ -3089,13 +3089,13 @@
         },
         "summary": "Update a current company information",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Job/Career Posting)"
         ]
       }
     },
     "/v2/hris/applicants": {
       "get": {
-        "operationId": "HiringPipelineV2Controller_getCareerPostings_v2",
+        "operationId": "ApplicantsController_getCareerPostings_v2",
         "parameters": [
           {
             "name": "search",
@@ -3187,11 +3187,11 @@
         },
         "summary": "List of all applicant posted",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
       },
       "post": {
-        "operationId": "HiringPipelineV2Controller_createApplicant_v2",
+        "operationId": "ApplicantsController_createApplicant_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3226,13 +3226,13 @@
         },
         "summary": "Applicant posting",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
       }
     },
     "/v2/hris/applicants/status-count": {
       "get": {
-        "operationId": "HiringPipelineV2Controller_getStatusCountActive_v2",
+        "operationId": "ApplicantsController_getStatusCountActive_v2",
         "parameters": [
           {
             "name": "is_active",
@@ -3266,13 +3266,13 @@
         },
         "summary": "List of all Applicants status",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
       }
     },
     "/v2/hris/applicants/{applicantId}": {
       "get": {
-        "operationId": "HiringPipelineV2Controller_getCareerPosting_v2",
+        "operationId": "ApplicantsController_getCareerPosting_v2",
         "parameters": [
           {
             "name": "applicantId",
@@ -3305,13 +3305,13 @@
         },
         "summary": "Get a Applicant",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
       }
     },
     "/v2/hris/applicants/{applicationId}": {
       "put": {
-        "operationId": "HiringPipelineV2Controller_updateCareerPosting_v2",
+        "operationId": "ApplicantsController_updateCareerPosting_v2",
         "parameters": [
           {
             "name": "applicationId",
@@ -3355,13 +3355,13 @@
         },
         "summary": "Update a current company information",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
       }
     },
-    "/v2/hris/applicants/assign-interview-panel": {
+    "/v2/hris/applicants/interview/assign-interview-panel": {
       "post": {
-        "operationId": "HiringPipelineV2Controller_assignInterviewer_v2",
+        "operationId": "InterviewApplicantController_assignInterviewer_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3380,13 +3380,13 @@
         },
         "summary": "Assign the full interview panel to an applicant",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Interview Applicant)"
         ]
       }
     },
-    "/v2/hris/applicants/assess-interview/{interviewerId}": {
+    "/v2/hris/applicants/interview/assess-interview/{interviewerId}": {
       "patch": {
-        "operationId": "HiringPipelineV2Controller_assessInterview_v2",
+        "operationId": "InterviewApplicantController_assessInterview_v2",
         "parameters": [
           {
             "name": "interviewerId",
@@ -3414,7 +3414,7 @@
         },
         "summary": "Submit assessment for a specific interview stage",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Interview Applicant)"
         ]
       }
     },
@@ -4949,6 +4949,31 @@
           "user_location_id"
         ]
       },
+      "ApplicantDocumentDto": {
+        "type": "object",
+        "properties": {
+          "document_type": {
+            "type": "string",
+            "example": "RESUME",
+            "description": "Type of document"
+          },
+          "file_name": {
+            "type": "string",
+            "example": "resume.pdf",
+            "description": "File name"
+          },
+          "file_path": {
+            "type": "string",
+            "example": "/uploads/resume.pdf",
+            "description": "File path"
+          }
+        },
+        "required": [
+          "document_type",
+          "file_name",
+          "file_path"
+        ]
+      },
       "CreateApplicantDto": {
         "type": "object",
         "properties": {
@@ -5011,6 +5036,13 @@
             "type": "string",
             "example": "2026-03-05",
             "description": "The date of application of the applicant"
+          },
+          "documents": {
+            "description": "List of applicant documents",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApplicantDocumentDto"
+            }
           }
         },
         "required": [
@@ -5022,7 +5054,8 @@
           "mobile_number",
           "application_source",
           "application_status",
-          "date_applied"
+          "date_applied",
+          "documents"
         ]
       },
       "UpdateApplicantDto": {
