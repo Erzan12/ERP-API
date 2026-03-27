@@ -26,7 +26,7 @@ import {
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Can } from 'src/utils/decorators/can.decorator';
-import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
+import { RecruitmentPaginationDto, StatusCountDto } from 'src/utils/dtos/recruitment-pagination.dto';
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 
@@ -50,6 +50,18 @@ export class HiringPipelineV2Controller {
     // @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
     return this.hiringPipelineService.getApplicants(user, dto);
+  }
+
+  
+  @Get('applicants/status-count')
+  @ApiOperation({ summary: 'List of all Applicants status' })
+  @ApiGetResponse('List of all Applicants status')
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  getStatusCountActive(
+    @SessionUser() user: RequestUser,
+    @Query() dto: StatusCountDto,
+  ) {
+    return this.hiringPipelineService.statusCount(user, dto);
   }
 
   @Get('applicants/:applicantId')

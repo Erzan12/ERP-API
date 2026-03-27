@@ -120,14 +120,21 @@ export class CareerPostingService {
 
   //get career postings
   async getCareerPostings(user: RequestUser, dto: RecruitmentPaginationDto) {
-    const { search, status, sortBy, order, page, perPage } = dto;
+    const { search, status, is_active, sortBy, order, page, perPage } = dto;
 
     //pagination area
     const skip = (page - 1) * perPage;
 
     //with status params filter
+    // const whereCondition: Prisma.CareerPostingWhereInput = {
+    //   isActive: true,
+    //   ...(status && {
+    //     status: status as CareerPosingStatus,
+    //   }),
+    // };
+
     const whereCondition: Prisma.CareerPostingWhereInput = {
-      isActive: true,
+      ...(is_active !== undefined && { is_active }),
       ...(status && {
         status: status as CareerPosingStatus,
       }),
@@ -237,7 +244,7 @@ export class CareerPostingService {
           employment_type: true,
           employee_type: true,
           status: true,
-          isActive: true,
+          is_active: true,
           created_at: true,
           updated_at: true,
           createdBy: {
@@ -434,7 +441,7 @@ export class CareerPostingService {
         user_location_id: updateCareerPostingDto.user_location_id ?? undefined,
         isPublished: updateCareerPostingDto.isPublished ?? undefined,
         published_on: publishDate,
-        isActive: updateCareerPostingDto.isActive ?? undefined,
+        is_active: updateCareerPostingDto.is_active ?? undefined,
         employment_type: updateCareerPostingDto.employment_type ?? undefined,
         employee_type: updateCareerPostingDto.employee_type ?? undefined,
         updated_by: user.id,
@@ -493,17 +500,15 @@ export class CareerPostingService {
   }
 
   async statusCount(user: RequestUser, dto: StatusCountDto) {
-    const { filter } = dto;
 
-    // 1. Initialize an empty where object
-    const whereCondition: Prisma.CareerPostingWhereInput = {};
+    // Count per status and also if isActive is true or false
+    const { is_active } = dto;
 
-    // 2. Only apply isActive filter if the user specifically asked for 'active'
-    if (filter === 'active') {
-      whereCondition.isActive = true;
-    }
+    const whereCondition: Prisma.CareerPostingWhereInput = {
+      ...(is_active !== undefined && { is_active }),
+    };
 
-    // 3. Execute queries
+    // Execute queries
     const [counts] = await Promise.all([
       this.prisma.careerPosting.groupBy({
         by: ['status'],
@@ -511,11 +516,11 @@ export class CareerPostingService {
         _count: { _all: true },
       }),
       this.prisma.careerPosting.count({
-        where: { isActive: true }, // We always want this count regardless of the filter
+        where: { is_active: true }, // We always want this count regardless of the filter
       }),
     ]);
 
-    // 4. Build the response object with defaults
+    // Build the response object with defaults
     const result = {
       all: 0,
       draft: 0,
@@ -526,7 +531,7 @@ export class CareerPostingService {
       // isActive: totalActiveCount,
     };
 
-    // 5. Populate the result based on the DB response
+    // Populate the result based on the DB response
     counts.forEach((item) => {
       const statusKey = item.status.toLowerCase();
 
@@ -541,6 +546,45 @@ export class CareerPostingService {
       }
     });
 
-    return result;
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    return {
+      stauts: 'success', 
+      message: 'Here is the status count', 
+      result,
+    };
   }
 }
