@@ -21,7 +21,7 @@ export class DepartmentService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.DepartmentWhereInput = {
-      isActive: true,
+      is_active: true,
     };
 
     if (search) {
@@ -50,7 +50,7 @@ export class DepartmentService {
       //boolean search
       if (search === 'true' || search === 'false') {
         orConditions.push({
-          isActive: search === 'true',
+          is_active: search === 'true',
         });
       }
 
@@ -328,11 +328,11 @@ export class DepartmentService {
       where: { id: departmentId },
       select: {
         name: true,
-        isActive: true,
+        is_active: true,
       },
     });
 
-    if (!department || department.isActive === false) {
+    if (!department || department.is_active === false) {
       throw new BadRequestException(
         'Department does not exist or is inactive!',
       );
@@ -344,7 +344,7 @@ export class DepartmentService {
         name: updateDepartmentDto.name ?? undefined,
         sorting: updateDepartmentDto.sorting ?? undefined,
         division_id: updateDepartmentDto.division_id ?? undefined,
-        isActive: updateDepartmentDto.isActive ?? undefined,
+        is_active: updateDepartmentDto.is_active ?? undefined,
         updated_by: user.id,
         //will be added to department schema updated_by and updated_at fields
         // updated_by: user.id,           // optional: if you track who updated it
