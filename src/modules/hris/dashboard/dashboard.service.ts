@@ -7,10 +7,10 @@ export class DashboardService {
 
   async getHRDashboard() {
     const totalActEmp = await this.prisma.user.count({
-      where: { isActive: true },
+      where: { is_active: true },
     });
     const totalInActEmp = await this.prisma.user.count({
-      where: { isActive: false },
+      where: { is_active: false },
     });
     const totalSepEmp = await this.prisma.employee.count({
       where: {

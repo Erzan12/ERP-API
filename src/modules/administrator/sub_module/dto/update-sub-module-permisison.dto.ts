@@ -23,5 +23,5 @@ export class UpdateSubModulePermisisonDto {
     example: 'true or false',
     description: 'If you want to update the status of the action ',
   })
-  isActive?: boolean;
+  is_active?: boolean;
 }
