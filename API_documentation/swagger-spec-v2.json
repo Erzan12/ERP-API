@@ -3918,7 +3918,7 @@
             "example": "view, create, update, note, delete",
             "description": "if you want to update the current actions"
           },
-          "isActive": {
+          "is_active": {
             "type": "boolean",
             "example": "true or false",
             "description": "If you want to update the status of the action "
@@ -3926,7 +3926,7 @@
         },
         "required": [
           "action",
-          "isActive"
+          "is_active"
         ]
       },
       "CreateModuleDto": {
@@ -4149,7 +4149,7 @@
             "example": "Department PK UUID",
             "description": "The Department where the position is available"
           },
-          "isActive": {
+          "is_active": {
             "type": "boolean",
             "example": "true or false",
             "description": "true if active and false if set to inactive"
@@ -4161,7 +4161,7 @@
           "job_description",
           "sorting",
           "department_id",
-          "isActive"
+          "is_active"
         ]
       },
       "CreateDepartmentDto": {
@@ -4207,7 +4207,7 @@
             "example": "Division PK UUID",
             "description": "The division where the department belongs to"
           },
-          "isActive": {
+          "is_active": {
             "type": "boolean",
             "example": "true or false",
             "description": "Update the status of a department"
@@ -4217,7 +4217,7 @@
           "name",
           "sorting",
           "division_id",
-          "isActive"
+          "is_active"
         ]
       },
       "CreateCompanyDto": {
@@ -4307,7 +4307,7 @@
             "example": "ABISC",
             "description": "Update current company abbreviation"
           },
-          "isActive": {
+          "is_active": {
             "type": "boolean",
             "example": "true or false",
             "description": "Update current company status"
@@ -4321,7 +4321,7 @@
           "company_tin",
           "is_top_20000",
           "abbreviation",
-          "isActive"
+          "is_active"
         ]
       },
       "CreateDivisionDto": {
@@ -4351,7 +4351,7 @@
             "example": "New Division Name",
             "description": "If you want to update the Division name"
           },
-          "isActive": {
+          "is_active": {
             "type": "boolean",
             "example": "true or false",
             "description": "Update the status of the division"
@@ -4359,7 +4359,7 @@
         },
         "required": [
           "name",
-          "isActive"
+          "is_active"
         ]
       },
       "CreateEmployeeStatusDto": {
@@ -4859,7 +4859,7 @@
             "example": "true or false",
             "description": "true if want to published and false if unpublished"
           },
-          "isActive": {
+          "is_active": {
             "type": "boolean",
             "example": "true or false",
             "description": "true if active and false if set to inactive"
@@ -4886,7 +4886,7 @@
           "department_id",
           "employee_type",
           "isPublished",
-          "isActive",
+          "is_active",
           "employment_type",
           "user_location_id"
         ]

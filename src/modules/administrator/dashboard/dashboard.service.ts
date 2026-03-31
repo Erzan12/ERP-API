@@ -13,10 +13,10 @@ export class DashboardService {
   async getAdminDashboardStats(user: RequestUser) {
     const totalUsers = await this.prisma.user.count();
     const activeUsers = await this.prisma.user.count({
-      where: { isActive: true },
+      where: { is_active: true },
     });
     const inActiceUsers = await this.prisma.user.count({
-      where: { isActive: false },
+      where: { is_active: false },
     });
 
     const roles = await this.prisma.role.findMany({

@@ -91,7 +91,7 @@ export class DivisionService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.DivisionWhereInput = {
-      isActive: true,
+      is_active: true,
     };
 
     //for string type search columns
@@ -114,7 +114,7 @@ export class DivisionService {
       //boolean search
       if (search === 'true' || search === 'false') {
         orConditions.push({
-          isActive: search === 'true',
+          is_active: search === 'true',
         });
       }
 
@@ -290,7 +290,7 @@ export class DivisionService {
       where: { id: divisionId },
       select: {
         name: true,
-        isActive: true,
+        is_active: true,
       },
     });
 
@@ -302,7 +302,7 @@ export class DivisionService {
       where: { id: divisionId },
       data: {
         name: updateDivisionDto.name ?? undefined,
-        isActive: updateDivisionDto.isActive ?? undefined,
+        is_active: updateDivisionDto.is_active ?? undefined,
         updated_by: user.id,
       },
     });
