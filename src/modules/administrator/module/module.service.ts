@@ -94,7 +94,7 @@ export class ModuleService {
           select: {
             id: true,
             name: true,
-            isActive: true,
+            is_active: true,
           },
         },
         createdBy: {
@@ -143,7 +143,7 @@ export class ModuleService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.ModuleWhereInput = {
-      isActive: true,
+      is_active: true,
     };
 
     if (search) {
@@ -161,7 +161,7 @@ export class ModuleService {
       //boolean search
       if (search === 'true' || search === 'false') {
         orConditions.push({
-          isActive: search === 'true',
+          is_active: search === 'true',
         });
       }
 
@@ -208,7 +208,7 @@ export class ModuleService {
             select: {
               id: true,
               name: true,
-              isActive: true,
+              is_active: true,
             },
           },
         },

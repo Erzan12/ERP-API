@@ -23,7 +23,7 @@ export class RoleService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.RoleWhereInput = {
-      isActive: true,
+      is_active: true,
     };
 
     if (search) {

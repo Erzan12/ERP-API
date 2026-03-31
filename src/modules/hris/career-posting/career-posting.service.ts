@@ -127,7 +127,7 @@ export class CareerPostingService {
 
     //with status params filter
     const whereCondition: Prisma.CareerPostingWhereInput = {
-      isActive: true,
+      is_active: true,
       ...(status && {
         status: status as CareerPosingStatus,
       }),
@@ -237,7 +237,7 @@ export class CareerPostingService {
           employment_type: true,
           employee_type: true,
           status: true,
-          isActive: true,
+          is_active: true,
           created_at: true,
           updated_at: true,
           createdBy: {
@@ -434,7 +434,7 @@ export class CareerPostingService {
         user_location_id: updateCareerPostingDto.user_location_id ?? undefined,
         isPublished: updateCareerPostingDto.isPublished ?? undefined,
         published_on: publishDate,
-        isActive: updateCareerPostingDto.isActive ?? undefined,
+        is_active: updateCareerPostingDto.is_active ?? undefined,
         employment_type: updateCareerPostingDto.employment_type ?? undefined,
         employee_type: updateCareerPostingDto.employee_type ?? undefined,
         updated_by: user.id,
@@ -500,7 +500,7 @@ export class CareerPostingService {
 
     // 2. Only apply isActive filter if the user specifically asked for 'active'
     if (filter === 'active') {
-      whereCondition.isActive = true;
+      whereCondition.is_active = true;
     }
 
     // 3. Execute queries
@@ -511,7 +511,7 @@ export class CareerPostingService {
         _count: { _all: true },
       }),
       this.prisma.careerPosting.count({
-        where: { isActive: true }, // We always want this count regardless of the filter
+        where: { is_active: true }, // We always want this count regardless of the filter
       }),
     ]);
 

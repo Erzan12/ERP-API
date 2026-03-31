@@ -91,7 +91,7 @@ export class PositionService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.PositionWhereInput = {
-      isActive: true,
+      is_active: true,
     };
 
     if (search) {
@@ -120,7 +120,7 @@ export class PositionService {
       //boolean search
       if (search === 'true' || search === 'false') {
         orConditions.push({
-          isActive: search === 'true',
+          is_active: search === 'true',
         });
       }
 
@@ -263,7 +263,7 @@ export class PositionService {
       select: {
         name: true,
         department: true,
-        isActive: true,
+        is_active: true,
       },
     });
 
@@ -333,7 +333,7 @@ export class PositionService {
       select: {
         id: true,
         name: true,
-        isActive: true,
+        is_active: true,
       },
     });
 
@@ -362,7 +362,7 @@ export class PositionService {
       hierarchy: updatePositionDto.hierarchy,
       job_description: updatePositionDto.job_description ?? undefined,
       sorting: updatePositionDto.sorting ?? undefined,
-      isActive: updatePositionDto.isActive ?? undefined,
+      is_active: updatePositionDto.is_active ?? undefined,
       updatedBy: {
         connect: { id: user.id },
       },

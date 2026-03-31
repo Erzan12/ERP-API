@@ -96,7 +96,7 @@ export class CompanyService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.CompanyWhereInput = {
-      isActive: true,
+      is_active: true,
     };
 
     const stringFields = [
@@ -148,7 +148,7 @@ export class CompanyService {
       //boolean search
       if (search === 'true' || search === 'false') {
         orConditions.push({
-          isActive: search === 'true',
+          is_active: search === 'true',
         });
       }
 
@@ -345,7 +345,7 @@ export class CompanyService {
       where: { id: companyId },
       select: {
         name: true,
-        isActive: true,
+        is_active: true,
       },
     });
 
@@ -363,7 +363,7 @@ export class CompanyService {
         company_tin: updateCompanyDto.company_tin ?? undefined,
         is_top_20000: updateCompanyDto.is_top_20000 ?? undefined,
         abbreviation: updateCompanyDto.abbreviation ?? undefined,
-        isActive: updateCompanyDto.isActive ?? undefined,
+        is_active: updateCompanyDto.is_active ?? undefined,
         updated_by: user.id,
       },
     });

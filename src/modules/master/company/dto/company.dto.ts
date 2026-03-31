@@ -172,5 +172,5 @@ export class UpdateCompanyDto {
     example: 'true or false',
     description: 'Update current company status',
   })
-  isActive?: boolean;
+  is_active?: boolean;
 }
