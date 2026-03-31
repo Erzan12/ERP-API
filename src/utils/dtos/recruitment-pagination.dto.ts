@@ -13,11 +13,11 @@ export class RecruitmentPaginationDto {
   @ApiPropertyOptional({ default: '' })
   status?: string;
 
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true')
-  @ApiPropertyOptional({ default: '' })
-  is_active?: boolean;
+  // @IsOptional()
+  // @IsBoolean()
+  // @Transform(({ value }) => value === 'true')
+  // @ApiPropertyOptional({ default: '' })
+  // is_active?: boolean;
 
   @IsOptional()
   @IsString()
@@ -42,10 +42,10 @@ export class RecruitmentPaginationDto {
   perPage: number = 10;
 }
 
-export class StatusCountDto {
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true')
-  @ApiPropertyOptional({ default: '' })
-  is_active?: boolean;
-}
+// export class StatusCountDto {
+//   @IsOptional()
+//   @IsBoolean()
+//   @Transform(({ value }) => value === 'true')
+//   @ApiPropertyOptional({ default: '' })
+//   is_active?: boolean;
+// }
