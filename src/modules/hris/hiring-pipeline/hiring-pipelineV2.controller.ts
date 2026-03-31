@@ -31,7 +31,6 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Can } from 'src/utils/decorators/can.decorator';
 import {
   RecruitmentPaginationDto,
-  StatusCountDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
@@ -71,9 +70,8 @@ export class ApplicantsController {
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   getStatusCountActive(
     @SessionUser() user: RequestUser,
-    @Query() dto: StatusCountDto,
   ) {
-    return this.hiringPipelineService.statusCount(user, dto);
+    return this.hiringPipelineService.statusCount(user);
   }
 
   @Get('applicants/:applicantId')
