@@ -2852,6 +2852,15 @@
             }
           },
           {
+            "name": "is_active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "boolean"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -2962,12 +2971,12 @@
         "operationId": "CareerPostingV2Controller_getStatusCountActive_v2",
         "parameters": [
           {
-            "name": "filter",
+            "name": "is_active",
             "required": false,
             "in": "query",
             "schema": {
               "default": "",
-              "type": "string"
+              "type": "boolean"
             }
           }
         ],
@@ -3086,7 +3095,7 @@
     },
     "/v2/hris/applicants": {
       "get": {
-        "operationId": "HiringPipelineV2Controller_getCareerPostings_v2",
+        "operationId": "ApplicantsController_getCareerPostings_v2",
         "parameters": [
           {
             "name": "search",
@@ -3104,6 +3113,15 @@
             "schema": {
               "default": "",
               "type": "string"
+            }
+          },
+          {
+            "name": "is_active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "boolean"
             }
           },
           {
@@ -3169,11 +3187,11 @@
         },
         "summary": "List of all applicant posted",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
       },
       "post": {
-        "operationId": "HiringPipelineV2Controller_createApplicant_v2",
+        "operationId": "ApplicantsController_createApplicant_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3208,13 +3226,53 @@
         },
         "summary": "Applicant posting",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/status-count": {
+      "get": {
+        "operationId": "ApplicantsController_getStatusCountActive_v2",
+        "parameters": [
+          {
+            "name": "is_active",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all Applicants status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Applicants status",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
       }
     },
     "/v2/hris/applicants/{applicantId}": {
       "get": {
-        "operationId": "HiringPipelineV2Controller_getCareerPosting_v2",
+        "operationId": "ApplicantsController_getCareerPosting_v2",
         "parameters": [
           {
             "name": "applicantId",
@@ -3247,13 +3305,13 @@
         },
         "summary": "Get a Applicant",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
       }
     },
     "/v2/hris/applicants/{applicationId}": {
       "put": {
-        "operationId": "HiringPipelineV2Controller_updateCareerPosting_v2",
+        "operationId": "ApplicantsController_updateCareerPosting_v2",
         "parameters": [
           {
             "name": "applicationId",
@@ -3297,13 +3355,13 @@
         },
         "summary": "Update a current company information",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
       }
     },
-    "/v2/hris/applicants/assign-interview-panel": {
+    "/v2/hris/applicants/interview/assign-interview-panel": {
       "post": {
-        "operationId": "HiringPipelineV2Controller_assignInterviewer_v2",
+        "operationId": "InterviewApplicantController_assignInterviewer_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3322,13 +3380,13 @@
         },
         "summary": "Assign the full interview panel to an applicant",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Interview Applicant)"
         ]
       }
     },
-    "/v2/hris/applicants/assess-interview/{interviewerId}": {
+    "/v2/hris/applicants/interview/assess-interview/{interviewerId}": {
       "patch": {
-        "operationId": "HiringPipelineV2Controller_assessInterview_v2",
+        "operationId": "InterviewApplicantController_assessInterview_v2",
         "parameters": [
           {
             "name": "interviewerId",
@@ -3356,7 +3414,7 @@
         },
         "summary": "Submit assessment for a specific interview stage",
         "tags": [
-          "Human Resources - Recruitment and Onboarding"
+          "Human Resources - Recruitment and Onboarding (Interview Applicant)"
         ]
       }
     },
