@@ -24,7 +24,6 @@ import {
 
 import {
   RecruitmentPaginationDto,
-  StatusCountDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
 import {
   CreateCareerPostingDto,
@@ -64,9 +63,9 @@ export class CareerPostingV2Controller {
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   getStatusCountActive(
     @SessionUser() user: RequestUser,
-    @Query() dto: StatusCountDto,
+    // @Query() dto: StatusCountDto,
   ) {
-    return this.careerPostingService.statusCount(user, dto);
+    return this.careerPostingService.statusCount(user);
   }
 
   @Get('recruitments/:recruitmentId')

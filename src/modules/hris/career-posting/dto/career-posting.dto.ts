@@ -101,14 +101,14 @@ export class UpdateCareerPostingDto {
   })
   slots?: number;
 
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 'Manages the development team',
-    description: 'The description of the position',
-  })
-  job_description?: string;
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // @ApiProperty({
+  //   example: 'Manages the development team',
+  //   description: 'The description of the position',
+  // })
+  // job_description?: string;
 
   @IsOptional()
   @IsUUID()
