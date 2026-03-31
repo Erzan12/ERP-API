@@ -9,7 +9,6 @@ import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
   RecruitmentPaginationDto,
-  StatusCountDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
 import {
   ApplicationSource,
@@ -119,24 +118,24 @@ export class HiringPipelineService {
   }
 
   async getApplicants(user: RequestUser, dto: RecruitmentPaginationDto) {
-    const { search, status, is_active, sortBy, order, page, perPage } = dto;
+    const { search, status, sortBy, order, page, perPage } = dto;
 
     //pagination area
     const skip = (page - 1) * perPage;
 
-    // const whereCondition: Prisma.ApplicantWhereInput = {
-    //   isActive: true,
-    //   ...(status && {
-    //     application_status: status as ApplicationStatus,
-    //   }),
-    // };
-
     const whereCondition: Prisma.ApplicantWhereInput = {
-      ...(is_active !== undefined && { is_active }),
+      is_active: true,
       ...(status && {
         application_status: status as ApplicationStatus,
       }),
     };
+
+    // const whereCondition: Prisma.ApplicantWhereInput = {
+    //   ...(is_active !== undefined && { is_active }),
+    //   ...(status && {
+    //     application_status: status as ApplicationStatus,
+    //   }),
+    // };
 
     const careerFields = ['name'];
     const userLocationFields = ['location_name'];
@@ -513,12 +512,17 @@ export class HiringPipelineService {
     };
   }
 
-  async statusCount(user: RequestUser, dto: StatusCountDto) {
+  async statusCount(user: RequestUser) {
     // Count per status and also if isActive is true or false
-    const { is_active } = dto;
+    // const { is_active } = dto;
+
+    // const whereCondition: Prisma.ApplicantWhereInput = {
+    //   ...(is_active !== undefined && { is_active }),
+    // };
 
     const whereCondition: Prisma.ApplicantWhereInput = {
-      ...(is_active !== undefined && { is_active }),
+       is_active: true,
+      // ...(is_active === true)
     };
 
     // Execute queries
@@ -528,7 +532,7 @@ export class HiringPipelineService {
         where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
         _count: { _all: true },
       }),
-      this.prisma.careerPosting.count({
+      this.prisma.applicant.count({
         where: { is_active: true }, // We always want this count regardless of the filter
       }),
     ]);
@@ -536,11 +540,12 @@ export class HiringPipelineService {
     // Build the response object with defaults
     const result = {
       all: 0,
-      draft: 0,
-      submitted: 0,
-      verified: 0,
-      approved: 0,
+      applied: 0,
+      screening: 0,
+      for_interview: 0,
+      accepted: 0,
       rejected: 0,
+      onboarding: 0,
       // isActive: totalActiveCount,
     };
 
@@ -596,7 +601,7 @@ export class HiringPipelineService {
 
     return {
       stauts: 'success',
-      message: 'Here is the status count',
+      message: 'Here is the status count for applicants',
       result,
     };
   }
