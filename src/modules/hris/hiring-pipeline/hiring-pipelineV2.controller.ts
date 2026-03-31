@@ -10,7 +10,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { HiringPipelineService } from './hiring-pipeline.service';
+import {
+  HiringPipelineService,
+  InterviewApplicantService,
+} from './hiring-pipeline.service';
 import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import {
   ApiGetResponse,
@@ -26,14 +29,24 @@ import {
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Can } from 'src/utils/decorators/can.decorator';
-import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
+import {
+  RecruitmentPaginationDto,
+  StatusCountDto,
+} from 'src/utils/dtos/recruitment-pagination.dto';
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 
-@ApiTags('Human Resources - Recruitment and Onboarding')
+/**
+ * Applicant CONTROLLER SECTION
+ */
+
+@ApiTags('Human Resources - Recruitment and Onboarding (Applicants)')
 @Controller({ path: 'hris', version: '2' })
-export class HiringPipelineV2Controller {
-  constructor(private readonly hiringPipelineService: HiringPipelineService) {}
+export class ApplicantsController {
+  constructor(
+    private readonly hiringPipelineService: HiringPipelineService,
+    private readonly interviewApplicantService: InterviewApplicantService,
+  ) {}
 
   @Get('applicants')
   @ApiOperation({ summary: 'List of all applicant posted' })
@@ -50,6 +63,17 @@ export class HiringPipelineV2Controller {
     // @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
     return this.hiringPipelineService.getApplicants(user, dto);
+  }
+
+  @Get('applicants/status-count')
+  @ApiOperation({ summary: 'List of all Applicants status' })
+  @ApiGetResponse('List of all Applicants status')
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  getStatusCountActive(
+    @SessionUser() user: RequestUser,
+    @Query() dto: StatusCountDto,
+  ) {
+    return this.hiringPipelineService.statusCount(user, dto);
   }
 
   @Get('applicants/:applicantId')
@@ -97,26 +121,59 @@ export class HiringPipelineV2Controller {
       user,
     );
   }
+}
+
+/**
+ * SCREENING CONTROLLER SECTION
+ */
+
+// @ApiTags('Human Resources - Recruitment and Onboarding (Screening Applicant)')
+// @Controller({ path: 'hris', version: '2' })
+// export class ScreeningApplicantController {
+//   constructor(private readonly screeningApplicantService: ScreeningApplicantService) {}
+
+//   @Get('applicants/screening/:applicantId')
+//   @ApiOperation({ summary: 'Screen an Applicant' })
+//   @ApiGetResponse('Screen an Applicant')
+//   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+//   getScreenApplicant(
+//     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+//     @SessionUser() user: RequestUser,
+//   ) {
+//     return this.screeningApplicantService.screenApplicant(applicantId, user);
+//   }
+// }
+
+/**
+ * INTERVIEW CONTROLLER SECTION
+ */
+
+@ApiTags('Human Resources - Recruitment and Onboarding (Interview Applicant)')
+@Controller({ path: 'hris', version: '2' })
+export class InterviewApplicantController {
+  constructor(
+    private readonly interviewApplicantService: InterviewApplicantService,
+  ) {}
 
   /**
    * PHASE 1: ASSIGNMENT
    * Creates the 3 interview slots (Initial, Second, Final)
    */
-  @Post('applicants/assign-interview-panel') // post for creation
+  @Post('applicants/interview/assign-interview-panel') // post for creation
   @ApiOperation({ summary: 'Assign the full interview panel to an applicant' })
   @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
   assignInterviewer(
     @Body() dto: BulkAssignInterviewDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.assignInterviewPanel(user, dto);
+    return this.interviewApplicantService.assignInterviewPanel(user, dto);
   }
 
   /**
    * PHASE 2: ASSESSMENT
    * Updates one specific interview slot with results and exam ratings
    */
-  @Patch('applicants/assess-interview/:interviewerId')
+  @Patch('applicants/interview/assess-interview/:interviewerId')
   @ApiOperation({ summary: 'Submit assessment for a specific interview stage' })
   @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
   async assessInterview(
@@ -125,7 +182,7 @@ export class HiringPipelineV2Controller {
     @SessionUser() user: RequestUser,
   ) {
     // We pass the ID from the URL into the DTO or directly to the service
-    return this.hiringPipelineService.assessInterviewPanel(user, {
+    return this.interviewApplicantService.assessInterviewPanel(user, {
       ...dto,
       interviewer_id: interviewerId,
     });

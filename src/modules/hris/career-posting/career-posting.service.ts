@@ -493,13 +493,13 @@ export class CareerPostingService {
   }
 
   async statusCount(user: RequestUser, dto: StatusCountDto) {
-    const { filter } = dto;
+    const { is_active } = dto;
 
     // 1. Initialize an empty where object
     const whereCondition: Prisma.CareerPostingWhereInput = {};
 
     // 2. Only apply isActive filter if the user specifically asked for 'active'
-    if (filter === 'active') {
+    if (is_active === true) {
       whereCondition.is_active = true;
     }
 
