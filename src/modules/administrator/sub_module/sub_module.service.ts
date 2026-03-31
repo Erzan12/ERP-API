@@ -23,7 +23,7 @@ export class SubModuleService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.SubModuleWhereInput = {
-      isActive: true,
+      is_active: true,
     };
 
     if (search) {
@@ -324,7 +324,7 @@ export class SubModuleService {
     user: RequestUser,
     subModulePermissionId: string,
   ) {
-    const { action, isActive } = dto;
+    const { action, is_active } = dto;
 
     const existingSubModulePermission =
       await this.prisma.subModuleAction.findFirst({
@@ -344,7 +344,7 @@ export class SubModuleService {
       data: {
         id: existingSubModulePermission.id,
         action,
-        isActive,
+        is_active,
       },
     });
 
@@ -424,7 +424,7 @@ export class SubModuleService {
         action: {
           in: action,
         },
-        isActive: true,
+        is_active: true,
       },
     });
 

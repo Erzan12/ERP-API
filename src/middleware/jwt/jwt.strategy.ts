@@ -38,12 +38,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       include: {
         employee: true,
         user_roles: {
-          where: { isActive: true },
+          where: { is_active: true },
           include: {
             role: {
               include: {
                 role_permissions: {
-                  where: { isActive: true },
+                  where: { is_active: true },
                   include: {
                     sub_module: true,
                   },
@@ -55,7 +55,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       },
     });
 
-    if (!user || user.isActive !== true) {
+    if (!user || user.is_active !== true) {
       throw new UnauthorizedException('User not found or invalid token');
     }
 

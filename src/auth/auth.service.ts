@@ -147,12 +147,12 @@ export class AuthService {
       include: {
         employee: true,
         user_roles: {
-          where: { isActive: true },
+          where: { is_active: true },
           include: {
             role: {
               include: {
                 role_permissions: {
-                  where: { isActive: true },
+                  where: { is_active: true },
                   include: {
                     sub_module: true,
                   },
@@ -228,7 +228,7 @@ export class AuthService {
       );
     }
 
-    if (userValidate.isActive !== true) {
+    if (userValidate.is_active !== true) {
       throw new BadRequestException('Your account was deactivated.');
     }
 
@@ -350,12 +350,12 @@ export class AuthService {
           },
         },
         user_roles: {
-          where: { isActive: true },
+          where: { is_active: true },
           include: {
             role: {
               include: {
                 role_permissions: {
-                  where: { isActive: true },
+                  where: { is_active: true },
                   include: {
                     sub_module: true,
                   },
@@ -367,7 +367,7 @@ export class AuthService {
       },
     });
 
-    if (!user || user.isActive !== true) {
+    if (!user || user.is_active !== true) {
       throw new UnauthorizedException('User not found or invalid token');
     }
 
@@ -424,7 +424,7 @@ export class AuthService {
           return {
             id: ur.role?.id ?? 0,
             role_name: ur.role?.name ?? 'Unknown Role',
-            isActive: ur.isActive ?? 'false',
+            isActive: ur.is_active ?? 'false',
             sub_modules: uniqueSubmodules,
           };
         }),

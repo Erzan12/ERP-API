@@ -122,7 +122,7 @@ export class HiringPipelineService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.ApplicantWhereInput = {
-      isActive: true,
+      is_active: true,
       ...(status && {
         application_status: status as ApplicationStatus,
       }),
@@ -182,18 +182,18 @@ export class HiringPipelineService {
               mode: 'insensitive',
             },
           },
-          {
-            application_source: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
-          {
-            application_status: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
+          // {
+          //   application_source: {
+          //     contains: search,
+          //     mode: 'insensitive',
+          //   },
+          // },
+          // {
+          //   application_status: {
+          //     contains: search,
+          //     mode: 'insensitive',
+          //   },
+          // },
         ],
       };
     }
@@ -252,7 +252,7 @@ export class HiringPipelineService {
           application_source: true,
           application_status: true,
           date_applied: true,
-          isActive: true,
+          is_active: true,
           created_at: true,
           updated_at: true,
           createdBy: {

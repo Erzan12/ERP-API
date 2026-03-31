@@ -46,7 +46,7 @@ export class UserManagementService {
             role_name: true,
           },
         },
-        isActive: true,
+        is_active: true,
       },
     });
     return {
@@ -153,7 +153,7 @@ export class UserManagementService {
             username: createUserWithRoleDto.user_details.username,
             email: createUserWithRoleDto.user_details.email,
             password: hashedPassword,
-            isActive: true,
+            is_active: true,
             require_reset: 1,
             created_by: admin,
             created_at: new Date(),
@@ -243,7 +243,7 @@ export class UserManagementService {
           const role = await tx.role.findFirst({
             where: {
               name: createUserWithRoleDto.role_name,
-              isActive: true,
+              is_active: true,
             },
           });
 
@@ -255,7 +255,7 @@ export class UserManagementService {
           const rolePermissions = await tx.rolePermission.findMany({
             where: {
               role_id: role.id,
-              isActive: true,
+              is_active: true,
             },
           });
 
@@ -428,7 +428,7 @@ export class UserManagementService {
       throw new BadRequestException('User not found');
     }
 
-    if (existingUser.isActive === false) {
+    if (existingUser.is_active === false) {
       throw new ForbiddenException('User account is already deactivated');
     }
 
@@ -436,7 +436,7 @@ export class UserManagementService {
     await this.prisma.user.update({
       where: { id: deactivateUserAccountDto.user_id },
       data: {
-        isActive: false,
+        is_active: false,
         // is_active: false,
       },
     });
@@ -460,14 +460,14 @@ export class UserManagementService {
       throw new BadRequestException('Deactivated User not found');
     }
 
-    if (existingDeactivatedUser.isActive === true) {
+    if (existingDeactivatedUser.is_active === true) {
       throw new ConflictException('User Account is still active');
     }
 
     await this.prisma.user.update({
       where: { id: reactivateUserAccountDto.user_id },
       data: {
-        isActive: true,
+        is_active: true,
         // is_active: true,
       },
     });
