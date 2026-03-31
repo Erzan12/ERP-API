@@ -13,7 +13,6 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { CareerPosingStatus, Prisma } from '@prisma/client';
 import {
   RecruitmentPaginationDto,
-  StatusCountDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
 
 @Injectable()
@@ -120,25 +119,25 @@ export class CareerPostingService {
 
   //get career postings
   async getCareerPostings(user: RequestUser, dto: RecruitmentPaginationDto) {
-    const { search, status, is_active, sortBy, order, page, perPage } = dto;
+    const { search, status, sortBy, order, page, perPage } = dto;
 
     //pagination area
     const skip = (page - 1) * perPage;
 
     //with status params filter
-    // const whereCondition: Prisma.CareerPostingWhereInput = {
-    //   isActive: true,
-    //   ...(status && {
-    //     status: status as CareerPosingStatus,
-    //   }),
-    // };
-
     const whereCondition: Prisma.CareerPostingWhereInput = {
-      ...(is_active !== undefined && { is_active }),
+      is_active: true,
       ...(status && {
         status: status as CareerPosingStatus,
       }),
     };
+
+    // const whereCondition: Prisma.CareerPostingWhereInput = {
+    //   ...(is_active !== undefined && { is_active }),
+    //   ...(status && {
+    //     status: status as CareerPosingStatus,
+    //   }),
+    // };
 
     const positionFields = ['name'];
     const departmentFields = ['name'];
@@ -436,7 +435,7 @@ export class CareerPostingService {
       data: {
         position_id: updateCareerPostingDto.position_id ?? undefined,
         slots: updateCareerPostingDto.slots ?? undefined,
-        job_description: updateCareerPostingDto.job_description ?? undefined,
+        // job_description: updateCareerPostingDto.job_description ?? undefined,
         department_id: updateCareerPostingDto.department_id ?? undefined,
         user_location_id: updateCareerPostingDto.user_location_id ?? undefined,
         isPublished: updateCareerPostingDto.isPublished ?? undefined,
@@ -499,12 +498,16 @@ export class CareerPostingService {
     };
   }
 
-  async statusCount(user: RequestUser, dto: StatusCountDto) {
+  async statusCount(user: RequestUser) {
     // Count per status and also if isActive is true or false
-    const { is_active } = dto;
+    // const { is_active } = dto;
+
+    // const whereCondition: Prisma.CareerPostingWhereInput = {
+    //   ...(is_active !== undefined && { is_active }),
+    // };
 
     const whereCondition: Prisma.CareerPostingWhereInput = {
-      ...(is_active !== undefined && { is_active }),
+      is_active: true,
     };
 
     // Execute queries
@@ -582,7 +585,7 @@ export class CareerPostingService {
 
     return {
       stauts: 'success',
-      message: 'Here is the status count',
+      message: 'Here is the status count for job/career posting',
       result,
     };
   }

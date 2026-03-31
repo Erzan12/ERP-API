@@ -2852,15 +2852,6 @@
             }
           },
           {
-            "name": "is_active",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "boolean"
-            }
-          },
-          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -2969,17 +2960,7 @@
     "/v2/hris/recruitments/status-count": {
       "get": {
         "operationId": "CareerPostingV2Controller_getStatusCountActive_v2",
-        "parameters": [
-          {
-            "name": "is_active",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "boolean"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "List of job/career postings status"
@@ -3116,15 +3097,6 @@
             }
           },
           {
-            "name": "is_active",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "boolean"
-            }
-          },
-          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -3233,17 +3205,7 @@
     "/v2/hris/applicants/status-count": {
       "get": {
         "operationId": "ApplicantsController_getStatusCountActive_v2",
-        "parameters": [
-          {
-            "name": "is_active",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "boolean"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "List of all Applicants status"
@@ -4893,11 +4855,6 @@
             "example": 5,
             "description": "The number of slots for this position"
           },
-          "job_description": {
-            "type": "string",
-            "example": "Manages the development team",
-            "description": "The description of the position"
-          },
           "department_id": {
             "type": "string",
             "example": "Deparment PK UUID",
@@ -4940,7 +4897,6 @@
         "required": [
           "position_id",
           "slots",
-          "job_description",
           "department_id",
           "employee_type",
           "isPublished",
