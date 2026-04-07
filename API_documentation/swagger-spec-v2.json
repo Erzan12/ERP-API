@@ -4994,6 +4994,7 @@
             "enum": [
               "applied",
               "screening",
+              "shortlisted",
               "for_interview",
               "accepted",
               "rejected",
@@ -5078,6 +5079,7 @@
             "enum": [
               "applied",
               "screening",
+              "shortlisted",
               "for_interview",
               "accepted",
               "rejected",

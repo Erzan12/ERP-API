@@ -62,6 +62,7 @@ enum ApplicationSource {
 enum ApplicationStatus {
   applied
   screening
+  shortlisted
   for_interview
   accepted
   rejected
