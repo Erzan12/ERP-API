@@ -4888,6 +4888,19 @@
             "example": "full_time",
             "description": "The employment type of this career posting"
           },
+          "status": {
+            "type": "string",
+            "enum": [
+              "all",
+              "draft",
+              "submitted",
+              "verified",
+              "approved",
+              "rejected"
+            ],
+            "example": "draft",
+            "description": "The status of this career posting"
+          },
           "user_location_id": {
             "type": "string",
             "example": "User Location PK UUID",
@@ -4902,6 +4915,7 @@
           "isPublished",
           "is_active",
           "employment_type",
+          "status",
           "user_location_id"
         ]
       },
@@ -4980,6 +4994,7 @@
             "enum": [
               "applied",
               "screening",
+              "shortlisted",
               "for_interview",
               "accepted",
               "rejected",
@@ -5064,6 +5079,7 @@
             "enum": [
               "applied",
               "screening",
+              "shortlisted",
               "for_interview",
               "accepted",
               "rejected",
