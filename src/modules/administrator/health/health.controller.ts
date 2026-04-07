@@ -6,9 +6,11 @@ import {
   PrismaHealthIndicator,
 } from '@nestjs/terminus';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { Public } from 'src/utils/decorators/public.decorator';
 
+@Public()
 @ApiTags('Administrator - Health Check')
-@Controller({ path: 'administrator', version: '2' })
+@Controller({ path: 'health', version: '2' })
 export class HealthController {
   constructor(
     private health: HealthCheckService,
@@ -16,12 +18,12 @@ export class HealthController {
     private prisma: PrismaService,
   ) {}
 
-  @Get('health/live')
+  @Get('live')
   live() {
     return { status: 'ok' };
   }
 
-  @Get('health/ready')
+  @Get('ready')
   @HealthCheck()
   async ready() {
     try {
@@ -34,7 +36,7 @@ export class HealthController {
     }
   }
 
-  @Get('health/env')
+  @Get('env')
   envCheck() {
     const databaseUrl = process.env.DATABASE_URL;
 
