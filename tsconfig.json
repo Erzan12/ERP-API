@@ -29,11 +29,5 @@
     "synchronousWatchDirectory": true,
     "excludeDirectories": ["**/node_modules", "dist"]
   },
-  "include": [
-    "src/**/*",
-    "test/**/*",
-    "src/types/express.ts",
-    "public",
-    ".d.ts"
-  ] 
+  "include": ["src/**/*", "src/types/express.ts", "public", ".d.ts"] 
 }
