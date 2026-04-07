@@ -256,7 +256,7 @@ async function main() {
   const defaultActions = ['create', 'read', 'update', 'delete', 'note', 'verify', 'approve'];
 
   await prisma.subModuleAction.createMany({
-    data: defaultActions.map(action => ({ action, isActive: true })),
+    data: defaultActions.map(action => ({ action, is_active: true })),
     skipDuplicates: true,
   });
 
