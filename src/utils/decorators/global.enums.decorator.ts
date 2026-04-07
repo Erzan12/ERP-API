@@ -45,6 +45,7 @@ export enum ApplicationSource {
 export enum ApplicationStatus {
   APPLIED = 'applied',
   SCREENING = 'screening',
+  SHORTLISTED = 'shortlisted',
   FOR_INTERVIEW = 'for_interview',
   ACCEPTED = 'accepted',
   REJECTED = 'rejected',
