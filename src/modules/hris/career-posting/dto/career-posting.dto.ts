@@ -139,7 +139,7 @@ export class UpdateCareerPostingDto {
     example: 'true or false',
     description: 'true if want to published and false if unpublished',
   })
-  isPublished: boolean;
+  is_published: boolean;
 
   @IsOptional()
   @IsBoolean()
