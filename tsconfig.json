@@ -17,10 +17,10 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-    "strictPropertyInitialization": false, //will check typescript if dtos like company_id has initializer if none will be red line error so we will put ! to promise it will be initialize at runtime or we can make it false but its recommented to just put ! in dtos
+    "strictPropertyInitialization": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false,
-    "types": ["node"]
+    "noFallthroughCasesInSwitch": false
+    // "types" field removed — TypeScript will auto-discover all @types/* packages
   },
   "watchOptions": {
     "watchFile": "priorityPollingInterval",
