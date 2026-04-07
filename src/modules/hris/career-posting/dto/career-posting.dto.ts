@@ -8,6 +8,7 @@ import {
   IsUUID,
 } from 'class-validator';
 import {
+  CareerPostingStatus,
   EmployeeType,
   EmploymentType,
 } from 'src/utils/decorators/global.enums.decorator';
@@ -160,6 +161,19 @@ export class UpdateCareerPostingDto {
     description: 'The employment type of this career posting',
   })
   employment_type?: EmploymentType;
+
+  @IsOptional()
+  @IsString()
+  @IsEnum(CareerPostingStatus, {
+    message: 'Career Posting status must be draft, submitted, verified, approved, rejected',
+  })
+  @Type(() => String)
+  @ApiProperty({
+    enum: CareerPostingStatus,
+    example: CareerPostingStatus.DRAFT,
+    description: 'The status of this career posting'
+  })
+  status?: CareerPostingStatus;
 
   @IsOptional()
   @IsString()

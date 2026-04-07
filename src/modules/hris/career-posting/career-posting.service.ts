@@ -10,11 +10,12 @@ import {
 } from './dto/career-posting.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { CareerPosingStatus, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import {
   RecruitmentPaginationDto,
   StatusCountDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
+import { CareerPostingStatus } from 'src/utils/decorators/global.enums.decorator';
 
 @Injectable()
 export class CareerPostingService {
@@ -126,10 +127,16 @@ export class CareerPostingService {
     const skip = (page - 1) * perPage;
 
     //with status params filter
+    // const whereCondition: Prisma.CareerPostingWhereInput = {
+    //   is_active: true,
+    //   ...(status && {
+    //     status: status as CareerPostingStatus,
+    //   }),
+    // };
     const whereCondition: Prisma.CareerPostingWhereInput = {
       is_active: true,
-      ...(status && {
-        status: status as CareerPosingStatus,
+      ...(status && status !== CareerPostingStatus.ALL && {
+        status: status as Exclude<CareerPostingStatus, typeof CareerPostingStatus.ALL>,
       }),
     };
 
@@ -437,6 +444,7 @@ export class CareerPostingService {
         is_active: updateCareerPostingDto.is_active ?? undefined,
         employment_type: updateCareerPostingDto.employment_type ?? undefined,
         employee_type: updateCareerPostingDto.employee_type ?? undefined,
+        status: updateCareerPostingDto.status && updateCareerPostingDto.status !== CareerPostingStatus.ALL ? updateCareerPostingDto.status : undefined,
         updated_by: user.id,
       },
     });
