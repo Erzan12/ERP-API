@@ -1052,7 +1052,7 @@
         ]
       }
     },
-    "/v2/administrator/health/live": {
+    "/v2/health/live": {
       "get": {
         "operationId": "HealthController_live_v2",
         "parameters": [],
@@ -1066,7 +1066,7 @@
         ]
       }
     },
-    "/v2/administrator/health/ready": {
+    "/v2/health/ready": {
       "get": {
         "operationId": "HealthController_ready_v2",
         "parameters": [],
@@ -1234,7 +1234,7 @@
         ]
       }
     },
-    "/v2/administrator/health/env": {
+    "/v2/health/env": {
       "get": {
         "operationId": "HealthController_envCheck_v2",
         "parameters": [],
