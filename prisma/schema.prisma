@@ -33,7 +33,7 @@ enum StatusEnum {
   inactive
 }
 
-enum CareerPosingStatus {
+enum CareerPostingStatus {
   draft
   submitted
   verified
@@ -62,6 +62,7 @@ enum ApplicationSource {
 enum ApplicationStatus {
   applied
   screening
+  shortlisted
   for_interview
   accepted
   rejected
@@ -584,12 +585,12 @@ model CareerPosting {
   job_description  String?
   department_id    String    @db.Uuid
   user_location_id String    @db.Uuid
-  isPublished      Boolean   @default(false)
+  is_published      Boolean   @default(false)
   published_on     DateTime?
   employment_type  String
   employee_type    String
-  status           CareerPosingStatus    @default(draft)
-  is_active         Boolean   @default(true)
+  status           CareerPostingStatus    @default(draft)
+  is_active        Boolean   @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
