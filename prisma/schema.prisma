@@ -75,6 +75,17 @@ enum InterviewStage {
   final
 }
 
+enum EvaluationStage {
+  third_month_evaluation
+  fifth_month_evaluation
+}
+
+enum EvaluationStatus {
+  pending
+  overdue
+  completed
+}
+
 ////////////////////////////////////////
 // CORE IDENTITY
 ////////////////////////////////////////
@@ -464,6 +475,8 @@ model EmploymentHistory {
   to_date        DateTime
   remarks        String
   is_active      Boolean  @default(true)
+  evaluation_stage  EvaluationStage  @default(third_month_evaluation)
+  evaluation_status EvaluationStatus @default(pending)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
