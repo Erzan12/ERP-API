@@ -4869,7 +4869,7 @@
             "example": "land_based",
             "description": "The employee type of this career posting"
           },
-          "isPublished": {
+          "is_published": {
             "type": "boolean",
             "example": "true or false",
             "description": "true if want to published and false if unpublished"
@@ -4912,7 +4912,7 @@
           "slots",
           "department_id",
           "employee_type",
-          "isPublished",
+          "is_published",
           "is_active",
           "employment_type",
           "status",
