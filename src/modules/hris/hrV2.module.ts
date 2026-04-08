@@ -21,6 +21,8 @@ import {
   ApplicantsController,
   InterviewApplicantController,
 } from './hiring-pipeline/hiring-pipelineV2.controller';
+import { RegularizationReviewsController } from './regularization_reviews/regularization_reviews.controller';
+import { RegularizationReviewsService } from './regularization_reviews/regularization_reviews.service';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
@@ -31,6 +33,7 @@ import {
     CareerPostingService,
     HiringPipelineService,
     InterviewApplicantService,
+    RegularizationReviewsService,
     // ScreeningApplicantService,
   ],
   controllers: [
@@ -40,6 +43,7 @@ import {
     ApplicantsController,
     // ScreeningApplicantController,
     InterviewApplicantController,
+    RegularizationReviewsController,
   ],
   exports: [HrV2Module],
 })
