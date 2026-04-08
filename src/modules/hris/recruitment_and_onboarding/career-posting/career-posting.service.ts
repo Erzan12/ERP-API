@@ -133,10 +133,28 @@ export class CareerPostingService {
     //   }),
     // };
 
+    // const whereCondition: Prisma.CareerPostingWhereInput = {
+    //   is_active: true,
+    //   ...(status && status !== CareerPostingStatus.ALL && {
+    //     status: status as Exclude<CareerPostingStatus, typeof CareerPostingStatus.ALL>,
+    //   }),
+    // };
+
+    const parsedStatus = status as CareerPostingStatus;
+
+    //filter for status submitted and verified if status filter is submitted
     const whereCondition: Prisma.CareerPostingWhereInput = {
       is_active: true,
-      ...(status && status !== CareerPostingStatus.ALL && {
-        status: status as Exclude<CareerPostingStatus, typeof CareerPostingStatus.ALL>,
+      ...(parsedStatus && parsedStatus !== CareerPostingStatus.ALL && {
+        status:
+          parsedStatus === CareerPostingStatus.SUBMITTED
+            ? {
+                in: [
+                  CareerPostingStatus.SUBMITTED,
+                  CareerPostingStatus.VERIFIED,
+                ],
+              }
+            : parsedStatus,
       }),
     };
 
@@ -173,18 +191,18 @@ export class CareerPostingService {
               },
             },
           })),
-          {
-            employment_type: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
-          {
-            employee_type: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
+          // {
+          //   employment_type: {
+          //     contains: search,
+          //     mode: 'insensitive',
+          //   },
+          // },
+          // {
+          //   employee_type: {
+          //     contains: search,
+          //     mode: 'insensitive',
+          //   },
+          // },
         ],
       };
     }
@@ -239,7 +257,7 @@ export class CareerPostingService {
               country: true,
             },
           },
-          isPublished: true,
+          is_published: true,
           published_on: true,
           employment_type: true,
           employee_type: true,
