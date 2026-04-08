@@ -133,10 +133,28 @@ export class CareerPostingService {
     //   }),
     // };
 
+    // const whereCondition: Prisma.CareerPostingWhereInput = {
+    //   is_active: true,
+    //   ...(status && status !== CareerPostingStatus.ALL && {
+    //     status: status as Exclude<CareerPostingStatus, typeof CareerPostingStatus.ALL>,
+    //   }),
+    // };
+
+    const parsedStatus = status as CareerPostingStatus;
+
+    //filter for status submitted and verified if status filter is submitted
     const whereCondition: Prisma.CareerPostingWhereInput = {
       is_active: true,
-      ...(status && status !== CareerPostingStatus.ALL && {
-        status: status as Exclude<CareerPostingStatus, typeof CareerPostingStatus.ALL>,
+      ...(parsedStatus && parsedStatus !== CareerPostingStatus.ALL && {
+        status:
+          parsedStatus === CareerPostingStatus.SUBMITTED
+            ? {
+                in: [
+                  CareerPostingStatus.SUBMITTED,
+                  CareerPostingStatus.VERIFIED,
+                ],
+              }
+            : parsedStatus,
       }),
     };
 
@@ -173,18 +191,18 @@ export class CareerPostingService {
               },
             },
           })),
-          {
-            employment_type: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
-          {
-            employee_type: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
+          // {
+          //   employment_type: {
+          //     contains: search,
+          //     mode: 'insensitive',
+          //   },
+          // },
+          // {
+          //   employee_type: {
+          //     contains: search,
+          //     mode: 'insensitive',
+          //   },
+          // },
         ],
       };
     }
@@ -239,7 +257,7 @@ export class CareerPostingService {
               country: true,
             },
           },
-          isPublished: true,
+          is_published: true,
           published_on: true,
           employment_type: true,
           employee_type: true,
@@ -422,10 +440,18 @@ export class CareerPostingService {
       throw new NotFoundException('Job/Career posting not found');
     }
 
+    //guard to check if posting status is already approved before posting can be published
+    if (
+      updateCareerPostingDto.is_published !== undefined && 
+      careerPosting.status !== CareerPostingStatus.APPROVED
+    ) {
+      throw new Error("Cannot publish a posting that is not approved.");
+    }
+
     let publishDate: Date | undefined = undefined;
 
     if (
-      updateCareerPostingDto.isPublished === true &&
+      updateCareerPostingDto.is_published === true &&
       !careerPosting.published_on
     ) {
       publishDate = new Date();
@@ -439,7 +465,7 @@ export class CareerPostingService {
         // job_description: updateCareerPostingDto.job_description ?? undefined,
         department_id: updateCareerPostingDto.department_id ?? undefined,
         user_location_id: updateCareerPostingDto.user_location_id ?? undefined,
-        isPublished: updateCareerPostingDto.isPublished ?? undefined,
+        is_published: updateCareerPostingDto.is_published ?? undefined,
         published_on: publishDate,
         is_active: updateCareerPostingDto.is_active ?? undefined,
         employment_type: updateCareerPostingDto.employment_type ?? undefined,
