@@ -41,7 +41,6 @@ export function setupHRISSwagger(app: INestApplication): void {
     .setVersion('2.0')
     .addTag('Authentication')
     .addTag('Human Resources - Dashboard')
-    .addTag('Human Resources - Employees')
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {

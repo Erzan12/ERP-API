@@ -34,13 +34,13 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
-import { EmployeeService } from './employee.service';
+import { EmployeeMasterlistService } from './employee.service';
 
 // @ApiCookieAuth('access-token')
-@ApiTags('Human Resources - Employees')
+@ApiTags('Human Resources - Employees (Employee Masterlist)')
 @Controller({ path: 'hris', version: '2' })
-export class EmployeeControllerV2 {
-  constructor(private readonly employeeService: EmployeeService) {}
+export class EmployeeMasterlistController {
+  constructor(private readonly employeeMasterlistService: EmployeeMasterlistService) {}
 
   @Get('employees')
   @ApiOperation({ summary: 'List of all employees' })
@@ -55,7 +55,7 @@ export class EmployeeControllerV2 {
     // @Query('sortBy') sortBy: string = 'created_at',
     // @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
-    return this.employeeService.getEmployees(user, dto);
+    return this.employeeMasterlistService.getEmployees(user, dto);
   }
 
   //get a single employee profile or view
@@ -67,7 +67,7 @@ export class EmployeeControllerV2 {
     @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employeeService.getEmployee(id, user);
+    return this.employeeMasterlistService.getEmployee(id, user);
   }
 
   @Post('employees')
@@ -82,7 +82,7 @@ export class EmployeeControllerV2 {
     @Body() createDto: CreateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employeeService.createEmployee(createDto, user);
+    return this.employeeMasterlistService.createEmployee(createDto, user);
   }
 
   //can edit employee profile
@@ -99,10 +99,16 @@ export class EmployeeControllerV2 {
     @Body() updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employeeService.updateEmployee(
+    return this.employeeMasterlistService.updateEmployee(
       id,
       updateEmployeeWithDetailsDto,
       user,
     );
   }
 }
+
+@ApiTags('Human Resources - Employees (Employment History)')
+@Controller({ path: 'hris', version: '2' })
+export class EmploymentHistoryController {
+
+} 

@@ -2595,7 +2595,7 @@
     },
     "/v2/hris/employees": {
       "get": {
-        "operationId": "EmployeeControllerV2_getEmployees_v2",
+        "operationId": "EmployeeMasterlistController_getEmployees_v2",
         "parameters": [
           {
             "name": "search",
@@ -2669,11 +2669,11 @@
         },
         "summary": "List of all employees",
         "tags": [
-          "Human Resources - Employees"
+          "Human Resources - Employees (Employee Masterlist)"
         ]
       },
       "post": {
-        "operationId": "EmployeeControllerV2_createEmployee_v2",
+        "operationId": "EmployeeMasterlistController_createEmployee_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2708,13 +2708,13 @@
         },
         "summary": "Create a new Employee",
         "tags": [
-          "Human Resources - Employees"
+          "Human Resources - Employees (Employee Masterlist)"
         ]
       }
     },
     "/v2/hris/employees/{id}": {
       "get": {
-        "operationId": "EmployeeControllerV2_getEmployee_v2",
+        "operationId": "EmployeeMasterlistController_getEmployee_v2",
         "parameters": [
           {
             "name": "id",
@@ -2747,11 +2747,11 @@
         },
         "summary": "View employee profile",
         "tags": [
-          "Human Resources - Employees"
+          "Human Resources - Employees (Employee Masterlist)"
         ]
       },
       "put": {
-        "operationId": "EmployeeControllerV2_updateEmployee_v2",
+        "operationId": "EmployeeMasterlistController_updateEmployee_v2",
         "parameters": [
           {
             "name": "id",
@@ -2795,7 +2795,7 @@
         },
         "summary": "Update a current Employee",
         "tags": [
-          "Human Resources - Employees"
+          "Human Resources - Employees (Employee Masterlist)"
         ]
       }
     },
@@ -3377,6 +3377,36 @@
         "summary": "Submit assessment for a specific interview stage",
         "tags": [
           "Human Resources - Recruitment and Onboarding (Interview Applicant)"
+        ]
+      }
+    },
+    "/v2/regularization-reviews": {
+      "get": {
+        "operationId": "RegularizationReviewsController_getForRegularizaiton_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of for regularization employees"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all employees for regularization",
+        "tags": [
+          "Human Resources - Performance Management (Regularization Reviews)"
         ]
       }
     },
