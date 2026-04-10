@@ -7,9 +7,9 @@ import {
 import {
   CivilStatus,
   Gender,
-} from '../../../utils/decorators/global.enums.decorator';
+} from '../../../../utils/decorators/global.enums.decorator';
 
-import { RequestUser } from '../../../utils/types/request-user.interface';
+import { RequestUser } from '../../../../utils/types/request-user.interface';
 
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import {
@@ -21,7 +21,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
-export class EmployeeService {
+export class EmployeeMasterlistService {
   constructor(private prisma: PrismaService) {}
 
   async createEmployee(
@@ -405,6 +405,7 @@ export class EmployeeService {
               label: true,
             },
           },
+          hire_date: true,
           createdBy: {
             select: {
               person: {
