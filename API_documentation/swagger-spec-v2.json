@@ -3408,6 +3408,44 @@
         "tags": [
           "Human Resources - Performance Management (Regularization Reviews)"
         ]
+      },
+      "post": {
+        "operationId": "RegularizationReviewsController_createEvaluation_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEvaluationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Evaluation successfully created"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create an Employee Evaluation for the first 3rd and 5th month",
+        "tags": [
+          "Human Resources - Performance Management (Regularization Reviews)"
+        ]
       }
     },
     "/v2/manager/permission-template": {
@@ -5251,6 +5289,53 @@
           "total_points",
           "recommendations",
           "ratings"
+        ]
+      },
+      "CreateEvaluationDto": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "PK UUID of employee",
+            "description": "UUID of the employee"
+          },
+          "evaluator_id": {
+            "type": "string",
+            "example": "PK UUID of evaluator employee",
+            "description": "UUID of the evaluator employee"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "third_month_evaluation",
+              "fifth_month_evaluation"
+            ],
+            "example": "third_month_evaluation",
+            "description": "The evaluation stage of this employee"
+          },
+          "due_date": {
+            "type": "string",
+            "example": "2026-10-04",
+            "description": "Due date of the evaluation"
+          },
+          "probation_date": {
+            "type": "string",
+            "example": "2026-10-04",
+            "description": "Start date of probation period"
+          },
+          "regularization_date": {
+            "type": "string",
+            "example": "2026-10-04",
+            "description": "End of probation period and start of regularization period"
+          }
+        },
+        "required": [
+          "employee_id",
+          "evaluator_id",
+          "stage",
+          "due_date",
+          "probation_date",
+          "regularization_date"
         ]
       },
       "CreatePermissionTemplateDto": {
