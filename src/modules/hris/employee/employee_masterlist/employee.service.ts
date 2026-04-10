@@ -2,6 +2,8 @@ import {
   Injectable,
   BadRequestException,
   ForbiddenException,
+  NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 
 import {
@@ -634,3 +636,27 @@ export class EmployeeMasterlistService {
     });
   }
 }
+
+/**
+ * Employment History SERVICE SECTION
+ */
+
+// export class EmploymentHistoryService {
+//   constructor(private prisma: PrismaService) {}
+
+//   async createEmploymentHistory(user: RequestUser, employeeId: string) {
+//     const existingEmployee = await this.prisma.employee.findUnique({
+//       where: { id: employeeId },
+//       include: {
+//         employment_history: true,
+//         employment_status: true,
+//       }
+//     })
+
+//     if (!existingEmployee) {
+//       throw new NotFoundException("Employee not found")
+//     }
+
+//     const employmentHistory = await this.prisma.employmentHistory.
+//   }
+// }
