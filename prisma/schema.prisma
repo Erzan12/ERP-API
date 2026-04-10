@@ -102,6 +102,7 @@ model Person {
   contact_no                String?
   civil_status              String   @default("single")
   home_address              String?
+  address_line_2            String?
   city_provice              String?
   nationality               String?
   country                   String?
@@ -457,7 +458,7 @@ model Employee {
   position            Position           @relation(fields: [position_id], references: [id])
   division            Division           @relation(fields: [division_id], references: [id])
   user                User?
-  employement_history EmploymentHistory? @relation(fields: [employmentHistoryId], references: [id])
+  employment_history  EmploymentHistory[]
   employmentHistoryId String?            @db.Uuid
 
   @@index([department_id])
@@ -487,7 +488,7 @@ model EmploymentHistory {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  employee Employee[]
+  employee Employee @relation(fields: [employee_id], references: [id])
 }
 
 model EmploymentStatus {
