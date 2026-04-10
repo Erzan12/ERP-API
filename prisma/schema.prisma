@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
 }
 
 datasource db {
@@ -246,6 +247,8 @@ model User {
   ExaminationRatingUpdatedBy               ExaminationRating[]                @relation("ExaminationRatingUpdatedBy")
   EmploymentHistoryCreatedBy               EmploymentHistory[]                @relation("EmploymentHistoryCreatedBy")
   EmploymentHistoryUpdatedBy               EmploymentHistory[]                @relation("EmploymentHistoryUpdatedBy")
+  EmployeeEvaluationCreatedBy              EmployeeEvaluation[]               @relation("EmployeeEvaluationCreatedBy")
+  EmployeeEvaluationUpdatedBy              EmployeeEvaluation[]               @relation("EmployeeEvaluationUpdatedBy")
 
   @@index([person_id])
   @@index([employee_id])
@@ -425,18 +428,26 @@ model Position {
 }
 
 model Employee {
-  id                        String   @id @default(uuid()) @db.Uuid
-  company_id                String   @db.Uuid
-  person_id                 String   @unique @db.Uuid
-  employee_id               String   @unique
-  department_id             String   @db.Uuid
-  position_id               String   @db.Uuid
-  division_id               String   @db.Uuid
+  id                        String          @id @default(uuid()) @db.Uuid
+  company_id                String          @db.Uuid
+  person_id                 String          @unique @db.Uuid
+  employee_id               String          @unique
+  department_id             String          @db.Uuid
+  position_id               String          @db.Uuid
+  division_id               String          @db.Uuid
   hire_date                 DateTime
   salary                    Decimal
   pay_frequency             String
-  employment_status_id      String   @db.Uuid
+  employment_status_id      String          @db.Uuid
+  employment_type           EmploymentType?
+  employee_type             EmployeeType?
   monthly_equivalent_salary Decimal
+
+  archive_date         DateTime?
+  other_employee_data  Json?
+  corporate_rank_id    Int?
+  evaluations_received EmployeeEvaluation[] @relation("EmployeeEvaluations")
+  evaluations_given    EmployeeEvaluation[] @relation("EmployeeGivenEvaluations")
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -447,35 +458,32 @@ model Employee {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  archive_date        DateTime?
-  other_employee_data Json?
-  corporate_rank_id   Int?
-
-  employment_status   EmploymentStatus   @relation(fields: [employment_status_id], references: [id])
-  company             Company            @relation(fields: [company_id], references: [id])
-  department          Department         @relation(fields: [department_id], references: [id])
-  person              Person             @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
-  position            Position           @relation(fields: [position_id], references: [id])
-  division            Division           @relation(fields: [division_id], references: [id])
-  user                User?
-  employment_history  EmploymentHistory[]
-  employmentHistoryId String?            @db.Uuid
+  employment_status         EmploymentStatus           @relation(fields: [employment_status_id], references: [id])
+  company                   Company                    @relation(fields: [company_id], references: [id])
+  department                Department                 @relation(fields: [department_id], references: [id])
+  person                    Person                     @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
+  position                  Position                   @relation(fields: [position_id], references: [id])
+  division                  Division                   @relation(fields: [division_id], references: [id])
+  user                      User?
+  employment_history        EmploymentHistory[]
+  employmentHistoryId       String?                    @db.Uuid
+  regularizationEligibility RegularizationEligibility?
 
   @@index([department_id])
   @@index([company_id])
 }
 
 model EmploymentHistory {
-  id             String   @id @default(uuid()) @db.Uuid
-  employee_id    String   @db.Uuid
-  effective_date DateTime
-  value_changed  String
-  from_val       String
-  to_val         String
-  from_date      DateTime
-  to_date        DateTime
-  remarks        String
-  is_active      Boolean  @default(true)
+  id                String           @id @default(uuid()) @db.Uuid
+  employee_id       String           @db.Uuid
+  effective_date    DateTime
+  value_changed     String
+  from_val          String
+  to_val            String
+  from_date         DateTime
+  to_date           DateTime
+  remarks           String
+  is_active         Boolean          @default(true)
   evaluation_stage  EvaluationStage  @default(third_month_evaluation)
   evaluation_status EvaluationStatus @default(pending)
 
@@ -489,6 +497,39 @@ model EmploymentHistory {
   updated_at DateTime @updatedAt
 
   employee Employee @relation(fields: [employee_id], references: [id])
+}
+
+model EmployeeEvaluation {
+  id String @id @default(uuid()) @db.Uuid
+
+  employee_id  String @db.Uuid
+  evaluator_id String @db.Uuid
+
+  stage  EvaluationStage
+  status EvaluationStatus @default(pending)
+
+  probation_date      DateTime
+  regularization_date DateTime
+
+  due_date     DateTime
+  completed_at DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  employee  Employee @relation("EmployeeEvaluations", fields: [employee_id], references: [id])
+  evaluator Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id])
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("EmployeeEvaluationCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("EmployeeEvaluationUpdatedBy", fields: [updated_by], references: [id])
+
+  @@index([evaluator_id])
+  @@index([employee_id])
+  @@index([stage])
+  @@index([status])
 }
 
 model EmploymentStatus {
@@ -977,4 +1018,20 @@ model PermissionTemplateRolePermission {
   @@index([permission_template_id])
   @@index([permission_template_department_id])
   @@index([role_permission_id])
+}
+
+////////////////////////////////////////
+// TABLE/MODEL VIEWS - PRE RENDERED
+////////////////////////////////////////
+
+view RegularizationEligibility {
+  employeeId      String   @unique
+  hire_date       DateTime
+  personId        String
+  positionId      String
+  departmentId    String
+  latestHistoryId String?
+
+  // Relations (Optional, but helpful for deep queries)
+  employee Employee @relation(fields: [employeeId], references: [id])
 }
