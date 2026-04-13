@@ -6,12 +6,39 @@ export function getExpectedDueDate(hireDate: Date, stage: keyof typeof STAGE_RUL
   return addMonths(hireDate, months);
 }
 
-export function computeStatus(evaluation: any) {
-  if (evaluation.completed_at) return 'completed';
+// export function computeEvaluationStatus(evaluation: any, now = new Date()) {
+//   if (evaluation.completed_at) {
+//     return "completed";
+//   }
 
-  if (isAfter(new Date(), new Date(evaluation.due_date))) {
-    return 'overdue';
+//   if (now > evaluation.due_date) {
+//     return "overdue";
+//   }
+
+//   return "pending";
+// }
+
+export function computeEvaluationStatus(evaluation: any, now = new Date()) {
+  if (evaluation.completed_at) {
+    return "complete";
   }
 
-  return 'pending';
+  const hireDate = evaluation.employee?.hire_date;
+  if (!hireDate) return "pending";
+
+  let deadline: Date;
+
+  if (evaluation.stage === "third_month_evaluation") {
+    deadline = addMonths(hireDate, 3);
+  } else if ( evaluation.stage === "fifth_month_evaluation") {
+    deadline = addMonths(hireDate, 5);
+  } else {
+    return "pending";
+  }
+
+  if (now > deadline) {
+    return "overdue";
+  } else {
+    return "pending";
+  }
 }
