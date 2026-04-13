@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { computeStatus, getExpectedDueDate } from 'src/utils/helpers/calculate-date.helper';
+import { computeEvaluationStatus, getExpectedDueDate } from 'src/utils/helpers/calculate-date.helper';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateEvaluationDto } from './dto/evaluation.dto';
 import { startOfDay } from 'date-fns/startOfDay';
@@ -255,24 +255,24 @@ export class RegularizationReviewsService {
         }
 
         // Block missing earlier evaluations
-        for (const [stage, months] of Object.entries(STAGE_RULES)) {
-            const due = addMonths(hireDate, months);
+        // for (const [stage, months] of Object.entries(STAGE_RULES)) {
+        //     // const due = addMonths(hireDate, months);
 
-            if (isAfter(now, due)) {
-            const existingEval = await this.prisma.employeeEvaluation.findFirst({
-                where: {
-                employee_id: dto.employee_id,
-                stage: stage as any,
-                },
-            });
+        //     if (isAfter(now)) {
+        //     const existingEval = await this.prisma.employeeEvaluation.findFirst({
+        //         where: {
+        //         employee_id: dto.employee_id,
+        //         stage: stage as any,
+        //         },
+        //     });
 
-            if (!existingEval) {
-                throw new BadRequestException(
-                `Missing ${stage}. It is already overdue.`
-                );
-            }
-            }
-        }
+        //     if (!existingEval) {
+        //         throw new BadRequestException(
+        //         `Missing ${stage}. It is already overdue.`
+        //         );
+        //     }
+        //     }
+        // }
 
         // Compute due date
         const expectedDueDate = getExpectedDueDate(hireDate, dto.stage);
@@ -283,7 +283,7 @@ export class RegularizationReviewsService {
             employee_id: dto.employee_id,
             evaluator_id: dto.evaluator_id,
             stage: dto.stage,
-            // due_date: expectedDueDate,
+            due_date: expectedDueDate,
             probation_date: new Date(dto.probation_date),
             regularization_date: new Date(dto.regularization_date),
             created_by: user.id,
@@ -306,13 +306,16 @@ export class RegularizationReviewsService {
         // Return with computed status
         return {
             ...evaluation,
-            status: computeStatus(evaluation),
+            status: computeEvaluationStatus(evaluation),
         };
-        }
+    }
 
-    async getEvaluations(employeeId: string, user: RequestUser) {
+    async getEmployeeEvaluations(employeeId: string, user: RequestUser) {
         const evaluations = await this.prisma.employeeEvaluation.findMany({
             where: { employee_id: employeeId },
+            include: {
+                employee: true, // required for hire date employee query
+            },
             orderBy: { created_at: 'asc' },
         });
 
@@ -331,7 +334,35 @@ export class RegularizationReviewsService {
 
         return evaluations.map((evaluation) => ({
             ...evaluation,
-            status: computeStatus(evaluation), // dynamic
+            status: computeEvaluationStatus(evaluation), // dynamic
+        }));
+    }
+
+    async getEvaluations(employeeId: string, user: RequestUser) {
+        const evaluations = await this.prisma.employeeEvaluation.findMany({
+            where: { employee_id: employeeId },
+            include: {
+                employee: true, // required for hire date employee query
+            },
+            orderBy: { created_at: 'asc' },
+        });
+
+        // Authorization Check
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: { user_roles: true, employee: true }
+        });
+
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return evaluations.map((evaluation) => ({
+            ...evaluation,
+            status: computeEvaluationStatus(evaluation), // dynamic
         }));
     }
 }
