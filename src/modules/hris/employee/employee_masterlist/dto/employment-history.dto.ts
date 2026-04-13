@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { EvaluationStage, EvaluationStatus } from "@prisma/client";
+import { EvaluationStage } from "@prisma/client";
 import { Type } from "class-transformer";
-import { IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateEmploymentHistory {
     @IsUUID()
@@ -53,29 +53,29 @@ export class CreateEmploymentHistory {
     })
     remarks: string;
 
-    @IsOptional()
-    @IsString()
-    @IsEnum(EvaluationStage, {
-        message: 'Evaluation Stage must be third_month_evaluation or fifth_month_evaluation'
-    })
-    @Type(() => String)
-    @ApiProperty({
-        enum: EvaluationStage,
-        example: EvaluationStage.third_month_evaluation,
-        description: 'The evaluation stage of this employee'
-    })
-    evaluation_stage: EvaluationStage;
+    // @IsOptional()
+    // @IsString()
+    // @IsEnum(EvaluationStage, {
+    //     message: 'Evaluation Stage must be third_month_evaluation or fifth_month_evaluation'
+    // })
+    // @Type(() => String)
+    // @ApiProperty({
+    //     enum: EvaluationStage,
+    //     example: EvaluationStage.third_month_evaluation,
+    //     description: 'The evaluation stage of this employee'
+    // })
+    // evaluation_stage: EvaluationStage;
 
-    @IsOptional()
-    @IsString()
-    @IsEnum(EvaluationStatus, {
-        message: 'Evaluation Status must be pending, overdue or completed'
-    })
-    @Type(() => String)
-    @ApiProperty({
-        enum: EvaluationStatus,
-        example: EvaluationStatus.pending,
-        description: 'The evaluation status of this employee'
-    })
-    evaluation_status: EvaluationStatus;
+    // @IsOptional()
+    // @IsString()
+    // @IsEnum(EvaluationStatus, {
+    //     message: 'Evaluation Status must be pending, overdue or completed'
+    // })
+    // @Type(() => String)
+    // @ApiProperty({
+    //     enum: EvaluationStatus,
+    //     example: EvaluationStatus.pending,
+    //     description: 'The evaluation status of this employee'
+    // })
+    // evaluation_status: EvaluationStatus;
 }
