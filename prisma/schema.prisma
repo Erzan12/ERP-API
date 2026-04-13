@@ -485,7 +485,7 @@ model EmploymentHistory {
   remarks           String
   is_active         Boolean          @default(true)
   evaluation_stage  EvaluationStage  @default(third_month_evaluation)
-  evaluation_status EvaluationStatus @default(pending)
+  //evaluation_status EvaluationStatus @default(pending)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -506,7 +506,7 @@ model EmployeeEvaluation {
   evaluator_id String @db.Uuid
 
   stage  EvaluationStage
-  status EvaluationStatus @default(pending)
+  //status EvaluationStatus @default(pending) after compute will be reflected in return instead of saving in db
 
   probation_date      DateTime
   regularization_date DateTime
@@ -529,7 +529,7 @@ model EmployeeEvaluation {
   @@index([evaluator_id])
   @@index([employee_id])
   @@index([stage])
-  @@index([status])
+  //@@index([status])
 }
 
 model EmploymentStatus {
