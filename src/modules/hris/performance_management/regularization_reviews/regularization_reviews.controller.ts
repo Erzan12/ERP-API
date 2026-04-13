@@ -42,7 +42,7 @@ export class RegularizationReviewsController {
         @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
         @SessionUser() user: RequestUser,
     ) {
-        return this.regularizationService.getEvaluations(employeeId, user);
+        return this.regularizationService.getEmployeeEvaluations(employeeId, user);
     }
 
 }
