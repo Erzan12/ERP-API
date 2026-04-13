@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Session } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Session } from '@nestjs/common';
 import { RegularizationReviewsService } from './regularization_reviews.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
@@ -33,4 +33,16 @@ export class RegularizationReviewsController {
     ) {
         return this.regularizationService.createEvaluation(dto,user)
     }
+
+    @Get(':employeeId')
+    @ApiOperation({ summary: 'Get employee with evaluation' })
+    @ApiGetResponse('Employee with evaluation')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getEvaluations(
+        @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.regularizationService.getEvaluations(employeeId, user);
+    }
+
 }
