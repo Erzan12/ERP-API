@@ -28,9 +28,10 @@ export class RegularizationReviewsService {
             throw new ForbiddenException('You are not authorized to perform this action');
         }
 
-        await this.prisma.$executeRawUnsafe(
-            `REFRESH MATERIALIZED VIEW "RegularizationEligibility"`
-        );
+        //  materialized view fast query but just snapshot needs to be refresh to get fresh data compared to normal view 
+        // await this.prisma.$executeRawUnsafe(
+        //     `REFRESH MATERIALIZED VIEW "RegularizationEligibility"`
+        // );
 
         // Query the Materialized View
         const employees = await this.prisma.regularizationEligibility.findMany({
@@ -282,7 +283,7 @@ export class RegularizationReviewsService {
             employee_id: dto.employee_id,
             evaluator_id: dto.evaluator_id,
             stage: dto.stage,
-            due_date: expectedDueDate,
+            // due_date: expectedDueDate,
             probation_date: new Date(dto.probation_date),
             regularization_date: new Date(dto.regularization_date),
             created_by: user.id,
