@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
-import { EmployeeService } from './employee_masterlist/employee.service';
-import { EmployeeControllerV2 } from './employee_masterlist/employeeV2.controller';
+import { EmployeeMasterlistService } from './employee/employee_masterlist/employee.service';
+import { EmployeeMasterlistController, EmploymentHistoryController } from './employee/employee_masterlist/employee.controller';
 
 import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardControllerV2 } from './dashboard/dashboardV2.controller';
@@ -21,25 +21,30 @@ import {
   ApplicantsController,
   InterviewApplicantController,
 } from './recruitment_and_onboarding/hiring-pipeline/hiring-pipelineV2.controller';
+import { RegularizationReviewsService } from './performance_management/regularization_reviews/regularization_reviews.service';
+import { RegularizationReviewsController } from './performance_management/regularization_reviews/regularization_reviews.controller';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
   providers: [
-    EmployeeService,
+    EmployeeMasterlistService,
     PrismaService,
     DashboardService,
     CareerPostingService,
     HiringPipelineService,
     InterviewApplicantService,
+    RegularizationReviewsService
     // ScreeningApplicantService,
   ],
   controllers: [
-    EmployeeControllerV2,
+    EmployeeMasterlistController,
+    EmploymentHistoryController,
     DashboardControllerV2,
     CareerPostingV2Controller,
     ApplicantsController,
     // ScreeningApplicantController,
     InterviewApplicantController,
+    RegularizationReviewsController
   ],
   exports: [HrV2Module],
 })
