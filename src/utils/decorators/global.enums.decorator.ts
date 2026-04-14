@@ -67,7 +67,7 @@ export enum EvaluationStatus {
   FOR_EVALUATION     = 'for_evaluation',
   FOR_VERIFICATION   = 'for_verification',
   FOR_APPROVAL       = 'for_approval',
-  FOR_ACKNOWLEDGMENT = 'for_acknowledgement'
+  FOR_ACKNOWLEDGMENT = 'for_acknowledgment'
 }
 
 export enum EvaluationStageStatus {
