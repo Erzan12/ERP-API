@@ -3531,7 +3531,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "List of for evaluated employees",
+        "summary": "List of evaluated employees",
         "tags": [
           "Human Resources - Performance Management (Regularization Reviews)"
         ]

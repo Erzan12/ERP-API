@@ -47,7 +47,7 @@ export class RegularizationReviewsController {
     }
 
     @Get('')
-    @ApiOperation({ summary: 'List of for evaluated employees' })
+    @ApiOperation({ summary: 'List of evaluated employees' })
     @ApiGetResponse('List of evalauted employees')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getForEvaluation(
