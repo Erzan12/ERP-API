@@ -3,12 +3,11 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { computeEvaluationStatus, getExpectedDueDate } from 'src/utils/helpers/calculate-date.helper';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateEvaluationDto } from './dto/evaluation.dto';
-import { startOfDay } from 'date-fns/startOfDay';
-import { addMonths } from 'date-fns/addMonths';
-import { isEqual } from 'date-fns/isEqual';
-import { PREVIOUS_STAGE_MAP, STAGE_RULES } from 'src/utils/constants/evaluation.constants';
-import { isAfter } from 'date-fns/isAfter';
-import { EvaluationStage } from '@prisma/client';
+import { PREVIOUS_STAGE_MAP, } from 'src/utils/constants/evaluation.constants';
+import { Prisma } from '@prisma/client';
+import { RegularizationReviewDto } from 'src/utils/dtos/regularization-pagination.dto';
+import { EvaluationStage, EvaluationStatus } from 'src/utils/decorators/global.enums.decorator';
+import { computeOverallStatus } from 'src/utils/helpers/compute-overall-status.helper';
 
 @Injectable()
 export class RegularizationReviewsService {
@@ -337,18 +336,13 @@ export class RegularizationReviewsService {
         }));
     }
 
-    async getEvaluations(user: RequestUser) {
-        const evaluations = await this.prisma.employeeEvaluation.findMany({
-            include: {
-                employee: true, // required for hire date employee query
-            },
-            orderBy: { created_at: 'asc' },
-        });
+    async getEvaluations(user: RequestUser, dto: RegularizationReviewDto) {
+        const { search, status, sortBy, order, page, perPage } = dto;
 
-        // Authorization Check
+        // Auth check first
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
-            include: { user_roles: true, employee: true }
+            include: { user_roles: true }
         });
 
         const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
@@ -358,9 +352,99 @@ export class RegularizationReviewsService {
             throw new ForbiddenException('You are not authorized to perform this action');
         }
 
-        return evaluations.map((evaluation) => ({
-            ...evaluation,
-            status: computeEvaluationStatus(evaluation), // dynamic
-        }));
+        // Prepare search conditions
+        let whereCondition: Prisma.EmployeeEvaluationWhereInput = {};
+        if (search) {
+            // Exact match only
+            // const stageEnumMatch = Object.values(EvaluationStage).find(v => v === search);
+            // const statusEnumMatch = Object.values(EvaluationStatus).find(v => v === search);
+
+            // Fuzzy search or as long as it matches input
+            const stageMatches = Object.values(EvaluationStage).filter((v) =>
+                v.toLowerCase().includes(search.toLowerCase())
+            );
+
+            const statusMatches = Object.values(EvaluationStatus).filter((v) =>
+                v.toLowerCase().includes(search.toLowerCase())
+            );
+
+            whereCondition.OR = [
+                { employee: { person: { first_name: { contains: search, mode: 'insensitive' } } } },
+                { employee: { person: { last_name: { contains: search, mode: 'insensitive' } } } },
+                { evaluator: { person: { first_name: { contains: search, mode: 'insensitive' } } } },
+                { evaluator: { person: { last_name: { contains: search, mode: 'insensitive' } } } },
+            ];
+
+            // Exact match only
+            // if (stageEnumMatch) whereCondition.OR.push({ stage: stageEnumMatch });
+            // if (statusEnumMatch) whereCondition.OR.push({ status: statusEnumMatch });
+
+            // Fuzzy search or as long as it matches input
+            if (stageMatches.length > 0) {
+                whereCondition.OR.push({
+                    stage: {
+                    in: stageMatches,
+                    },
+                });
+            }
+
+            if (statusMatches.length > 0) {
+                whereCondition.OR.push({
+                    status: {
+                    in: statusMatches,
+                    },
+                });
+            }
+        }
+
+        // Db fetch
+        // If you must filter by a compted property (overall_status), 
+        // you have to fetch more records or handle pagination in memory.
+        const evaluations = await this.prisma.employeeEvaluation.findMany({
+            where: whereCondition,
+            include: {
+                employee: { select: { id: true, person: { select: { first_name: true, last_name: true } } } },
+                evaluator: { select: { id: true, person: { select: { first_name: true, last_name: true } } } }
+            },
+            orderBy: { [sortBy || 'created_at']: order || 'asc' },
+        });
+
+        // In memory processing (grouping and computing)
+        const grouped = new Map<string, any[]>();
+        for (const evalItem of evaluations) {
+            if (!grouped.has(evalItem.employee_id)) grouped.set(evalItem.employee_id, []);
+            grouped.get(evalItem.employee_id)!.push(evalItem);
+        }
+
+        let processedResults = [];
+        for (const [employeeId, evals] of grouped.entries()) {
+            const overallStatus = computeOverallStatus(evals);
+            for (const evaluation of evals) {
+                processedResults.push({
+                    ...evaluation,
+                    stage_status: computeEvaluationStatus(evaluation),
+                    overall_status: overallStatus,
+                });
+            }
+        }
+
+        // Filtering by computed stats
+        if (status) {
+            processedResults = processedResults.filter(e => e.overall_status === status);
+        }
+
+        // Manual Pagination (Since we filtered in memory)
+        const total = processedResults.length;
+        const skip = (page - 1) * perPage;
+        const paginatedResults = processedResults.slice(skip, skip + perPage);
+
+        return {
+            status: 'success',
+            message: 'List of evaluated employees',
+            count: total,
+            page,
+            perPage,
+            employeeEvaluations: paginatedResults,
+        };
     }
 }
