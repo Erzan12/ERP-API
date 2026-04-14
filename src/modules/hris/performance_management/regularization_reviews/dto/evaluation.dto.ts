@@ -35,15 +35,6 @@ export class CreateEvaluationDto {
   })
   stage: EvaluationStage;
 
-  // optional override (HR can manually adjust)
-  @IsOptional()
-  @IsDateString()
-  @ApiProperty({
-    example: '2026-10-04',
-    description: 'Due date of the evaluation'
-  })
-  due_date?: string;
-
   @IsNotEmpty()
   @IsDateString()
   @ApiProperty({

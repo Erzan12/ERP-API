@@ -280,13 +280,12 @@ export class RegularizationReviewsService {
         // Create evaluation (NO status saved)
         const evaluation = await this.prisma.employeeEvaluation.create({
             data: {
-            employee_id: dto.employee_id,
-            evaluator_id: dto.evaluator_id,
-            stage: dto.stage,
-            due_date: expectedDueDate,
-            probation_date: new Date(dto.probation_date),
-            regularization_date: new Date(dto.regularization_date),
-            created_by: user.id,
+                employee_id: dto.employee_id,
+                evaluator_id: dto.evaluator_id,
+                stage: dto.stage,
+                probation_date: new Date(dto.probation_date),
+                regularization_date: new Date(dto.regularization_date),
+                created_by: user.id,
             },
         });
 
@@ -338,9 +337,8 @@ export class RegularizationReviewsService {
         }));
     }
 
-    async getEvaluations(employeeId: string, user: RequestUser) {
+    async getEvaluations(user: RequestUser) {
         const evaluations = await this.prisma.employeeEvaluation.findMany({
-            where: { employee_id: employeeId },
             include: {
                 employee: true, // required for hire date employee query
             },
