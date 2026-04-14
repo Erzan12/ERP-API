@@ -11,7 +11,7 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import {
   CivilStatus,
   Gender,
-} from '../../../../utils/decorators/global.enums.decorator';
+} from '../../../../../utils/decorators/global.enums.decorator';
 
 export class CreatePersonDto {
   @IsString()
