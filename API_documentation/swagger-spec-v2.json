@@ -3380,7 +3380,7 @@
         ]
       }
     },
-    "/v2/regularization-reviews": {
+    "/v2/regularization-reviews/for_regularization": {
       "get": {
         "operationId": "RegularizationReviewsController_getForRegularizaiton_v2",
         "parameters": [],
@@ -3408,7 +3408,9 @@
         "tags": [
           "Human Resources - Performance Management (Regularization Reviews)"
         ]
-      },
+      }
+    },
+    "/v2/regularization-reviews": {
       "post": {
         "operationId": "RegularizationReviewsController_createEvaluation_v2",
         "parameters": [],
@@ -3443,6 +3445,34 @@
           }
         },
         "summary": "Create an Employee Evaluation for the first 3rd and 5th month",
+        "tags": [
+          "Human Resources - Performance Management (Regularization Reviews)"
+        ]
+      },
+      "get": {
+        "operationId": "RegularizationReviewsController_getForEvaluation_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of evalauted employees"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of for evaluated employees",
         "tags": [
           "Human Resources - Performance Management (Regularization Reviews)"
         ]
@@ -5352,11 +5382,6 @@
             "example": "third_month_evaluation",
             "description": "The evaluation stage of this employee"
           },
-          "due_date": {
-            "type": "string",
-            "example": "2026-10-04",
-            "description": "Due date of the evaluation"
-          },
           "probation_date": {
             "type": "string",
             "example": "2026-10-04",
@@ -5372,7 +5397,6 @@
           "employee_id",
           "evaluator_id",
           "stage",
-          "due_date",
           "probation_date",
           "regularization_date"
         ]
