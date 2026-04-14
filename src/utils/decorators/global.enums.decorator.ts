@@ -57,3 +57,15 @@ export enum InterviewStage {
   SECOND = 'second',
   FINAL = 'final',
 }
+
+export enum EvaluationStage {
+  THIRD_MONTH_EVALUATION = 'third_month_evaluation',
+  FIFTH_MONTH_EVALUATION = 'fifth_month_evaluation',
+}
+
+export enum EvaluationStatus {
+  FOR_EVALUATION     = 'for_evaluation',
+  FOR_VERIFICATION   = 'for_verification',
+  FOR_APPROVAL       = 'for_approval',
+  FOR_ACKNOWLEDGMENT = 'for_acknowledgement'
+}
