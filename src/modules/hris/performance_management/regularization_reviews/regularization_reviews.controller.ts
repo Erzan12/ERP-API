@@ -13,7 +13,7 @@ import { CreateEvaluationDto } from './dto/evaluation.dto';
 export class RegularizationReviewsController {
     constructor(private readonly regularizationService: RegularizationReviewsService) {}
 
-    @Get()
+    @Get('for_regularization')
     @ApiOperation({ summary: 'List of all employees for regularization' })
     @ApiGetResponse('List of for regularization employees')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
@@ -43,6 +43,16 @@ export class RegularizationReviewsController {
         @SessionUser() user: RequestUser,
     ) {
         return this.regularizationService.getEmployeeEvaluations(employeeId, user);
+    }
+
+    @Get('')
+    @ApiOperation({ summary: 'List of for evaluated employees' })
+    @ApiGetResponse('List of evalauted employees')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getForEvaluation(
+        @SessionUser() user: RequestUser,
+    )   {
+        return this.regularizationService.getEvaluations(user)
     }
 
 }
