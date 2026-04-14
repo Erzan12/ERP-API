@@ -1,5 +1,6 @@
 import { addMonths, isAfter } from 'date-fns';
 import { STAGE_RULES } from '../constants/evaluation.constants';
+import { EvaluationStage, EvaluationStageStatus } from '../decorators/global.enums.decorator';
 
 export function getExpectedDueDate(hireDate: Date, stage: keyof typeof STAGE_RULES) {
   const months = STAGE_RULES[stage];
@@ -20,11 +21,11 @@ export function getExpectedDueDate(hireDate: Date, stage: keyof typeof STAGE_RUL
 
 export function computeEvaluationStatus(evaluation: any, now = new Date()) {
   if (evaluation.completed_at) {
-    return "complete";
+    return EvaluationStageStatus.COMPLETE;
   }
 
   const hireDate = evaluation.employee?.hire_date;
-  if (!hireDate) return "pending";
+  if (!hireDate) return EvaluationStageStatus.PENDING;
 
   let deadline: Date;
 
@@ -33,17 +34,18 @@ export function computeEvaluationStatus(evaluation: any, now = new Date()) {
   //   deadline = addMonths(hireDate, 3);
 
   //probation date is adjustable and is not based on hire date of employee
-  if (evaluation.stage === "third_month_evaluation") {
-    deadline = new Date(evaluation.probation_date);
-  } else if ( evaluation.stage === "fifth_month_evaluation") {
+  if (evaluation.stage === EvaluationStage.THIRD_MONTH_EVALUATION) {
+    deadline = new Date(evaluation.probation_date, 3);
+    // deadline = addMonths(hireDate, 3);
+  } else if ( evaluation.stage === EvaluationStage.FIFTH_MONTH_EVALUATION) {
     deadline = addMonths(hireDate, 5);
   } else {
-    return "pending";
+    return EvaluationStageStatus.PENDING;
   }
 
   if (now > deadline) {
-    return "overdue";
+    return EvaluationStageStatus.OVERDUE;
   } else {
-    return "pending";
+    return EvaluationStageStatus.PENDING;
   }
 }
