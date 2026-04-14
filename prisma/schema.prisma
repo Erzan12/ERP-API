@@ -81,6 +81,13 @@ enum EvaluationStage {
   fifth_month_evaluation
 }
 
+enum EvaluationStatus {
+  for_evaluation
+  for_verification
+  for_approval
+  for_acknowledgment
+}
+
 ////////////////////////////////////////
 // CORE IDENTITY
 ////////////////////////////////////////
@@ -479,7 +486,7 @@ model EmploymentHistory {
   remarks           String
   is_active         Boolean          @default(true)
   evaluation_stage  EvaluationStage  @default(third_month_evaluation)
-  //evaluation_status EvaluationStatus @default(pending)
+  evaluation_status EvaluationStatus @default(for_evaluation)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -500,6 +507,7 @@ model EmployeeEvaluation {
   evaluator_id String @db.Uuid
 
   stage  EvaluationStage
+  status EvaluationStatus @default(for_evaluation)
 
   probation_date      DateTime
   regularization_date DateTime
