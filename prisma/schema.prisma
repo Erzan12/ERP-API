@@ -504,7 +504,6 @@ model EmployeeEvaluation {
   probation_date      DateTime
   regularization_date DateTime
 
-  due_date     DateTime
   completed_at DateTime?
 
   created_at DateTime @default(now())
