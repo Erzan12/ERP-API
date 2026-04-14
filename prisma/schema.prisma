@@ -81,12 +81,6 @@ enum EvaluationStage {
   fifth_month_evaluation
 }
 
-enum EvaluationStatus {
-  pending
-  overdue
-  completed
-}
-
 ////////////////////////////////////////
 // CORE IDENTITY
 ////////////////////////////////////////
@@ -506,7 +500,6 @@ model EmployeeEvaluation {
   evaluator_id String @db.Uuid
 
   stage  EvaluationStage
-  //status EvaluationStatus @default(pending) after compute will be reflected in return instead of saving in db
 
   probation_date      DateTime
   regularization_date DateTime
