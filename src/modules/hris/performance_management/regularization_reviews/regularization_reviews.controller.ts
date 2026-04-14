@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Session } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, Session } from '@nestjs/common';
 import { RegularizationReviewsService } from './regularization_reviews.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
@@ -7,6 +7,7 @@ import { ACTION_CREATE, ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/const
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateEvaluationDto } from './dto/evaluation.dto';
+import { RegularizationReviewDto } from 'src/utils/dtos/regularization-pagination.dto';
 
 @ApiTags('Human Resources - Performance Management (Regularization Reviews)')
 @Controller({path:'regularization-reviews', version: '2'})
@@ -51,8 +52,9 @@ export class RegularizationReviewsController {
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getForEvaluation(
         @SessionUser() user: RequestUser,
+        @Query() dto: RegularizationReviewDto 
     )   {
-        return this.regularizationService.getEvaluations(user)
+        return this.regularizationService.getEvaluations(user, dto)
     }
 
 }
