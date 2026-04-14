@@ -2,14 +2,16 @@ import {
   Injectable,
   BadRequestException,
   ForbiddenException,
+  NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 
 import {
   CivilStatus,
   Gender,
-} from '../../../utils/decorators/global.enums.decorator';
+} from '../../../../utils/decorators/global.enums.decorator';
 
-import { RequestUser } from '../../../utils/types/request-user.interface';
+import { RequestUser } from '../../../../utils/types/request-user.interface';
 
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import {
@@ -21,7 +23,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
-export class EmployeeService {
+export class EmployeeMasterlistService {
   constructor(private prisma: PrismaService) {}
 
   async createEmployee(
@@ -405,6 +407,7 @@ export class EmployeeService {
               label: true,
             },
           },
+          hire_date: true,
           createdBy: {
             select: {
               person: {
@@ -633,3 +636,27 @@ export class EmployeeService {
     });
   }
 }
+
+/**
+ * Employment History SERVICE SECTION
+ */
+
+// export class EmploymentHistoryService {
+//   constructor(private prisma: PrismaService) {}
+
+//   async createEmploymentHistory(user: RequestUser, employeeId: string) {
+//     const existingEmployee = await this.prisma.employee.findUnique({
+//       where: { id: employeeId },
+//       include: {
+//         employment_history: true,
+//         employment_status: true,
+//       }
+//     })
+
+//     if (!existingEmployee) {
+//       throw new NotFoundException("Employee not found")
+//     }
+
+//     const employmentHistory = await this.prisma.employmentHistory.
+//   }
+// }
