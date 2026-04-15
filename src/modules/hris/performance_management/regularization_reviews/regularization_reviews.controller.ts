@@ -10,7 +10,7 @@ import { CreateEvaluationDto } from './dto/evaluation.dto';
 import { RegularizationReviewDto } from 'src/utils/dtos/regularization-pagination.dto';
 
 @ApiTags('Human Resources - Performance Management (Regularization Reviews)')
-@Controller({path:'regularization-reviews', version: '2'})
+@Controller({path:'hris/regularization-reviews', version: '2'})
 export class RegularizationReviewsController {
     constructor(private readonly regularizationService: RegularizationReviewsService) {}
 

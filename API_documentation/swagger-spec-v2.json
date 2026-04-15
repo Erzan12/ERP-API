@@ -3380,7 +3380,7 @@
         ]
       }
     },
-    "/v2/regularization-reviews/for_regularization": {
+    "/v2/hris/regularization-reviews/for_regularization": {
       "get": {
         "operationId": "RegularizationReviewsController_getForRegularizaiton_v2",
         "parameters": [
@@ -3469,7 +3469,7 @@
         ]
       }
     },
-    "/v2/regularization-reviews": {
+    "/v2/hris/regularization-reviews": {
       "post": {
         "operationId": "RegularizationReviewsController_createEvaluation_v2",
         "parameters": [],
@@ -3596,7 +3596,7 @@
         ]
       }
     },
-    "/v2/regularization-reviews/{employeeId}": {
+    "/v2/hris/regularization-reviews/{employeeId}": {
       "get": {
         "operationId": "RegularizationReviewsController_getEvaluations_v2",
         "parameters": [
