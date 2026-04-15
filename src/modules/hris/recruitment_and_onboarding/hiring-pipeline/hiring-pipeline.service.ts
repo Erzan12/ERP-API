@@ -497,7 +497,7 @@ export class HiringPipelineService {
     });
 
     return {
-      stauts: 'success',
+      status: 'success',
       message: 'Here is the status count for applicants',
       result,
     };
