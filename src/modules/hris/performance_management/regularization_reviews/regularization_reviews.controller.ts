@@ -20,8 +20,9 @@ export class RegularizationReviewsController {
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getForRegularizaiton(
         @SessionUser() user: RequestUser,
+        @Query() dto: RegularizationReviewDto,
     ) {
-        return this.regularizationService.getForRegularization(user);
+        return this.regularizationService.getForRegularization(user, dto);
     }
 
     @Post()
