@@ -10,7 +10,7 @@ import { CreateEvaluationDto } from './dto/evaluation.dto';
 import { RegularizationReviewDto } from 'src/utils/dtos/regularization-pagination.dto';
 
 @ApiTags('Human Resources - Performance Management (Regularization Reviews)')
-@Controller({path:'regularization-reviews', version: '2'})
+@Controller({path:'hris/regularization-reviews', version: '2'})
 export class RegularizationReviewsController {
     constructor(private readonly regularizationService: RegularizationReviewsService) {}
 
@@ -20,8 +20,19 @@ export class RegularizationReviewsController {
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getForRegularizaiton(
         @SessionUser() user: RequestUser,
+        @Query() dto: RegularizationReviewDto,
     ) {
-        return this.regularizationService.getForRegularization(user);
+        return this.regularizationService.getForRegularization(user, dto);
+    }
+
+    @Get('status-count')
+    @ApiOperation({ summary: 'List of all Employee Evalaution Status' })
+    @ApiGetResponse('List of all Employee Evaluation status count')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getStatusCountActive(
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.regularizationService.statusCount(user);
     }
 
     @Post()
@@ -56,5 +67,4 @@ export class RegularizationReviewsController {
     )   {
         return this.regularizationService.getEvaluations(user, dto)
     }
-
 }

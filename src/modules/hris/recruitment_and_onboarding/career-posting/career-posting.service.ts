@@ -125,38 +125,77 @@ export class CareerPostingService {
     //pagination area
     const skip = (page - 1) * perPage;
 
-    //with status params filter
+    // const parsedStatus = status as CareerPostingStatus;
+
+    const isValidStatus = Object.values(CareerPostingStatus).includes(
+      status as CareerPostingStatus,
+    );
+
+    // invalid → empty result
+    if (status && !isValidStatus) {
+      return {
+        status: 'success',
+        message: 'List of Career Posting',
+        count: 0,
+        page,
+        perPage,
+        recruitments: [],
+      };
+    }
+
+    // const parsedStatus = isValidStatus ? (status as CareerPostingStatus) : undefined;
+
+    //filter for status submitted and verified if status filter is submitted
     // const whereCondition: Prisma.CareerPostingWhereInput = {
     //   is_active: true,
-    //   ...(status && {
-    //     status: status as CareerPostingStatus,
+    //   ...(parsedStatus && parsedStatus !== CareerPostingStatus.ALL && {
+    //     status:
+    //       parsedStatus === CareerPostingStatus.SUBMITTED
+    //         ? {
+    //             in: [
+    //               CareerPostingStatus.SUBMITTED,
+    //               CareerPostingStatus.VERIFIED,
+    //             ],
+    //           }
+    //         : parsedStatus,
     //   }),
     // };
 
     // const whereCondition: Prisma.CareerPostingWhereInput = {
     //   is_active: true,
-    //   ...(status && status !== CareerPostingStatus.ALL && {
-    //     status: status as Exclude<CareerPostingStatus, typeof CareerPostingStatus.ALL>,
-    //   }),
+    //   ...(parsedStatus &&
+    //     parsedStatus !== CareerPostingStatus.ALL && {
+    //       status:
+    //         parsedStatus === CareerPostingStatus.SUBMITTED
+    //           ? {
+    //               in: [
+    //                 CareerPostingStatus.SUBMITTED,
+    //                 CareerPostingStatus.VERIFIED,
+    //               ],
+    //             }
+    //           : parsedStatus,
+    //     }),
     // };
+
 
     const parsedStatus = status as CareerPostingStatus;
 
-    //filter for status submitted and verified if status filter is submitted
     const whereCondition: Prisma.CareerPostingWhereInput = {
       is_active: true,
-      ...(parsedStatus && parsedStatus !== CareerPostingStatus.ALL && {
-        status:
-          parsedStatus === CareerPostingStatus.SUBMITTED
-            ? {
-                in: [
-                  CareerPostingStatus.SUBMITTED,
-                  CareerPostingStatus.VERIFIED,
-                ],
-              }
-            : parsedStatus,
-      }),
     };
+
+    if (parsedStatus && parsedStatus !== CareerPostingStatus.ALL) {
+      if (parsedStatus === CareerPostingStatus.SUBMITTED) {
+        whereCondition.status = {
+          in: [
+            CareerPostingStatus.SUBMITTED,
+            CareerPostingStatus.VERIFIED,
+          ],
+        };
+      } else {
+        whereCondition.status = parsedStatus;
+      }
+    }
 
     const positionFields = ['name'];
     const departmentFields = ['name'];
