@@ -2856,8 +2856,8 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "id",
-              "example": "id",
+              "default": "created_at",
+              "example": "created_at",
               "type": "string"
             }
           },
@@ -3101,8 +3101,8 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "id",
-              "example": "id",
+              "default": "created_at",
+              "example": "created_at",
               "type": "string"
             }
           },
