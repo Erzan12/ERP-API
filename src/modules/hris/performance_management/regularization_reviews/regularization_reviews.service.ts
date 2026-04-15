@@ -218,6 +218,20 @@ export class RegularizationReviewsService {
     // }
 
     async createEvaluation(dto: CreateEvaluationDto, user: RequestUser) {
+        
+        // Authorization Check
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: { user_roles: true, employee: true }
+        });
+
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
         const employee = await this.prisma.employee.findUnique({
             where: { id: dto.employee_id },
         });
@@ -287,19 +301,6 @@ export class RegularizationReviewsService {
                 created_by: user.id,
             },
         });
-
-        // Authorization Check
-        const requestUser = await this.prisma.user.findUnique({
-            where: { id: user.id },
-            include: { user_roles: true, employee: true }
-        });
-
-        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
-        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
-
-        if (!canView) {
-            throw new ForbiddenException('You are not authorized to perform this action');
-        }
 
         // Return with computed status
         return {
