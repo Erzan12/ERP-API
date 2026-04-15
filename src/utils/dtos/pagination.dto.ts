@@ -10,8 +10,8 @@ export class PaginationDto {
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'id', default: 'id' })
-  sortBy: string = 'id';
+  @ApiPropertyOptional({ example: 'created_at', default: 'created_at' })
+  sortBy: string = 'created_at';
 
   @IsOptional()
   @IsString()
