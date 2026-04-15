@@ -13,7 +13,11 @@ import { computeOverallStatus } from 'src/utils/helpers/compute-overall-status.h
 export class RegularizationReviewsService {
     constructor(private readonly prisma:PrismaService) {}
 
-    async getForRegularization(user: RequestUser) {
+    async getForRegularization(user: RequestUser, dto: RegularizationReviewDto) {
+        const { search, status, sortBy, order, page, perPage } = dto;
+
+        const skip = (page - 1) * perPage;
+        
         // Authorization Check
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
@@ -27,195 +31,150 @@ export class RegularizationReviewsService {
             throw new ForbiddenException('You are not authorized to perform this action');
         }
 
+        let whereCondition: Prisma.RegularizationEligibilityWhereInput = {};
+        if (search) {
+            whereCondition.OR = [
+                { employee: { person: { first_name: { contains: search, mode: 'insensitive' } } } },
+                { employee: { person: { last_name: { contains: search, mode: 'insensitive' } } } },
+                { employee: { position: { name: { contains: search, mode: 'insensitive' } } } },
+                { employee: { department: { name: { contains: search, mode: 'insensitive' } } } },
+            ];
+        }
+
         //  materialized view fast query but just snapshot needs to be refresh to get fresh data compared to normal view 
         // await this.prisma.$executeRawUnsafe(
         //     `REFRESH MATERIALIZED VIEW "RegularizationEligibility"`
         // );
 
         // Query the Materialized View
-        const employees = await this.prisma.regularizationEligibility.findMany({
-            include: {
+        // const employees = await this.prisma.regularizationEligibility.findMany({
+        //     where: whereCondition,
+        //     include: {
+        //         employee: {
+        //             include: {
+        //                 evaluations_received: {
+        //                     select: {
+        //                         id: true,
+        //                         employee_id: true,
+        //                         evaluator_id: true,
+        //                         stage: true,
+        //                         // status: true,
+        //                         probation_date: true,
+        //                         regularization_date: true,
+        //                         completed_at: true,
+        //                     }
+        //                 },
+        //                 evaluations_given: true,
+        //                 employment_history: {
+        //                     where: { is_active: true },
+        //                     take: 1,
+        //                     orderBy: { effective_date: 'desc' }
+        //                 }
+        //             }
+        //         }
+        //     },
+        //     orderBy: { [sortBy || 'created_at']: order || 'asc' },
+        // });
+
+        const sortMap = {
+            employee_created_at: {
                 employee: {
-                    include: {
-                        evaluations_received: {
-                            select: {
-                                id: true,
-                                employee_id: true,
-                                evaluator_id: true,
-                                stage: true,
-                                // status: true,
-                                probation_date: true,
-                                regularization_date: true,
-                                completed_at: true,
-                            }
-                        },
-                        evaluations_given: true,
-                        employment_history: {
-                            where: { is_active: true },
-                            take: 1,
-                            orderBy: { effective_date: 'desc' }
-                        }
-                    }
+                    created_at: order || 'desc'
                 }
-            }
-        });
+            },
+            hire_date: { hire_date: order || 'desc' },
+        };
+
+        const sortOrder =
+            sortMap[sortBy as keyof typeof sortMap] ||
+            sortMap.employee_created_at;
+
+        const [total, employees] = await this.prisma.$transaction([
+            this.prisma.regularizationEligibility.count({
+                where: whereCondition,
+            }),
+            this.prisma.regularizationEligibility.findMany({
+                where: whereCondition,
+                include: {
+                    employee: {
+                        select: {
+                            id: true,
+                            company: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                }
+                            },
+                            person: {
+                                select: {
+                                    id: true,
+                                    first_name: true,
+                                    last_name: true,
+                                }
+                            },
+                            employee_id: true,
+                            department: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                }
+                            },
+                            position: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                }
+                            },
+                            division: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                }
+                            },
+                            employment_status: {
+                                select: {
+                                    id: true,
+                                    label: true,
+                                }
+                            },
+                            employee_type: true,
+                            employment_type: true,
+                            evaluations_received: {
+                                select: {
+                                    employee_id: true,
+                                    evaluator_id: true,
+                                    stage: true,
+                                    probation_date: true,
+                                    regularization_date: true,
+                                    completed_at: true,
+                                }
+                            },
+                            evaluations_given: true,
+                            employment_history: {
+                                where: { is_active: true },
+                                take: 1,
+                                orderBy: { effective_date: 'desc' }
+                            },
+                            created_at: true,
+                        },
+                    }
+                },
+                skip,
+                take: perPage,
+                orderBy: sortOrder,
+            })
+        ]);
 
         return {
             status: 'success',
             message: 'List of Employees for Regularization',
-            data: { employees }
+            count: total,
+            page,
+            perPage,
+            // totalPage: Math.ceil(total / perPage),
+            employees
         };
     }
-
-    // async getForRegularization(user: RequestUser) {
-    //     const today = new Date();
-
-    //     const sixMonthsAgo = new Date();
-    //     sixMonthsAgo.setMonth(today.getMonth() - 6);
-
-    //     const employees = await this.prisma.employee.findMany({
-    //         where: {
-    //             hire_date: {
-    //                 lte: today,
-    //                 gte: sixMonthsAgo,
-    //             },
-    //             employment_status: {
-    //                 code: 'PROBATIONARY',
-    //             }
-    //         },
-    //         include: {
-    //             employment_history: {
-    //             where: {
-    //                 is_active: true,
-    //             },
-    //             orderBy: {
-    //                 effective_date: "desc",
-    //             },
-    //             take: 1,
-    //             },
-    //             evaluations_received: true,
-    //             person: {
-    //                 select: {
-    //                     id: true,
-    //                 }
-    //             },
-    //             position: {
-    //                 select: {
-    //                     id: true,
-    //                 }
-    //             },
-    //             department: {
-    //                 select: {
-    //                     id: true,
-    //                 }
-    //             },
-    //         },
-    //     });
-
-    //     const requestUser = await this.prisma.user.findUnique({
-    //         where: { id: user.id },
-    //         include: {
-    //         employee: {
-    //             include: {
-    //             person: true,
-    //             position: true,
-    //             },
-    //         },
-    //         user_roles: true,
-    //         },
-    //     });
-    
-    //     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-    //         throw new BadRequestException(`User does not exist.`);
-    //     }
-    
-    //     const allowedRoles = [
-    //         'Administrator',
-    //         'Super Administrator',
-    //         'HR Manager',
-    //         'HR Clerk',
-    //         'HR Staff',
-    //     ];
-    
-    //     const canView = requestUser.user_roles.some((role) =>
-    //         allowedRoles.includes(role.role_name),
-    //     );
-    
-    //     if (!canView) {
-    //         throw new ForbiddenException(
-    //             'You are not authorized to perform this action',
-    //         );
-    //     }
-
-    //     return {
-    //         status: 'success',
-    //         message: 'List of Employees for Regularization',
-    //         data: {
-    //             employees
-    //         }
-    //     }
-    // }
-
-    // async createEvaluation(dto: CreateEvaluationDto, user: RequestUser) {
-    //     const employee = await this.prisma.employee.findUnique({
-    //         where: { id: dto.employee_id },
-    //     });
-
-    //     if (!employee) {
-    //         throw new BadRequestException('Employee not found');
-    //     }
-
-    //     const probationDate = startOfDay(new Date(dto.probation_date));
-    //     const regularizationDate = startOfDay(new Date(dto.regularization_date));
-
-    //     // BASE DATE (hire date)
-    //     const baseDate = startOfDay(new Date(employee.hire_date));
-
-    //     const expectedRegularization = addMonths(baseDate, 6);
-
-    //     // Guard probation must equal base date
-    //     if (!isEqual(probationDate, baseDate)) {
-    //         throw new BadRequestException(
-    //             'Probation date must match employee hire date'
-    //         );
-    //     }
-
-    //     // Guard regularization must be exactly +6 months
-    //     if (!isEqual(regularizationDate, expectedRegularization)) {
-    //         throw new BadRequestException(
-    //             'Regularization date must be exactly 6 months from hire date'
-    //         );
-    //     }
-
-    //     const dueDate =
-    //         dto.due_date
-    //         ? new Date(dto.due_date)
-    //         : calculateDueDate(employee.hire_date, dto.stage);
-
-    //     // optional: prevent duplicates
-    //     const existing = await this.prisma.employeeEvaluation.findFirst({
-    //         where: {
-    //         employee_id: dto.employee_id,
-    //         stage: dto.stage,
-    //         },
-    //     });
-
-    //     if (existing) {
-    //         throw new BadRequestException('Evaluation already exists for this stage');
-    //     }
-
-    //     return this.prisma.employeeEvaluation.create({
-    //         data: {
-    //         employee_id: dto.employee_id,
-    //         evaluator_id: dto.evaluator_id,
-    //         stage: dto.stage,
-    //         due_date: dueDate,
-    //         probation_date: probationDate,
-    //         regularization_date: regularizationDate,
-    //         created_by: user.id,
-    //         },
-    //     });
-    // }
 
     async createEvaluation(dto: CreateEvaluationDto, user: RequestUser) {
         
