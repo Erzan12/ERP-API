@@ -512,6 +512,8 @@ model EmployeeEvaluation {
   probation_date      DateTime
   regularization_date DateTime
 
+  is_active  Boolean  @default(true)
+
   completed_at DateTime?
 
   created_at DateTime @default(now())
@@ -529,7 +531,7 @@ model EmployeeEvaluation {
   @@index([evaluator_id])
   @@index([employee_id])
   @@index([stage])
-  //@@index([status])
+  @@index([status])
 }
 
 model EmploymentStatus {

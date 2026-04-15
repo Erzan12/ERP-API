@@ -24,6 +24,20 @@ export class HiringPipelineService {
   constructor(private prisma: PrismaService) {}
 
   async getApplicant(applicantId: string, user: RequestUser) {
+
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: { user_roles: true }
+    });
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
     const applicant = await this.prisma.applicant.findUnique({
       where: { id: applicantId },
       include: {
@@ -75,41 +89,6 @@ export class HiringPipelineService {
       throw new NotFoundException('Applicant not found');
     }
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
     return {
       status: 'success',
       message: 'Here is the Applicant.',
@@ -119,6 +98,19 @@ export class HiringPipelineService {
 
   async getApplicants(user: RequestUser, dto: RecruitmentPaginationDto) {
     const { search, status, sortBy, order, page, perPage } = dto;
+
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: { user_roles: true }
+    });
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
 
     //pagination area
     const skip = (page - 1) * perPage;
@@ -191,18 +183,6 @@ export class HiringPipelineService {
               mode: 'insensitive',
             },
           },
-          // {
-          //   application_source: {
-          //     contains: search,
-          //     mode: 'insensitive',
-          //   },
-          // },
-          // {
-          //   application_status: {
-          //     contains: search,
-          //     mode: 'insensitive',
-          //   },
-          // },
         ],
       };
     }
@@ -295,41 +275,6 @@ export class HiringPipelineService {
       }),
     ]);
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
     return {
       status: 'success',
       message: 'List of Applicant Posting',
@@ -376,22 +321,11 @@ export class HiringPipelineService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
 
     if (!canView) {
-      throw new ForbiddenException(
-        'You are not allowed to perform this action',
-      );
+      throw new ForbiddenException('You are not authorized to perform this action');
     }
 
     await this.prisma.careerPosting.findUnique({
@@ -438,6 +372,31 @@ export class HiringPipelineService {
     updateApplicantDto: UpdateApplicantDto,
     user: RequestUser,
   ) {
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+      throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
     const exisitngApplicant = await this.prisma.applicant.findUnique({
       where: { id: applicantId },
     });
@@ -461,52 +420,12 @@ export class HiringPipelineService {
       },
     });
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
       message: `Job/Career posting has been updated successfully!`,
-      // updated_by: {
-      //   id: requestUser.id,
-      //   name: userName,
-      //   position: userPos,
-      // },
       applicant,
       updated_by_user: `${userName} - ${userPosition}`,
     };
@@ -519,6 +438,19 @@ export class HiringPipelineService {
     // const whereCondition: Prisma.ApplicantWhereInput = {
     //   ...(is_active !== undefined && { is_active }),
     // };
+
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: { user_roles: true }
+    });
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
 
     const whereCondition: Prisma.ApplicantWhereInput = {
        is_active: true,
@@ -564,43 +496,8 @@ export class HiringPipelineService {
       }
     });
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
     return {
-      stauts: 'success',
+      status: 'success',
       message: 'Here is the status count for applicants',
       result,
     };
@@ -700,6 +597,31 @@ export class InterviewApplicantService {
 
   async assignInterviewPanel(user: RequestUser, dto: BulkAssignInterviewDto) {
     const { applicant_id, interviewer_ids, date_of_interview } = dto;
+
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+      throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
     const stages = [
       InterviewStage.INITIAL,
       InterviewStage.SECOND,
@@ -736,7 +658,31 @@ export class InterviewApplicantService {
   async assessInterviewPanel(user: RequestUser, dto: AssessInterviewDto) {
     const { interviewer_id, ratings, ...assessmentData } = dto;
 
-    // 1. Fetch current interviewer and their stage
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+      throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    // Fetch current interviewer and their stage
     const currentInterviewer = await this.prisma.interviewer.findUnique({
       where: { id: interviewer_id },
     });
@@ -744,7 +690,7 @@ export class InterviewApplicantService {
     if (!currentInterviewer)
       throw new NotFoundException('Interviewer record not found');
 
-    // 2. Sequential Logic Check
+    // Sequential Logic Check
     if (
       (currentInterviewer.stage as InterviewStage) !== InterviewStage.INITIAL
     ) {
@@ -768,7 +714,7 @@ export class InterviewApplicantService {
       }
     }
 
-    // 3. Transaction: Update Interviewer + Create Ratings
+    // Transaction: Update Interviewer + Create Ratings
     return await this.prisma.$transaction(async (tx) => {
       // Update the interviewer record
       const updated = await tx.interviewer.update({
