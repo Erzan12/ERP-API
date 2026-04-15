@@ -25,6 +25,16 @@ export class RegularizationReviewsController {
         return this.regularizationService.getForRegularization(user, dto);
     }
 
+    @Get('status-count')
+    @ApiOperation({ summary: 'List of all Employee Evalaution Status' })
+    @ApiGetResponse('List of all Employee Evaluation status count')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getStatusCountActive(
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.regularizationService.statusCount(user);
+    }
+
     @Post()
     @ApiOperation({ summary: 'Create an Employee Evaluation for the first 3rd and 5th month' })
     @ApiPostResponse('Evaluation successfully created')
@@ -57,5 +67,4 @@ export class RegularizationReviewsController {
     )   {
         return this.regularizationService.getEvaluations(user, dto)
     }
-
 }

@@ -407,4 +407,61 @@ export class RegularizationReviewsService {
             employeeEvaluations: paginatedResults,
         };
     }
+
+    async statusCount(user: RequestUser) {
+
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: { user_roles: true }
+        });
+
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        const whereCondition: Prisma.EmployeeEvaluationWhereInput = {
+            is_active: true,
+        }
+
+        const [counts] = await Promise.all([
+            this.prisma.employeeEvaluation.groupBy({
+                by: ['status'],
+                where: whereCondition,
+                _count: { _all: true },
+            }),
+            this.prisma.employeeEvaluation.count({
+                where: { is_active: true }
+            }),
+        ]);
+
+        const result = {
+            // all: 0,
+            for_evaluation: 0,
+            for_verification: 0,
+            for_approval: 0,
+            for_acknowledgment: 0
+        };
+
+        counts.forEach((item) => {
+            const statusKey = item.status.toLowerCase();
+
+            if (Object.prototype.hasOwnProperty.call(result, statusKey)) {
+                const key = statusKey as keyof typeof result;
+
+                const countValue = item._count._all;
+                result[key] = countValue;
+                // result.all += countValue;
+            }
+        });
+
+        return {
+            status: 'success',
+            message: 'Here is the status count for employee evaluation',
+            result,
+        };
+    }
 }
