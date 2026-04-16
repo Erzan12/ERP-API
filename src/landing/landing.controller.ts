@@ -48,6 +48,13 @@ export class LandingController {
           status: 'Beta',
         },
         {
+          title: 'Evaluator - Perf Mngt',
+          slug: 'evaluator',
+          swaggerLink: '/docs/evaluator',
+          icon: '/public/icons/evaluator.png',
+          status: 'Beta',
+        },
+        {
           title: 'DB Query',
           slug: 'db-query',
           swaggerLink: '/docs/db-query',

@@ -26,7 +26,7 @@ import { RegularizationReviewsController } from './performance_management/regula
 import { EvaluatorModule } from './performance_management/evaluator/evaluator.module';
 
 @Module({
-  imports: [AuthModule, AdministratorV2Module, EvaluatorModule],
+  imports: [AuthModule, AdministratorV2Module],
   providers: [
     EmployeeMasterlistService,
     PrismaService,
