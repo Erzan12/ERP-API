@@ -1,6 +1,149 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/v2/auth/login": {
+      "post": {
+        "operationId": "AuthController_login_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User login successful"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "User authorized login",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/v2/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout_v2",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "User logout successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "User will logout",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/v2/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_passwordResetWithToken_v2",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordWithTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User reset password successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "User reset password",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/v2/auth/verify": {
+      "get": {
+        "operationId": "AuthController_verify_v2",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "User has been verified"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Verify user",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
     "/v2/administrator/sub-modules": {
       "get": {
         "operationId": "SubModuleControllerV2_getSubmodules_v2",
@@ -4139,6 +4282,45 @@
           "Manager - Role Management"
         ]
       }
+    },
+    "/v2/performance-evaluation/my-evalations": {
+      "get": {
+        "operationId": "PerformanceEvaluationController_getMyEvaluations_v2",
+        "parameters": [
+          {
+            "name": "evaluatorId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of my evaluations"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of evaluations added to this employee/user",
+        "tags": [
+          "Corporate Services - Performance Evaluation"
+        ]
+      }
     }
   },
   "info": {
@@ -4158,6 +4340,38 @@
       }
     },
     "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "admin",
+            "description": "User username"
+          },
+          "password": {
+            "type": "string",
+            "example": "1234567890",
+            "description": "User password"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "ResetPasswordWithTokenDto": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "example": "newpassword",
+            "description": "user new password"
+          }
+        },
+        "required": [
+          "newPassword"
+        ]
+      },
       "CreateSubModuleDto": {
         "type": "object",
         "properties": {

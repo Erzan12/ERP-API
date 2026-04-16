@@ -49,8 +49,8 @@ export class LandingController {
         },
         {
           title: 'Performance Evaluation - Corp Services',
-          slug: 'performance-evaluation',
-          swaggerLink: '/docs/performance-evaluation',
+          slug: 'performance-evaluations',
+          swaggerLink: '/docs/performance-evaluations',
           icon: '/public/icons/evaluator.png',
           status: 'Beta',
         },
