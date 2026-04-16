@@ -3,7 +3,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AuthModule } from "src/auth/auth.module";
 import { PerformanceEvaluationModule } from "src/modules/corporate_services/performance_evaluations/performance_evalautions.module";
 
-export function setupEvaluatorSwagger(app: INestApplication): void {
+export function setupPerformanceEvaluationSwagger(app: INestApplication): void {
     // build document for v2
     const optionsV2 = new DocumentBuilder()
         .setTitle('Performance Evaluation API - Corporate Service')
@@ -12,7 +12,6 @@ export function setupEvaluatorSwagger(app: INestApplication): void {
         )
         .setVersion('2.0')
         .addTag('Authentication')
-        .addTag('Performance Evaluation - Corporate Service')
         .build();
 
     const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
