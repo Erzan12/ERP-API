@@ -4283,19 +4283,10 @@
         ]
       }
     },
-    "/v2/performance-evaluation/my-evalations": {
+    "/v2/corporate-services/performance-evaluation/my-evalations": {
       "get": {
         "operationId": "PerformanceEvaluationController_getMyEvaluations_v2",
-        "parameters": [
-          {
-            "name": "evaluatorId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "List of my evaluations"
