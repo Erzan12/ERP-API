@@ -363,7 +363,41 @@ export class RegularizationReviewsService {
         const evaluations = await this.prisma.employeeEvaluation.findMany({
             where: whereCondition,
             include: {
-                employee: { select: { id: true, person: { select: { first_name: true, last_name: true } } } },
+                employee: { 
+                    select: 
+                    {   id: true, 
+                        person: 
+                        { select: 
+                            {   
+                                first_name: true, 
+                                last_name: true 
+                            } 
+                        }, 
+                        company: 
+                        { select: 
+                            { 
+                                id: true, 
+                                name: true 
+                            }
+                        }, 
+                        position: 
+                        { select: 
+                            { 
+                                id: true, 
+                                name: true 
+                            },
+                        }, 
+                        department: 
+                        { select: 
+                            {
+                                id: true, 
+                                name: true,
+                            }
+                        }, 
+                        employee_type: true,
+                        employment_type: true 
+                    }
+                },
                 evaluator: { select: { id: true, person: { select: { first_name: true, last_name: true } } } }
             },
             orderBy: { [sortBy || 'created_at']: order || 'asc' },
