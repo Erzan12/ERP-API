@@ -11,23 +11,50 @@ export class PerformanceEvaluationService {
 
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
-            select: {
-                employee: {
                 select: {
-                    id: true,
-                },
+                    employee: {
+                    select: {
+                        id: true,
+                    },
                 },
             },
         });
 
         const myEvaluations = await this.prisma.employeeEvaluation.findMany({
             where: {
+                employee_id: requestUser?.employee?.id,
+            },
+        });
+
+        return {
+            status: 'success',
+            message: 'List of evaluations I received',
+            myEvaluations,
+        };
+    }
+
+    async getToBeEvaluated(user: RequestUser) {
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+                select: {
+                    employee: {
+                    select: {
+                        id: true,
+                    },
+                },
+            },
+        });
+
+        const toBeEvaluated = await this.prisma.employeeEvaluation.findMany({
+            where: {
                 evaluator_id: requestUser?.employee?.id,
             },
         });
 
         return {
-            myEvaluations,
+            status: 'success',
+            message: 'List of Employees I will evaluate',
+            toBeEvaluated,
         };
     }
 }
