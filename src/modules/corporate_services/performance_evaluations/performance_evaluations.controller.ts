@@ -29,6 +29,6 @@ export class PerformanceEvaluationController {
     getToBeEvaluated(
         @SessionUser() user: RequestUser,
     ) {
-        return this.performanceEvaluationService.getMyEvaluations(user)
+        return this.performanceEvaluationService.getToBeEvaluated(user)
     }
 }
