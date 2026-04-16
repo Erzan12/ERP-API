@@ -48,9 +48,9 @@ export class LandingController {
           status: 'Beta',
         },
         {
-          title: 'Evaluator - Perf Mngt',
-          slug: 'evaluator',
-          swaggerLink: '/docs/evaluator',
+          title: 'Performance Evaluation - Corp Services',
+          slug: 'performance-evaluation',
+          swaggerLink: '/docs/performance-evaluation',
           icon: '/public/icons/evaluator.png',
           status: 'Beta',
         },

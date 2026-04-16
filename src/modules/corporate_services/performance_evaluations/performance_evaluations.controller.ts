@@ -1,4 +1,4 @@
 import { Controller } from '@nestjs/common';
 
 @Controller('evaluator')
-export class EvaluatorController {}
+export class PerformanceEvaluationController {}
