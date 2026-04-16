@@ -4307,6 +4307,36 @@
             "description": "Internal Server Error"
           }
         },
+        "summary": "List of current users personal evaluation",
+        "tags": [
+          "Corporate Services - Performance Evaluation"
+        ]
+      }
+    },
+    "/v2/corporate-services/performance-evaluation/to-be-evaluated": {
+      "get": {
+        "operationId": "PerformanceEvaluationController_getToBeEvaluated_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of to be evaluated"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
         "summary": "List of evaluations added to this employee/user",
         "tags": [
           "Corporate Services - Performance Evaluation"

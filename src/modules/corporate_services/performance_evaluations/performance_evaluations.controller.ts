@@ -13,10 +13,20 @@ export class PerformanceEvaluationController {
     constructor (private readonly performanceEvaluationService: PerformanceEvaluationService) {}
 
     @Get('performance-evaluation/my-evalations')
-    @ApiOperation({ summary: 'List of evaluations added to this employee/user' })
+    @ApiOperation({ summary: 'List of current users personal evaluation' })
     @ApiGetResponse('List of my evaluations')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getMyEvaluations(
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.performanceEvaluationService.getMyEvaluations(user)
+    }
+
+    @Get('performance-evaluation/to-be-evaluated')
+    @ApiOperation({ summary: 'List of evaluations added to this employee/user' })
+    @ApiGetResponse('List of to be evaluated')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getToBeEvaluated(
         @SessionUser() user: RequestUser,
     ) {
         return this.performanceEvaluationService.getMyEvaluations(user)
