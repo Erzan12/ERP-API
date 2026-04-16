@@ -23,7 +23,6 @@ import {
 } from './recruitment_and_onboarding/hiring-pipeline/hiring-pipelineV2.controller';
 import { RegularizationReviewsService } from './performance_management/regularization_reviews/regularization_reviews.service';
 import { RegularizationReviewsController } from './performance_management/regularization_reviews/regularization_reviews.controller';
-import { EvaluatorModule } from './performance_management/evaluator/evaluator.module';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
