@@ -142,7 +142,18 @@ export class RegularizationReviewsService {
                             evaluations_received: {
                                 select: {
                                     employee_id: true,
-                                    evaluator_id: true,
+                                    evaluator: {
+                                        select: {
+                                            id: true,
+                                            person: {
+                                                select: {
+                                                    first_name: true,
+                                                    middle_name: true,
+                                                    last_name: true,
+                                                }
+                                            }
+                                        }
+                                    },
                                     stage: true,
                                     probation_date: true,
                                     regularization_date: true,
