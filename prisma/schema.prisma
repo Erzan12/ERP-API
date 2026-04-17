@@ -817,8 +817,9 @@ model ExaminationRating {
 
 model HrPerformanceCompetency {
   id                  String  @id @default(uuid())  @db.Uuid
-  department_group    String
-  category            String
+  department_group    EmployeeType
+  sea_category        SeaBasedCategory?
+  land_category       LandBasedCategory?           
   title               String
   description         String
   highest_score_limit Int?
