@@ -10,6 +10,7 @@ import { HrV2Module } from './modules/hris/hrV2.module';
 import { ManagerV2Module } from './modules/manager/managerV2.module';
 import { MasterV2Module } from './modules/master/masterV2.module';
 import { UserManagementV2Module } from './modules/manager/user_management/user_managementV2.module';
+import { PerformanceEvaluationModule } from './modules/corporate_services/performance_evaluations/performance_evalautions.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
 import { CustomJwtAuthGuard } from './middleware/jwt/jwt.auth.guard';
@@ -49,6 +50,7 @@ import { UserLocationService } from './modules/master/user_location/user_locatio
     HrV2Module,
     ManagerV2Module,
     UserManagementV2Module,
+    PerformanceEvaluationModule,
     PrismaModule,
     // HealthCheckModule,
     // HealthModule,

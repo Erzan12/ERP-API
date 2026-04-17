@@ -1,6 +1,149 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/v2/auth/login": {
+      "post": {
+        "operationId": "AuthController_login_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User login successful"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "User authorized login",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/v2/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout_v2",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "User logout successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "User will logout",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/v2/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_passwordResetWithToken_v2",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordWithTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User reset password successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "User reset password",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/v2/auth/verify": {
+      "get": {
+        "operationId": "AuthController_verify_v2",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "User has been verified"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Verify user",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
     "/v2/administrator/sub-modules": {
       "get": {
         "operationId": "SubModuleControllerV2_getSubmodules_v2",
@@ -3665,6 +3808,74 @@
         ]
       }
     },
+    "/v2/hris/performance-competency": {
+      "get": {
+        "operationId": "PerformanceCompetencyController_getCompetencies_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of Performance Comptencies"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Performance Competencies",
+        "tags": [
+          "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      },
+      "post": {
+        "operationId": "PerformanceCompetencyController_createCompetency_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePerformanceCompetencyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Performance Competency created"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a Performance Competency",
+        "tags": [
+          "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -4139,6 +4350,66 @@
           "Manager - Role Management"
         ]
       }
+    },
+    "/v2/corporate-services/performance-evaluation/my-evalations": {
+      "get": {
+        "operationId": "PerformanceEvaluationController_getMyEvaluations_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of my evaluations"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of current users personal evaluation",
+        "tags": [
+          "Corporate Services - Performance Evaluation"
+        ]
+      }
+    },
+    "/v2/corporate-services/performance-evaluation/to-be-evaluated": {
+      "get": {
+        "operationId": "PerformanceEvaluationController_getToBeEvaluated_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of to be evaluated"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of evaluations added to this employee/user",
+        "tags": [
+          "Corporate Services - Performance Evaluation"
+        ]
+      }
     }
   },
   "info": {
@@ -4158,6 +4429,38 @@
       }
     },
     "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "admin",
+            "description": "User username"
+          },
+          "password": {
+            "type": "string",
+            "example": "1234567890",
+            "description": "User password"
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "ResetPasswordWithTokenDto": {
+        "type": "object",
+        "properties": {
+          "newPassword": {
+            "type": "string",
+            "example": "newpassword",
+            "description": "user new password"
+          }
+        },
+        "required": [
+          "newPassword"
+        ]
+      },
       "CreateSubModuleDto": {
         "type": "object",
         "properties": {
@@ -5547,6 +5850,69 @@
           "stage",
           "probation_date",
           "regularization_date"
+        ]
+      },
+      "CreatePerformanceCompetencyDto": {
+        "type": "object",
+        "properties": {
+          "department_group": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ],
+            "example": "land_based",
+            "description": "The deparment group of the employee"
+          },
+          "sea_category": {
+            "type": "string",
+            "enum": [
+              "all_ranks",
+              "all_officers",
+              "top_2_master_chief_engineer"
+            ]
+          },
+          "land_category": {
+            "type": "string",
+            "enum": [
+              "rank_and_file",
+              "managerial_and_supervisory"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "example": "Name or Title of the performance competency",
+            "description": "The name of the performance competency"
+          },
+          "description": {
+            "type": "string",
+            "example": "Detail or description of this performance competency",
+            "description": "Add description for this performance competence"
+          },
+          "highest_score_limit": {
+            "type": "number",
+            "example": "Rate from 1 to 5, 5 is highest 1 is lowest",
+            "description": "Highest rate of this performance competency"
+          },
+          "performanceRating": {
+            "type": "string",
+            "enum": [
+              "unsatisfactory",
+              "needs_improvement",
+              "meets_expectations",
+              "exceed_expectations",
+              "exceptional"
+            ],
+            "example": "exceptional",
+            "description": "Highest rate of this performance competence"
+          }
+        },
+        "required": [
+          "department_group",
+          "title",
+          "description",
+          "highest_score_limit",
+          "performanceRating"
         ]
       },
       "CreatePermissionTemplateDto": {

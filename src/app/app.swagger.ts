@@ -11,6 +11,9 @@ import { HrV2Module } from 'src/modules/hris/hrV2.module';
 import { ManagerV2Module } from 'src/modules/manager/managerV2.module';
 import { MasterV2Module } from 'src/modules/master/masterV2.module';
 import { setupUserSwagger } from './user-management/user-management.swagger';
+import { setupPerformanceEvaluationSwagger } from './performance-evaluation/performance-evaluation.swagger';
+import { PerformanceEvaluationModule } from 'src/modules/corporate_services/performance_evaluations/performance_evalautions.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 function setupAppSwagger(app: INestApplication): void {
   // All APIs docs
@@ -37,10 +40,12 @@ function setupAppSwagger(app: INestApplication): void {
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
     include: [
+      AuthModule,
       AdministratorV2Module,
       HrV2Module,
       ManagerV2Module,
       MasterV2Module,
+      PerformanceEvaluationModule
     ],
   });
 
@@ -74,6 +79,7 @@ function setupAppSwagger(app: INestApplication): void {
   setupManagerSwagger(app);
   setupMasterSwagger(app);
   setupUserSwagger(app);
+  setupPerformanceEvaluationSwagger(app);
 }
 
 export { setupAppSwagger };
