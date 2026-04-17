@@ -838,7 +838,6 @@ model HrPerformanceCompetency {
   evaluation_details HrPerformanceEvaluationDetails[]
 
   @@index([department_group])
-  @@index([category])
   @@index([title])
 }
 
