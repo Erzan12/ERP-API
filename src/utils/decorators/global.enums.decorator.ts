@@ -37,7 +37,7 @@ export enum EmployeeType {
 export enum SeaBasedCategory {
   ALL_RANKS = 'all_ranks',
   ALL_OFFICERS = 'all_officers',
-  TOP_2_MASTER_CHEIF_ENGINEER = 'top_2_master_chief_engineer'
+  TOP_2_MASTER_CHIEF_ENGINEER = 'top_2_master_chief_engineer'
 }
 
 export enum LandBasedCategory {
