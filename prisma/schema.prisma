@@ -52,6 +52,17 @@ enum EmployeeType {
   sea_based
 }
 
+enum SeaBasedCategory {
+  all_ranks
+  all_officers
+  top_2_master_chief_engineer
+}
+
+enum LandBasedCategory {
+  rank_and_file
+  managerial_and_supervisory
+}
+
 enum ApplicationSource {
   company_website
   walk_in
