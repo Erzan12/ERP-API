@@ -23,6 +23,8 @@ import {
 } from './recruitment_and_onboarding/hiring-pipeline/hiring-pipelineV2.controller';
 import { RegularizationReviewsService } from './performance_management/regularization_reviews/regularization_reviews.service';
 import { RegularizationReviewsController } from './performance_management/regularization_reviews/regularization_reviews.controller';
+import { PerformanceCompetencyController } from './performance_management/performance_competency/performance_competency.controller';
+import { PerformanceCompetencyService } from './performance_management/performance_competency/performance_competency.service';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
@@ -33,7 +35,8 @@ import { RegularizationReviewsController } from './performance_management/regula
     CareerPostingService,
     HiringPipelineService,
     InterviewApplicantService,
-    RegularizationReviewsService
+    RegularizationReviewsService,
+    PerformanceCompetencyService
     // ScreeningApplicantService,
   ],
   controllers: [
@@ -44,7 +47,8 @@ import { RegularizationReviewsController } from './performance_management/regula
     ApplicantsController,
     // ScreeningApplicantController,
     InterviewApplicantController,
-    RegularizationReviewsController
+    RegularizationReviewsController,
+    PerformanceCompetencyController
   ],
   exports: [HrV2Module],
 })
