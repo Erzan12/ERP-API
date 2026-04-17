@@ -485,12 +485,55 @@ export class EmployeeMasterlistService {
     };
   }
 
-  async getEmployee(id: string, user: RequestUser) {
+  async getEmployee( employeeId: string, user: RequestUser) {
     // 1. Find the employee
     const employee = await this.prisma.employee.findUnique({
-      where: { id },
-      include: {
-        person: true, // fetch person details automatically
+      where: { id: employeeId },
+      select: {
+        id: true,
+        company: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
+        person: true,
+        employee_id: true,
+        department: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
+        position: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
+        division: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
+        employment_status: {
+          select: {
+            id: true,
+            label: true,
+          }
+        },
+        hire_date: true,
+        salary: true,
+        pay_frequency: true,
+        employment_type: true,
+        employee_type: true,
+        monthly_equivalent_salary: true,
+        archive_date: true,
+        other_employee_data: true,
+        corporate_rank_id: true,
+        created_at: true,
+        updated_at: true,
         createdBy: {
           select: {
             person: {
