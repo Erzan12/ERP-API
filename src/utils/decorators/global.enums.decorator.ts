@@ -34,6 +34,17 @@ export enum EmployeeType {
   SEA_BASED = 'sea_based',
 }
 
+export enum SeaBasedCategory {
+  ALL_RANKS = 'all_ranks',
+  ALL_OFFICERS = 'all_officers',
+  TOP_2_MASTER_CHIEF_ENGINEER = 'top_2_master_chief_engineer'
+}
+
+export enum LandBasedCategory {
+  RANK_AND_FILE = 'rank_and_file',
+  MANAGERIAL_AND_SUPERVISORY = 'managerial_and_supervisory'
+}
+
 export enum ApplicationSource {
   COMPANY_WEBSITE = 'company_website',
   WALK_IN         = 'walk_in',

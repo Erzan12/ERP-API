@@ -1,7 +1,8 @@
 import { IsUUID, IsEnum, IsOptional, IsDateString, IsNotEmpty, IsString } from 'class-validator';
-import { EvaluationStage } from '@prisma/client';
+
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { EvaluationStage } from 'src/utils/decorators/global.enums.decorator';
 
 export class CreateEvaluationDto {
   @IsUUID()
@@ -30,7 +31,7 @@ export class CreateEvaluationDto {
   @Type(() => String)
   @ApiProperty({
       enum: EvaluationStage,
-      example: EvaluationStage.third_month_evaluation,
+      example: EvaluationStage.THIRD_MONTH_EVALUATION,
       description: 'The evaluation stage of this employee'
   })
   stage: EvaluationStage;
