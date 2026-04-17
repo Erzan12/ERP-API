@@ -206,7 +206,7 @@ export class RegularizationReviewsService {
         const requiredPreviousStage = PREVIOUS_STAGE_MAP[dto.stage];
 
         if (requiredPreviousStage) {
-            const previous = await this.prisma.employeeEvaluation.findFirst({
+            const previous = await this.prisma.hrEmployeeEvaluation.findFirst({
                 where: {
                     employee_id: dto.employee_id,
                     stage: requiredPreviousStage as EvaluationStage,
@@ -250,7 +250,7 @@ export class RegularizationReviewsService {
         const expectedDueDate = getExpectedDueDate(hireDate, dto.stage);
 
         // Create evaluation (NO status saved)
-        const evaluation = await this.prisma.employeeEvaluation.create({
+        const evaluation = await this.prisma.hrEmployeeEvaluation.create({
             data: {
                 employee_id: dto.employee_id,
                 evaluator_id: dto.evaluator_id,
@@ -269,7 +269,7 @@ export class RegularizationReviewsService {
     }
 
     async getEmployeeEvaluations(employeeId: string, user: RequestUser) {
-        const evaluations = await this.prisma.employeeEvaluation.findMany({
+        const evaluations = await this.prisma.hrEmployeeEvaluation.findMany({
             where: { employee_id: employeeId },
             include: {
                 employee: true, // required for hire date employee query
@@ -313,7 +313,7 @@ export class RegularizationReviewsService {
         }
 
         // Prepare search conditions
-        let whereCondition: Prisma.EmployeeEvaluationWhereInput = {};
+        let whereCondition: Prisma.HrEmployeeEvaluationWhereInput = {};
         if (search) {
             // Exact match only
             // const stageEnumMatch = Object.values(EvaluationStage).find(v => v === search);
@@ -360,7 +360,7 @@ export class RegularizationReviewsService {
         // Db fetch
         // If you must filter by a compted property (overall_status), 
         // you have to fetch more records or handle pagination in memory.
-        const evaluations = await this.prisma.employeeEvaluation.findMany({
+        const evaluations = await this.prisma.hrEmployeeEvaluation.findMany({
             where: whereCondition,
             include: {
                 employee: { 
@@ -457,17 +457,17 @@ export class RegularizationReviewsService {
             throw new ForbiddenException('You are not authorized to perform this action');
         }
 
-        const whereCondition: Prisma.EmployeeEvaluationWhereInput = {
+        const whereCondition: Prisma.HrEmployeeEvaluationWhereInput = {
             is_active: true,
         }
 
         const [counts] = await Promise.all([
-            this.prisma.employeeEvaluation.groupBy({
+            this.prisma.hrEmployeeEvaluation.groupBy({
                 by: ['status'],
                 where: whereCondition,
                 _count: { _all: true },
             }),
-            this.prisma.employeeEvaluation.count({
+            this.prisma.hrEmployeeEvaluation.count({
                 where: { is_active: true }
             }),
         ]);

@@ -1,5 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { NotFoundError } from 'rxjs';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
@@ -20,7 +19,7 @@ export class PerformanceEvaluationService {
             },
         });
 
-        const myEvaluations = await this.prisma.employeeEvaluation.findMany({
+        const myEvaluations = await this.prisma.hrEmployeeEvaluation.findMany({
             where: {
                 employee_id: requestUser?.employee?.id,
             },
@@ -45,7 +44,7 @@ export class PerformanceEvaluationService {
             },
         });
 
-        const toBeEvaluated = await this.prisma.employeeEvaluation.findMany({
+        const toBeEvaluated = await this.prisma.hrEmployeeEvaluation.findMany({
             where: {
                 evaluator_id: requestUser?.employee?.id,
             },
