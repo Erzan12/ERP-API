@@ -497,14 +497,7 @@ export class EmployeeMasterlistService {
             name: true,
           }
         },
-        person: {
-          select: {
-            id: true,
-            first_name: true,
-            middle_name: true,
-            last_name: true
-          }
-        },
+        person: true,
         employee_id: true,
         department: {
           select: {
