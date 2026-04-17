@@ -88,6 +88,14 @@ enum EvaluationStatus {
   for_acknowledgment
 }
 
+enum PerformanceRating {
+  unsatisfactory
+  needs_improvement
+  meets_expectations
+  exceed_expectations
+  exceptional
+}
+
 ////////////////////////////////////////
 // CORE IDENTITY
 ////////////////////////////////////////
@@ -248,8 +256,10 @@ model User {
   ExaminationRatingUpdatedBy               ExaminationRating[]                @relation("ExaminationRatingUpdatedBy")
   EmploymentHistoryCreatedBy               EmploymentHistory[]                @relation("EmploymentHistoryCreatedBy")
   EmploymentHistoryUpdatedBy               EmploymentHistory[]                @relation("EmploymentHistoryUpdatedBy")
-  EmployeeEvaluationCreatedBy              EmployeeEvaluation[]               @relation("EmployeeEvaluationCreatedBy")
-  EmployeeEvaluationUpdatedBy              EmployeeEvaluation[]               @relation("EmployeeEvaluationUpdatedBy")
+  HrEmployeeEvaluationCreatedBy            HrEmployeeEvaluation[]             @relation("HrEmployeeEvaluationCreatedBy")
+  HrEmployeeEvaluationUpdatedBy            HrEmployeeEvaluation[]             @relation("HrEmployeeEvaluationUpdatedBy")
+  HrPerformanceCompetencyCreatedBy         HrPerformanceCompetency[]          @relation("HrPerformanceCompetencyCreatedBy")
+  HrPerformanceCompetencyUpdatedBy         HrPerformanceCompetency[]          @relation("HrPerformanceCompetencyUpdatedBy")
 
   @@index([person_id])
   @@index([employee_id])
@@ -447,8 +457,8 @@ model Employee {
   archive_date         DateTime?
   other_employee_data  Json?
   corporate_rank_id    Int?
-  evaluations_received EmployeeEvaluation[] @relation("EmployeeEvaluations")
-  evaluations_given    EmployeeEvaluation[] @relation("EmployeeGivenEvaluations")
+  evaluations_received HrEmployeeEvaluation[] @relation("HrEmployeeEvaluations")
+  evaluations_given    HrEmployeeEvaluation[] @relation("EmployeeGivenEvaluations")
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -500,33 +510,43 @@ model EmploymentHistory {
   employee Employee @relation(fields: [employee_id], references: [id])
 }
 
-model EmployeeEvaluation {
-  id String @id @default(uuid()) @db.Uuid
+model HrEmployeeEvaluation {
+  id           String @id @default(uuid()) @db.Uuid
 
   employee_id  String @db.Uuid
   evaluator_id String @db.Uuid
 
-  stage  EvaluationStage
-  status EvaluationStatus @default(for_evaluation)
+  stage        EvaluationStage
+  status       EvaluationStatus @default(for_evaluation)
 
   probation_date      DateTime
   regularization_date DateTime
 
-  is_active  Boolean  @default(true)
+  is_active       Boolean  @default(true)
 
-  completed_at DateTime?
+  overall_rating  Int?
+  decision        String?
+  comments        String?
+  response        String?
+  evaluated_on    DateTime?
+  acknowledged_on DateTime?
+  approved_on     DateTime?
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  completed_at    DateTime?
 
-  employee  Employee @relation("EmployeeEvaluations", fields: [employee_id], references: [id])
-  evaluator Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id])
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  employee   Employee @relation("HrEmployeeEvaluations", fields: [employee_id], references: [id])
+  evaluator  Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id])
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
 
-  createdBy User? @relation("EmployeeEvaluationCreatedBy", fields: [created_by], references: [id])
-  updatedBy User? @relation("EmployeeEvaluationUpdatedBy", fields: [updated_by], references: [id])
+  createdBy  User? @relation("HrEmployeeEvaluationCreatedBy", fields: [created_by], references: [id])
+  updatedBy  User? @relation("HrEmployeeEvaluationUpdatedBy", fields: [updated_by], references: [id])
+
+  details    HrPerformanceEvaluationDetails[]
 
   @@index([evaluator_id])
   @@index([employee_id])
@@ -782,6 +802,49 @@ model ExaminationRating {
   created_at  DateTime     @default(now())
   updated_at  DateTime     @updatedAt
   interviewer Interviewer? @relation(fields: [interviewer_id], references: [id])
+}
+
+model HrPerformanceCompetency {
+  id                  String  @id @default(uuid())  @db.Uuid
+  department_group    String
+  category            String
+  title               String
+  description         String
+  highest_score_limit Int?
+  performanceRating   PerformanceRating?
+  is_active           Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User?  @relation("HrPerformanceCompetencyCreatedBy", fields: [created_by], references: [id])
+  updatedBy User?  @relation("HrPerformanceCompetencyUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  evaluation_details HrPerformanceEvaluationDetails[]
+
+  @@index([department_group])
+  @@index([category])
+  @@index([title])
+}
+
+model HrPerformanceEvaluationDetails {
+  id              String  @id @default(uuid()) @db.Uuid
+  evaluation_id   String  @db.Uuid
+  competency_id   String  @db.Uuid
+  rating          String
+  remarks         String
+  is_active       Boolean @default(true)
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
+
+  employee_evaluation      HrEmployeeEvaluation @relation(fields: [evaluation_id], references: [id], onDelete: Cascade)
+  performance_competency   HrPerformanceCompetency @relation(fields: [competency_id], references: [id])
+
+  @@index([evaluation_id])
+  @@index([competency_id])
 }
 
 ////////////////////////////////////////
