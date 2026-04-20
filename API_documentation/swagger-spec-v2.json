@@ -3926,6 +3926,45 @@
         ]
       }
     },
+    "/v2/hris/performance-competency/{competencyId}": {
+      "get": {
+        "operationId": "PerformanceCompetencyController_getCompetency_v2",
+        "parameters": [
+          {
+            "name": "competencyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Performance Competency"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single Performance Competency",
+        "tags": [
+          "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",

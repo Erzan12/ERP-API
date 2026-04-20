@@ -53,4 +53,18 @@ export class PerformanceCompetencyController {
             dto,
         )
     }
+
+    @Get('performance-competency/:competencyId')
+    @ApiOperation({ summary: 'Get a single Performance Competency' })
+    @ApiPatchResponse('Here is the Performance Competency')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getCompetency(
+        @SessionUser() user: RequestUser,
+        @Param('competencyId', new ParseUUIDPipe()) competencyId: string,
+    ) {
+        return this.performanceCompetencyService.getCompetency(
+            user,
+            competencyId
+        )
+    }
 }
