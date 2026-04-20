@@ -823,7 +823,6 @@ model HrPerformanceCompetency {
   title               String
   description         String
   highest_score_limit Int?
-  performanceRating   PerformanceRating?
   is_active           Boolean @default(true)
 
   created_by String? @db.Uuid
@@ -845,7 +844,7 @@ model HrPerformanceEvaluationDetails {
   id              String  @id @default(uuid()) @db.Uuid
   evaluation_id   String  @db.Uuid
   competency_id   String  @db.Uuid
-  rating          String
+  rating          PerformanceRating
   remarks         String
   is_active       Boolean @default(true)
   created_at  DateTime     @default(now())
