@@ -4440,7 +4440,7 @@
         ]
       }
     },
-    "/v2/corporate-services/performance-evaluation/my-evalations": {
+    "/v2/employee-dashboard/performance-evaluation/my-evaluations": {
       "get": {
         "operationId": "PerformanceEvaluationController_getMyEvaluations_v2",
         "parameters": [],
@@ -4466,11 +4466,11 @@
         },
         "summary": "List of current users personal evaluation",
         "tags": [
-          "Corporate Services - Performance Evaluation"
+          "Performance Evaluation"
         ]
       }
     },
-    "/v2/corporate-services/performance-evaluation/to-be-evaluated": {
+    "/v2/employee-dashboard/performance-evaluation/to-be-evaluated": {
       "get": {
         "operationId": "PerformanceEvaluationController_getToBeEvaluated_v2",
         "parameters": [],
@@ -4496,7 +4496,7 @@
         },
         "summary": "List of evaluations added to this employee/user",
         "tags": [
-          "Corporate Services - Performance Evaluation"
+          "Performance Evaluation"
         ]
       }
     }
