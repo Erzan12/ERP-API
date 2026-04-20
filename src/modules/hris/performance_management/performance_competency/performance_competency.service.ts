@@ -38,6 +38,36 @@ export class PerformanceCompetencyService {
         }
     }
 
+    async getCompetency(user: RequestUser, competencyId: string ) {
+
+        // Authorization Check
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: { user_roles: true, employee: true }
+        });
+
+        if (!requestUser || !requestUser.employee) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        const competency = await this.prisma.hrPerformanceCompetency.findUnique({
+            where: { id: competencyId }
+        })
+
+        return {
+            status: 'success',
+            message: 'Here is the Performance Comptency',
+            competency
+        }
+    }
+
     async createCompetencies(user: RequestUser, dto: CreatePerformanceCompetencyDto) {
         const { department_group, sea_category, land_category, title, description, highest_score_limit, performanceRating } = dto;
 
