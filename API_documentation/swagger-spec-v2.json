@@ -5336,6 +5336,20 @@
             "example": "PK uuid of employment status",
             "description": "The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated"
           },
+          "employment_type": {
+            "type": "string",
+            "enum": [
+              "full_time",
+              "part_time"
+            ]
+          },
+          "employee_type": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ]
+          },
           "monthly_equivalent_salary": {
             "type": "number",
             "example": 21000,
@@ -5479,6 +5493,20 @@
             "type": "string",
             "example": "PK uuid of employment status",
             "description": "The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated"
+          },
+          "employment_type": {
+            "type": "string",
+            "enum": [
+              "full_time",
+              "part_time"
+            ]
+          },
+          "employee_type": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ]
           },
           "monthly_equivalent_salary": {
             "type": "number",

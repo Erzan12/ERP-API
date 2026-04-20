@@ -389,7 +389,8 @@ export class RegularizationReviewsService {
                         { select: 
                             { 
                                 id: true, 
-                                name: true 
+                                name: true,
+                                abbreviation: true,
                             }
                         }, 
                         position: 
