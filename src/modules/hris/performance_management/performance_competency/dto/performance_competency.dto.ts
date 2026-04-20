@@ -63,24 +63,10 @@ export class CreatePerformanceCompetencyDto {
     @IsInt()
     @IsOptional()
     @ApiProperty({
-        example: 'Rate from 1 to 5, 5 is highest 1 is lowest',
-        description: 'Highest rate of this performance competency'
+        example: 'Highest rate of this performance competency from 1-5',
+        description: 'Highest rate of this performance competency from 1-5'
     })
     highest_score_limit?: number;
-
-    @IsOptional()
-    @IsNotEmpty()
-    @IsEnum(PerformanceRating, {
-        message: 'Valid inputs are: unsatisfactory, needs_improvement, meets_expectations, exceed_expectations, exceptional'
-        // message: 'If selected Land based group valid inputs are: rank_and_file and managerial_and_supervisory. If selected Sea based group valid inputs are: all_ranks, all_officers and top_2_master_chief_engineer.'
-    })
-    @Type(() => String)
-    @ApiProperty({
-        enum: PerformanceRating,
-        example: PerformanceRating.exceptional,
-        description: 'Highest rate of this performance competence'
-    })
-    performanceRating?: PerformanceRating;
 }
 
 export class UpdatePerformanceCompetencyDto {
@@ -146,17 +132,4 @@ export class UpdatePerformanceCompetencyDto {
         description: 'Highest rate of this performance competency'
     })
     highest_score_limit?: number;
-
-    @IsOptional()
-    @IsEnum(PerformanceRating, {
-        message: 'Valid inputs are: unsatisfactory, needs_improvement, meets_expectations, exceed_expectations, exceptional'
-        // message: 'If selected Land based group valid inputs are: rank_and_file and managerial_and_supervisory. If selected Sea based group valid inputs are: all_ranks, all_officers and top_2_master_chief_engineer.'
-    })
-    @Type(() => String)
-    @ApiProperty({
-        enum: PerformanceRating,
-        example: PerformanceRating.exceptional,
-        description: 'Highest rate of this performance competence'
-    })
-    performanceRating?: PerformanceRating;
 }
