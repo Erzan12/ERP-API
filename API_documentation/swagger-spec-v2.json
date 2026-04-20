@@ -4499,6 +4499,55 @@
           "Performance Evaluation"
         ]
       }
+    },
+    "/v2/employee-dashboard/performance-evaluation/to-be-evaluated/{evaluationId}/submit": {
+      "post": {
+        "operationId": "PerformanceEvaluationController_submitEvaluation_v2",
+        "parameters": [
+          {
+            "name": "evaluationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitEvaluationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee Performance Evaluation submitted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Submit Employee Performance Evaluation",
+        "tags": [
+          "Performance Evaluation"
+        ]
+      }
     }
   },
   "info": {
@@ -5922,6 +5971,16 @@
             "example": "third_month_evaluation",
             "description": "The evaluation stage of this employee"
           },
+          "type_of_evaluation": {
+            "type": "string",
+            "enum": [
+              "for_regularization",
+              "for_appraisal",
+              "for_promotion"
+            ],
+            "example": "for_regularization",
+            "description": "The type of evaluation of this employee"
+          },
           "probation_date": {
             "type": "string",
             "example": "2026-10-04",
@@ -5937,6 +5996,7 @@
           "employee_id",
           "evaluator_id",
           "stage",
+          "type_of_evaluation",
           "probation_date",
           "regularization_date"
         ]
@@ -5980,28 +6040,15 @@
           },
           "highest_score_limit": {
             "type": "number",
-            "example": "Rate from 1 to 5, 5 is highest 1 is lowest",
-            "description": "Highest rate of this performance competency"
-          },
-          "performanceRating": {
-            "type": "string",
-            "enum": [
-              "unsatisfactory",
-              "needs_improvement",
-              "meets_expectations",
-              "exceed_expectations",
-              "exceptional"
-            ],
-            "example": "exceptional",
-            "description": "Highest rate of this performance competence"
+            "example": "Highest rate of this performance competency from 1-5",
+            "description": "Highest rate of this performance competency from 1-5"
           }
         },
         "required": [
           "department_group",
           "title",
           "description",
-          "highest_score_limit",
-          "performanceRating"
+          "highest_score_limit"
         ]
       },
       "UpdatePerformanceCompetencyDto": {
@@ -6045,26 +6092,13 @@
             "type": "number",
             "example": "Rate from 1 to 5, 5 is highest 1 is lowest",
             "description": "Highest rate of this performance competency"
-          },
-          "performanceRating": {
-            "type": "string",
-            "enum": [
-              "unsatisfactory",
-              "needs_improvement",
-              "meets_expectations",
-              "exceed_expectations",
-              "exceptional"
-            ],
-            "example": "exceptional",
-            "description": "Highest rate of this performance competence"
           }
         },
         "required": [
           "department_group",
           "title",
           "description",
-          "highest_score_limit",
-          "performanceRating"
+          "highest_score_limit"
         ]
       },
       "CreatePermissionTemplateDto": {
@@ -6184,6 +6218,84 @@
         "required": [
           "userId",
           "rolePermissionIds"
+        ]
+      },
+      "EvaluationDetailDto": {
+        "type": "object",
+        "properties": {
+          "competency_id": {
+            "type": "string",
+            "example": "uuid-1",
+            "description": "The competency ID"
+          },
+          "rating": {
+            "type": "string",
+            "enum": [
+              "unsatisfactory",
+              "needs_improvement",
+              "meets_expectations",
+              "exceed_expectations",
+              "exceptional"
+            ],
+            "example": "meets_expectations",
+            "description": "The score for the competency"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Doing well",
+            "description": "Evaluator's remarks for this competency"
+          }
+        },
+        "required": [
+          "competency_id",
+          "rating",
+          "remarks"
+        ]
+      },
+      "SubmitEvaluationDto": {
+        "type": "object",
+        "properties": {
+          "details": {
+            "description": "List of competency evaluations",
+            "example": [
+              {
+                "competency_id": "uuid-1",
+                "rating": "meets_expectations",
+                "remarks": "Doing well"
+              },
+              {
+                "competency_id": "uuid-2",
+                "rating": "exceptional",
+                "remarks": "Exceeded targets"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EvaluationDetailDto"
+            }
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "for_reevaluation",
+              "for_regularization",
+              "for_rehire",
+              "for_promotion",
+              "for_dismissal"
+            ],
+            "example": "for_regularization",
+            "description": "Final evaluation decision"
+          },
+          "comments": {
+            "type": "string",
+            "example": "Overall strong performance",
+            "description": "Overall evaluator comments"
+          }
+        },
+        "required": [
+          "details",
+          "decision",
+          "comments"
         ]
       }
     }
