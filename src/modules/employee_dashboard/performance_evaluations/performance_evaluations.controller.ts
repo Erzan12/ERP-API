@@ -7,12 +7,12 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { Can } from 'src/utils/decorators/can.decorator';
 
-@ApiTags('Corporate Services - Performance Evaluation')
-@Controller({path: 'corporate-services', version: '2'})
+@ApiTags('Performance Evaluation')
+@Controller({path: 'employee-dashboard', version: '2'})
 export class PerformanceEvaluationController {
     constructor (private readonly performanceEvaluationService: PerformanceEvaluationService) {}
 
-    @Get('performance-evaluation/my-evalations')
+    @Get('performance-evaluation/my-evaluations')
     @ApiOperation({ summary: 'List of current users personal evaluation' })
     @ApiGetResponse('List of my evaluations')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
