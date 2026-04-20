@@ -3458,7 +3458,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Update a current company information",
+        "summary": "Update a current applicants information",
         "tags": [
           "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
@@ -3871,6 +3871,95 @@
           }
         },
         "summary": "Create a Performance Competency",
+        "tags": [
+          "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      }
+    },
+    "/v2/hris/performance-compentency/{competencyId}": {
+      "put": {
+        "operationId": "PerformanceCompetencyController_updateCompetency_v2",
+        "parameters": [
+          {
+            "name": "competencyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Performance Competency",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePerformanceCompetencyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Performance Competency updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current Performance Competency Information",
+        "tags": [
+          "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      }
+    },
+    "/v2/hris/performance-competency/{competencyId}": {
+      "get": {
+        "operationId": "PerformanceCompetencyController_getCompetency_v2",
+        "parameters": [
+          {
+            "name": "competencyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Performance Competency"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single Performance Competency",
         "tags": [
           "Human Resources - Performance Management (Performance Competencies)"
         ]
@@ -4351,7 +4440,7 @@
         ]
       }
     },
-    "/v2/corporate-services/performance-evaluation/my-evalations": {
+    "/v2/employee-dashboard/performance-evaluation/my-evaluations": {
       "get": {
         "operationId": "PerformanceEvaluationController_getMyEvaluations_v2",
         "parameters": [],
@@ -4377,11 +4466,11 @@
         },
         "summary": "List of current users personal evaluation",
         "tags": [
-          "Corporate Services - Performance Evaluation"
+          "Performance Evaluation"
         ]
       }
     },
-    "/v2/corporate-services/performance-evaluation/to-be-evaluated": {
+    "/v2/employee-dashboard/performance-evaluation/to-be-evaluated": {
       "get": {
         "operationId": "PerformanceEvaluationController_getToBeEvaluated_v2",
         "parameters": [],
@@ -4407,7 +4496,56 @@
         },
         "summary": "List of evaluations added to this employee/user",
         "tags": [
-          "Corporate Services - Performance Evaluation"
+          "Performance Evaluation"
+        ]
+      }
+    },
+    "/v2/employee-dashboard/performance-evaluation/to-be-evaluated/{evaluationId}/submit": {
+      "post": {
+        "operationId": "PerformanceEvaluationController_submitEvaluation_v2",
+        "parameters": [
+          {
+            "name": "evaluationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitEvaluationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee Performance Evaluation submitted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Submit Employee Performance Evaluation",
+        "tags": [
+          "Performance Evaluation"
         ]
       }
     }
@@ -5198,6 +5336,20 @@
             "example": "PK uuid of employment status",
             "description": "The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated"
           },
+          "employment_type": {
+            "type": "string",
+            "enum": [
+              "full_time",
+              "part_time"
+            ]
+          },
+          "employee_type": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ]
+          },
           "monthly_equivalent_salary": {
             "type": "number",
             "example": 21000,
@@ -5341,6 +5493,20 @@
             "type": "string",
             "example": "PK uuid of employment status",
             "description": "The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated"
+          },
+          "employment_type": {
+            "type": "string",
+            "enum": [
+              "full_time",
+              "part_time"
+            ]
+          },
+          "employee_type": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ]
           },
           "monthly_equivalent_salary": {
             "type": "number",
@@ -5833,6 +5999,16 @@
             "example": "third_month_evaluation",
             "description": "The evaluation stage of this employee"
           },
+          "type_of_evaluation": {
+            "type": "string",
+            "enum": [
+              "for_regularization",
+              "for_appraisal",
+              "for_promotion"
+            ],
+            "example": "for_regularization",
+            "description": "The type of evaluation of this employee"
+          },
           "probation_date": {
             "type": "string",
             "example": "2026-10-04",
@@ -5848,6 +6024,7 @@
           "employee_id",
           "evaluator_id",
           "stage",
+          "type_of_evaluation",
           "probation_date",
           "regularization_date"
         ]
@@ -5891,28 +6068,65 @@
           },
           "highest_score_limit": {
             "type": "number",
-            "example": "Rate from 1 to 5, 5 is highest 1 is lowest",
-            "description": "Highest rate of this performance competency"
-          },
-          "performanceRating": {
-            "type": "string",
-            "enum": [
-              "unsatisfactory",
-              "needs_improvement",
-              "meets_expectations",
-              "exceed_expectations",
-              "exceptional"
-            ],
-            "example": "exceptional",
-            "description": "Highest rate of this performance competence"
+            "example": "Highest rate of this performance competency from 1-5",
+            "description": "Highest rate of this performance competency from 1-5"
           }
         },
         "required": [
           "department_group",
           "title",
           "description",
-          "highest_score_limit",
-          "performanceRating"
+          "highest_score_limit"
+        ]
+      },
+      "UpdatePerformanceCompetencyDto": {
+        "type": "object",
+        "properties": {
+          "department_group": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ],
+            "example": "land_based",
+            "description": "The deparment group of the employee"
+          },
+          "sea_category": {
+            "type": "string",
+            "enum": [
+              "all_ranks",
+              "all_officers",
+              "top_2_master_chief_engineer"
+            ]
+          },
+          "land_category": {
+            "type": "string",
+            "enum": [
+              "rank_and_file",
+              "managerial_and_supervisory"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "example": "Name or Title of the performance competency",
+            "description": "The name of the performance competency"
+          },
+          "description": {
+            "type": "string",
+            "example": "Detail or description of this performance competency",
+            "description": "Add description for this performance competence"
+          },
+          "highest_score_limit": {
+            "type": "number",
+            "example": "Rate from 1 to 5, 5 is highest 1 is lowest",
+            "description": "Highest rate of this performance competency"
+          }
+        },
+        "required": [
+          "department_group",
+          "title",
+          "description",
+          "highest_score_limit"
         ]
       },
       "CreatePermissionTemplateDto": {
@@ -6032,6 +6246,84 @@
         "required": [
           "userId",
           "rolePermissionIds"
+        ]
+      },
+      "EvaluationDetailDto": {
+        "type": "object",
+        "properties": {
+          "competency_id": {
+            "type": "string",
+            "example": "uuid-1",
+            "description": "The competency ID"
+          },
+          "rating": {
+            "type": "string",
+            "enum": [
+              "unsatisfactory",
+              "needs_improvement",
+              "meets_expectations",
+              "exceed_expectations",
+              "exceptional"
+            ],
+            "example": "meets_expectations",
+            "description": "The score for the competency"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Doing well",
+            "description": "Evaluator's remarks for this competency"
+          }
+        },
+        "required": [
+          "competency_id",
+          "rating",
+          "remarks"
+        ]
+      },
+      "SubmitEvaluationDto": {
+        "type": "object",
+        "properties": {
+          "details": {
+            "description": "List of competency evaluations",
+            "example": [
+              {
+                "competency_id": "uuid-1",
+                "rating": "meets_expectations",
+                "remarks": "Doing well"
+              },
+              {
+                "competency_id": "uuid-2",
+                "rating": "exceptional",
+                "remarks": "Exceeded targets"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/EvaluationDetailDto"
+            }
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "for_reevaluation",
+              "for_regularization",
+              "for_rehire",
+              "for_promotion",
+              "for_dismissal"
+            ],
+            "example": "for_regularization",
+            "description": "Final evaluation decision"
+          },
+          "comments": {
+            "type": "string",
+            "example": "Overall strong performance",
+            "description": "Overall evaluator comments"
+          }
+        },
+        "required": [
+          "details",
+          "decision",
+          "comments"
         ]
       }
     }

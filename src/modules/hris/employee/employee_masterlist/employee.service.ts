@@ -27,12 +27,12 @@ export class EmployeeMasterlistService {
   constructor(private prisma: PrismaService) {}
 
   async createEmployee(
-    createEmployeeWithDetails: CreateEmployeeWithDetailsDto,
+    dto: CreateEmployeeWithDetailsDto,
     user: RequestUser,
   ) {
     return await this.prisma.$transaction(async (prisma) => {
       try {
-        const { gender, civil_status } = createEmployeeWithDetails.person;
+        const { gender, civil_status } = dto.person;
 
         if (!Object.values(Gender).includes(gender)) {
           throw new ForbiddenException('Error! Please use male or female');
@@ -45,20 +45,20 @@ export class EmployeeMasterlistService {
         }
 
         const company = await prisma.company.findUnique({
-          where: { id: createEmployeeWithDetails.employee.company_id },
+          where: { id: dto.employee.company_id },
         });
         if (!company) throw new BadRequestException('Invalid company_id');
 
         const department = await prisma.department.findUnique({
-          where: { id: createEmployeeWithDetails.employee.department_id },
+          where: { id: dto.employee.department_id },
         });
         if (!department) throw new BadRequestException('Invalid department_id');
 
-        const companyId = createEmployeeWithDetails.employee.company_id;
+        const companyId = dto.employee.company_id;
 
         const existingPerson = await prisma.person.findFirst({
           where: {
-            email: createEmployeeWithDetails.person.email,
+            email: dto.person.email,
           },
         });
 
@@ -67,7 +67,7 @@ export class EmployeeMasterlistService {
           const existingEmployee = await prisma.employee.findFirst({
             where: {
               person_id: existingPerson.id,
-              company_id: createEmployeeWithDetails.employee.company_id,
+              company_id: dto.employee.company_id,
             },
           });
 
@@ -83,19 +83,19 @@ export class EmployeeMasterlistService {
           existingPerson ??
           (await prisma.person.create({
             data: {
-              first_name: createEmployeeWithDetails.person.first_name,
-              middle_name: createEmployeeWithDetails.person.middle_name,
-              last_name: createEmployeeWithDetails.person.last_name,
+              first_name: dto.person.first_name,
+              middle_name: dto.person.middle_name,
+              last_name: dto.person.last_name,
               date_of_birth: new Date(
-                createEmployeeWithDetails.person.date_of_birth,
+                dto.person.date_of_birth,
               ),
               gender,
               civil_status,
-              email: createEmployeeWithDetails.person.email,
+              email: dto.person.email,
             },
           }));
 
-        const hireDate = new Date(createEmployeeWithDetails.employee.hire_date);
+        const hireDate = new Date(dto.employee.hire_date);
         const generatedEmpID = await this.createUniqueEmpID(
           prisma,
           companyId,
@@ -121,21 +121,25 @@ export class EmployeeMasterlistService {
             person_id: person.id,
             employee_id: generatedEmpID,
             company_id: companyId,
-            department_id: createEmployeeWithDetails.employee.department_id,
-            position_id: createEmployeeWithDetails.employee.position_id,
-            division_id: createEmployeeWithDetails.employee.division_id,
-            salary: createEmployeeWithDetails.employee.salary,
+            department_id: dto.employee.department_id,
+            position_id: dto.employee.position_id,
+            division_id: dto.employee.division_id,
+            salary: dto.employee.salary,
             hire_date: hireDate,
-            pay_frequency: createEmployeeWithDetails.employee.pay_frequency,
+            pay_frequency: dto.employee.pay_frequency,
             employment_status_id:
-              createEmployeeWithDetails.employee.employment_status_id,
+              dto.employee.employment_status_id,
+            employment_type:
+              dto.employee.employment_type,
+            employee_type: 
+              dto.employee.employee_type,
             monthly_equivalent_salary:
-              createEmployeeWithDetails.employee.monthly_equivalent_salary,
-            archive_date: createEmployeeWithDetails.employee.archive_date,
+              dto.employee.monthly_equivalent_salary,
+            archive_date: dto.employee.archive_date,
             other_employee_data:
-              createEmployeeWithDetails.employee.other_employee_data,
+              dto.employee.other_employee_data,
             corporate_rank_id:
-              createEmployeeWithDetails.employee.corporate_rank_id,
+              dto.employee.corporate_rank_id,
             created_by: user.id ?? null,
           },
         });
@@ -407,6 +411,8 @@ export class EmployeeMasterlistService {
               label: true,
             },
           },
+          employment_type: true,
+          employee_type: true,
           hire_date: true,
           createdBy: {
             select: {
@@ -497,14 +503,7 @@ export class EmployeeMasterlistService {
             name: true,
           }
         },
-        person: {
-          select: {
-            id: true,
-            first_name: true,
-            middle_name: true,
-            last_name: true
-          }
-        },
+        person: true,
         employee_id: true,
         department: {
           select: {
