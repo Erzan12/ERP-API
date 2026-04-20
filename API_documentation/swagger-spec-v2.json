@@ -3458,7 +3458,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Update a current company information",
+        "summary": "Update a current applicants information",
         "tags": [
           "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
