@@ -2,7 +2,8 @@ import { IsUUID, IsEnum, IsOptional, IsDateString, IsNotEmpty, IsString } from '
 
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { EvaluationStage } from 'src/utils/decorators/global.enums.decorator';
+// import { EvaluationStage } from 'src/utils/decorators/global.enums.decorator';
+import { TypeOfEvaluation, EvaluationStage } from '@prisma/client';
 
 export class CreateEvaluationDto {
   @IsUUID()
@@ -23,18 +24,27 @@ export class CreateEvaluationDto {
   })
   evaluator_id: string;
 
-  @IsOptional()
-  @IsString()
   @IsEnum(EvaluationStage, {
       message: 'Evaluation Stage must be third_month_evaluation or fifth_month_evaluation'
   })
   @Type(() => String)
   @ApiProperty({
       enum: EvaluationStage,
-      example: EvaluationStage.THIRD_MONTH_EVALUATION,
+      example: EvaluationStage.third_month_evaluation,
       description: 'The evaluation stage of this employee'
   })
   stage: EvaluationStage;
+
+  @IsEnum(TypeOfEvaluation, {
+      message: 'Evaluation Stage must be third_month_evaluation or fifth_month_evaluation'
+  })
+  @Type(() => String)
+  @ApiProperty({
+      enum: TypeOfEvaluation,
+      example: TypeOfEvaluation.for_regularization,
+      description: 'The type of evaluation of this employee'
+  })
+  type_of_evaluation: TypeOfEvaluation;
 
   @IsNotEmpty()
   @IsDateString()
