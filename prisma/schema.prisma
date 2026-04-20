@@ -99,6 +99,20 @@ enum EvaluationStatus {
   for_acknowledgment
 }
 
+enum TypeOfEvaluation {
+  for_regularization
+  for_appraisal
+  for_promotion
+}
+
+enum EvaluationDecision {
+  for_reevaluation
+  for_regularization
+  for_rehire
+  for_promotion
+  for_dismissal
+}
+
 enum PerformanceRating {
   unsatisfactory
   needs_improvement
@@ -536,8 +550,11 @@ model HrEmployeeEvaluation {
   is_active       Boolean  @default(true)
 
   overall_rating  Int?
-  decision        String?
+
+  decision        EvaluationDecision?
   comments        String?
+  type_of_evaluation  TypeOfEvaluation
+
   response        String?
   evaluated_on    DateTime?
   acknowledged_on DateTime?
