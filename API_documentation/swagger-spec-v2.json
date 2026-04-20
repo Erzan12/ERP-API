@@ -3876,6 +3876,56 @@
         ]
       }
     },
+    "/v2/hris/performance-compentency/{competencyId}": {
+      "put": {
+        "operationId": "PerformanceCompetencyController_updateCompetency_v2",
+        "parameters": [
+          {
+            "name": "competencyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Performance Competency",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePerformanceCompetencyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Performance Competency updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current Performance Competency Information",
+        "tags": [
+          "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -5853,6 +5903,69 @@
         ]
       },
       "CreatePerformanceCompetencyDto": {
+        "type": "object",
+        "properties": {
+          "department_group": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ],
+            "example": "land_based",
+            "description": "The deparment group of the employee"
+          },
+          "sea_category": {
+            "type": "string",
+            "enum": [
+              "all_ranks",
+              "all_officers",
+              "top_2_master_chief_engineer"
+            ]
+          },
+          "land_category": {
+            "type": "string",
+            "enum": [
+              "rank_and_file",
+              "managerial_and_supervisory"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "example": "Name or Title of the performance competency",
+            "description": "The name of the performance competency"
+          },
+          "description": {
+            "type": "string",
+            "example": "Detail or description of this performance competency",
+            "description": "Add description for this performance competence"
+          },
+          "highest_score_limit": {
+            "type": "number",
+            "example": "Rate from 1 to 5, 5 is highest 1 is lowest",
+            "description": "Highest rate of this performance competency"
+          },
+          "performanceRating": {
+            "type": "string",
+            "enum": [
+              "unsatisfactory",
+              "needs_improvement",
+              "meets_expectations",
+              "exceed_expectations",
+              "exceptional"
+            ],
+            "example": "exceptional",
+            "description": "Highest rate of this performance competence"
+          }
+        },
+        "required": [
+          "department_group",
+          "title",
+          "description",
+          "highest_score_limit",
+          "performanceRating"
+        ]
+      },
+      "UpdatePerformanceCompetencyDto": {
         "type": "object",
         "properties": {
           "department_group": {
