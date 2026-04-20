@@ -28,6 +28,7 @@ export class CreatePerformanceCompetencyDto {
     @IsEnum(SeaBasedCategory, {
         message: 'Valid sea categories: all_ranks, all_officers, top_2_master_chief_engineer'
     })
+    @Type(() => String)
     @ApiProperty({
         enum: SeaBasedCategory,
         required: false
@@ -38,6 +39,7 @@ export class CreatePerformanceCompetencyDto {
     @IsEnum(LandBasedCategory, {
         message: 'Valid land categories: rank_and_file, managerial_and_supervisory'
     })
+    @Type(() => String)
     @ApiProperty({
         enum: LandBasedCategory,
         required: false
