@@ -69,7 +69,7 @@ export class PerformanceCompetencyService {
     }
 
     async createCompetencies(user: RequestUser, dto: CreatePerformanceCompetencyDto) {
-        const { department_group, sea_category, land_category, title, description, highest_score_limit, performanceRating } = dto;
+        const { department_group, sea_category, land_category, title, description, highest_score_limit } = dto;
 
         // Authorization Check
         const requestUser = await this.prisma.user.findUnique({
@@ -96,7 +96,6 @@ export class PerformanceCompetencyService {
                 title: title,
                 description: description,
                 highest_score_limit: highest_score_limit,
-                performanceRating: performanceRating,
             }
         })
 
@@ -150,7 +149,6 @@ export class PerformanceCompetencyService {
                 title: dto.title ?? undefined,
                 description: dto.description ?? undefined,
                 highest_score_limit: dto.highest_score_limit ?? undefined,
-                performanceRating: dto.performanceRating ?? undefined,
             },
         });
 
