@@ -15,7 +15,7 @@ export class PerformanceCompetencyController {
 
     @Get('performance-competency')
     @ApiOperation({ summary: 'List of all Performance Competencies' })
-    @ApiGetResponse('List of Performance Comptency')
+    @ApiGetResponse('List of Performance Comptencies')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getCompetencies(
         @SessionUser() user: RequestUser,
