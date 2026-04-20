@@ -266,6 +266,7 @@ export class RegularizationReviewsService {
                 employee_id: dto.employee_id,
                 evaluator_id: dto.evaluator_id,
                 stage: dto.stage,
+                type_of_evaluation: dto.type_of_evaluation,
                 probation_date: new Date(dto.probation_date),
                 regularization_date: new Date(dto.regularization_date),
                 created_by: user.id,
