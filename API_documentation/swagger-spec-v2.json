@@ -4500,6 +4500,36 @@
         ]
       }
     },
+    "/v2/employee-dashboard/performance-evaluation/done-evaluated": {
+      "get": {
+        "operationId": "PerformanceEvaluationController_getDoneEvaluated_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of done/finished evaluations"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of evaluations completed by this evaluator",
+        "tags": [
+          "Performance Evaluation"
+        ]
+      }
+    },
     "/v2/employee-dashboard/performance-evaluation/to-be-evaluated/{evaluationId}/submit": {
       "post": {
         "operationId": "PerformanceEvaluationController_submitEvaluation_v2",
