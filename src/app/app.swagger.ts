@@ -11,9 +11,10 @@ import { HrV2Module } from 'src/modules/hris/hrV2.module';
 import { ManagerV2Module } from 'src/modules/manager/managerV2.module';
 import { MasterV2Module } from 'src/modules/master/masterV2.module';
 import { setupUserSwagger } from './user-management/user-management.swagger';
-import { PerformanceEvaluationModule } from 'src/modules/employee_dashboard/performance_evaluations/performance_evalautions.module';
+
 import { AuthModule } from 'src/auth/auth.module';
 import { setupEmployeeDashboardSwagger } from './employee-dashboard/employee-dashboard.swagger';
+import { EmployeeDashboardModule } from 'src/modules/employee_dashboard/employee_dashboard.module';
 
 function setupAppSwagger(app: INestApplication): void {
   // All APIs docs
@@ -45,7 +46,7 @@ function setupAppSwagger(app: INestApplication): void {
       HrV2Module,
       ManagerV2Module,
       MasterV2Module,
-      PerformanceEvaluationModule
+      EmployeeDashboardModule
     ],
   });
 
