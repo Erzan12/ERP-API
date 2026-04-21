@@ -105,7 +105,7 @@ export class ApplicantsController {
     type: UpdateApplicantDto,
     description: 'Payload to update career posting',
   })
-  @ApiOperation({ summary: 'Update a current company information' })
+  @ApiOperation({ summary: 'Update a current applicants information' })
   @ApiPatchResponse('Career Posting updated successfully')
   @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
   updateCareerPosting(

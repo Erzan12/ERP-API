@@ -99,6 +99,20 @@ enum EvaluationStatus {
   for_acknowledgment
 }
 
+enum TypeOfEvaluation {
+  for_regularization
+  for_appraisal
+  for_promotion
+}
+
+enum EvaluationDecision {
+  for_reevaluation
+  for_regularization
+  for_rehire
+  for_promotion
+  for_dismissal
+}
+
 enum PerformanceRating {
   unsatisfactory
   needs_improvement
@@ -536,8 +550,11 @@ model HrEmployeeEvaluation {
   is_active       Boolean  @default(true)
 
   overall_rating  Int?
-  decision        String?
+
+  decision        EvaluationDecision?
   comments        String?
+  type_of_evaluation  TypeOfEvaluation
+
   response        String?
   evaluated_on    DateTime?
   acknowledged_on DateTime?
@@ -823,7 +840,6 @@ model HrPerformanceCompetency {
   title               String
   description         String
   highest_score_limit Int?
-  performanceRating   PerformanceRating?
   is_active           Boolean @default(true)
 
   created_by String? @db.Uuid
@@ -845,7 +861,7 @@ model HrPerformanceEvaluationDetails {
   id              String  @id @default(uuid()) @db.Uuid
   evaluation_id   String  @db.Uuid
   competency_id   String  @db.Uuid
-  rating          String
+  rating          PerformanceRating
   remarks         String
   is_active       Boolean @default(true)
   created_at  DateTime     @default(now())

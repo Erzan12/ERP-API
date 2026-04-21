@@ -86,3 +86,11 @@ export enum EvaluationStageStatus {
   OVERDUE  = 'overdue',
   COMPLETE = 'complete'
 }
+
+export enum PerformanceRating {
+  UNSATISFACTORY = 'unsatisfactory',
+  NEEDS_IMPROVEMENT = 'needs_improvement',
+  MEETS_EXPECTATIONS = 'meets_expectations',
+  EXCEED_EXPECTATIONS = 'exceed_expectations',
+  EXCEPTIONAL = 'exceptional'
+}

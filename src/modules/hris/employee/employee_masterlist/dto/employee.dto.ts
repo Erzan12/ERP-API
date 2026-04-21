@@ -7,9 +7,12 @@ import {
   IsString,
   IsDefined,
   IsUUID,
+  IsEnum,
 } from 'class-validator';
 // import { Expose, Transform } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { EmployeeType, EmploymentType } from '@prisma/client';
+import { Type } from 'class-transformer';
 // import { BadRequestException } from '@nestjs/common';
 
 export class CreateEmployeeDto {
@@ -93,6 +96,28 @@ export class CreateEmployeeDto {
       'The status of employee if Probitionary, Regular, On Leave, Resigned, Terminated',
   })
   employment_status_id: string;
+
+  @IsOptional()
+  @IsEnum(EmploymentType, {
+      message: 'Valid employment type: full_time, part_time'
+  })
+  @Type(() => String)
+  @ApiProperty({
+      enum: EmploymentType,
+      required: false
+  })
+  employment_type?: EmploymentType;
+
+  @IsOptional()
+  @IsEnum(EmployeeType, {
+      message: 'Valid employment type: land_based, sea_based'
+  })
+  @Type(() => String)
+  @ApiProperty({
+      enum: EmployeeType,
+      required: false
+  })
+  employee_type?: EmployeeType;
 
   @IsInt()
   @IsNotEmpty()
