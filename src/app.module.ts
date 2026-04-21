@@ -23,7 +23,7 @@ import { AuthController } from './auth/auth.controller';
 import { UserManagementService } from './modules/manager/user_management/user_management.service';
 import { AuditService } from './modules/administrator/audit/audit.service';
 import { PositionService } from './modules/master/position/position.service';
-import { EmployeeService } from './modules/hris/employee_masterlist/employee.service';
+import { EmployeeService } from './modules/hris/employee/employee_masterlist/employee.service';
 import { CaslAbilityService } from './middleware/casl/casl.service';
 import { DepartmentService } from './modules/master/department/department.service';
 import { EmploymentStatusService } from './modules/master/employment_status/employment_status.service';

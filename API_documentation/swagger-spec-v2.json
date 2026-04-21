@@ -4912,7 +4912,7 @@
             "example": "land_based",
             "description": "The employee type of this career posting"
           },
-          "isPublished": {
+          "is_published": {
             "type": "boolean",
             "example": "true or false",
             "description": "true if want to published and false if unpublished"
@@ -4931,6 +4931,19 @@
             "example": "full_time",
             "description": "The employment type of this career posting"
           },
+          "status": {
+            "type": "string",
+            "enum": [
+              "all",
+              "draft",
+              "submitted",
+              "verified",
+              "approved",
+              "rejected"
+            ],
+            "example": "draft",
+            "description": "The status of this career posting"
+          },
           "user_location_id": {
             "type": "string",
             "example": "User Location PK UUID",
@@ -4943,9 +4956,10 @@
           "job_description",
           "department_id",
           "employee_type",
-          "isPublished",
+          "is_published",
           "is_active",
           "employment_type",
+          "status",
           "user_location_id"
         ]
       },
@@ -4999,6 +5013,7 @@
             "enum": [
               "applied",
               "screening",
+              "shortlisted",
               "for_interview",
               "accepted",
               "rejected",
@@ -5075,6 +5090,7 @@
             "enum": [
               "applied",
               "screening",
+              "shortlisted",
               "for_interview",
               "accepted",
               "rejected",
