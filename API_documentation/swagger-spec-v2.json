@@ -3703,6 +3703,163 @@
         ]
       }
     },
+    "/v2/hris/performance-competency": {
+      "get": {
+        "operationId": "PerformanceCompetencyController_getCompetencies_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of Performance Comptencies"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Performance Competencies",
+        "tags": [
+          "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      },
+      "post": {
+        "operationId": "PerformanceCompetencyController_createCompetency_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePerformanceCompetencyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Performance Competency created"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a Performance Competency",
+        "tags": [
+          "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      }
+    },
+    "/v2/hris/performance-compentency/{competencyId}": {
+      "put": {
+        "operationId": "PerformanceCompetencyController_updateCompetency_v2",
+        "parameters": [
+          {
+            "name": "competencyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Performance Competency",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePerformanceCompetencyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Performance Competency updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current Performance Competency Information",
+        "tags": [
+          "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      }
+    },
+    "/v2/hris/performance-competency/{competencyId}": {
+      "get": {
+        "operationId": "PerformanceCompetencyController_getCompetency_v2",
+        "parameters": [
+          {
+            "name": "competencyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Performance Competency"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single Performance Competency",
+        "tags": [
+          "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -5569,6 +5726,106 @@
           "type_of_evaluation",
           "probation_date",
           "regularization_date"
+        ]
+      },
+      "CreatePerformanceCompetencyDto": {
+        "type": "object",
+        "properties": {
+          "department_group": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ],
+            "example": "land_based",
+            "description": "The deparment group of the employee"
+          },
+          "sea_category": {
+            "type": "string",
+            "enum": [
+              "all_ranks",
+              "all_officers",
+              "top_2_master_chief_engineer"
+            ]
+          },
+          "land_category": {
+            "type": "string",
+            "enum": [
+              "rank_and_file",
+              "managerial_and_supervisory"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "example": "Name or Title of the performance competency",
+            "description": "The name of the performance competency"
+          },
+          "description": {
+            "type": "string",
+            "example": "Detail or description of this performance competency",
+            "description": "Add description for this performance competence"
+          },
+          "highest_score_limit": {
+            "type": "number",
+            "example": "Highest rate of this performance competency from 1-5",
+            "description": "Highest rate of this performance competency from 1-5"
+          }
+        },
+        "required": [
+          "department_group",
+          "title",
+          "description",
+          "highest_score_limit"
+        ]
+      },
+      "UpdatePerformanceCompetencyDto": {
+        "type": "object",
+        "properties": {
+          "department_group": {
+            "type": "string",
+            "enum": [
+              "land_based",
+              "sea_based"
+            ],
+            "example": "land_based",
+            "description": "The deparment group of the employee"
+          },
+          "sea_category": {
+            "type": "string",
+            "enum": [
+              "all_ranks",
+              "all_officers",
+              "top_2_master_chief_engineer"
+            ]
+          },
+          "land_category": {
+            "type": "string",
+            "enum": [
+              "rank_and_file",
+              "managerial_and_supervisory"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "example": "Name or Title of the performance competency",
+            "description": "The name of the performance competency"
+          },
+          "description": {
+            "type": "string",
+            "example": "Detail or description of this performance competency",
+            "description": "Add description for this performance competence"
+          },
+          "highest_score_limit": {
+            "type": "number",
+            "example": "Rate from 1 to 5, 5 is highest 1 is lowest",
+            "description": "Highest rate of this performance competency"
+          }
+        },
+        "required": [
+          "department_group",
+          "title",
+          "description",
+          "highest_score_limit"
         ]
       },
       "CreatePermissionTemplateDto": {
