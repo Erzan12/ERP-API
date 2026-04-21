@@ -4578,6 +4578,55 @@
           "Performance Evaluation"
         ]
       }
+    },
+    "/v2/employee-dashboard/performance-evaluation/{evaluationId}": {
+      "put": {
+        "operationId": "PerformanceEvaluationController_acknowledgeEvaluation_v2",
+        "parameters": [
+          {
+            "name": "evaluationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcknowledgeEvaluationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employee acknowledge evaluation successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Employee to acknowledge evaluation",
+        "tags": [
+          "Performance Evaluation"
+        ]
+      }
     }
   },
   "info": {
@@ -6354,6 +6403,18 @@
           "details",
           "decision",
           "comments"
+        ]
+      },
+      "AcknowledgeEvaluationDto": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "string",
+            "example": "Employee response or message of appreciation"
+          }
+        },
+        "required": [
+          "response"
         ]
       }
     }
