@@ -3,12 +3,12 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AuthModule } from "src/auth/auth.module";
 import { PerformanceEvaluationModule } from "src/modules/employee_dashboard/performance_evaluations/performance_evalautions.module";
 
-export function setupPerformanceEvaluationSwagger(app: INestApplication): void {
+export function setupEmployeeDashboardSwagger(app: INestApplication): void {
     // build document for v2
     const optionsV2 = new DocumentBuilder()
-        .setTitle('Employee Dashboard API - Performance Evaluation')
+        .setTitle('Employee Dashboard API')
         .setDescription(
-            'API for Evaluators view side when evaluating employees',
+            'API for Employee Dashboard',
         )
         .setVersion('2.0')
         .addTag('Authentication')
@@ -18,13 +18,13 @@ export function setupPerformanceEvaluationSwagger(app: INestApplication): void {
         include: [PerformanceEvaluationModule, AuthModule],
     });
 
-    SwaggerModule.setup('docs/performance-evaluations/v2', app, documentV2)
+    SwaggerModule.setup('docs/employee-dashboard/v2', app, documentV2)
 
-    SwaggerModule.setup('docs/performance-evaluations', app, documentV2, {
+    SwaggerModule.setup('docs/employee-dashboard', app, documentV2, {
         explorer: true,
         swaggerOptions: {
             urls: [
-                { name: 'v2', url: '/docs/performance-evaluations/v2-json'},
+                { name: 'v2', url: '/docs/employee-dashboard/v2-json'},
             ],
             persistAuthorization: true,
             filter: true,
