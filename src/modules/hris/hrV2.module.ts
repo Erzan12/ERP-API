@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 import { EmployeeService } from './employee_masterlist/employee.service';
-import { EmployeeControllerV2 } from './employee_masterlist/employeeV2.controller';
+import { EmployeeControllerV2 } from './employee_masterlist/employee.controller';
 
 import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardControllerV2 } from './dashboard/dashboardV2.controller';
