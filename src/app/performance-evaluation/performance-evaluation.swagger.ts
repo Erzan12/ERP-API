@@ -1,12 +1,12 @@
 import { INestApplication } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AuthModule } from "src/auth/auth.module";
-import { PerformanceEvaluationModule } from "src/modules/corporate_services/performance_evaluations/performance_evalautions.module";
+import { PerformanceEvaluationModule } from "src/modules/employee_dashboard/performance_evaluations/performance_evalautions.module";
 
 export function setupPerformanceEvaluationSwagger(app: INestApplication): void {
     // build document for v2
     const optionsV2 = new DocumentBuilder()
-        .setTitle('Performance Evaluation API - Corporate Service')
+        .setTitle('Employee Dashboard API - Performance Evaluation')
         .setDescription(
             'API for Evaluators view side when evaluating employees',
         )
