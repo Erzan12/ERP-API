@@ -553,7 +553,7 @@ model HrEmployeeEvaluation {
 
   decision        EvaluationDecision?
   comments        String?
-  type_of_evaluation  TypeOfEvaluation
+  type_of_evaluation  TypeOfEvaluation?
 
   response        String?
   evaluated_on    DateTime?
