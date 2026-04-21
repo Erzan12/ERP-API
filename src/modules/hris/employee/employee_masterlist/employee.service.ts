@@ -4,13 +4,6 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 
-import {
-  CivilStatus,
-  Gender,
-} from '../../../utils/decorators/global.enums.decorator';
-
-import { RequestUser } from '../../../utils/types/request-user.interface';
-
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import {
   CreateEmployeeWithDetailsDto,
@@ -18,7 +11,8 @@ import {
 } from './dto/employee-person.dto';
 
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { CivilStatus, Gender, Prisma } from '@prisma/client';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @Injectable()
 export class EmployeeService {

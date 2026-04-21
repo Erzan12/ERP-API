@@ -8,10 +8,8 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import {
-  CivilStatus,
-  Gender,
-} from '../../../../utils/decorators/global.enums.decorator';
+import { CivilStatus, Gender } from '@prisma/client';
+
 
 export class CreatePersonDto {
   @IsString()
@@ -50,7 +48,7 @@ export class CreatePersonDto {
   @IsString()
   @ApiProperty({
     enum: Gender,
-    example: Gender.MALE,
+    example: Gender.male,
     description: 'Gender of the employee',
   })
   @IsEnum(Gender, { message: 'Gender must be male and female' })
@@ -59,7 +57,7 @@ export class CreatePersonDto {
   @Type(() => String)
   @ApiProperty({
     enum: CivilStatus,
-    example: CivilStatus.SINGLE,
+    example: CivilStatus.single,
     description: 'Civil Status of the employee',
   })
   @IsEnum(CivilStatus, {
