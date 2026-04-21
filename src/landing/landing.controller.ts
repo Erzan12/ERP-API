@@ -48,6 +48,13 @@ export class LandingController {
           status: 'Beta',
         },
         {
+          title: 'Performance Evaluation - Employee Dashboard',
+          slug: 'performance-evaluations',
+          swaggerLink: '/docs/performance-evaluations',
+          icon: '/public/icons/evaluator.png',
+          status: 'Beta',
+        },
+        {
           title: 'DB Query',
           slug: 'db-query',
           swaggerLink: '/docs/db-query',
