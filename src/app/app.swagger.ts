@@ -11,6 +11,7 @@ import { HrV2Module } from 'src/modules/hris/hrV2.module';
 import { ManagerV2Module } from 'src/modules/manager/managerV2.module';
 import { MasterV2Module } from 'src/modules/master/masterV2.module';
 import { setupUserSwagger } from './user-management/user-management.swagger';
+import { setupPerformanceEvaluationSwagger } from './employee-dashboard/employee-dashboard.swagger';
 
 function setupAppSwagger(app: INestApplication): void {
   // All APIs docs
@@ -74,6 +75,7 @@ function setupAppSwagger(app: INestApplication): void {
   setupManagerSwagger(app);
   setupMasterSwagger(app);
   setupUserSwagger(app);
+  setupPerformanceEvaluationSwagger(app);
 }
 
 export { setupAppSwagger };
