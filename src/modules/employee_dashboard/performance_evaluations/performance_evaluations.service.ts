@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { SubmitEvaluationDto } from './dto/performance_evaluation.dto';
+import { AcknowledgeEvaluationDto, SubmitEvaluationDto } from './dto/performance_evaluation.dto';
 import { Request } from 'express';
 
 @Injectable()
@@ -166,5 +166,51 @@ export class PerformanceEvaluationService {
                 },
             });
         });        
+    }
+
+    async acknowledgeEvaluation(user: RequestUser, evaluationId: string, dto: AcknowledgeEvaluationDto) {
+        // Authorization Check
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: { 
+                user_roles: true, 
+                employee: true,
+            }
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.id) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        const acknowledgeEvaluation = await this.prisma.hrEmployeeEvaluation.update({
+            where: { 
+                id: evaluationId, 
+                employee_id: requestUser.employee.id , 
+                evaluated_on: { not: null }, 
+                type_of_evaluation: { not: null },
+                overall_rating: { not: null }
+            },
+            data: {
+                response: dto.response,
+                acknowledged_on: new Date(),
+            }
+        })
+
+        if (!acknowledgeEvaluation) {
+            throw new NotFoundException('No evaluations done yet')
+        }
+
+        return {
+            status: 'success',
+            message: 'Evaluation successfully acknowledge',
+            acknowledgeEvaluation
+        }
     }
 }
