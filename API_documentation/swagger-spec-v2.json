@@ -3418,6 +3418,291 @@
         ]
       }
     },
+    "/v2/hris/regularization-reviews/for_regularization": {
+      "get": {
+        "operationId": "RegularizationReviewsController_getForRegularizaiton_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of for regularization employees"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all employees for regularization",
+        "tags": [
+          "Human Resources - Performance Management (Regularization Reviews)"
+        ]
+      }
+    },
+    "/v2/hris/regularization-reviews/status-count": {
+      "get": {
+        "operationId": "RegularizationReviewsController_getStatusCountActive_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all Employee Evaluation status count"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Employee Evalaution Status",
+        "tags": [
+          "Human Resources - Performance Management (Regularization Reviews)"
+        ]
+      }
+    },
+    "/v2/hris/regularization-reviews": {
+      "post": {
+        "operationId": "RegularizationReviewsController_createEvaluation_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEvaluationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Evaluation successfully created"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create an Employee Evaluation for the first 3rd and 5th month",
+        "tags": [
+          "Human Resources - Performance Management (Regularization Reviews)"
+        ]
+      },
+      "get": {
+        "operationId": "RegularizationReviewsController_getForEvaluation_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of evalauted employees"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of evaluated employees",
+        "tags": [
+          "Human Resources - Performance Management (Regularization Reviews)"
+        ]
+      }
+    },
+    "/v2/hris/regularization-reviews/{employeeId}": {
+      "get": {
+        "operationId": "RegularizationReviewsController_getEvaluations_v2",
+        "parameters": [
+          {
+            "name": "employeeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employee with evaluation"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get employee with evaluation",
+        "tags": [
+          "Human Resources - Performance Management (Regularization Reviews)"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -5232,6 +5517,58 @@
           "total_points",
           "recommendations",
           "ratings"
+        ]
+      },
+      "CreateEvaluationDto": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "PK UUID of employee",
+            "description": "UUID of the employee"
+          },
+          "evaluator_id": {
+            "type": "string",
+            "example": "PK UUID of evaluator employee",
+            "description": "UUID of the evaluator employee"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "third_month_evaluation",
+              "fifth_month_evaluation"
+            ],
+            "example": "third_month_evaluation",
+            "description": "The evaluation stage of this employee"
+          },
+          "type_of_evaluation": {
+            "type": "string",
+            "enum": [
+              "for_regularization",
+              "for_appraisal",
+              "for_promotion"
+            ],
+            "example": "for_regularization",
+            "description": "The type of evaluation of this employee"
+          },
+          "probation_date": {
+            "type": "string",
+            "example": "2026-10-04",
+            "description": "Start date of probation period"
+          },
+          "regularization_date": {
+            "type": "string",
+            "example": "2026-10-04",
+            "description": "End of probation period and start of regularization period"
+          }
+        },
+        "required": [
+          "employee_id",
+          "evaluator_id",
+          "stage",
+          "type_of_evaluation",
+          "probation_date",
+          "regularization_date"
         ]
       },
       "CreatePermissionTemplateDto": {
