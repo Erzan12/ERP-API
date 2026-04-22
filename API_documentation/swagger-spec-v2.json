@@ -5819,22 +5819,14 @@
               "linkedIn",
               "jobstreet"
             ],
-            "example": "company_website",
+            "example": {
+              "company_website": "company_website",
+              "walk_in": "walk_in",
+              "referral": "referral",
+              "linkedIn": "linkedIn",
+              "jobstreet": "jobstreet"
+            },
             "description": "The application source of the applicant"
-          },
-          "application_status": {
-            "type": "string",
-            "enum": [
-              "applied",
-              "screening",
-              "shortlisted",
-              "for_interview",
-              "accepted",
-              "rejected",
-              "onboarding"
-            ],
-            "example": "for_interview",
-            "description": "The status of application of the applicant"
           },
           "date_applied": {
             "type": "string",
@@ -5857,7 +5849,6 @@
           "email",
           "mobile_number",
           "application_source",
-          "application_status",
           "date_applied",
           "documents"
         ]
@@ -5918,7 +5909,7 @@
               "rejected",
               "onboarding"
             ],
-            "example": "for_interview",
+            "example": "screening",
             "description": "The status of application of the applicant"
           },
           "date_applied": {

@@ -15,7 +15,7 @@ import {
 import {
   ApplicationSource,
   ApplicationStatus,
-} from 'src/utils/decorators/global.enums.decorator';
+} from '@prisma/client';
 import { ApplicantDocumentDto } from './applicant-document.dto';
 
 export class CreateApplicantDto {
@@ -76,24 +76,24 @@ export class CreateApplicantDto {
   @Type(() => String)
   @ApiProperty({
     enum: ApplicationSource,
-    example: ApplicationSource.COMPANY_WEBSITE,
+    example: ApplicationSource,
     description: 'The application source of the applicant',
   })
   application_source: ApplicationSource;
 
-  @IsString()
-  @IsNotEmpty()
-  @IsEnum(ApplicationStatus, {
-    message:
-      'Application Status must be applied, screening, for_interview, accepted, rejected, onboarding',
-  })
-  @Type(() => String)
-  @ApiProperty({
-    enum: ApplicationStatus,
-    example: ApplicationStatus.FOR_INTERVIEW,
-    description: 'The status of application of the applicant',
-  })
-  application_status: ApplicationStatus;
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsEnum(ApplicationStatus, {
+  //   message:
+  //     'Application Status must be applied, screening, for_interview, accepted, rejected, onboarding',
+  // })
+  // @Type(() => String)
+  // @ApiProperty({
+  //   enum: ApplicationStatus,
+  //   example: ApplicationStatus.FOR_INTERVIEW,
+  //   description: 'The status of application of the applicant',
+  // })
+  // application_status: ApplicationStatus;
 
   @IsDateString()
   @IsNotEmpty()
@@ -171,7 +171,7 @@ export class UpdateApplicantDto {
   @Type(() => String)
   @ApiProperty({
     enum: ApplicationSource,
-    example: ApplicationSource.COMPANY_WEBSITE,
+    example: ApplicationSource.company_website,
     description: 'The application source of the applicant',
   })
   application_source?: ApplicationSource;
@@ -185,7 +185,7 @@ export class UpdateApplicantDto {
   @Type(() => String)
   @ApiProperty({
     enum: ApplicationStatus,
-    example: ApplicationStatus.FOR_INTERVIEW,
+    example: ApplicationStatus.screening,
     description: 'The status of application of the applicant',
   })
   application_status?: ApplicationStatus;
