@@ -753,7 +753,7 @@ model Applicant {
   email              String            @unique
   mobile_number      String
   application_source ApplicationSource
-  application_status ApplicationStatus
+  application_status ApplicationStatus @default(applied)
   date_applied       DateTime
   is_active          Boolean           @default(true)
 
