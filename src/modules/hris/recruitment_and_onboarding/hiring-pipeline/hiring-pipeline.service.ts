@@ -291,18 +291,18 @@ export class HiringPipelineService {
     createApplicantDto: CreateApplicantDto,
     user: RequestUser,
   ) {
-    const { career_id, application_source, application_status } =
+    const { career_id, application_source } =
       createApplicantDto;
 
-    if (!Object.values(ApplicationSource).includes(application_source)) {
-      throw new ForbiddenException('Error! Please use male or female');
+    if (!Object.values(application_source).includes(application_source)) {
+      throw new ForbiddenException('Error! Please use company_website, walk_in, referral, linkedIn or jobstreet');
     }
 
-    if (!Object.values(ApplicationStatus).includes(application_status)) {
-      throw new ForbiddenException(
-        'Error! Please use single, married, separated, or widowed',
-      );
-    }
+    // if (!Object.values(ApplicationStatus).includes(application_status)) {
+    //   throw new ForbiddenException(
+    //     'Error! Please use single, married, separated, or widowed',
+    //   );
+    // }
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -350,7 +350,7 @@ export class HiringPipelineService {
         email: createApplicantDto.email,
         mobile_number: createApplicantDto.mobile_number,
         application_source,
-        application_status,
+        // application_status,
         date_applied: new Date(createApplicantDto.date_applied),
         created_by: user.id,
       },
@@ -473,6 +473,7 @@ export class HiringPipelineService {
     const result = {
       all: 0,
       applied: 0,
+      shortlisted: 0,
       screening: 0,
       for_interview: 0,
       accepted: 0,
