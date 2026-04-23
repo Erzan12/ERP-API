@@ -4500,6 +4500,36 @@
         ]
       }
     },
+    "/v2/employee-dashboard/performance-evaluation/done-evaluated": {
+      "get": {
+        "operationId": "PerformanceEvaluationController_getDoneEvaluated_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of done/finished evaluations"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of evaluations completed by this evaluator",
+        "tags": [
+          "Performance Evaluation"
+        ]
+      }
+    },
     "/v2/employee-dashboard/performance-evaluation/to-be-evaluated/{evaluationId}/submit": {
       "post": {
         "operationId": "PerformanceEvaluationController_submitEvaluation_v2",
@@ -4544,6 +4574,55 @@
           }
         },
         "summary": "Submit Employee Performance Evaluation",
+        "tags": [
+          "Performance Evaluation"
+        ]
+      }
+    },
+    "/v2/employee-dashboard/performance-evaluation/{evaluationId}": {
+      "put": {
+        "operationId": "PerformanceEvaluationController_acknowledgeEvaluation_v2",
+        "parameters": [
+          {
+            "name": "evaluationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcknowledgeEvaluationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Employee acknowledge evaluation successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Employee to acknowledge evaluation",
         "tags": [
           "Performance Evaluation"
         ]
@@ -5740,22 +5819,14 @@
               "linkedIn",
               "jobstreet"
             ],
-            "example": "company_website",
+            "example": {
+              "company_website": "company_website",
+              "walk_in": "walk_in",
+              "referral": "referral",
+              "linkedIn": "linkedIn",
+              "jobstreet": "jobstreet"
+            },
             "description": "The application source of the applicant"
-          },
-          "application_status": {
-            "type": "string",
-            "enum": [
-              "applied",
-              "screening",
-              "shortlisted",
-              "for_interview",
-              "accepted",
-              "rejected",
-              "onboarding"
-            ],
-            "example": "for_interview",
-            "description": "The status of application of the applicant"
           },
           "date_applied": {
             "type": "string",
@@ -5778,7 +5849,6 @@
           "email",
           "mobile_number",
           "application_source",
-          "application_status",
           "date_applied",
           "documents"
         ]
@@ -5839,7 +5909,7 @@
               "rejected",
               "onboarding"
             ],
-            "example": "for_interview",
+            "example": "screening",
             "description": "The status of application of the applicant"
           },
           "date_applied": {
@@ -6324,6 +6394,18 @@
           "details",
           "decision",
           "comments"
+        ]
+      },
+      "AcknowledgeEvaluationDto": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "string",
+            "example": "Employee response or message of appreciation"
+          }
+        },
+        "required": [
+          "response"
         ]
       }
     }
