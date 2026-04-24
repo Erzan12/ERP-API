@@ -886,8 +886,8 @@ model HrLeaveCategory {
   createdBy     User?  @relation("HrLeaveCategoryCreatedBy", fields: [created_by], references: [id])
   updatedBy     User?  @relation("HrLeaveCategoryUpdatedBy", fields: [updated_by], references: [id])
 
-  created_at    DateTime
-  updated_at    DateTime
+  created_at    DateTime   @default(now())
+  updated_at    DateTime   @updatedAt
 }
 
 ////////////////////////////////////////
