@@ -397,11 +397,11 @@ export class HiringPipelineService {
       throw new ForbiddenException('You are not authorized to perform this action');
     }
 
-    const exisitngApplicant = await this.prisma.applicant.findUnique({
+    const existingApplicant = await this.prisma.applicant.findUnique({
       where: { id: applicantId },
     });
 
-    if (!exisitngApplicant) {
+    if (!existingApplicant) {
       throw new NotFoundException('Applicant not found');
     }
 
