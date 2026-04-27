@@ -27,6 +27,8 @@ import { PerformanceCompetencyController } from './performance_management/perfor
 import { PerformanceCompetencyService } from './performance_management/performance_competency/performance_competency.service';
 import { LeaveCategoryController } from './time_and_attendance_cases/leave_category/leave_category.controller';
 import { LeaveCategoryService } from './time_and_attendance_cases/leave_category/leave_category.service';
+import { LeaveCasesService } from './time_and_attendance_cases/leave_cases/leave_cases.service';
+import { LeaveCasesController } from './time_and_attendance_cases/leave_cases/leave_cases.controller';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
@@ -39,7 +41,8 @@ import { LeaveCategoryService } from './time_and_attendance_cases/leave_category
     InterviewApplicantService,
     RegularizationReviewsService,
     PerformanceCompetencyService,
-    LeaveCategoryService
+    LeaveCategoryService,
+    LeaveCasesService,
     // ScreeningApplicantService,
   ],
   controllers: [
@@ -52,7 +55,8 @@ import { LeaveCategoryService } from './time_and_attendance_cases/leave_category
     InterviewApplicantController,
     RegularizationReviewsController,
     PerformanceCompetencyController,
-    LeaveCategoryController
+    LeaveCategoryController,
+    LeaveCasesController,
   ],
   exports: [HrV2Module],
 })

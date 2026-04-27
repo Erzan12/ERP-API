@@ -3965,7 +3965,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance-cases/leave_category": {
+    "/v2/hris/time-and-attendance-cases/leave-category": {
       "get": {
         "operationId": "LeaveCategoryController_getLeaveCategories_v2",
         "parameters": [],
@@ -4034,7 +4034,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance-cases/leave_category/{leaveCategoryId}": {
+    "/v2/hris/time-and-attendance-cases/leave-category/{leaveCategoryId}": {
       "get": {
         "operationId": "LeaveCategoryController_getLeaveCategory_v2",
         "parameters": [
@@ -4118,6 +4118,36 @@
         "summary": "Update a current leave category",
         "tags": [
           "Human Resources - Time and Attendance Cases (Leave Category)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave-cases": {
+      "get": {
+        "operationId": "LeaveCasesController_getLeaveCases_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of Leave Cases"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Leave Cases",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
         ]
       }
     },
