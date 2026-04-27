@@ -15,7 +15,7 @@ export class LeaveCategoryController {
         private readonly leaveCategoryService: LeaveCategoryService
     ) {}
 
-    @Get('time-and-attendance-cases/leave_category')
+    @Get('time-and-attendance-cases/leave-category')
     @ApiOperation({ summary: 'List of all Leave Categories'})
     @ApiGetResponse('List of Leave Categories')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
@@ -25,7 +25,7 @@ export class LeaveCategoryController {
         return this.leaveCategoryService.getLeaveCategories(user)
     }
 
-    @Get('time-and-attendance-cases/leave_category/:leaveCategoryId')
+    @Get('time-and-attendance-cases/leave-category/:leaveCategoryId')
     @ApiOperation({ summary: 'Get a Leave Category' })
     @ApiGetResponse('Here is the Leave Category')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
@@ -36,7 +36,7 @@ export class LeaveCategoryController {
         return this.leaveCategoryService.getLeaveCategory(leaveCategoryId, user)
     }
 
-    @Post('time-and-attendance-cases/leave_category')
+    @Post('time-and-attendance-cases/leave-category')
     @ApiBody({
         type: CreateLeaveCategory,
         description: 'Payload to create Leave Category'
@@ -51,7 +51,7 @@ export class LeaveCategoryController {
         return this.leaveCategoryService.createLeaveCategory(user, dto)
     }
 
-    @Put('time-and-attendance-cases/leave_category/:leaveCategoryId')
+    @Put('time-and-attendance-cases/leave-category/:leaveCategoryId')
     @ApiBody({
         type: UpdateLeaveCategory,
         description: 'Payload to update leave category'
