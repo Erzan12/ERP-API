@@ -54,24 +54,24 @@ export class CreateLeaveRequestDto {
     @IsUUID()
     @IsNotEmpty()
     @ApiProperty({
-        example: 'Employee UUID for reliver while on leave',
-        description: 'The uuid of reliever employee while employee is on leave'
+        example: 'User UUID for reliver while on leave',
+        description: 'The uuid of reliever user while employee is on leave'
     })
     reliever_id: string;
 
     @IsUUID()
     @IsNotEmpty()
     @ApiProperty({
-        example: 'Employee UUID for verifier of this leave request',
-        description: 'The uuid of verifier employee for this leave request'
+        example: 'User UUID for verifier of this leave request',
+        description: 'The uuid of verifier user for this leave request'
     })
     verifier_id: string;
 
     @IsUUID()
     @IsNotEmpty()
     @ApiProperty({
-        example: 'Employee UUID for leave request approver',
-        description: 'The uuid of approver employee for this employee leave request'
+        example: 'User UUID for leave request approver',
+        description: 'The uuid of approver user for this user leave request'
     })
     approver_id: string;
 }

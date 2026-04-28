@@ -106,7 +106,6 @@ export class LeaveCasesService {
                     verifier_id: leave_request.verifier_id,
                     approver_id: leave_request.approver_id,
                     created_by: requestUser.id,
-                    date_created: new Date(),
 
                     hr_leave_dates: {
                         create: leave_dates.map(d => ({
@@ -146,13 +145,37 @@ export class LeaveCasesService {
     }
 
     async submitLeave(hrLeaveRequestId: string, user: RequestUser) {
+         // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
         return this.prisma.$transaction(async (tx) => {
 
-            await tx.hrLeaveRequest.update({
+            const submitLeave = await tx.hrLeaveRequest.update({
                 where: { id: hrLeaveRequestId },
                 data: {
                     status: "for_verification",
-                    date_verified: new Date()
                 }
             });
 
@@ -164,6 +187,17 @@ export class LeaveCasesService {
                     acted_by: user.id
                 }
             });
+
+            const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+            const userPosition = requestUser.employee.position.name;
+
+            return {
+                status: 'success',
+                message: 'Leave Request Createad',
+                submitLeave,
+                submitted_by: `${userName} - ${userPosition}`,
+            };
+
         });
-    }
+    }  
 }
