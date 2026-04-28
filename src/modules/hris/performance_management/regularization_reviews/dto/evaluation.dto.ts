@@ -49,7 +49,7 @@ export class CreateEvaluationDto {
   @IsNotEmpty()
   @IsDateString()
   @ApiProperty({
-    example: '2026-10-04',
+    example: '2026-01-10',
     description: 'Start date of probation period'
   })
   probation_date: string;
@@ -57,7 +57,7 @@ export class CreateEvaluationDto {
   @IsNotEmpty()
   @IsDateString()
   @ApiProperty({
-    example: '2026-10-04',
+    example: '2026-01-10',
     description: 'End of probation period and start of regularization period'
   })
   regularization_date: string;
