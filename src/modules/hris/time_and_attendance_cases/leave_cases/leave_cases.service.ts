@@ -193,11 +193,67 @@ export class LeaveCasesService {
 
             return {
                 status: 'success',
-                message: 'Leave Request Createad',
+                message: 'Leave Request Submitted',
                 submitLeave,
                 submitted_by: `${userName} - ${userPosition}`,
             };
-
         });
-    }  
+    }
+
+    async verifyLeave(hrLeaveRequestId: string, user: RequestUser) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async (tx) => {
+
+            const verifyLeave = await tx.hrLeaveRequest.update({
+                where: { id: hrLeaveRequestId },
+                data: {
+                    status: "verified",
+                    verifier_id: requestUser.id
+                }
+            });
+
+            await tx.workflowAction.create({
+                data: {
+                    actionable_type: "LeaveRequest",
+                    actionable_id: hrLeaveRequestId,
+                    action: "verify",
+                    acted_by: user.id
+                }
+            });
+
+            const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+            const userPosition = requestUser.employee.position.name;
+
+            return {
+                status: 'success',
+                message: 'Leave Request Verified',
+                verifyLeave,
+                verified_by: `${userName} - ${userPosition}`,
+            };
+        });
+    }    
 }
