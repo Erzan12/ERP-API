@@ -337,9 +337,9 @@ async function main() {
 
   // After upserting employment statuses
   const activeRegularStatus = await prisma.employmentStatus.findUnique({ where: { code: 'REGULAR' } });
-  const activeProbiStatus = await prisma.employmentStatus.findUnique({ where: { code: 'PROBITIONARY' } });
+  const activeProbiStatus = await prisma.employmentStatus.findUnique({ where: { code: 'PROBATIONARY' } });
 
-  if (!activeStatus) {
+  if (!activeRegularStatus) {
     throw new Error("Active employment status not found!");
   }
 
@@ -360,7 +360,7 @@ async function main() {
       division_id: assetMgmt.id,
       salary: 20000,
       pay_frequency: 'Monthly',
-      employment_status_id: activeStatus.id,
+      employment_status_id: activeProbiStatus.id,
       monthly_equivalent_salary: 60000,
       corporate_rank_id: 1,
     },
@@ -394,7 +394,7 @@ async function main() {
       division_id: assetMgmt.id,
       salary: 60000,
       pay_frequency: 'Monthly',
-      employment_status_id: activeStatus.id,
+      employment_status_id: activeProbiStatus.id,
       monthly_equivalent_salary: 60000,
       corporate_rank_id: 1,
     },
