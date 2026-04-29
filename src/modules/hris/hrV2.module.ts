@@ -25,6 +25,10 @@ import { RegularizationReviewsService } from './performance_management/regulariz
 import { RegularizationReviewsController } from './performance_management/regularization_reviews/regularization_reviews.controller';
 import { PerformanceCompetencyController } from './performance_management/performance_competency/performance_competency.controller';
 import { PerformanceCompetencyService } from './performance_management/performance_competency/performance_competency.service';
+import { LeaveCategoryController } from './time_and_attendance_cases/leave_category/leave_category.controller';
+import { LeaveCategoryService } from './time_and_attendance_cases/leave_category/leave_category.service';
+import { LeaveCasesService } from './time_and_attendance_cases/leave_cases/leave_cases.service';
+import { LeaveCasesController } from './time_and_attendance_cases/leave_cases/leave_cases.controller';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
@@ -36,7 +40,9 @@ import { PerformanceCompetencyService } from './performance_management/performan
     HiringPipelineService,
     InterviewApplicantService,
     RegularizationReviewsService,
-    PerformanceCompetencyService
+    PerformanceCompetencyService,
+    LeaveCategoryService,
+    LeaveCasesService,
     // ScreeningApplicantService,
   ],
   controllers: [
@@ -48,7 +54,9 @@ import { PerformanceCompetencyService } from './performance_management/performan
     // ScreeningApplicantController,
     InterviewApplicantController,
     RegularizationReviewsController,
-    PerformanceCompetencyController
+    PerformanceCompetencyController,
+    LeaveCategoryController,
+    LeaveCasesController,
   ],
   exports: [HrV2Module],
 })

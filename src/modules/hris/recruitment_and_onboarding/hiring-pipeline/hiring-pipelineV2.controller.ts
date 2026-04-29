@@ -110,12 +110,12 @@ export class ApplicantsController {
   @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
   updateCareerPosting(
     @Param('applicationId', new ParseUUIDPipe()) applicationId: string,
-    @Body() updateApplicantDto: UpdateApplicantDto,
+    @Body() dto: UpdateApplicantDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.hiringPipelineService.updateApplicant(
       applicationId,
-      updateApplicantDto,
+      dto,
       user,
     );
   }
