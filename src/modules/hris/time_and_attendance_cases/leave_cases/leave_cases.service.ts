@@ -222,6 +222,7 @@ export class LeaveCasesService {
                 where: { id: hrLeaveRequestId },
                 data: {
                     status: "for_verification",
+                    updated_by: requestUser.id
                 }
             });
 
@@ -278,7 +279,8 @@ export class LeaveCasesService {
                 where: { id: hrLeaveRequestId, status: "for_verification" },
                 data: {
                     status: "for_approval",
-                    verifier_id: requestUser.id
+                    verifier_id: requestUser.id,
+                    updated_by: requestUser.id
                 }
             });
 
@@ -339,7 +341,8 @@ export class LeaveCasesService {
                     where: { id: hrLeaveRequestId, status: "for_approval" },
                     data: {
                         status: "for_processing",
-                        approver_id: requestUser.id
+                        approver_id: requestUser.id,
+                        updated_by: requestUser.id
                     }
                 })
 
@@ -403,7 +406,8 @@ export class LeaveCasesService {
                 const processLeave = await tx.hrLeaveRequest.update({
                     where: { id: hrLeaveRequestId, status: "for_processing" },
                     data: {
-                        status: 'processed',                  
+                        status: 'processed',
+                        updated_by: requestUser.id                  
                     }
                 })
 
@@ -486,7 +490,8 @@ export class LeaveCasesService {
                         ]
                     },
                     data: {
-                        status: 'rejected'
+                        status: 'rejected',
+                        updated_by: requestUser.id
                     }
                 });
 
@@ -553,7 +558,8 @@ export class LeaveCasesService {
                         ]
                     },
                     data: {
-                        status: 'cancelled'
+                        status: 'cancelled',
+                        updated_by: requestUser.id
                     }
                 })
 
