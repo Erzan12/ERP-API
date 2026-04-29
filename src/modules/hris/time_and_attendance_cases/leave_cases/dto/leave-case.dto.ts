@@ -22,7 +22,7 @@ export class CreateLeaveRequestDto {
     @IsDateString()
     @IsNotEmpty()
     @ApiProperty({
-        example: '2026-04-12',
+        example: '2026-04-10',
         description: 'Date end of the employee leave request'
     })
     date_to: string;

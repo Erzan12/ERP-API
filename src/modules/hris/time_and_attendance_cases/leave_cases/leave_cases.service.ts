@@ -10,7 +10,11 @@ export class LeaveCasesService {
     constructor (private readonly prisma: PrismaService) {}
 
     async getLeaveCases(user: RequestUser) {
-        const leaves = await this.prisma.hrLeaveRequest.findMany()
+        const leaves = await this.prisma.hrLeaveRequest.findMany({
+            include: {
+                hr_leave_dates: true
+            }
+        })
 
         if (leaves.length === 0) {
             throw new NotFoundException('No Leave Cases found')
@@ -89,16 +93,6 @@ export class LeaveCasesService {
                     );
                 }
 
-                // for (const d of leave_dates) {
-                // const date = new Date(d.leave_date);
-
-                //     if (date < from || date > to) {
-                //         throw new BadRequestException(
-                //         `Leave date ${d.leave_date} is outside range`
-                //         );
-                //     }
-                // }
-
                 const uniqueDates = new Set(
                     leave_dates.map(d => d.leave_date)
                 );
@@ -112,19 +106,24 @@ export class LeaveCasesService {
                     0
                 );
 
-                const existing = await tx.hrLeaveDates.findFirst({
+                const conflict = await tx.hrLeaveDates.findFirst({
                     where: {
+                        employee_id: leave_request.employee_id,
                         leave_date: {
                             in: leave_dates.map(d => new Date(d.leave_date))
                         },
                         hr_leave_request: {
-                            employee_id: leave_request.employee_id
+                            status: {
+                                notIn: ["cancelled", "rejected"]
+                            }
                         }
                     }
                 });
 
-                if (existing) {
-                    throw new BadRequestException('Conflicting leave date exists');
+                if (conflict) {
+                    throw new BadRequestException(
+                        "Conflicting leave date exists (active request already exists)"
+                    );
                 }
 
                 const leaveRequest = await tx.hrLeaveRequest.create({
