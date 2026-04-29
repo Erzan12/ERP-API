@@ -6707,7 +6707,7 @@
           },
           "date_to": {
             "type": "string",
-            "example": "2026-04-12",
+            "example": "2026-04-10",
             "description": "Date end of the employee leave request"
           },
           "reason": {
