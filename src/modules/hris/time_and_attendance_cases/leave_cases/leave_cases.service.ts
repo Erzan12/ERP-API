@@ -269,6 +269,79 @@ export class LeaveCasesService {
         });
     }
 
+    async statusCount(user: RequestUser) {
+        // Count per status and also if isActive is true or false
+        // const { is_active } = dto;
+
+        // const whereCondition: Prisma.ApplicantWhereInput = {
+        //   ...(is_active !== undefined && { is_active }),
+        // };
+
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: { user_roles: true }
+        });
+
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        const whereCondition: Prisma.HrLeaveRequestWhereInput = {
+        is_active: true,
+        // ...(is_active === true)
+        };
+
+        // Execute queries
+        const [counts] = await Promise.all([
+        this.prisma.hrLeaveRequest.groupBy({
+            by: ['status'],
+            where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
+            _count: { _all: true },
+        }),
+        this.prisma.applicant.count({
+            where: { is_active: true }, // We always want this count regardless of the filter
+        }),
+        ]);
+
+        // Build the response object with defaults
+        const result = {
+        all: 0,
+        draft: 0,
+        for_verification: 0,
+        for_approval: 0,
+        for_processing: 0,
+        processed: 0,
+        cancelled: 0,
+        rejected: 0,
+        // isActive: totalActiveCount,
+        };
+
+        // Populate the result based on the DB response
+        counts.forEach((item) => {
+        const statusKey = item.status.toLowerCase();
+
+        // Check if the key exists in our object
+        if (Object.prototype.hasOwnProperty.call(result, statusKey)) {
+            // Cast the string to a valid key type
+            const key = statusKey as keyof typeof result;
+
+            const countValue = item._count._all;
+            result[key] = countValue;
+            result.all += countValue;
+        }
+        });
+
+        return {
+        status: 'success',
+        message: 'Here is the status count for applicants',
+        result,
+        };
+    }
+
     async submitLeave(hrLeaveRequestId: string, user: RequestUser) {
          // Auth check first
         const requestUser = await this.prisma.user.findUnique({

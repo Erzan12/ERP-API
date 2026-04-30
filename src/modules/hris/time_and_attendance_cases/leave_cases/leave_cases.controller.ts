@@ -25,6 +25,16 @@ export class LeaveCasesController {
         return this.leaveCasesService.getLeaveCases(user, dto)
     }
 
+    @Get('time-and-attendance-cases/leaves/status-count')
+    @ApiOperation({ summary: 'List of all Leave Request status' })
+    @ApiGetResponse('List of all Leave Request status')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getStatusCountActive(
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.leaveCasesService.statusCount(user);
+    }
+
     @Post('time-and-attendance-cases/leave')
     @ApiBody({
         type: CreateLeaveRequestWithDetailsDto,
