@@ -8,8 +8,10 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   HiringPipelineService,
   InterviewApplicantService,
@@ -34,6 +36,9 @@ import {
 } from 'src/utils/dtos/recruitment-pagination.dto';
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 /**
  * Applicant CONTROLLER SECTION
@@ -86,18 +91,76 @@ export class ApplicantsController {
   }
 
   @Post('applicants')
+  @UseInterceptors(
+    FilesInterceptor('files', 5, {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, cb) => {
+          const timestamp = Date.now();
+          const ext = extname(file.originalname);
+          const name = file.originalname.replace(ext, '').replace(/\s+/g, '-');
+
+          cb(null, `${name}-${timestamp}${ext}`);
+        },
+      }),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
-    type: CreateApplicantDto,
-    description: 'Payload to create Applicant',
+    schema: {
+      type: 'object',
+      properties: {
+        career_id: { type: 'string'},
+
+        first_name: { type: 'string' },
+        last_name: { type: 'string' },
+        email: { type: 'string' },
+
+        mobile_number: { type: 'string' },
+
+        date_applied:{ type: 'string' },
+
+        files: {
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
+        },
+
+        application_source: { 
+          type: 'string',
+          enum: [
+            'company_website',
+            'walk_in',
+            'referral',
+            'linkedIn',
+            'jobstreet'
+          ]
+        },
+
+        // document_type: {
+        //   type: 'array',
+        //   items: {
+        //     type: 'string',
+        //     enum: [
+        //       'resume',
+        //       'cover_letter',
+        //       'portfolio',
+        //       'certificate',
+        //       'other',
+        //     ],
+        //   },
+        // },
+      },
+    },
   })
   @ApiOperation({ summary: 'Applicant posting' })
   @ApiPostResponse('Applicant posted successfully')
   @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
   createApplicant(
+    @UploadedFiles() files: Express.Multer.File[],
     @Body() dto: CreateApplicantDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.createApplicant(dto, user);
+    return this.hiringPipelineService.createApplicant(dto, user, files );
   }
 
   @Put('applicants/:applicationId')

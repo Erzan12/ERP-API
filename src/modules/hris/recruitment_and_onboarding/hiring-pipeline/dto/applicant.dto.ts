@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -16,7 +16,6 @@ import {
   ApplicationSource,
   ApplicationStatus,
 } from '@prisma/client';
-import { ApplicantDocumentDto } from './applicant-document.dto';
 
 export class CreateApplicantDto {
   @IsUUID()
@@ -67,34 +66,6 @@ export class CreateApplicantDto {
   })
   mobile_number: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @IsEnum(ApplicationSource, {
-    message:
-      'Application Source must be company_website, walk_in, referral, linkedIn, jobstreet',
-  })
-  @Type(() => String)
-  @ApiProperty({
-    enum: ApplicationSource,
-    example: ApplicationSource,
-    description: 'The application source of the applicant',
-  })
-  application_source: ApplicationSource;
-
-  // @IsString()
-  // @IsNotEmpty()
-  // @IsEnum(ApplicationStatus, {
-  //   message:
-  //     'Application Status must be applied, screening, for_interview, accepted, rejected, onboarding',
-  // })
-  // @Type(() => String)
-  // @ApiProperty({
-  //   enum: ApplicationStatus,
-  //   example: ApplicationStatus.FOR_INTERVIEW,
-  //   description: 'The status of application of the applicant',
-  // })
-  // application_status: ApplicationStatus;
-
   @IsDateString()
   @IsNotEmpty()
   @ApiProperty({
@@ -103,14 +74,36 @@ export class CreateApplicantDto {
   })
   date_applied: string;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ApplicantDocumentDto)
-  @ApiProperty({
-    type: [ApplicantDocumentDto],
-    description: 'List of applicant documents',
+  @IsNotEmpty()
+  @IsEnum(ApplicationSource, { each: true,
+    message:
+      'Application Source must be company_website, walk_in, referral, linkedIn, jobstreet',
   })
-  documents: ApplicantDocumentDto[];
+  @ApiProperty({
+    enum: ApplicationSource,
+    example: ApplicationSource,
+    description: 'The application source of the applicant',
+  })
+  application_source: ApplicationSource;
+
+  // @Transform(({ value }) => {
+  //   if (Array.isArray(value)) return value;
+  //   return [value];
+  // })
+  // @IsArray()
+  // @IsEnum(DocumentType, { each: true })
+  // file_desc: DocumentType[];
+  // @IsString()
+  // // @IsNotEmpty()
+  // @ApiProperty({
+  //   example: '09633416290',
+  //   description: 'Mobile no. of the applicant',
+  // })
+  // file_desc?: string;
+  // @IsArray()
+  // @ValidateNested({ each: true })
+  // @Type(() => DocumentDto)
+  // documents: DocumentDto[];
 }
 
 export class UpdateApplicantDto {
