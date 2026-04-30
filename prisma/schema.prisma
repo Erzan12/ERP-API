@@ -328,8 +328,8 @@ model User {
   careerPostingUpdated                     CareerPosting[]                    @relation("CareerPostingUpdatedBy")
   applicantCreated                         Applicant[]                        @relation("ApplicantCreatedBy")
   applicantUpdated                         Applicant[]                        @relation("ApplicantUpdatedBy")
-  applicantDocumentCreated                 ApplicantDocument[]                @relation("ApplicantDocumentCreatedBy")
-  applicantDocumentUpdated                 ApplicantDocument[]                @relation("ApplicantDocumentUpdatedBy")
+  attachmentsCreatedBy                     Attachments[]                      @relation("AttachmentsCreatedBy")
+  attachmentsUpdatedBy                     Attachments[]                      @relation("AttachmentsUpdatedBy")
   InterviewerCreatedBy                     Interviewer[]                      @relation("InterviewerCreatedBy")
   InterviewerUpdatedBy                     Interviewer[]                      @relation("InterviewerUpdatedBy")
   ExaminationRatingCreatedBy               ExaminationRating[]                @relation("ExaminationRatingCreatedBy")
@@ -836,27 +836,32 @@ model Applicant {
   updated_at DateTime @updatedAt
 
   careerPosting CareerPosting       @relation(fields: [career_id], references: [id])
-  applicant     ApplicantDocument[]
-  interviewer   Interviewer[]
+  interviewer               Interviewer[]
 }
 
-model ApplicantDocument {
-  id            String @id @default(uuid()) @db.Uuid
-  applicant_id  String @db.Uuid
-  document_type String
-  file_name     String
-  file_path     String
+model Attachments {
+  id              String   @id @default(uuid()) @db.Uuid
 
-  created_by String? @db.Uuid
-  updated_by String? @db.Uuid
+  // polymorphic relation
+  transaction_type String   // "Applicant", "Order", "Invoice"
+  transaction_id   String   @db.Uuid
 
-  createdBy User? @relation("ApplicantDocumentCreatedBy", fields: [created_by], references: [id])
-  updatedBy User? @relation("ApplicantDocumentUpdatedBy", fields: [updated_by], references: [id])
+  file_name       String
+  file_path       String
+  mime_type       String?
+  file_desc       String?
+  file_size       Int?
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_by      String?  @db.Uuid
+  updated_by      String?  @db.Uuid
 
-  applicant Applicant @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+  createdBy User? @relation("AttachmentsCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("AttachmentsUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@index([transaction_type, transaction_id])
 }
 
 model Interviewer {
@@ -970,6 +975,7 @@ model HrLeaveRequest {
   address_on_leave  String?
   no_of_days        Float?
   status            LeaveRequestStatus @default(draft)
+  is_active         Boolean            @default(true)
 
   reliever_id String @db.Uuid
   verifier_id String @db.Uuid
