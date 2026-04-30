@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { LeaveCasesService } from './leave_cases.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
@@ -7,6 +7,7 @@ import { ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.co
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateLeaveRequestWithDetailsDto } from './dto/leave-case.dto';
+import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request.dto';
 
 @ApiTags('Human Resources - Time and Attendance Cases (Leave Cases)')
 @Controller({path:'hris', version: '2'})
@@ -19,8 +20,19 @@ export class LeaveCasesController {
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getLeaveCases(
         @SessionUser() user: RequestUser,
+        @Query() dto: LeaveRequestPaginationDto,
     ) {
-        return this.leaveCasesService.getLeaveCases(user)
+        return this.leaveCasesService.getLeaveCases(user, dto)
+    }
+
+    @Get('time-and-attendance-cases/leaves/status-count')
+    @ApiOperation({ summary: 'List of all Leave Request status' })
+    @ApiGetResponse('List of all Leave Request status')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getStatusCountActive(
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.leaveCasesService.statusCount(user);
     }
 
     @Post('time-and-attendance-cases/leave')

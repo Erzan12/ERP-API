@@ -4,6 +4,9 @@
 /build
 /dist/tsconfig.tsbuildinfo
 
+# uploads
+uploads
+
 # Logs
 logs
 *.log

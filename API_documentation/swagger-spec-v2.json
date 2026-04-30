@@ -1501,6 +1501,39 @@
         ]
       }
     },
+    "/v2/administrator/uploads": {
+      "post": {
+        "operationId": "FileUploadController_uploadFiles_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Administrator - File Uploads"
+        ]
+      }
+    },
     "/v2/mastertable/positions": {
       "get": {
         "operationId": "PositionControllerV2_getPositions_v2",
@@ -3310,11 +3343,47 @@
         "parameters": [],
         "requestBody": {
           "required": true,
-          "description": "Payload to create Applicant",
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/CreateApplicantDto"
+                "type": "object",
+                "properties": {
+                  "career_id": {
+                    "type": "string"
+                  },
+                  "first_name": {
+                    "type": "string"
+                  },
+                  "last_name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "mobile_number": {
+                    "type": "string"
+                  },
+                  "date_applied": {
+                    "type": "string"
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "application_source": {
+                    "type": "string",
+                    "enum": [
+                      "company_website",
+                      "walk_in",
+                      "referral",
+                      "linkedIn",
+                      "jobstreet"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -4124,7 +4193,66 @@
     "/v2/hris/time-and-attendance-cases/leaves": {
       "get": {
         "operationId": "LeaveCasesController_getLeaveCases_v2",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of Leave Cases"
@@ -4146,6 +4274,36 @@
           }
         },
         "summary": "List of all Leave Cases",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leaves/status-count": {
+      "get": {
+        "operationId": "LeaveCasesController_getStatusCountActive_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all Leave Request status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Leave Request status",
         "tags": [
           "Human Resources - Time and Attendance Cases (Leave Cases)"
         ]
@@ -6211,107 +6369,6 @@
           "employment_type",
           "status",
           "user_location_id"
-        ]
-      },
-      "ApplicantDocumentDto": {
-        "type": "object",
-        "properties": {
-          "document_type": {
-            "type": "string",
-            "example": "RESUME",
-            "description": "Type of document"
-          },
-          "file_name": {
-            "type": "string",
-            "example": "resume.pdf",
-            "description": "File name"
-          },
-          "file_path": {
-            "type": "string",
-            "example": "/uploads/resume.pdf",
-            "description": "File path"
-          }
-        },
-        "required": [
-          "document_type",
-          "file_name",
-          "file_path"
-        ]
-      },
-      "CreateApplicantDto": {
-        "type": "object",
-        "properties": {
-          "career_id": {
-            "type": "string",
-            "example": "Job/Career posting PK UUID",
-            "description": "UUID of career posting"
-          },
-          "first_name": {
-            "type": "string",
-            "example": "Juan",
-            "description": "First name of applicant"
-          },
-          "middle_name": {
-            "type": "string",
-            "example": "Doe",
-            "description": "Middlename can be optional"
-          },
-          "last_name": {
-            "type": "string",
-            "example": "Dee",
-            "description": "Last name of the applicant"
-          },
-          "email": {
-            "type": "string",
-            "example": "juandoe@gmail.com",
-            "description": "Email of the applicant"
-          },
-          "mobile_number": {
-            "type": "string",
-            "example": "09633416290",
-            "description": "Mobile no. of the applicant"
-          },
-          "application_source": {
-            "type": "string",
-            "enum": [
-              "company_website",
-              "walk_in",
-              "referral",
-              "linkedIn",
-              "jobstreet"
-            ],
-            "example": {
-              "company_website": "company_website",
-              "walk_in": "walk_in",
-              "referral": "referral",
-              "linkedIn": "linkedIn",
-              "jobstreet": "jobstreet"
-            },
-            "description": "The application source of the applicant"
-          },
-          "date_applied": {
-            "type": "string",
-            "example": "2026-03-05",
-            "description": "The date of application of the applicant"
-          },
-          "documents": {
-            "description": "List of applicant documents",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ApplicantDocumentDto"
-            }
-          }
-        },
-        "required": [
-          "career_id",
-          "first_name",
-          "middle_name",
-          "last_name",
-          "email",
-          "mobile_number",
-          "application_source",
-          "date_applied",
-          "documents"
         ]
       },
       "UpdateApplicantDto": {

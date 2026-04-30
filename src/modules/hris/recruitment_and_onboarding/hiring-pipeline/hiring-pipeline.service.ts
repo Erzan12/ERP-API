@@ -18,10 +18,14 @@ import {
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 import { Prisma } from '@prisma/client';
+import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 
 @Injectable()
 export class HiringPipelineService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private uploadService: AttachmentUploadService
+  ) {}
 
   async getApplicant(applicantId: string, user: RequestUser) {
 
@@ -199,8 +203,7 @@ export class HiringPipelineService {
     //   sortBy;
     // }
     const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
-
-    const [total, applicants] = await this.prisma.$transaction([
+    const [total, findApplicants] = await this.prisma.$transaction([
       this.prisma.applicant.count({
         where: {
           ...whereCondition,
@@ -275,6 +278,28 @@ export class HiringPipelineService {
       }),
     ]);
 
+    const applicantIds = findApplicants.map(a => a.id);
+
+    const attachments = await this.prisma.attachments.findMany({
+      where: {
+        transaction_type: 'Applicant',
+        transaction_id: { in: applicantIds },
+      },
+    });
+
+    const attachmentMap = new Map<string, any[]>();
+
+    for (const file of attachments) {
+      const list = attachmentMap.get(file.transaction_id) || [];
+      list.push(file);
+      attachmentMap.set(file.transaction_id, list);
+    }
+
+    const applicants = findApplicants.map(applicant => ({
+      ...applicant,
+      attachments: attachmentMap.get(applicant.id) || [],
+    }));
+
     return {
       status: 'success',
       message: 'List of Applicant Posting',
@@ -290,13 +315,14 @@ export class HiringPipelineService {
   async createApplicant(
     createApplicantDto: CreateApplicantDto,
     user: RequestUser,
+    files: Express.Multer.File[]
   ) {
     const { career_id, application_source } =
       createApplicantDto;
 
-    if (!Object.values(application_source).includes(application_source)) {
-      throw new ForbiddenException('Error! Please use company_website, walk_in, referral, linkedIn or jobstreet');
-    }
+    // if (!Object.values(application_source).includes(application_source)) {
+    //   throw new ForbiddenException('Error! Please use company_website, walk_in, referral, linkedIn or jobstreet');
+    // }
 
     // if (!Object.values(ApplicationStatus).includes(application_status)) {
     //   throw new ForbiddenException(
@@ -356,6 +382,14 @@ export class HiringPipelineService {
       },
     });
 
+    const attachments = await this.uploadService.attachFiles({
+      files,
+      transaction_type: 'Applicant',
+      transaction_id: applicant.id,
+      // file_desc: file_desc,
+      user_id: user.id,
+    });
+
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
 
@@ -363,6 +397,7 @@ export class HiringPipelineService {
       status: 'success',
       message: `Applicant has been created successfully`,
       applicant,
+      attachments,
       created_by_user: `${userName} - ${userPosition}`,
     };
   }
