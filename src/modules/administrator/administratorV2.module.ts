@@ -24,6 +24,7 @@ import { DbQueryService } from './db-query/db-query.service';
 import { SlackModule } from 'src/jobs/slack/slack.module';
 import { HttpModule } from '@nestjs/axios';
 import { SlackService } from 'src/jobs/slack/slack.service';
+import { FileUploadController } from './file-upload/file-upload.controller';
 
 @Module({
   imports: [AuthModule, TerminusModule, SlackModule, HttpModule],
@@ -36,6 +37,7 @@ import { SlackService } from 'src/jobs/slack/slack.service';
     AuditControllerV2,
     HealthController,
     DbQueryControllerV2,
+    FileUploadController,
   ],
   providers: [
     JwtStrategy,
