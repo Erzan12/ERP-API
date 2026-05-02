@@ -121,6 +121,59 @@ enum PerformanceRating {
   exceptional
 }
 
+enum LeaveRequestStatus {
+  draft
+  for_verification
+  for_approval
+  for_processing
+  processed
+  cancelled
+  rejected
+}
+
+enum LeaveTransactionType {
+  add
+  deduct
+}
+
+enum WorkflowActionType {
+  draft
+
+  created
+  submitted
+
+  verify
+  verified
+
+  approve
+  approved
+
+  reject
+  rejected
+
+  cancel
+  cancelled
+
+  process
+  processed
+
+  return
+  returned
+
+  escalate
+
+  reopen
+
+  hold
+  resume
+
+  screen
+  shortlist
+  set_interview
+  accept
+  onboard
+}
+
 ////////////////////////////////////////
 // CORE IDENTITY
 ////////////////////////////////////////
@@ -200,6 +253,14 @@ model User {
   security_questions       Json?
   security_clearance_level Int?
 
+  // Workflow action
+  workflow_actions  WorkflowAction[]
+
+  // Workflow roles
+  relieved_requests HrLeaveRequest[] @relation("Reliever")
+  verified_requests HrLeaveRequest[] @relation("Verifier")
+  approved_requests HrLeaveRequest[] @relation("Approver")
+
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
 
@@ -273,8 +334,8 @@ model User {
   careerPostingUpdated                     CareerPosting[]                    @relation("CareerPostingUpdatedBy")
   applicantCreated                         Applicant[]                        @relation("ApplicantCreatedBy")
   applicantUpdated                         Applicant[]                        @relation("ApplicantUpdatedBy")
-  applicantDocumentCreated                 ApplicantDocument[]                @relation("ApplicantDocumentCreatedBy")
-  applicantDocumentUpdated                 ApplicantDocument[]                @relation("ApplicantDocumentUpdatedBy")
+  attachmentsCreatedBy                     Attachments[]                      @relation("AttachmentsCreatedBy")
+  attachmentsUpdatedBy                     Attachments[]                      @relation("AttachmentsUpdatedBy")
   InterviewerCreatedBy                     Interviewer[]                      @relation("InterviewerCreatedBy")
   InterviewerUpdatedBy                     Interviewer[]                      @relation("InterviewerUpdatedBy")
   ExaminationRatingCreatedBy               ExaminationRating[]                @relation("ExaminationRatingCreatedBy")
@@ -285,6 +346,10 @@ model User {
   HrEmployeeEvaluationUpdatedBy            HrEmployeeEvaluation[]             @relation("HrEmployeeEvaluationUpdatedBy")
   HrPerformanceCompetencyCreatedBy         HrPerformanceCompetency[]          @relation("HrPerformanceCompetencyCreatedBy")
   HrPerformanceCompetencyUpdatedBy         HrPerformanceCompetency[]          @relation("HrPerformanceCompetencyUpdatedBy")
+  HrLeaveCategoryCreatedBy                 HrLeaveCategory[]                  @relation("HrLeaveCategoryCreatedBy")
+  HrLeaveCategoryUpdatedBy                 HrLeaveCategory[]                  @relation("HrLeaveCategoryUpdatedBy")
+  HrLeaveRequestCreatedBy                  HrLeaveRequest[]                   @relation("HrLeaveRequestCreatedBy")
+  HrLeaveRequestUpdatedBy                  HrLeaveRequest[]                   @relation("HrLeaveRequestUpdatedBy")
 
   @@index([person_id])
   @@index([employee_id])
@@ -471,6 +536,7 @@ model Employee {
   department_id             String          @db.Uuid
   position_id               String          @db.Uuid
   division_id               String          @db.Uuid
+  user_id                   String?         @db.Uuid
   hire_date                 DateTime
   salary                    Decimal
   pay_frequency             String
@@ -479,9 +545,10 @@ model Employee {
   employee_type             EmployeeType?
   monthly_equivalent_salary Decimal
 
-  archive_date         DateTime?
-  other_employee_data  Json?
-  corporate_rank_id    Int?
+  archive_date        DateTime?
+  other_employee_data Json?
+  corporate_rank_id   Int?
+
   evaluations_received HrEmployeeEvaluation[] @relation("HrEmployeeEvaluations")
   evaluations_given    HrEmployeeEvaluation[] @relation("EmployeeGivenEvaluations")
 
@@ -494,19 +561,27 @@ model Employee {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  employment_status         EmploymentStatus           @relation(fields: [employment_status_id], references: [id])
-  company                   Company                    @relation(fields: [company_id], references: [id])
-  department                Department                 @relation(fields: [department_id], references: [id])
-  person                    Person                     @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
-  position                  Position                   @relation(fields: [position_id], references: [id])
-  division                  Division                   @relation(fields: [division_id], references: [id])
+  employment_status EmploymentStatus @relation(fields: [employment_status_id], references: [id])
+  company           Company          @relation(fields: [company_id], references: [id])
+  department        Department       @relation(fields: [department_id], references: [id])
+  person            Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
+  position          Position         @relation(fields: [position_id], references: [id])
+  division          Division         @relation(fields: [division_id], references: [id])
+
   user                      User?
   employment_history        EmploymentHistory[]
-  employmentHistoryId       String?                    @db.Uuid
   regularizationEligibility RegularizationEligibility?
+
+  // Leave system
+  leave_balances     HrLeaveBalance[]
+  leave_requests     HrLeaveRequest[]
+  //leave_transactions HrLeaveTransaction[]
+  //leave_actions      HrLeaveRequestAction[]
+  leave_dates        HrLeaveDates[]  
 
   @@index([department_id])
   @@index([company_id])
+  @@index([employment_status_id])
 }
 
 model EmploymentHistory {
@@ -536,45 +611,45 @@ model EmploymentHistory {
 }
 
 model HrEmployeeEvaluation {
-  id           String @id @default(uuid()) @db.Uuid
+  id String @id @default(uuid()) @db.Uuid
 
   employee_id  String @db.Uuid
   evaluator_id String @db.Uuid
 
-  stage        EvaluationStage
-  status       EvaluationStatus @default(for_evaluation)
+  stage  EvaluationStage
+  status EvaluationStatus @default(for_evaluation)
 
   probation_date      DateTime
   regularization_date DateTime
 
-  is_active       Boolean  @default(true)
+  is_active Boolean @default(true)
 
-  overall_rating  Int?
+  overall_rating Int?
 
-  decision        EvaluationDecision?
-  comments        String?
-  type_of_evaluation  TypeOfEvaluation
+  decision           EvaluationDecision?
+  comments           String?
+  type_of_evaluation TypeOfEvaluation?
 
   response        String?
   evaluated_on    DateTime?
   acknowledged_on DateTime?
   approved_on     DateTime?
 
-  completed_at    DateTime?
+  completed_at DateTime?
 
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  employee   Employee @relation("HrEmployeeEvaluations", fields: [employee_id], references: [id])
-  evaluator  Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id])
+  employee  Employee @relation("HrEmployeeEvaluations", fields: [employee_id], references: [id])
+  evaluator Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id])
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
 
-  createdBy  User? @relation("HrEmployeeEvaluationCreatedBy", fields: [created_by], references: [id])
-  updatedBy  User? @relation("HrEmployeeEvaluationUpdatedBy", fields: [updated_by], references: [id])
+  createdBy User? @relation("HrEmployeeEvaluationCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrEmployeeEvaluationUpdatedBy", fields: [updated_by], references: [id])
 
-  details    HrPerformanceEvaluationDetails[]
+  details HrPerformanceEvaluationDetails[]
 
   @@index([evaluator_id])
   @@index([employee_id])
@@ -753,7 +828,7 @@ model Applicant {
   email              String            @unique
   mobile_number      String
   application_source ApplicationSource
-  application_status ApplicationStatus
+  application_status ApplicationStatus @default(applied)
   date_applied       DateTime
   is_active          Boolean           @default(true)
 
@@ -767,27 +842,32 @@ model Applicant {
   updated_at DateTime @updatedAt
 
   careerPosting CareerPosting       @relation(fields: [career_id], references: [id])
-  applicant     ApplicantDocument[]
-  interviewer   Interviewer[]
+  interviewer               Interviewer[]
 }
 
-model ApplicantDocument {
-  id            String @id @default(uuid()) @db.Uuid
-  applicant_id  String @db.Uuid
-  document_type String
-  file_name     String
-  file_path     String
+model Attachments {
+  id              String   @id @default(uuid()) @db.Uuid
 
-  created_by String? @db.Uuid
-  updated_by String? @db.Uuid
+  // polymorphic relation
+  transaction_type String   // "Applicant", "Order", "Invoice"
+  transaction_id   String   @db.Uuid
 
-  createdBy User? @relation("ApplicantDocumentCreatedBy", fields: [created_by], references: [id])
-  updatedBy User? @relation("ApplicantDocumentUpdatedBy", fields: [updated_by], references: [id])
+  file_name       String
+  file_path       String
+  mime_type       String?
+  file_desc       String?
+  file_size       Int?
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_by      String?  @db.Uuid
+  updated_by      String?  @db.Uuid
 
-  applicant Applicant @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+  createdBy User? @relation("AttachmentsCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("AttachmentsUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@index([transaction_type, transaction_id])
 }
 
 model Interviewer {
@@ -833,23 +913,23 @@ model ExaminationRating {
 }
 
 model HrPerformanceCompetency {
-  id                  String  @id @default(uuid())  @db.Uuid
+  id                  String             @id @default(uuid()) @db.Uuid
   department_group    EmployeeType
   sea_category        SeaBasedCategory?
-  land_category       LandBasedCategory?           
+  land_category       LandBasedCategory?
   title               String
   description         String
   highest_score_limit Int?
-  is_active           Boolean @default(true)
+  is_active           Boolean            @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
 
-  createdBy User?  @relation("HrPerformanceCompetencyCreatedBy", fields: [created_by], references: [id])
-  updatedBy User?  @relation("HrPerformanceCompetencyUpdatedBy", fields: [updated_by], references: [id])
+  createdBy User? @relation("HrPerformanceCompetencyCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrPerformanceCompetencyUpdatedBy", fields: [updated_by], references: [id])
 
-  created_at  DateTime     @default(now())
-  updated_at  DateTime     @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   evaluation_details HrPerformanceEvaluationDetails[]
 
@@ -858,25 +938,150 @@ model HrPerformanceCompetency {
 }
 
 model HrPerformanceEvaluationDetails {
-  id              String  @id @default(uuid()) @db.Uuid
-  evaluation_id   String  @db.Uuid
-  competency_id   String  @db.Uuid
-  rating          PerformanceRating
-  remarks         String
-  is_active       Boolean @default(true)
-  created_at  DateTime     @default(now())
-  updated_at  DateTime     @updatedAt
+  id            String            @id @default(uuid()) @db.Uuid
+  evaluation_id String            @db.Uuid
+  competency_id String            @db.Uuid
+  rating        PerformanceRating
+  remarks       String
+  is_active     Boolean           @default(true)
+  created_at    DateTime          @default(now())
+  updated_at    DateTime          @updatedAt
 
-  employee_evaluation      HrEmployeeEvaluation @relation(fields: [evaluation_id], references: [id], onDelete: Cascade)
-  performance_competency   HrPerformanceCompetency @relation(fields: [competency_id], references: [id])
+  employee_evaluation    HrEmployeeEvaluation    @relation(fields: [evaluation_id], references: [id], onDelete: Cascade)
+  performance_competency HrPerformanceCompetency @relation(fields: [competency_id], references: [id])
 
   @@index([evaluation_id])
   @@index([competency_id])
 }
 
+model HrLeaveCategory {
+  id            String  @id @default(uuid()) @db.Uuid
+  category_name String
+  is_active     Boolean @default(true)
+  created_by    String? @db.Uuid
+  updated_by    String? @db.Uuid
+
+  createdBy User? @relation("HrLeaveCategoryCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrLeaveCategoryUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at          DateTime             @default(now())
+  updated_at          DateTime             @updatedAt
+  hrLeaveBalances     HrLeaveBalance[]
+  //hrLeaveTransactions HrLeaveTransaction[]
+  hrLeaveDates        HrLeaveDates[]
+}
+
+model HrLeaveRequest {
+  id                String             @id @default(uuid()) @db.Uuid
+  employee_id       String             @db.Uuid
+  date_from         DateTime
+  date_to           DateTime
+  reason            String
+  contact_number    String
+  address_on_leave  String?
+  no_of_days        Float?
+  status            LeaveRequestStatus @default(draft)
+  is_active         Boolean            @default(true)
+
+  reliever_id String @db.Uuid
+  verifier_id String @db.Uuid
+  approver_id String @db.Uuid 
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  created_by   String? @db.Uuid
+  updated_by   String? @db.Uuid
+
+  createdBy User? @relation("HrLeaveRequestCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrLeaveRequestUpdatedBy", fields: [updated_by], references: [id])
+
+  employee Employee @relation(fields: [employee_id], references: [id])
+  reliever User @relation("Reliever", fields: [reliever_id], references: [id])
+  verifier User @relation("Verifier", fields: [verifier_id], references: [id])
+  approver User @relation("Approver", fields: [approver_id], references: [id])
+
+  //hr_leave_transactions HrLeaveTransaction[]
+  hr_leave_dates        HrLeaveDates[]
+
+  //actions HrLeaveRequestAction[]
+}
+
+//Hr Leave Balance (per year, per type)
+model HrLeaveBalance {
+  id                String @id @default(uuid()) @db.Uuid
+  employee_id       String @db.Uuid
+  leave_category_id String @db.Uuid
+  year              Int
+  total             Int
+  used              Int    @default(0)
+  transaction_type  LeaveTransactionType
+
+  employee Employee        @relation(fields: [employee_id], references: [id])
+  category HrLeaveCategory @relation(fields: [leave_category_id], references: [id])
+
+  @@unique([employee_id, leave_category_id, year])
+  @@index([employee_id, year])
+}
+
+model HrLeaveDates {
+  id                  String   @id @default(uuid()) @db.Uuid
+  hr_leave_request_id String   @db.Uuid
+  employee_id         String   @db.Uuid
+  leave_category_id   String   @db.Uuid
+  fraction            Float    @default(1.0) //if halday = 0.5 and fullday = 1.0
+  leave_date          DateTime
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  hr_leave_request HrLeaveRequest  @relation(fields: [hr_leave_request_id], references: [id])
+  employee         Employee       @relation(fields: [employee_id], references: [id])
+  category         HrLeaveCategory @relation(fields: [leave_category_id], references: [id])
+}
+
+//Hr Leave Transaction (audit trail for employee leave)
+//will be keep for now, for experimental purpose or might be usefule in the future
+//model HrLeaveTransaction {
+//  id                  String               @id @default(uuid()) @db.Uuid
+//  employee_id         String               @db.Uuid
+//  leave_category_id   String               @db.Uuid
+//  hr_leave_request_id String?              @db.Uuid
+//  days                Int
+//  transaction_type    LeaveTransactionType
+//
+//  created_at DateTime @default(now())
+//  updated_at DateTime @updatedAt
+
+//  employee         Employee        @relation(fields: [employee_id], references: [id])
+//  leave_category   HrLeaveCategory @relation(fields: [leave_category_id], references: [id])
+//  hr_leave_request HrLeaveRequest? @relation(fields: [hr_leave_request_id], references: [id])
+//}
+
+//Hr Leave Request Action will record per user action per status
+//will be keep for now, for experimental purpose or might be useful in the future
+
+
 ////////////////////////////////////////
 // AUDIT TRAIL & DATABASE CONTROL
 ////////////////////////////////////////
+model WorkflowAction {
+  id               String              @id @default(uuid()) @db.Uuid
+ 
+  //what action was performed
+  actionable_type  String              // get table name from actionable_id
+  actionable_id    String              @db.Uuid
+  action           WorkflowActionType  
+  
+  //who performed the action
+  acted_by         String              @db.Uuid
+  acted_at         DateTime            @default(now())
+  remarks          String?
+  metadata         Json?
+
+  //acted_by_employee Employee       @relation(fields: [acted_by], references: [id])
+  acted_by_user    User        @relation(fields: [acted_by], references: [id])
+}
 
 model AuditTrail {
   id          String  @id @default(uuid()) @db.Uuid
