@@ -371,7 +371,7 @@ export class LeaveCasesService {
         return this.prisma.$transaction(async (tx) => {
 
             const submitLeave = await tx.hrLeaveRequest.update({
-                where: { id: hrLeaveRequestId },
+                where: { id: hrLeaveRequestId, status: "draft" },
                 data: {
                     status: "for_verification",
                     updated_by: requestUser.id
@@ -380,7 +380,7 @@ export class LeaveCasesService {
 
             await tx.workflowAction.create({
                 data: {
-                    actionable_type: "LeaveRequest",
+                    actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                     actionable_id: hrLeaveRequestId,
                     action: "submitted",
                     acted_by: user.id
@@ -520,7 +520,6 @@ export class LeaveCasesService {
                 if (e instanceof BadRequestException) {
                     throw e; // keep your validation errors
                 }
-
                 throw new Error ('Leave Request cannot be approved')
             }
             
@@ -651,7 +650,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: 'rejected',
+                        action: 'reject',
                         acted_by: requestUser.id
                     }
                 });
@@ -666,6 +665,9 @@ export class LeaveCasesService {
                     rejected_by: `${userName} - ${userPosition}`,
                 };
             } catch (e) {
+                // if (e instanceof BadRequestException) {
+                //     throw e; // keep your validation errors
+                // }
                 throw new Error('Invalid status for rejection');
             }
         })
