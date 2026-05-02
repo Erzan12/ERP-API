@@ -1,3 +1,4 @@
 export const WORKFLOW_ENTITY = {
-  LEAVE_REQUEST: "LeaveRequest"
+  LEAVE_REQUEST: "LeaveRequest",
+  APPLICANT: "Applicant"
 };

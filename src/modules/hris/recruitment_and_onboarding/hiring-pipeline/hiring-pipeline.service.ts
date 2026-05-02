@@ -19,6 +19,8 @@ import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 import { Prisma } from '@prisma/client';
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
+import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
+import { pid } from 'process';
 
 @Injectable()
 export class HiringPipelineService {
@@ -537,6 +539,318 @@ export class HiringPipelineService {
       message: 'Here is the status count for applicants',
       result,
     };
+  }
+
+  async shortlisted(applicantId: string, user: RequestUser) {
+     // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const shortlist = await tx.applicant.update({
+        where: { id: applicantId, application_status: "applied" },
+        data: {
+          application_status: "shortlisted",
+          updated_by: requestUser.id
+        }
+      });
+
+      await tx.workflowAction.create({
+        data: {
+          actionable_type: WORKFLOW_ENTITY.APPLICANT,
+          actionable_id: applicantId,
+          action: "shortlist",
+          acted_by: user.id
+        }
+      });
+
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      return {
+          status: 'success',
+          message: 'Applicant has been shortlisted',
+          shortlist,
+          shortlisted_by: `${userName} - ${userPosition}`,
+      };
+    })
+  }
+
+  async forInterview(applicantId: string, user: RequestUser) {
+     // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const forInterview = await tx.applicant.update({
+        where: { id: applicantId, application_status: "shortlisted" },
+        data: {
+          application_status: "for_interview",
+          updated_by: requestUser.id,
+        }
+      });
+
+      await tx.workflowAction.create({
+        data: {
+          actionable_type: WORKFLOW_ENTITY.APPLICANT,
+          actionable_id: applicantId,
+          action: "set_interview",
+          acted_by: user.id
+        }
+      });
+
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      return {
+          status: 'success',
+          message: 'Applicant has been set for interview',
+          forInterview,
+          set_by: `${userName} - ${userPosition}`,
+      };
+    })
+  }
+
+  async accepted(applicantId: string, user: RequestUser) {
+     // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const accepted = await tx.applicant.update({
+        where: { id: applicantId, application_status: "for_interview" },
+        data: {
+          application_status: "accepted",
+          updated_by: requestUser.id
+        }
+      });
+
+      await tx.workflowAction.create({
+        data: {
+          actionable_type: WORKFLOW_ENTITY.APPLICANT,
+          actionable_id: applicantId,
+          action: "accept",
+          acted_by: user.id
+        }
+      });
+
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      return {
+          status: 'success',
+          message: 'Applicant has been accepted',
+          accepted,
+          accepted_by: `${userName} - ${userPosition}`,
+      };
+    })
+  }
+
+  async onBoarding(applicantId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      try {
+        const checkStatus = await tx.applicant.findUnique({
+          where: { id: applicantId }
+        })
+
+        if (!checkStatus || checkStatus.application_status !== "accepted") {
+          throw new BadRequestException("Applicant must be accepted first before can be onboarded");
+        }
+
+        const onBoard = await tx.applicant.update({
+          where: { id: applicantId, application_status: "accepted" },
+          data: {
+            application_status: "onboarding",
+            updated_by: requestUser.id
+          }
+        });
+
+        await tx.workflowAction.create({
+          data: {
+            actionable_type: WORKFLOW_ENTITY.APPLICANT,
+            actionable_id: applicantId,
+            action: "onboard",
+            acted_by: requestUser.id
+          }
+        })
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+          status: 'success',
+          message: 'Applicant is now Onboard',
+          onBoard,
+          onboarded_by: `${userName} - ${userPosition}`,
+        }
+      } catch (e) {
+        if (e instanceof BadRequestException) {
+            throw e; // keep your validation errors
+        }
+        throw new Error ('Leave Request cannot be approved')
+      }
+    })
+  }
+
+  async reject(applicantId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      try {
+          const checkStatus = await tx.applicant.findUnique({
+            where: { id: applicantId }
+          })
+
+          if (!checkStatus || checkStatus.application_status === "onboarding") {
+            throw new BadRequestException("Applicant is now onboarding cannot be rejected");
+          }
+
+          const reject = await tx.applicant.update({
+            where: { 
+              id: applicantId
+            },
+            data: {
+              application_status: 'rejected',
+              updated_by: requestUser.id
+            }
+          });
+
+          await tx.workflowAction.create({
+            data: {
+              actionable_type: WORKFLOW_ENTITY.APPLICANT,
+              actionable_id: applicantId,
+              action: 'reject',
+              acted_by: requestUser.id
+            }
+          });
+
+          const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+          const userPosition = requestUser.employee.position.name;
+
+          return {
+            status: 'success',
+            message: 'Applicant has been rejected',
+            reject,
+            rejected_by: `${userName} - ${userPosition}`,
+          }
+      } catch (e) {
+        if (e instanceof BadRequestException) {
+            throw e; // keep your validation errors
+        }
+        // throw new Error ('Applicant cannot be rejected')
+      }
+    })
   }
 }
 
