@@ -182,6 +182,57 @@ export class ApplicantsController {
       user,
     );
   }
+
+  // HIRING PIPELINE WORKFLOW STATUS
+  @Post('applicants/:applicantId/submit')
+  @ApiOperation({ summary: 'Shortlist an Applicant' })
+  @ApiPostResponse('Applicant has been shortlisted')
+  submitLeave(
+      @Param('applicantId', new ParseUUIDPipe) applicantId: string,
+      @SessionUser() user: RequestUser
+  ) {
+      return this.hiringPipelineService.shortlisted(applicantId,user)
+  }
+
+  @Post('applicants/:applicantId/for-interview')
+  @ApiOperation({ summary: 'Set an Applicant for Interview' })
+  @ApiPostResponse('Applicant has been set for interview')
+  forInterview(
+      @Param('applicantId', new ParseUUIDPipe) applicantId: string,
+      @SessionUser() user: RequestUser
+  ) {
+      return this.hiringPipelineService.forInterview(applicantId,user)
+  }
+
+  @Post('applicants/:applicantId/accept')
+  @ApiOperation({ summary: 'Accept an Applicant' })
+  @ApiPostResponse('Applicant has been accepted')
+  accept(
+    @Param('applicantId', new ParseUUIDPipe) applicantId: string,
+    @SessionUser() user: RequestUser
+  ) {
+    return this.hiringPipelineService.accepted(applicantId, user)
+  }
+
+  @Post('applicants/:applicantId/onboard')
+  @ApiOperation({ summary: 'Onbaord an Applicant' })
+  @ApiPostResponse('Applicant is now onboard')
+  onBoard(
+    @Param('applicantId', new ParseUUIDPipe) applicantId: string,
+    @SessionUser() user: RequestUser
+  ) {
+    return this.hiringPipelineService.onBoarding(applicantId, user)
+  }
+
+  @Post('applicants/:applicantId/reject')
+  @ApiOperation({ summary: 'Reject an Applicant' })
+  @ApiPostResponse('Applicant has been rejected')
+  reject(
+    @Param('applicantId', new ParseUUIDPipe) applicantId: string,
+    @SessionUser() user: RequestUser
+  ) {
+    return this.hiringPipelineService.reject(applicantId, user)
+  }
 }
 
 /**
