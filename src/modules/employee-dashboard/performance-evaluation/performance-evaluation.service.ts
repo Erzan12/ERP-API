@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { SubmitEvaluationDto } from './dto/performance-evaluation.dto';
+import { AcknowledgeEvaluationDto, SubmitEvaluationDto } from './dto/performance-evaluation.dto';
 
 @Injectable()
 export class PerformanceEvaluationService {

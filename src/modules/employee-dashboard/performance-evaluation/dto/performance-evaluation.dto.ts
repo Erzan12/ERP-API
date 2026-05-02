@@ -84,3 +84,12 @@ export class SubmitEvaluationDto {
   })
   comments: string;
 }
+
+export class AcknowledgeEvaluationDto {
+  @IsString()
+  @ApiProperty({
+    example: 'Employee response or message of appreciation'
+  })
+  @IsNotEmpty()
+  response: string;
+}
