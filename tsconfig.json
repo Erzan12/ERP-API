@@ -19,7 +19,8 @@
     "forceConsistentCasingInFileNames": true,
     "strictPropertyInitialization": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "types": ["jest", "node", "multer"]
     // "types" field removed — TypeScript will auto-discover all @types/* packages
   },
   "watchOptions": {
