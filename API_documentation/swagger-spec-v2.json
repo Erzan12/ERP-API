@@ -3195,11 +3195,47 @@
         "parameters": [],
         "requestBody": {
           "required": true,
-          "description": "Payload to create Applicant",
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/CreateApplicantDto"
+                "type": "object",
+                "properties": {
+                  "career_id": {
+                    "type": "string"
+                  },
+                  "first_name": {
+                    "type": "string"
+                  },
+                  "last_name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "mobile_number": {
+                    "type": "string"
+                  },
+                  "date_applied": {
+                    "type": "string"
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "application_source": {
+                    "type": "string",
+                    "enum": [
+                      "company_website",
+                      "walk_in",
+                      "referral",
+                      "linkedIn",
+                      "jobstreet"
+                    ]
+                  }
+                }
               }
             }
           }
@@ -3233,17 +3269,7 @@
     "/v2/hris/applicants/status-count": {
       "get": {
         "operationId": "ApplicantsController_getStatusCountActive_v2",
-        "parameters": [
-          {
-            "name": "is_active",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "boolean"
-            }
-          }
-        ],
+        "parameters": [],
         "responses": {
           "200": {
             "description": "List of all Applicants status"
@@ -3353,7 +3379,202 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Update a current company information",
+        "summary": "Update a current applicants information",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/submit": {
+      "post": {
+        "operationId": "ApplicantsController_submitLeave_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant has been shortlisted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Shortlist an Applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/for-interview": {
+      "post": {
+        "operationId": "ApplicantsController_forInterview_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant has been set for interview"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Set an Applicant for Interview",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/accept": {
+      "post": {
+        "operationId": "ApplicantsController_accept_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant has been accepted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Accept an Applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/onboard": {
+      "post": {
+        "operationId": "ApplicantsController_onBoard_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant is now onboard"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Onbaord an Applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/reject": {
+      "post": {
+        "operationId": "ApplicantsController_reject_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant has been rejected"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Reject an Applicant",
         "tags": [
           "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
@@ -5953,83 +6174,6 @@
           "employment_type",
           "status",
           "user_location_id"
-        ]
-      },
-      "CreateApplicantDto": {
-        "type": "object",
-        "properties": {
-          "career_id": {
-            "type": "string",
-            "example": "Job/Career posting PK UUID",
-            "description": "UUID of career posting"
-          },
-          "first_name": {
-            "type": "string",
-            "example": "Juan",
-            "description": "First name of applicant"
-          },
-          "middle_name": {
-            "type": "string",
-            "example": "Doe",
-            "description": "Middlename can be optional"
-          },
-          "last_name": {
-            "type": "string",
-            "example": "Dee",
-            "description": "Last name of the applicant"
-          },
-          "email": {
-            "type": "string",
-            "example": "juandoe@gmail.com",
-            "description": "Email of the applicant"
-          },
-          "mobile_number": {
-            "type": "string",
-            "example": "09633416290",
-            "description": "Mobile no. of the applicant"
-          },
-          "application_source": {
-            "type": "string",
-            "enum": [
-              "company_website",
-              "walk_in",
-              "referral",
-              "linkedIn",
-              "jobstreet"
-            ],
-            "example": "company_website",
-            "description": "The application source of the applicant"
-          },
-          "application_status": {
-            "type": "string",
-            "enum": [
-              "applied",
-              "screening",
-              "shortlisted",
-              "for_interview",
-              "accepted",
-              "rejected",
-              "onboarding"
-            ],
-            "example": "for_interview",
-            "description": "The status of application of the applicant"
-          },
-          "date_applied": {
-            "type": "string",
-            "example": "2026-03-05",
-            "description": "The date of application of the applicant"
-          }
-        },
-        "required": [
-          "career_id",
-          "first_name",
-          "middle_name",
-          "last_name",
-          "email",
-          "mobile_number",
-          "application_source",
-          "application_status",
-          "date_applied"
         ]
       },
       "UpdateApplicantDto": {
