@@ -172,6 +172,8 @@ enum WorkflowActionType {
   set_interview
   accept
   onboard
+
+  acknowledge
 }
 
 ////////////////////////////////////////
