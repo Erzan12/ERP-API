@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
-import { EmployeeService } from './employee_masterlist/employee.service';
-import { EmployeeControllerV2 } from './employee_masterlist/employeeV2.controller';
+import { EmployeeService } from './employee/employee-masterlist/employee.service';
+import { EmployeeControllerV2 } from './employee/employee-masterlist/employee.controller';
 
 import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardControllerV2 } from './dashboard/dashboardV2.controller';
@@ -10,17 +10,26 @@ import { DashboardControllerV2 } from './dashboard/dashboardV2.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { AdministratorV2Module } from '../administrator/administratorV2.module';
 
-import { CareerPostingService } from './career-posting/career-posting.service';
-import { CareerPostingV2Controller } from './career-posting/career-posting-v2.controller';
+import { CareerPostingService } from './recruitment-and-onboarding/career-posting/career-posting.service';
+import { CareerPostingV2Controller } from './recruitment-and-onboarding/career-posting/career-posting-v2.controller';
 
 import {
   HiringPipelineService,
   InterviewApplicantService,
-} from './hiring-pipeline/hiring-pipeline.service';
+} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.service';
 import {
   ApplicantsController,
   InterviewApplicantController,
-} from './hiring-pipeline/hiring-pipelineV2.controller';
+} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipelineV2.controller';
+import { RegularizationReviewsService } from './performance-management/regularization-reviews/regularization-reviews.service';
+import { RegularizationReviewsController } from './performance-management/regularization-reviews/regularization-reviews.controller';
+import { PerformanceCompetencyService } from './performance-management/performance-competency/performance-competency.service';
+import { PerformanceCompetencyController } from './performance-management/performance-competency/performance-competency.controller';
+import { LeaveCasesService } from './time-and-attendance-cases/leave-cases/leave-cases.service';
+import { LeaveCategoryService } from './time-and-attendance-cases/leave-category/leave-category.service';
+import { LeaveCasesController } from './time-and-attendance-cases/leave-cases/leave-cases.controller';
+import { LeaveCategoryController } from './time-and-attendance-cases/leave-category/leave-category.controller';
+import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
@@ -31,6 +40,11 @@ import {
     CareerPostingService,
     HiringPipelineService,
     InterviewApplicantService,
+    RegularizationReviewsService,
+    PerformanceCompetencyService,
+    LeaveCasesService,
+    LeaveCategoryService,
+    AttachmentUploadService
     // ScreeningApplicantService,
   ],
   controllers: [
@@ -40,6 +54,10 @@ import {
     ApplicantsController,
     // ScreeningApplicantController,
     InterviewApplicantController,
+    RegularizationReviewsController,
+    PerformanceCompetencyController,
+    LeaveCasesController,
+    LeaveCategoryController
   ],
   exports: [HrV2Module],
 })
