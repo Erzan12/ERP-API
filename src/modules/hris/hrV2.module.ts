@@ -10,21 +10,25 @@ import { DashboardControllerV2 } from './dashboard/dashboardV2.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { AdministratorV2Module } from '../administrator/administratorV2.module';
 
-import { CareerPostingService } from './recruitment_and_onboarding/career-posting/career-posting.service';
-import { CareerPostingV2Controller } from './recruitment_and_onboarding/career-posting/career-posting-v2.controller';
+import { CareerPostingService } from './recruitment-and-onboarding/career-posting/career-posting.service';
+import { CareerPostingV2Controller } from './recruitment-and-onboarding/career-posting/career-posting-v2.controller';
 
 import {
   HiringPipelineService,
   InterviewApplicantService,
-} from './recruitment_and_onboarding/hiring-pipeline/hiring-pipeline.service';
+} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.service';
 import {
   ApplicantsController,
   InterviewApplicantController,
-} from './recruitment_and_onboarding/hiring-pipeline/hiring-pipelineV2.controller';
+} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipelineV2.controller';
 import { RegularizationReviewsService } from './performance-management/regularization-reviews/regularization-reviews.service';
 import { RegularizationReviewsController } from './performance-management/regularization-reviews/regularization-reviews.controller';
 import { PerformanceCompetencyService } from './performance-management/performance-competency/performance-competency.service';
 import { PerformanceCompetencyController } from './performance-management/performance-competency/performance-competency.controller';
+import { LeaveCasesService } from './time-and-attendance-cases/leave-cases/leave-cases.service';
+import { LeaveCategoryService } from './time-and-attendance-cases/leave-category/leave-category.service';
+import { LeaveCasesController } from './time-and-attendance-cases/leave-cases/leave-cases.controller';
+import { LeaveCategoryController } from './time-and-attendance-cases/leave-category/leave-category.controller';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
@@ -36,7 +40,9 @@ import { PerformanceCompetencyController } from './performance-management/perfor
     HiringPipelineService,
     InterviewApplicantService,
     RegularizationReviewsService,
-    PerformanceCompetencyService
+    PerformanceCompetencyService,
+    LeaveCasesService,
+    LeaveCategoryService
     // ScreeningApplicantService,
   ],
   controllers: [
@@ -47,7 +53,9 @@ import { PerformanceCompetencyController } from './performance-management/perfor
     // ScreeningApplicantController,
     InterviewApplicantController,
     RegularizationReviewsController,
-    PerformanceCompetencyController
+    PerformanceCompetencyController,
+    LeaveCasesController,
+    LeaveCategoryController
   ],
   exports: [HrV2Module],
 })
