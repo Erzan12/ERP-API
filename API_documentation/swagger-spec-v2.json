@@ -4254,6 +4254,162 @@
         ]
       }
     },
+    "/v2/hris/time-and-attendance-cases/leave-category": {
+      "get": {
+        "operationId": "LeaveCategoryController_getLeaveCategories_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of Leave Categories"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Leave Categories",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Category)"
+        ]
+      },
+      "post": {
+        "operationId": "LeaveCategoryController_createLeaveCategory_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Leave Category",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeaveCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Leave Category successfully created"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Leave Category creation",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Category)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave-category/{leaveCategoryId}": {
+      "get": {
+        "operationId": "LeaveCategoryController_getLeaveCategory_v2",
+        "parameters": [
+          {
+            "name": "leaveCategoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Leave Category"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a Leave Category",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Category)"
+        ]
+      },
+      "put": {
+        "operationId": "LeaveCategoryController_updateLeaveCategory_v2",
+        "parameters": [
+          {
+            "name": "leaveCategoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update leave category",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLeaveCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Leave Category updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current leave category",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Category)"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -6321,6 +6477,38 @@
         "required": [
           "leave_request",
           "leave_dates"
+        ]
+      },
+      "CreateLeaveCategory": {
+        "type": "object",
+        "properties": {
+          "category_name": {
+            "type": "string",
+            "example": "Sick Leave",
+            "description": "Category name of leave category"
+          }
+        },
+        "required": [
+          "category_name"
+        ]
+      },
+      "UpdateLeaveCategory": {
+        "type": "object",
+        "properties": {
+          "category_name": {
+            "type": "string",
+            "example": "Sick Leave",
+            "description": "Category name of leave category"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": "true or false",
+            "description": "The status of this Leave Category"
+          }
+        },
+        "required": [
+          "category_name",
+          "is_active"
         ]
       },
       "CreatePermissionTemplateDto": {
