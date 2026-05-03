@@ -45,9 +45,9 @@ export class PerformanceEvaluationController {
         return this.performanceEvaluationService.submitEvaluation(evaluationId, user, dto)
     }
 
-    @Put('performance-evaluation/evaluation/:evaluationId/acknowledge')
+    @Post('performance-evaluation/evaluation/:evaluationId/acknowledge')
     @ApiOperation({ summary: 'Employee to acknowledge evaluation' })
-    @ApiPatchResponse('Employee acknowledge evaluation successfully')
+    @ApiPostResponse('Employee acknowledge evaluation successfully')
     @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
     acknowledgeEvaluation(
         @Param('evaluationId', new ParseUUIDPipe()) evaluationId: string,

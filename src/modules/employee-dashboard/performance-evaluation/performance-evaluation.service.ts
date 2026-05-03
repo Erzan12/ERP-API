@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AcknowledgeEvaluationDto, SubmitEvaluationDto } from './dto/performance-evaluation.dto';
+import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constant';
 
 @Injectable()
 export class PerformanceEvaluationService {
@@ -187,28 +188,43 @@ export class PerformanceEvaluationService {
             throw new ForbiddenException('You are not authorized to perform this action');
         }
 
-        const acknowledgeEvaluation = await this.prisma.hrEmployeeEvaluation.update({
-            where: { 
-                id: evaluationId, 
-                employee_id: requestUser.employee.id , 
-                evaluated_on: { not: null }, 
-                type_of_evaluation: { not: null },
-                overall_rating: { not: null }
-            },
-            data: {
-                response: dto.response,
-                acknowledged_on: new Date(),
+        return this.prisma.$transaction(async (tx) => {
+            try {
+                const acknowledgeEvaluation = await this.prisma.hrEmployeeEvaluation.update({
+                    where: { 
+                        id: evaluationId, 
+                        employee_id: requestUser.employee.id , 
+                        evaluated_on: { not: null }, 
+                        type_of_evaluation: { not: null },
+                        overall_rating: { not: null }
+                    },
+                    data: {
+                        response: dto.response,
+                        acknowledged_on: new Date(),
+                    }
+                })
+
+                if (!acknowledgeEvaluation) {
+                    throw new NotFoundException('No evaluations done yet')
+                }
+
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.PERFORMANCE_EVAL,
+                        actionable_id: evaluationId,
+                        action: 'acknowledge',
+                        acted_by: requestUser.id
+                    }
+                })
+
+                return {
+                    status: 'success',
+                    message: 'Evaluation successfully acknowledge',
+                    acknowledgeEvaluation
+                }
+            } catch (e) {
+                throw new Error ('Evaluation cannot be acknowledge')
             }
         })
-
-        if (!acknowledgeEvaluation) {
-            throw new NotFoundException('No evaluations done yet')
-        }
-
-        return {
-            status: 'success',
-            message: 'Evaluation successfully acknowledge',
-            acknowledgeEvaluation
-        }
     }
 }
