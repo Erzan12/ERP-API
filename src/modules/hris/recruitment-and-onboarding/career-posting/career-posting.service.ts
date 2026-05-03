@@ -173,18 +173,18 @@ export class CareerPostingService {
               },
             },
           })),
-          {
-            employment_type: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
-          {
-            employee_type: {
-              contains: search,
-              mode: 'insensitive',
-            },
-          },
+          // {
+          //   employment_type: {
+          //     contains: search,
+          //     mode: 'insensitive',
+          //   },
+          // },
+          // {
+          //   employee_type: {
+          //     contains: search,
+          //     mode: 'insensitive',
+          //   },
+          // },
         ],
       };
     }

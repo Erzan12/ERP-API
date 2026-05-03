@@ -48,6 +48,13 @@ export class LandingController {
           status: 'Beta',
         },
         {
+          title: 'Employee Dashboard',
+          slug: 'employee-dashboard',
+          swaggerLink: '/docs/employee-dashboard',
+          icon: '/public/icons/employees.png',
+          status: 'Beta',
+        },
+        {
           title: 'DB Query',
           slug: 'db-query',
           swaggerLink: '/docs/db-query',
