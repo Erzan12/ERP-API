@@ -3860,6 +3860,400 @@
         ]
       }
     },
+    "/v2/hris/time-and-attendance-cases/leaves": {
+      "get": {
+        "operationId": "LeaveCasesController_getLeaveCases_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of Leave Cases"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Leave Cases",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leaves/status-count": {
+      "get": {
+        "operationId": "LeaveCasesController_getStatusCountActive_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all Leave Request stats"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Leave Request status",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave": {
+      "post": {
+        "operationId": "LeaveCasesController_createLeaveRequest_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Leave Request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLeaveRequestWithDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Leave Request successfully created"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Leave Request Creation",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/submit": {
+      "post": {
+        "operationId": "LeaveCasesController_submitLeave_v2",
+        "parameters": [
+          {
+            "name": "hrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Leave Request submitted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Submit Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave-cases/{hrLeaveRequestId}/verify": {
+      "post": {
+        "operationId": "LeaveCasesController_verifyLeave_v2",
+        "parameters": [
+          {
+            "name": "hrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Leave Request verified"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Verify Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/approve": {
+      "post": {
+        "operationId": "LeaveCasesController_approveLeave_v2",
+        "parameters": [
+          {
+            "name": "hrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Leave Request approved"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Approve Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/process": {
+      "post": {
+        "operationId": "LeaveCasesController_processLeave_v2",
+        "parameters": [
+          {
+            "name": "hrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Leave Request processed"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Process Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/reject": {
+      "post": {
+        "operationId": "LeaveCasesController_rejectLeave_v2",
+        "parameters": [
+          {
+            "name": "hrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Leave Request rejected"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Reject Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/cancel": {
+      "post": {
+        "operationId": "LeaveCasesController_cancelLeave_v2",
+        "parameters": [
+          {
+            "name": "hrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Leave Request cancelled"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Cancel Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -5826,6 +6220,107 @@
           "title",
           "description",
           "highest_score_limit"
+        ]
+      },
+      "CreateLeaveRequestDto": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "Employee UUID",
+            "description": "The employee uuid PK"
+          },
+          "date_from": {
+            "type": "string",
+            "example": "2026-04-10",
+            "description": "Date start of employee leave request"
+          },
+          "date_to": {
+            "type": "string",
+            "example": "2026-04-10",
+            "description": "Date end of the employee leave request"
+          },
+          "reason": {
+            "type": "string",
+            "example": "I will go for vacation",
+            "description": "The reason of employee leave request"
+          },
+          "contact_number": {
+            "type": "string",
+            "example": "09633263341",
+            "description": "Telephone or cellphone number of employee"
+          },
+          "address_on_leave": {
+            "type": "string",
+            "example": "Hotel California",
+            "description": "The employee address while on leave"
+          },
+          "reliever_id": {
+            "type": "string",
+            "example": "User UUID for reliver while on leave",
+            "description": "The uuid of reliever user while employee is on leave"
+          },
+          "verifier_id": {
+            "type": "string",
+            "example": "User UUID for verifier of this leave request",
+            "description": "The uuid of verifier user for this leave request"
+          },
+          "approver_id": {
+            "type": "string",
+            "example": "User UUID for leave request approver",
+            "description": "The uuid of approver user for this user leave request"
+          }
+        },
+        "required": [
+          "employee_id",
+          "date_from",
+          "date_to",
+          "reason",
+          "contact_number",
+          "address_on_leave",
+          "reliever_id",
+          "verifier_id",
+          "approver_id"
+        ]
+      },
+      "RecordLeaveDatesDto": {
+        "type": "object",
+        "properties": {
+          "leave_date": {
+            "type": "string",
+            "example": "2026-04-10"
+          },
+          "leave_type": {
+            "type": "string",
+            "example": "Leave type/category UUID PK"
+          },
+          "fraction": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "leave_date",
+          "leave_type",
+          "fraction"
+        ]
+      },
+      "CreateLeaveRequestWithDetailsDto": {
+        "type": "object",
+        "properties": {
+          "leave_request": {
+            "$ref": "#/components/schemas/CreateLeaveRequestDto"
+          },
+          "leave_dates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecordLeaveDatesDto"
+            }
+          }
+        },
+        "required": [
+          "leave_request",
+          "leave_dates"
         ]
       },
       "CreatePermissionTemplateDto": {
