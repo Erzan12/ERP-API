@@ -33,6 +33,16 @@ export class PerformanceEvaluationController {
         return this.performanceEvaluationService.getToBeEvaluated(user)
     }
 
+    @Get('performance-evaluation/done-evaluated')
+    @ApiOperation({ summary: 'List of evaluations completed by this evaluator' })
+    @ApiGetResponse('List of done/finished evaluations')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getDoneEvaluated(
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.performanceEvaluationService.getDoneEvaluated(user)
+    }
+
     @Post('performance-evaluation/to-be-evaluated/:evaluationId/submit')
     @ApiOperation({ summary: 'Submit Employee Performance Evaluation' })
     @ApiPostResponse('Employee Performance Evaluation submitted')
