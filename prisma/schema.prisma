@@ -166,6 +166,12 @@ enum WorkflowActionType {
 
   hold
   resume
+
+  screen
+  shortlist
+  set_interview
+  accept
+  onboard
 }
 
 ////////////////////////////////////////
