@@ -3533,6 +3533,201 @@
         ]
       }
     },
+    "/v2/hris/applicants/{applicantId}/submit": {
+      "post": {
+        "operationId": "ApplicantsController_submitLeave_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant has been shortlisted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Shortlist an Applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/for-interview": {
+      "post": {
+        "operationId": "ApplicantsController_forInterview_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant has been set for interview"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Set an Applicant for Interview",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/accept": {
+      "post": {
+        "operationId": "ApplicantsController_accept_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant has been accepted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Accept an Applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/onboard": {
+      "post": {
+        "operationId": "ApplicantsController_onBoard_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant is now onboard"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Onbaord an Applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/reject": {
+      "post": {
+        "operationId": "ApplicantsController_reject_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant has been rejected"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Reject an Applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
     "/v2/hris/applicants/interview/assign-interview-panel": {
       "post": {
         "operationId": "InterviewApplicantController_assignInterviewer_v2",
@@ -4285,7 +4480,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of all Leave Request status"
+            "description": "List of all Leave Request stats"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
