@@ -91,7 +91,7 @@ export class CareerPostingV2Controller {
     @Body() dto: CreateCareerPostingDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.careerPostingService.createCareerPosting(dto, user);
+    return this.careerPostingService.create(dto, user);
   }
 
   @Put('recruitments/:recruitmentId')
@@ -107,7 +107,7 @@ export class CareerPostingV2Controller {
     @Body() updateCareerPostingDto: UpdateCareerPostingDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.careerPostingService.updateCareerPosting(
+    return this.careerPostingService.update(
       recruitmentId,
       updateCareerPostingDto,
       user,
