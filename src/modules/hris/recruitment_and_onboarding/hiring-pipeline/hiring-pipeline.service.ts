@@ -11,7 +11,6 @@ import {
   RecruitmentPaginationDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
 import {
-  ApplicationSource,
   ApplicationStatus,
   InterviewStage,
 } from 'src/utils/decorators/global.enums.decorator';
@@ -20,7 +19,6 @@ import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 import { Prisma } from '@prisma/client';
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
-import { pid } from 'process';
 
 @Injectable()
 export class HiringPipelineService {
