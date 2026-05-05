@@ -8,6 +8,7 @@ import { Prisma } from '@prisma/client';
 import { RegularizationReviewDto } from 'src/utils/dtos/regularization-pagination.dto';
 import { EvaluationStage, EvaluationStatus } from 'src/utils/decorators/global.enums.decorator';
 import { computeOverallStatus } from 'src/utils/helpers/compute-overall-status.helper';
+import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 
 @Injectable()
 export class RegularizationReviewsService {
@@ -510,5 +511,200 @@ export class RegularizationReviewsService {
             message: 'Here is the status count for employee evaluation',
             result,
         };
+    }
+
+    async verify(employeeEvaluationId: string, user: RequestUser) {
+       // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+        
+        return this.prisma.$transaction(async (tx) => {
+            try {
+                const verifyEvaluation = await tx.hrEmployeeEvaluation.update({
+                    where: { id: employeeEvaluationId, completed_at: { not: null}},
+                    data: {
+                        status: "for_approval",
+                        verifier_id: requestUser.employee_id,
+                        updated_by: requestUser.id
+                    }
+                });
+
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.EMPLOYEE_EVALUATION,
+                        actionable_id: employeeEvaluationId,
+                        action: "verify",
+                        acted_by: requestUser.id
+                    }
+                });
+
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
+
+                return {
+                    status: 'success',
+                    message: 'Employee Evaluation Verified',
+                    verifyEvaluation,
+                    verified_by: `${userName} - ${userPosition}`,
+                }; 
+            } catch (e) {
+                throw new Error ('Invalid status cannot be verified')
+            }
+        })
+    }
+
+    async approve(employeeEvaluationId: string, user: RequestUser) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async (tx) => {
+            try {
+                const approveEvaluation = await tx.hrEmployeeEvaluation.update({
+                    where: { 
+                        id: employeeEvaluationId, 
+                        status: "for_acknowledgment"
+                    },
+                    data: {
+                        status: "approved",
+                        approver_id: requestUser.employee_id,
+                        updated_by: requestUser.id
+                    }
+                })
+
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.EMPLOYEE_EVALUATION,
+                        actionable_id: employeeEvaluationId,
+                        action: "approve",
+                        acted_by: requestUser.id
+                    }
+                })
+
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
+
+                return {
+                    status: 'success',
+                    message: 'Employee evaluation has been approved',
+                    approveEvaluation,
+                    approved_by: `${userName} - ${userPosition}`,
+                }
+            } catch (e) {
+                throw new Error ('Invalid status cannot be approved')
+            }
+        })
+    }
+
+    async reject(employeeEvaluationId: string, user: RequestUser) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async (tx) => {
+            try {
+                const rejectEvaluation = await tx.hrEmployeeEvaluation.update({
+                    where: { 
+                        id: employeeEvaluationId,
+                        OR: [
+                            { status: 'for_verification' },
+                            { status: 'for_approval' }
+                        ]
+                    },
+                    data: {
+                        status: 'rejected',
+                        updated_by: requestUser.id
+                    }
+                });
+
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.EMPLOYEE_EVALUATION,
+                        actionable_id: employeeEvaluationId,
+                        action: 'reject',
+                        acted_by: requestUser.id
+                    }
+                });
+
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
+
+                return {
+                    status: 'success',
+                    message: 'Employee Evaluation Rejected',
+                    rejectEvaluation,
+                    rejected_by: `${userName} - ${userPosition}`,
+                };
+            } catch (e) {
+                // if (e instanceof BadRequestException) {
+                //     throw e; // keep your validation errors
+                // }
+                throw new Error('Invalid status cannot be rejected');
+            }
+
+        })
     }
 }
