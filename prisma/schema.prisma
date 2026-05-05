@@ -97,6 +97,8 @@ enum EvaluationStatus {
   for_verification
   for_approval
   for_acknowledgment
+  approved
+  rejected
 }
 
 enum TypeOfEvaluation {
@@ -139,7 +141,10 @@ enum LeaveTransactionType {
 enum WorkflowActionType {
   draft
 
+  create
   created
+  
+  submit
   submitted
 
   verify
@@ -147,6 +152,9 @@ enum WorkflowActionType {
 
   approve
   approved
+
+  acknowledge
+  completed
 
   reject
   rejected
@@ -552,6 +560,9 @@ model Employee {
   evaluations_received HrEmployeeEvaluation[] @relation("HrEmployeeEvaluations")
   evaluations_given    HrEmployeeEvaluation[] @relation("EmployeeGivenEvaluations")
 
+  verified_requests HrEmployeeEvaluation[] @relation("Verifier")
+  approved_requests HrEmployeeEvaluation[] @relation("Approver")
+
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
 
@@ -615,6 +626,8 @@ model HrEmployeeEvaluation {
 
   employee_id  String @db.Uuid
   evaluator_id String @db.Uuid
+  verifier_id  String? @db.Uuid
+  approver_id  String? @db.Uuid
 
   stage  EvaluationStage
   status EvaluationStatus @default(for_evaluation)
@@ -642,7 +655,9 @@ model HrEmployeeEvaluation {
 
   employee  Employee @relation("HrEmployeeEvaluations", fields: [employee_id], references: [id])
   evaluator Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id])
-
+  verifier Employee? @relation("Verifier", fields: [verifier_id], references: [id])
+  approver Employee? @relation("Approver", fields: [approver_id], references: [id])
+  
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
 
