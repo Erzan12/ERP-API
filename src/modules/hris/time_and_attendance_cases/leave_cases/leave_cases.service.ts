@@ -260,11 +260,7 @@ export class LeaveCasesService {
                     created_by: `${userName} - ${userPosition}`,
                 };
             } catch (e) {
-                if (e instanceof BadRequestException) {
-                    throw e; // keep your validation errors
-                }
-
-                throw new Error ('Leave Request cannot be created')
+                throw e;
             }
         });
     }
@@ -369,33 +365,36 @@ export class LeaveCasesService {
         }
 
         return this.prisma.$transaction(async (tx) => {
+            try {
+                const submitLeave = await tx.hrLeaveRequest.update({
+                    where: { id: hrLeaveRequestId, status: "draft" },
+                    data: {
+                        status: "for_verification",
+                        updated_by: requestUser.id
+                    }
+                });
 
-            const submitLeave = await tx.hrLeaveRequest.update({
-                where: { id: hrLeaveRequestId, status: "draft" },
-                data: {
-                    status: "for_verification",
-                    updated_by: requestUser.id
-                }
-            });
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+                        actionable_id: hrLeaveRequestId,
+                        action: "submitted",
+                        acted_by: user.id
+                    }
+                });
 
-            await tx.workflowAction.create({
-                data: {
-                    actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
-                    actionable_id: hrLeaveRequestId,
-                    action: "submitted",
-                    acted_by: user.id
-                }
-            });
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
 
-            const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-            const userPosition = requestUser.employee.position.name;
-
-            return {
-                status: 'success',
-                message: 'Leave Request Submitted',
-                submitLeave,
-                submitted_by: `${userName} - ${userPosition}`,
-            };
+                return {
+                    status: 'success',
+                    message: 'Leave Request Submitted',
+                    submitLeave,
+                    submitted_by: `${userName} - ${userPosition}`,
+                };
+            } catch (e) {
+                throw e;
+            }
         });
     }
 
@@ -426,38 +425,42 @@ export class LeaveCasesService {
         }
 
         return this.prisma.$transaction(async (tx) => {
+            try {
+                const verifyLeave = await tx.hrLeaveRequest.update({
+                    where: { id: hrLeaveRequestId, status: "for_verification" },
+                    data: {
+                        status: "for_approval",
+                        verifier_id: requestUser.id,
+                        updated_by: requestUser.id
+                    }
+                });
 
-            const verifyLeave = await tx.hrLeaveRequest.update({
-                where: { id: hrLeaveRequestId, status: "for_verification" },
-                data: {
-                    status: "for_approval",
-                    verifier_id: requestUser.id,
-                    updated_by: requestUser.id
-                }
-            });
+                // if(verifyLeave.status != 'for_verification') {
+                //     throw new BadRequestException('Leave request cannot be verify it needs to be submitted first')
+                // }
 
-            // if(verifyLeave.status != 'for_verification') {
-            //     throw new BadRequestException('Leave request cannot be verify it needs to be submitted first')
-            // }
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+                        actionable_id: hrLeaveRequestId,
+                        action: "verify",
+                        acted_by: requestUser.id
+                    }
+                });
 
-            await tx.workflowAction.create({
-                data: {
-                    actionable_type: "LeaveRequest",
-                    actionable_id: hrLeaveRequestId,
-                    action: "verified",
-                    acted_by: requestUser.id
-                }
-            });
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
 
-            const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-            const userPosition = requestUser.employee.position.name;
+                return {
+                    status: 'success',
+                    message: 'Leave Request Verified',
+                    verifyLeave,
+                    verified_by: `${userName} - ${userPosition}`,
+                };
+            } catch (e) {
+                throw e;
+            }
 
-            return {
-                status: 'success',
-                message: 'Leave Request Verified',
-                verifyLeave,
-                verified_by: `${userName} - ${userPosition}`,
-            };
         });
     }
     
@@ -517,10 +520,13 @@ export class LeaveCasesService {
                     approved_by: `${userName} - ${userPosition}`,
                 };
             } catch (e) {
-                if (e instanceof BadRequestException) {
-                    throw e; // keep your validation errors
-                }
-                throw new Error ('Leave Request cannot be approved')
+                // if (e instanceof BadRequestException) {
+                //     throw e; // keep your validation errors
+                // }
+                // if (e.code === 'P2002') {
+                //     throw new BadRequestException('Duplicate entry');
+                // }
+                throw e;
             }
             
         })
@@ -581,7 +587,8 @@ export class LeaveCasesService {
                     processed_by: `${userName} - ${userPosition}`,
                 };
             } catch (e) {
-                throw new Error ('Invalid status for processing leave request')
+                // throw new Error ('Invalid status for processing leave request')
+                throw e;
             }
         })
     }
@@ -668,7 +675,8 @@ export class LeaveCasesService {
                 // if (e instanceof BadRequestException) {
                 //     throw e; // keep your validation errors
                 // }
-                throw new Error('Invalid status for rejection');
+                // throw new Error('Invalid status for rejection');
+                throw e;
             }
         })
     }
@@ -736,7 +744,8 @@ export class LeaveCasesService {
                     cancelled_by: `${userName} - ${userPosition}`,
                 }
             } catch (e) {
-                throw new Error ('Invalid status for cancellation')
+                // throw new Error ('Invalid status for cancellation')
+                throw e;
             }
         })
     }
