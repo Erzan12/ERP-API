@@ -37,9 +37,7 @@ enum StatusEnum {
 enum CareerPostingStatus {
   draft
   submitted
-  for_verification
   verified
-  for_approval
   approved
   rejected
 }
@@ -142,7 +140,6 @@ enum LeaveTransactionType {
 
 enum WorkflowActionType {
   for_acknowledgment
-  for_approval
   for_appraisal
   for_evaluation
   for_interview
@@ -150,7 +147,6 @@ enum WorkflowActionType {
   for_regularization
   for_promotion
   for_processing
-  for_verification
 
   draft
 
@@ -1034,7 +1030,7 @@ model HrLeaveCategory {
 model HrLeaveRequest {
   id                String             @id @default(uuid()) @db.Uuid
   employee_id       String             @db.Uuid
-  leave_category_id String             @db.Uuid
+  leave_category_id String?             @db.Uuid
   date_from         DateTime
   date_to           DateTime
   reason            String
@@ -1055,7 +1051,7 @@ model HrLeaveRequest {
   createdBy User? @relation("HrLeaveRequestCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("HrLeaveRequestUpdatedBy", fields: [updated_by], references: [id])
 
-  category  HrLeaveCategory @relation(fields: [leave_category_id], references: [id])
+  category  HrLeaveCategory? @relation(fields: [leave_category_id], references: [id])
 
   employee Employee @relation(fields: [employee_id], references: [id])
   reliever User  @relation("LeaveRequestReliever", fields: [reliever_id], references: [id])

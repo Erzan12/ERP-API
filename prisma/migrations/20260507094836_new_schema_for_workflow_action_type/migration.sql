@@ -5,18 +5,9 @@
   - You are about to drop the column `approver_id` on the `HrLeaveRequest` table. All the data in the column will be lost.
   - You are about to drop the column `verifier_id` on the `HrLeaveRequest` table. All the data in the column will be lost.
   - You are about to drop the column `remarks` on the `WorkflowAction` table. All the data in the column will be lost.
-  - Added the required column `leave_category_id` to the `HrLeaveRequest` table without a default value. This is not possible if the table is not empty.
 
 */
 -- AlterEnum
--- This migration adds more than one value to an enum.
--- With PostgreSQL versions 11 and earlier, this is not possible
--- in a single migration. This can be worked around by creating
--- multiple migrations, each migration adding only one value to
--- the enum.
-
-
-ALTER TYPE "CareerPostingStatus" ADD VALUE 'for_verification';
 ALTER TYPE "CareerPostingStatus" ADD VALUE 'for_approval';
 
 -- AlterEnum
@@ -36,7 +27,6 @@ ALTER TYPE "WorkflowActionType" ADD VALUE 'for_reevaluation';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'for_regularization';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'for_promotion';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'for_processing';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_verification';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluate';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluated';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluation';
@@ -78,11 +68,11 @@ ALTER TABLE "HrLeaveDates" DROP COLUMN "leave_category_id";
 -- AlterTable
 ALTER TABLE "HrLeaveRequest" DROP COLUMN "approver_id",
 DROP COLUMN "verifier_id",
-ADD COLUMN     "leave_category_id" UUID NOT NULL;
+ADD COLUMN     "leave_category_id" UUID;
 
 -- AlterTable
 ALTER TABLE "WorkflowAction" DROP COLUMN "remarks",
 ALTER COLUMN "acted_at" DROP NOT NULL;
 
 -- AddForeignKey
-ALTER TABLE "HrLeaveRequest" ADD CONSTRAINT "HrLeaveRequest_leave_category_id_fkey" FOREIGN KEY ("leave_category_id") REFERENCES "HrLeaveCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "HrLeaveRequest" ADD CONSTRAINT "HrLeaveRequest_leave_category_id_fkey" FOREIGN KEY ("leave_category_id") REFERENCES "HrLeaveCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
