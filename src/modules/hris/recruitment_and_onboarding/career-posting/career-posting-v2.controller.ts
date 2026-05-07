@@ -91,7 +91,7 @@ export class CareerPostingV2Controller {
     @Body() dto: CreateCareerPostingDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.careerPostingService.createCareerPosting(dto, user);
+    return this.careerPostingService.create(dto, user);
   }
 
   @Put('recruitments/:recruitmentId')
@@ -107,10 +107,51 @@ export class CareerPostingV2Controller {
     @Body() updateCareerPostingDto: UpdateCareerPostingDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.careerPostingService.updateCareerPosting(
+    return this.careerPostingService.update(
       recruitmentId,
       updateCareerPostingDto,
       user,
     );
+  }
+
+  // CAREER/JOB POSTING WORKFLOW STATUS
+  @Post('recruitments/:recruitmentId/submit')
+  @ApiOperation({ summary: 'Submit Career/Job Posting' })
+  @ApiPostResponse('Career/Job Posting submitted')
+  submitCareerPosting(
+    @Param('recruitmentId', new ParseUUIDPipe) recruitmentId: string,
+    @SessionUser() user: RequestUser
+  ) {
+    return this.careerPostingService.submit(recruitmentId, user)
+  }
+
+  @Post('recruitments/:recruitmentId/verify')
+  @ApiOperation({ summary: 'Verify Career/Job Posting' })
+  @ApiPostResponse('Career/Job Posting verified')
+  verifyCareerPosting(
+    @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
+    @SessionUser() user: RequestUser
+  ) {
+    return this.careerPostingService.verify(recruitmentId, user)
+  }
+
+  @Post('recruitments/:recruitmentId/approve')
+  @ApiOperation({ summary: 'Approve Career/Job Posting' })
+  @ApiPostResponse('Career/Job Posting approved')
+  approveCareerPosting(
+    @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
+    @SessionUser() user: RequestUser
+  ) {
+    return this.careerPostingService.approve(recruitmentId, user)
+  }
+
+  @Post('recruitments/:recruitmentId/reject')
+  @ApiOperation({ summary: 'Reject Career/Job Posting' })
+  @ApiPostResponse('Career/Job Posting rejected')
+  rejectCareerPosting(
+    @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
+    @SessionUser() user: RequestUser
+  ) {
+    return this.careerPostingService.reject(recruitmentId, user)
   }
 }
