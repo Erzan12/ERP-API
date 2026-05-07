@@ -52,7 +52,7 @@ export class PerformanceEvaluationController {
         @SessionUser() user: RequestUser,
         @Body() dto: SubmitEvaluationDto,
     ) {
-        return this.performanceEvaluationService.submitEvaluation(evaluationId, user, dto)
+        return this.performanceEvaluationService.submit(evaluationId, user, dto)
     }
 
     @Put('performance-evaluation/:evaluationId')
@@ -64,6 +64,6 @@ export class PerformanceEvaluationController {
         @SessionUser() user: RequestUser,
         @Body() dto: AcknowledgeEvaluationDto,
     ) {
-        return this.performanceEvaluationService.acknowledgeEvaluation( user,evaluationId, dto)
+        return this.performanceEvaluationService.acknowledge( user,evaluationId, dto)
     }
 }

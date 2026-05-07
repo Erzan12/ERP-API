@@ -15,6 +15,7 @@ import {
   RecruitmentPaginationDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
 import { CareerPostingStatus } from 'src/utils/decorators/global.enums.decorator';
+import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 
 @Injectable()
 export class CareerPostingService {
@@ -22,6 +23,31 @@ export class CareerPostingService {
 
   //get career posting
   async getCareerPosting(recruitmentId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
     const recruitment = await this.prisma.careerPosting.findUnique({
       where: { id: recruitmentId },
       include: {
@@ -76,41 +102,6 @@ export class CareerPostingService {
       throw new NotFoundException('Career Posting not found');
     }
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
     return {
       status: 'success',
       message: 'Here is the Career/Job Posting',
@@ -121,6 +112,31 @@ export class CareerPostingService {
   //get career postings
   async getCareerPostings(user: RequestUser, dto: RecruitmentPaginationDto) {
     const { search, status, sortBy, order, page, perPage } = dto;
+
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
 
     //pagination area
     const skip = (page - 1) * perPage;
@@ -256,6 +272,7 @@ export class CareerPostingService {
       'created_at',
       'updated_at',
     ];
+
     const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, recruitments] = await this.prisma.$transaction([
@@ -335,41 +352,6 @@ export class CareerPostingService {
       }),
     ]);
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
     return {
       status: 'success',
       message: 'List of Career Posting',
@@ -382,43 +364,33 @@ export class CareerPostingService {
   }
 
   //create career posting
-  async createCareerPosting(
+  async create(
     createCareerPosting: CreateCareerPostingDto,
     user: RequestUser,
   ) {
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
         },
-        user_roles: true,
-      },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
+        throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
 
     if (!canView) {
-      throw new ForbiddenException(
-        'You are not allowed to perform this action',
-      );
+        throw new ForbiddenException('You are not authorized to perform this action');
     }
 
     const posting = await this.prisma.position.findUnique({
@@ -442,35 +414,75 @@ export class CareerPostingService {
     // ${createCareerPosting.job_description ?? ''}
     // `;
 
-    const recruitment = await this.prisma.careerPosting.create({
-      data: {
-        position_id: createCareerPosting.position_id,
-        slots: createCareerPosting.slots,
-        // job_description: posting.job_description || '',
-        created_by: user.id,
-        department_id: createCareerPosting.department_id,
-        employee_type: createCareerPosting.employee_type,
-        employment_type: createCareerPosting.employment_type,
-        user_location_id: createCareerPosting.user_location_id,
-      },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      try {
+        const recruitment = await tx.careerPosting.create({
+          data: {
+            position_id: createCareerPosting.position_id,
+            slots: createCareerPosting.slots,
+            // job_description: posting.job_description || '',
+            created_by: user.id,
+            department_id: createCareerPosting.department_id,
+            employee_type: createCareerPosting.employee_type,
+            employment_type: createCareerPosting.employment_type,
+            user_location_id: createCareerPosting.user_location_id,
+          },
+        });
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+        await tx.workflowAction.create({
+          data: {
+            actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
+            actionable_id: recruitment.id,
+            action: 'creation',
+            acted_by: requestUser.id
+          }
+        })
 
-    return {
-      status: 'success',
-      message: `Career has been created successfully`,
-      recruitment,
-      created_by_user: `${userName} - ${userPosition}`,
-    };
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+          status: 'success',
+          message: `Career/Job Posting has been created successfully`,
+          recruitment,
+          created_by_user: `${userName} - ${userPosition}`,
+        };
+      } catch (e) {
+        throw e;
+      }
+    })
   }
 
-  async updateCareerPosting(
+  async update(
     recruitmentId: string,
     updateCareerPostingDto: UpdateCareerPostingDto,
     user: RequestUser,
   ) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
     const careerPosting = await this.prisma.careerPosting.findUnique({
       where: { id: recruitmentId },
     });
@@ -478,14 +490,6 @@ export class CareerPostingService {
     if (!careerPosting) {
       throw new NotFoundException('Job/Career posting not found');
     }
-
-    //guard to check if posting status is already approved before posting can be published
-    // if (
-    //   updateCareerPostingDto.is_published !== undefined && 
-    //   careerPosting.status !== CareerPostingStatus.APPROVED
-    // ) {
-    //   throw new Error("Cannot publish a posting that is not approved.");
-    // }
     
     // Determine the resulting status (incoming or existing)
     const nextStatus =
@@ -504,15 +508,6 @@ export class CareerPostingService {
         "Only approved career postings can be published."
       );
     }
-
-    // let publishDate: Date | undefined = undefined;
-
-    // if (
-    //   updateCareerPostingDto.is_published === true &&
-    //   !careerPosting.published_on
-    // ) {
-    //   publishDate = new Date();
-    // }
 
     let publishDate: Date | undefined = undefined;
 
@@ -547,64 +542,42 @@ export class CareerPostingService {
       },
     });
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
-      message: `Job/Career posting has been updated successfully!`,
-      // updated_by: {
-      //   id: requestUser.id,
-      //   name: userName,
-      //   position: userPos,
-      // },
+      message: `Career/Job posting has been updated successfully!`,
       recruitment,
       updated_by_user: `${userName} - ${userPosition}`,
     };
   }
 
   async statusCount(user: RequestUser) {
-    // Count per status and also if isActive is true or false
-    // const { is_active } = dto;
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
 
-    // const whereCondition: Prisma.CareerPostingWhereInput = {
-    //   ...(is_active !== undefined && { is_active }),
-    // };
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
 
     const whereCondition: Prisma.CareerPostingWhereInput = {
       is_active: true,
@@ -648,45 +621,293 @@ export class CareerPostingService {
       }
     });
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
     return {
       stauts: 'success',
       message: 'Here is the status count for job/career posting',
       result,
     };
+  }
+
+  async submit(careerPostingId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      try {
+        const submitRecruitment = await tx.careerPosting.update({
+          where: { id: careerPostingId, status: 'draft' },
+          data: {
+            status: 'for_verification',
+            updated_by: requestUser.id,
+          }
+        });
+
+        await tx.workflowAction.create({
+          data: {
+            actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
+            actionable_id: careerPostingId,
+            action: "submission",
+            acted_by: requestUser.id
+          }
+        });
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+            status: 'success',
+            message: 'Career Posting submitted',
+            submitRecruitment,
+            submitted_by: `${userName} - ${userPosition}`,
+        };
+      } catch (e) {
+        throw e;
+      }
+    })
+  }
+
+  async verify(careerPostingId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      try {
+        const careerPosting = await tx.careerPosting.findUnique({
+          where: { id: careerPostingId }
+        });
+
+        if (careerPosting?.status !== "for_verification") {
+          throw new BadRequestException("Invalid! status must be: submitted");
+        }
+
+        const verifyCareerPosting = await tx.careerPosting.update({
+          where: { id: careerPostingId, status: "for_verification" },
+          data: {
+            status: "verified",
+          }
+        });
+
+        await tx.workflowAction.create({
+          data: {
+            actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+            actionable_id: careerPostingId,
+            action: "verification",
+            acted_by: requestUser.id
+          }
+        });
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+            status: 'success',
+            message: 'Career Posting Verified',
+            verifyCareerPosting,
+            verified_by: `${userName} - ${userPosition}`,
+        };
+      } catch (e) {
+        throw e;
+      }
+    })
+  }
+
+  async approve(careerPostingId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      try {
+        const careerPosting = await tx.careerPosting.findUnique({
+          where: { id: careerPostingId }
+        });
+
+        if (careerPosting?.status !== "verified") {
+          throw new BadRequestException("Invalid! status must be: submitted");
+        }
+
+        const approveCareerPosting = await tx.careerPosting.update({
+          where: { id: careerPostingId, status: "verified" },
+          data: {
+            status: "approved"
+          }
+        });
+
+        await tx.workflowAction.create({
+          data: {
+            actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
+            actionable_id: careerPostingId,
+            action: "approval",
+            acted_by: requestUser.id
+          }
+        });
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+            status: 'success',
+            message: 'Career Posting Approved',
+            approveCareerPosting,
+            approved_by: `${userName} - ${userPosition}`,
+        };
+      } catch (e) {
+        throw e;
+      }
+    })
+  }
+
+  async reject(careerPostingId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      try {
+        const careerPosting = await tx.careerPosting.findUnique({
+          where: { id: careerPostingId }
+        });
+
+        if (!careerPosting) {
+          throw new NotFoundException("Career Posting not found");
+        }
+
+        const allowedStatuses = ["submitted", "verified", "for_verification", "for_approval"];
+
+        if (!allowedStatuses.includes(careerPosting.status)){
+          throw new BadRequestException("Invalid! status must be: submitted, verified, for_verification or for_approval");
+        }
+
+        const rejectCareerPosting = await tx.careerPosting.updateMany({
+          where: { 
+            id: careerPostingId,
+            status: { 
+              in: [
+                "submitted", 
+                "verified", 
+                "for_verification", 
+                "for_approval"
+              ] 
+            }
+          },
+          data: {
+            status: 'rejected'
+          }
+        });
+
+        if (rejectCareerPosting.count === 0) {
+          throw new BadRequestException("Update failed due to invalid status");
+        }
+
+        await tx.workflowAction.create({
+          data: {
+            actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
+            actionable_id: careerPostingId,
+            action: 'rejection',
+            acted_by: requestUser.id
+          }
+        })
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+            status: 'success',
+            message: 'Career Posting Rejected',
+            rejectCareerPosting,
+            rejected_by: `${userName} - ${userPosition}`,
+        };
+      } catch (e) {
+        if (e instanceof BadRequestException) {
+          throw e;
+        }
+      }
+    })
   }
 }
