@@ -578,7 +578,7 @@ export class HiringPipelineService {
         data: {
           actionable_type: WORKFLOW_ENTITY.APPLICANT,
           actionable_id: applicantId,
-          action: "shortlist",
+          action: "shortlisting",
           acted_by: user.id
         }
       });
@@ -634,7 +634,7 @@ export class HiringPipelineService {
         data: {
           actionable_type: WORKFLOW_ENTITY.APPLICANT,
           actionable_id: applicantId,
-          action: "set_interview",
+          action: "interview_scheduling",
           acted_by: user.id
         }
       });
@@ -690,7 +690,7 @@ export class HiringPipelineService {
         data: {
           actionable_type: WORKFLOW_ENTITY.APPLICANT,
           actionable_id: applicantId,
-          action: "accept",
+          action: "acceptance",
           acted_by: user.id
         }
       });
@@ -755,7 +755,7 @@ export class HiringPipelineService {
           data: {
             actionable_type: WORKFLOW_ENTITY.APPLICANT,
             actionable_id: applicantId,
-            action: "onboard",
+            action: "onboarding",
             acted_by: requestUser.id
           }
         })
@@ -828,7 +828,7 @@ export class HiringPipelineService {
             data: {
               actionable_type: WORKFLOW_ENTITY.APPLICANT,
               actionable_id: applicantId,
-              action: 'reject',
+              action: 'rejection',
               acted_by: requestUser.id
             }
           });

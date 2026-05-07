@@ -554,7 +554,7 @@ export class RegularizationReviewsService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.EMPLOYEE_EVALUATION,
                         actionable_id: employeeEvaluationId,
-                        action: "verify",
+                        action: "verification",
                         acted_by: requestUser.id
                     }
                 });
@@ -618,7 +618,7 @@ export class RegularizationReviewsService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.EMPLOYEE_EVALUATION,
                         actionable_id: employeeEvaluationId,
-                        action: "approve",
+                        action: "approval",
                         acted_by: requestUser.id
                     }
                 })
@@ -684,7 +684,7 @@ export class RegularizationReviewsService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.EMPLOYEE_EVALUATION,
                         actionable_id: employeeEvaluationId,
-                        action: 'reject',
+                        action: 'rejection',
                         acted_by: requestUser.id
                     }
                 });
