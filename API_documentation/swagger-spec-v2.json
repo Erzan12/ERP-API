@@ -3250,6 +3250,162 @@
         ]
       }
     },
+    "/v2/hris/recruitments/{recruitmentId}/submit": {
+      "post": {
+        "operationId": "CareerPostingV2Controller_submitCareerPosting_v2",
+        "parameters": [
+          {
+            "name": "recruitmentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Career/Job Posting submitted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Submit Career/Job Posting",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Job/Career Posting)"
+        ]
+      }
+    },
+    "/v2/hris/recruitments/{recruitmentId}/verify": {
+      "post": {
+        "operationId": "CareerPostingV2Controller_verifyCareerPosting_v2",
+        "parameters": [
+          {
+            "name": "recruitmentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Career/Job Posting verified"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Verify Career/Job Posting",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Job/Career Posting)"
+        ]
+      }
+    },
+    "/v2/hris/recruitments/{recruitmentId}/approve": {
+      "post": {
+        "operationId": "CareerPostingV2Controller_approveCareerPosting_v2",
+        "parameters": [
+          {
+            "name": "recruitmentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Career/Job Posting approved"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Approve Career/Job Posting",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Job/Career Posting)"
+        ]
+      }
+    },
+    "/v2/hris/recruitments/{recruitmentId}/reject": {
+      "post": {
+        "operationId": "CareerPostingV2Controller_rejectCareerPosting_v2",
+        "parameters": [
+          {
+            "name": "recruitmentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Career/Job Posting rejected"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Reject Career/Job Posting",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Job/Career Posting)"
+        ]
+      }
+    },
     "/v2/hris/applicants": {
       "get": {
         "operationId": "ApplicantsController_getCareerPostings_v2",
@@ -4474,6 +4630,45 @@
         ]
       }
     },
+    "/v2/hris/time-and-attendance-cases/leaves/{hrLeaveRequestId}": {
+      "get": {
+        "operationId": "LeaveCasesController_getLeaveCase_v2",
+        "parameters": [
+          {
+            "name": "hrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Leave Request"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
     "/v2/hris/time-and-attendance-cases/leaves/status-count": {
       "get": {
         "operationId": "LeaveCasesController_getStatusCountActive_v2",
@@ -4584,7 +4779,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance-cases/leave-cases/{hrLeaveRequestId}/verify": {
+    "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/verify": {
       "post": {
         "operationId": "LeaveCasesController_verifyLeave_v2",
         "parameters": [
@@ -6952,6 +7147,11 @@
             "example": "Employee UUID",
             "description": "The employee uuid PK"
           },
+          "leave_category_id": {
+            "type": "string",
+            "example": "Leave Category UUID",
+            "description": "The employee uuid PK"
+          },
           "date_from": {
             "type": "string",
             "example": "2026-04-10",
@@ -6995,6 +7195,7 @@
         },
         "required": [
           "employee_id",
+          "leave_category_id",
           "date_from",
           "date_to",
           "reason",
@@ -7012,10 +7213,6 @@
             "type": "string",
             "example": "2026-04-10"
           },
-          "leave_type": {
-            "type": "string",
-            "example": "Leave type/category UUID PK"
-          },
           "fraction": {
             "type": "number",
             "example": 1
@@ -7023,7 +7220,6 @@
         },
         "required": [
           "leave_date",
-          "leave_type",
           "fraction"
         ]
       },
