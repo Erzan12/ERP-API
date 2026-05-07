@@ -3689,45 +3689,6 @@
         ]
       }
     },
-    "/v2/hris/applicants/{applicantId}/submit": {
-      "post": {
-        "operationId": "ApplicantsController_submitLeave_v2",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Applicant has been shortlisted"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Shortlist an Applicant",
-        "tags": [
-          "Human Resources - Recruitment and Onboarding (Applicants)"
-        ]
-      }
-    },
     "/v2/hris/applicants/{applicantId}/for-interview": {
       "post": {
         "operationId": "ApplicantsController_forInterview_v2",
@@ -4382,6 +4343,84 @@
         "summary": "Get a single Performance Competency",
         "tags": [
           "Human Resources - Performance Management (Performance Competencies)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/documents": {
+      "get": {
+        "operationId": "ScreeningApplicantController_getApplicantDocuments_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get Applicant document"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Applicant document",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Screening Applicant)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/submit": {
+      "post": {
+        "operationId": "ScreeningApplicantController_submitLeave_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Applicant has been shortlisted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Shortlist an Applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Screening Applicant)"
         ]
       }
     },
