@@ -357,6 +357,9 @@ export class LeaveCasesService {
             throw new ForbiddenException('You are not authorized to perform this action');
         }
 
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
         return this.prisma.$transaction(async (tx) => {
             try {
                 if(leave_dates.length === 0) {
@@ -457,7 +460,99 @@ export class LeaveCasesService {
                     }
                 });
 
-                if (leaveRequest.employee_id )
+                //query users first
+                const [verifierUser, approverUser, currentUser] = await Promise.all([
+                    tx.user.findUnique({
+                        where: {
+                            id: leave_request.verifier_id
+                        },
+                        select: {
+                            id: true,
+                            employee: {
+                                select: {
+                                    person: {
+                                        select: {
+                                            first_name: true,
+                                            middle_name: true,
+                                            last_name: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }),
+
+                    tx.user.findUnique({
+                        where: {
+                            id: leave_request.approver_id
+                        },
+                        select: {
+                            id: true,
+                            employee: {
+                                select: {
+                                    person: {
+                                        select: {
+                                            first_name: true,
+                                            middle_name: true,
+                                            last_name: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }),
+
+                    tx.user.findUnique({
+                        where: {
+                            id: requestUser.id
+                        },
+                        select: {
+                            id: true,
+                            employee: {
+                                select: {
+                                    person: {
+                                        select: {
+                                            first_name: true,
+                                            middle_name: true,
+                                            last_name: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    })
+                ]);
+
+                // build names
+                const verifierName = verifierUser
+                    ? [
+                        verifierUser.employee?.person?.first_name,
+                        verifierUser.employee?.person?.middle_name,
+                        verifierUser.employee?.person?.last_name,
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
+                    : "";
+
+                const approverName = approverUser
+                    ? [
+                        approverUser.employee?.person?.first_name,
+                        approverUser.employee?.person?.middle_name,
+                        approverUser.employee?.person?.last_name,
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
+                    : "";
+
+                const creatorName = currentUser
+                ? [
+                    currentUser.employee?.person?.first_name,
+                    currentUser.employee?.person?.middle_name,
+                    currentUser.employee?.person?.last_name,
+                ]
+                    .filter(Boolean)
+                    .join(" ")
+                : "";
 
                 // ADD WORKFLOW ACTION
                 await tx.workflowAction.createMany({
@@ -467,7 +562,13 @@ export class LeaveCasesService {
                             actionable_id: leaveRequest.id,
                             action: "creation",
                             acted_by: requestUser.id,
-                            acted_at: new Date()
+                            acted_at: new Date(),
+                            metadata: {
+                                title: "Leave Request created",
+                                message: "You have created a new Leave Request",
+                                user: creatorName,
+                                role: "creator",
+                            }
                         },
                         {
                             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
@@ -475,9 +576,9 @@ export class LeaveCasesService {
                             action: "verification",
                             acted_by: leave_request.verifier_id,
                             metadata: {
-                                title: "",
-                                message: "",
-                                user: "",
+                                title: "Verify Leave Request",
+                                message: "You have a new Verify Request",
+                                user: verifierName,
                                 role: "verifier",
                             },
                             acted_at: null,
@@ -488,18 +589,15 @@ export class LeaveCasesService {
                             action: "approval",
                             acted_by: leave_request.approver_id,
                             metadata: {
-                                title: "",
-                                message: "",
-                                user: "",
+                                title: "Approve Leave Request",
+                                message: "You have a new Approval Request",
+                                user: approverName,
                                 role: "approver",
                             },
                             acted_at: null,
                         }
                     ]  
                 });
-
-                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-                const userPosition = requestUser.employee.position.name;
 
                 return {
                     status: 'success',
@@ -546,7 +644,7 @@ export class LeaveCasesService {
             where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
             _count: { _all: true },
         }),
-        this.prisma.applicant.count({
+        this.prisma.hrLeaveRequest.count({
             where: { is_active: true }, // We always want this count regardless of the filter
         }),
         ]);
@@ -581,7 +679,7 @@ export class LeaveCasesService {
 
         return {
         status: 'success',
-        message: 'Here is the status count for applicants',
+        message: 'Here is the status count for leave requests',
         result,
         };
     }

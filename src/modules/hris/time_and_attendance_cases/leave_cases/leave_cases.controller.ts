@@ -25,6 +25,16 @@ export class LeaveCasesController {
         return this.leaveCasesService.getLeaveCases(user, dto)
     }
 
+    @Get('time-and-attendance-cases/leaves/status-count')
+    @ApiOperation({ summary: 'List of all Leave Request status' })
+    @ApiGetResponse('List of all Leave Request stats')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getStatusCountActive(
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.leaveCasesService.statusCount(user);
+    }
+
     @Get('time-and-attendance-cases/leaves/:hrLeaveRequestId')
     @ApiOperation({ summary: 'Get a single Leave Request' })
     @ApiGetResponse('Here is the Leave Request')
@@ -34,16 +44,6 @@ export class LeaveCasesController {
         @Param("hrLeaveRequestId", new ParseUUIDPipe) hrLeaveRequestId: string,
     ) {
         return this.leaveCasesService.getLeaveCase(hrLeaveRequestId, user)
-    }
-
-    @Get('time-and-attendance-cases/leaves/status-count')
-    @ApiOperation({ summary: 'List of all Leave Request status' })
-    @ApiGetResponse('List of all Leave Request stats')
-    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-    getStatusCountActive(
-        @SessionUser() user: RequestUser,
-    ) {
-        return this.leaveCasesService.statusCount(user);
     }
 
     @Post('time-and-attendance-cases/leave')
