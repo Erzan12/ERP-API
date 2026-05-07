@@ -16,10 +16,12 @@ import { CareerPostingV2Controller } from './recruitment_and_onboarding/career-p
 import {
   HiringPipelineService,
   InterviewApplicantService,
+  ScreeningApplicantService,
 } from './recruitment_and_onboarding/hiring-pipeline/hiring-pipeline.service';
 import {
   ApplicantsController,
   InterviewApplicantController,
+  ScreeningApplicantController,
 } from './recruitment_and_onboarding/hiring-pipeline/hiring-pipelineV2.controller';
 import { RegularizationReviewsService } from './performance_management/regularization_reviews/regularization_reviews.service';
 import { RegularizationReviewsController } from './performance_management/regularization_reviews/regularization_reviews.controller';
@@ -44,7 +46,8 @@ import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-u
     PerformanceCompetencyService,
     LeaveCategoryService,
     LeaveCasesService,
-    AttachmentUploadService
+    AttachmentUploadService,
+    ScreeningApplicantService
     // ScreeningApplicantService,
   ],
   controllers: [
@@ -57,6 +60,7 @@ import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-u
     InterviewApplicantController,
     RegularizationReviewsController,
     PerformanceCompetencyController,
+    ScreeningApplicantController,
     LeaveCategoryController,
     LeaveCasesController,
   ],

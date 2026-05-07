@@ -11,7 +11,6 @@ import {
   RecruitmentPaginationDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
 import {
-  ApplicationSource,
   ApplicationStatus,
   InterviewStage,
 } from 'src/utils/decorators/global.enums.decorator';
@@ -20,7 +19,6 @@ import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 import { Prisma } from '@prisma/client';
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
-import { pid } from 'process';
 
 @Injectable()
 export class HiringPipelineService {
@@ -284,7 +282,7 @@ export class HiringPipelineService {
 
     const attachments = await this.prisma.attachments.findMany({
       where: {
-        transaction_type: 'Applicant',
+        transaction_type: WORKFLOW_ENTITY.HIRING_PIPELINE,
         transaction_id: { in: applicantIds },
       },
     });
@@ -315,12 +313,12 @@ export class HiringPipelineService {
 
   //create applicant
   async createApplicant(
-    createApplicantDto: CreateApplicantDto,
+    applicantDto: CreateApplicantDto,
     user: RequestUser,
     files: Express.Multer.File[]
   ) {
     const { career_id, application_source } =
-      createApplicantDto;
+      applicantDto;
 
     // if (!Object.values(application_source).includes(application_source)) {
     //   throw new ForbiddenException('Error! Please use company_website, walk_in, referral, linkedIn or jobstreet');
@@ -369,45 +367,98 @@ export class HiringPipelineService {
       },
     });
 
-    const applicant = await this.prisma.applicant.create({
-      data: {
-        career_id: career_id,
-        first_name: createApplicantDto.first_name,
-        middle_name: createApplicantDto.middle_name ?? undefined,
-        last_name: createApplicantDto.last_name,
-        email: createApplicantDto.email,
-        mobile_number: createApplicantDto.mobile_number,
-        application_source,
-        // application_status,
-        date_applied: new Date(createApplicantDto.date_applied),
-        created_by: user.id,
-      },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      try {
+        const applicant = await tx.applicant.create({
+          data: {
+            career_id: career_id,
+            first_name: applicantDto.first_name,
+            middle_name: applicantDto.middle_name ?? undefined,
+            last_name: applicantDto.last_name,
+            email: applicantDto.email,
+            mobile_number: applicantDto.mobile_number,
+            application_source,
+            // application_status,
+            date_applied: new Date(applicantDto.date_applied),
+            created_by: user.id,
+          },
+        });
 
-    const attachments = await this.uploadService.attachFiles({
-      files,
-      transaction_type: 'Applicant',
-      transaction_id: applicant.id,
-      // file_desc: file_desc,
-      user_id: user.id,
-    });
+        const attachments = await this.uploadService.attachFiles({
+          files,
+          transaction_type: 'Applicant',
+          transaction_id: applicant.id,
+          // file_desc: file_desc,
+          user_id: user.id,
+        });
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+        const currentUser = await tx.user.findUnique({
+          where: {
+            id: requestUser.id
+          },
+          select: {
+            id: true,
+            employee: {
+                select: {
+                    person: {
+                        select: {
+                            first_name: true,
+                            middle_name: true,
+                            last_name: true
+                        }
+                    }
+                }
+            }
+          }
+        })
 
-    return {
-      status: 'success',
-      message: `Applicant has been created successfully`,
-      applicant,
-      attachments,
-      created_by_user: `${userName} - ${userPosition}`,
-    };
+        const creatorName = currentUser
+          ? [
+              currentUser.employee?.person?.first_name,
+              currentUser.employee?.person?.middle_name,
+              currentUser.employee?.person?.last_name,
+          ]
+              .filter(Boolean)
+              .join(" ")
+          : "";
+
+        await tx.workflowAction.create({
+          data: {
+            actionable_type: WORKFLOW_ENTITY.HIRING_PIPELINE,
+            actionable_id: applicant.id,
+            action: "creation",
+            acted_by: requestUser.id,
+            acted_at: new Date(),
+            metadata: {
+                title: "Career/Job Posting created",
+                message: "You have created a new Career/Job Posting",
+                user: creatorName,
+                role: "creator",
+            }
+          }
+        })
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+          status: 'success',
+          message: `Applicant has been created successfully`,
+          applicant,
+          attachments,
+          created_by_user: `${userName} - ${userPosition}`,
+        };
+      } catch (e) {
+        throw e;
+      }
+    })
   }
 
   async updateApplicant(
     applicantId: string,
     updateApplicantDto: UpdateApplicantDto,
     user: RequestUser,
+    files: Express.Multer.File[]
   ) {
 
     const requestUser = await this.prisma.user.findUnique({
@@ -457,6 +508,14 @@ export class HiringPipelineService {
       },
     });
 
+    const attachments = await this.uploadService.attachFiles({
+      files,
+      transaction_type: 'Applicant',
+      transaction_id: applicant.id,
+      // file_desc: file_desc,
+      user_id: user.id,
+    });
+
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
 
@@ -464,6 +523,7 @@ export class HiringPipelineService {
       status: 'success',
       message: `Job/Career posting has been updated successfully!`,
       applicant,
+      attachments,
       updated_by_user: `${userName} - ${userPosition}`,
     };
   }
@@ -541,62 +601,6 @@ export class HiringPipelineService {
     };
   }
 
-  async shortlisted(applicantId: string, user: RequestUser) {
-     // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-            employee: {
-            include: {
-                person: true,
-                position: true,
-            },
-            },
-            user_roles: true,
-        },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-        throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
-    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
-
-    if (!canView) {
-        throw new ForbiddenException('You are not authorized to perform this action');
-    }
-
-    return this.prisma.$transaction(async (tx) => {
-      const shortlist = await tx.applicant.update({
-        where: { id: applicantId, application_status: "applied" },
-        data: {
-          application_status: "shortlisted",
-          updated_by: requestUser.id
-        }
-      });
-
-      await tx.workflowAction.create({
-        data: {
-          actionable_type: WORKFLOW_ENTITY.APPLICANT,
-          actionable_id: applicantId,
-          action: "shortlist",
-          acted_by: user.id
-        }
-      });
-
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
-
-      return {
-          status: 'success',
-          message: 'Applicant has been shortlisted',
-          shortlist,
-          shortlisted_by: `${userName} - ${userPosition}`,
-      };
-    })
-  }
-
   async forInterview(applicantId: string, user: RequestUser) {
      // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -636,7 +640,7 @@ export class HiringPipelineService {
         data: {
           actionable_type: WORKFLOW_ENTITY.APPLICANT,
           actionable_id: applicantId,
-          action: "set_interview",
+          action: "interview_scheduling",
           acted_by: user.id
         }
       });
@@ -692,7 +696,7 @@ export class HiringPipelineService {
         data: {
           actionable_type: WORKFLOW_ENTITY.APPLICANT,
           actionable_id: applicantId,
-          action: "accept",
+          action: "acceptance",
           acted_by: user.id
         }
       });
@@ -757,7 +761,7 @@ export class HiringPipelineService {
           data: {
             actionable_type: WORKFLOW_ENTITY.APPLICANT,
             actionable_id: applicantId,
-            action: "onboard",
+            action: "onboarding",
             acted_by: requestUser.id
           }
         })
@@ -830,7 +834,7 @@ export class HiringPipelineService {
             data: {
               actionable_type: WORKFLOW_ENTITY.APPLICANT,
               actionable_id: applicantId,
-              action: 'reject',
+              action: 'rejection',
               acted_by: requestUser.id
             }
           });
@@ -857,86 +861,93 @@ export class HiringPipelineService {
 /**
  * SCREENING SERVICE SECTION
  */
+@Injectable()
+export class ScreeningApplicantService {
+  constructor(private readonly prisma: PrismaService) {}
 
-// export class ScreeningApplicantService {
-//   constructor(private prisma: PrismaService) {}
+  async getApplicantDocuments(applicantId: string, user: RequestUser) {
+    const applicant = await this.prisma.applicant.findUnique({
+      where: { id: applicantId }
+    });
 
-//   async screenApplicant(applicantId: string, files: UploadedFileDto[], user: RequestUser) {
-//     const screenApplicant = await this.prisma.applicant.findUnique({
-//       where: { id: applicantId },
-//       include: {
-//         applicant: true,
-//         createdBy: {
-//           select: {
-//             person: {
-//               select: {
-//                 first_name: true,
-//                 middle_name: true,
-//                 last_name: true,
-//               }
-//             }
-//           }
-//         },
-//         updatedBy: {
-//           select: {
-//             person: {
-//               select: {
-//                 first_name: true,
-//                 middle_name: true,
-//                 last_name: true,
-//               }
-//             }
-//           }
-//         }
-//       }
-//     });
+    if (!applicant) {
+      throw new NotFoundException("Applicant not found");
+    }
 
-//     if (!screenApplicant) {
-//       throw new NotFoundException('Applicant not found')
-//     }
+    const documents = await this.prisma.attachments.findMany({
+      where: { 
+        transaction_type: WORKFLOW_ENTITY.HIRING_PIPELINE,
+        transaction_id: applicant.id
+      },
+    })
 
-//     const requestUser = await this.prisma.user.findUnique({
-//       where: { id: user.id },
-//       include: {
-//         employee: {
-//           include: {
-//             person: true,
-//             position: true,
-//           },
-//         },
-//         user_roles: true,
-//       },
-//     });
+    return {
+      status: 'success',
+      message: 'These are the Applicants Documents',
+      documents
+    }
+  }
 
-//     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-//       throw new BadRequestException(`User does not exist.`);
-//     }
+  async screenApplicant(applicantId: string, user: RequestUser) {
+ // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
 
-//     const allowedRoles = [
-//       'Administrator',
-//       'Super Administrator',
-//       'HR Manager',
-//       'HR Clerk',
-//       'HR Staff',
-//     ];
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
 
-//     const canView = requestUser.user_roles.some((role) =>
-//       allowedRoles.includes(role.role_name),
-//     );
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
 
-//     if (!canView) {
-//       throw new ForbiddenException(
-//         'You are not authorized to perform this action',
-//       );
-//     }
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
 
-//     return {
-//       status: 'success',
-//       message: 'Here is the Applicant.',
-//       screenApplicant,
-//     };
-//   }
-// }
+    return this.prisma.$transaction(async (tx) => {
+      try {
+        const screenApplicant = await tx.applicant.update({
+          where: { id: applicantId, application_status: "applied" },
+          data: {
+            application_status: "shortlisted",
+            updated_by: requestUser.id
+          }
+        });
+
+        await tx.workflowAction.create({
+          data: {
+            actionable_type: WORKFLOW_ENTITY.APPLICANT,
+            actionable_id: applicantId,
+            action: "shortlisting",
+            acted_by: user.id
+          }
+        });
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+            status: 'success',
+            message: 'Applicant has been shortlisted',
+            screenApplicant,
+            shortlisted_by: `${userName} - ${userPosition}`,
+        };
+      } catch (e) {
+        throw e;
+      }
+    })
+  }
+}
 
 /**
  * INTERVIEW SERVICE SECTION
