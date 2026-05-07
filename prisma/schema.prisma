@@ -38,7 +38,6 @@ enum CareerPostingStatus {
   draft
   submitted
   verified
-  for_approval
   approved
   rejected
 }
@@ -141,7 +140,6 @@ enum LeaveTransactionType {
 
 enum WorkflowActionType {
   for_acknowledgment
-  for_approval
   for_appraisal
   for_evaluation
   for_interview
