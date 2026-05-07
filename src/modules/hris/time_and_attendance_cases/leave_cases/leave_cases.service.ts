@@ -357,9 +357,6 @@ export class LeaveCasesService {
             throw new ForbiddenException('You are not authorized to perform this action');
         }
 
-        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const userPosition = requestUser.employee.position.name;
-
         return this.prisma.$transaction(async (tx) => {
             try {
                 if(leave_dates.length === 0) {
@@ -545,14 +542,14 @@ export class LeaveCasesService {
                     : "";
 
                 const creatorName = currentUser
-                ? [
-                    currentUser.employee?.person?.first_name,
-                    currentUser.employee?.person?.middle_name,
-                    currentUser.employee?.person?.last_name,
-                ]
-                    .filter(Boolean)
-                    .join(" ")
-                : "";
+                    ? [
+                        currentUser.employee?.person?.first_name,
+                        currentUser.employee?.person?.middle_name,
+                        currentUser.employee?.person?.last_name,
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
+                    : "";
 
                 // ADD WORKFLOW ACTION
                 await tx.workflowAction.createMany({
@@ -598,6 +595,9 @@ export class LeaveCasesService {
                         }
                     ]  
                 });
+
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
 
                 return {
                     status: 'success',
