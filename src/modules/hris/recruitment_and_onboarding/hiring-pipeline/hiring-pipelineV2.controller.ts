@@ -268,7 +268,7 @@ export class InterviewApplicantController {
   constructor(
     private readonly interviewApplicantService: InterviewApplicantService,
   ) {}
-
+ 
   /**
    * PHASE 1: ASSIGNMENT
    * Creates the 3 interview slots (Initial, Second, Final)
