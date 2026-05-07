@@ -5,7 +5,6 @@
   - You are about to drop the column `approver_id` on the `HrLeaveRequest` table. All the data in the column will be lost.
   - You are about to drop the column `verifier_id` on the `HrLeaveRequest` table. All the data in the column will be lost.
   - You are about to drop the column `remarks` on the `WorkflowAction` table. All the data in the column will be lost.
-  - Added the required column `leave_category_id` to the `HrLeaveRequest` table without a default value. This is not possible if the table is not empty.
 
 */
 -- AlterEnum
@@ -78,11 +77,11 @@ ALTER TABLE "HrLeaveDates" DROP COLUMN "leave_category_id";
 -- AlterTable
 ALTER TABLE "HrLeaveRequest" DROP COLUMN "approver_id",
 DROP COLUMN "verifier_id",
-ADD COLUMN     "leave_category_id" UUID NOT NULL;
+ADD COLUMN     "leave_category_id" UUID;
 
 -- AlterTable
 ALTER TABLE "WorkflowAction" DROP COLUMN "remarks",
 ALTER COLUMN "acted_at" DROP NOT NULL;
 
 -- AddForeignKey
-ALTER TABLE "HrLeaveRequest" ADD CONSTRAINT "HrLeaveRequest_leave_category_id_fkey" FOREIGN KEY ("leave_category_id") REFERENCES "HrLeaveCategory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "HrLeaveRequest" ADD CONSTRAINT "HrLeaveRequest_leave_category_id_fkey" FOREIGN KEY ("leave_category_id") REFERENCES "HrLeaveCategory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
