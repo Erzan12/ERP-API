@@ -545,7 +545,7 @@ export class RegularizationReviewsService {
                     where: { id: employeeEvaluationId, completed_at: { not: null}},
                     data: {
                         status: "for_approval",
-                        verifier_id: requestUser.employee_id,
+                        // verifier_id: requestUser.employee_id,
                         updated_by: requestUser.id
                     }
                 });
@@ -609,7 +609,7 @@ export class RegularizationReviewsService {
                     },
                     data: {
                         status: "approved",
-                        approver_id: requestUser.employee_id,
+                        // approver_id: requestUser.employee_id,
                         updated_by: requestUser.id
                     }
                 })
