@@ -15,14 +15,6 @@
 -- the enum.
 
 
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_acknowledgment';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_appraisal';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_evaluation';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_interview';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_reevaluation';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_regularization';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_promotion';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_processing';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluate';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluated';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluation';
