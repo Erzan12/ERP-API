@@ -35,6 +35,17 @@ export class LeaveCasesController {
         return this.leaveCasesService.statusCount(user);
     }
 
+    @Get('time-and-attendance-cases/leaves/:hrLeaveRequestId')
+    @ApiOperation({ summary: 'Get a single Leave Request' })
+    @ApiGetResponse('Here is the Leave Request')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getLeaveCase(
+        @SessionUser() user: RequestUser,
+        @Param("hrLeaveRequestId", new ParseUUIDPipe) hrLeaveRequestId: string,
+    ) {
+        return this.leaveCasesService.getLeaveCase(hrLeaveRequestId, user)
+    }
+
     @Post('time-and-attendance-cases/leave')
     @ApiBody({
         type: CreateLeaveRequestWithDetailsDto,
@@ -61,7 +72,7 @@ export class LeaveCasesController {
         return this.leaveCasesService.submitLeave(hrLeaveRequestId,user)
     }
 
-    @Post('time-and-attendance-cases/leave-cases/:hrLeaveRequestId/verify')
+    @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/verify')
     @ApiOperation({ summary: 'Verify Leave Request' })
     @ApiPostResponse('Leave Request verified')
     verifyLeave(
