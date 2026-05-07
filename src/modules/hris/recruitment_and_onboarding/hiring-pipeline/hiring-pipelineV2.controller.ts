@@ -15,6 +15,7 @@ import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   HiringPipelineService,
   InterviewApplicantService,
+  ScreeningApplicantService,
 } from './hiring-pipeline.service';
 import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import {
@@ -49,7 +50,6 @@ import { extname } from 'path';
 export class ApplicantsController {
   constructor(
     private readonly hiringPipelineService: HiringPipelineService,
-    private readonly interviewApplicantService: InterviewApplicantService,
   ) {}
 
   @Get('applicants')
@@ -173,6 +173,7 @@ export class ApplicantsController {
   @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
   updateCareerPosting(
     @Param('applicationId', new ParseUUIDPipe()) applicationId: string,
+    @UploadedFiles() files: Express.Multer.File[],
     @Body() dto: UpdateApplicantDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -180,20 +181,11 @@ export class ApplicantsController {
       applicationId,
       dto,
       user,
+      files
     );
   }
 
   // HIRING PIPELINE WORKFLOW STATUS
-  @Post('applicants/:applicantId/submit')
-  @ApiOperation({ summary: 'Shortlist an Applicant' })
-  @ApiPostResponse('Applicant has been shortlisted')
-  submitLeave(
-      @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-      @SessionUser() user: RequestUser
-  ) {
-      return this.hiringPipelineService.shortlisted(applicantId,user)
-  }
-
   @Post('applicants/:applicantId/for-interview')
   @ApiOperation({ summary: 'Set an Applicant for Interview' })
   @ApiPostResponse('Applicant has been set for interview')
@@ -239,22 +231,32 @@ export class ApplicantsController {
  * SCREENING CONTROLLER SECTION
  */
 
-// @ApiTags('Human Resources - Recruitment and Onboarding (Screening Applicant)')
-// @Controller({ path: 'hris', version: '2' })
-// export class ScreeningApplicantController {
-//   constructor(private readonly screeningApplicantService: ScreeningApplicantService) {}
+@ApiTags('Human Resources - Recruitment and Onboarding (Screening Applicant)')
+@Controller({ path: 'hris', version: '2' })
+export class ScreeningApplicantController {
+  constructor(private readonly screeningApplicantService: ScreeningApplicantService) {}
 
-//   @Get('applicants/screening/:applicantId')
-//   @ApiOperation({ summary: 'Screen an Applicant' })
-//   @ApiGetResponse('Screen an Applicant')
-//   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-//   getScreenApplicant(
-//     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
-//     @SessionUser() user: RequestUser,
-//   ) {
-//     return this.screeningApplicantService.screenApplicant(applicantId, user);
-//   }
-// }
+  @Get('applicants/:applicantId/documents')
+  @ApiOperation({ summary: 'Get Applicant document' })
+  @ApiGetResponse('Get Applicant document')
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  getApplicantDocuments(
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.screeningApplicantService.getApplicantDocuments(applicantId, user);
+  }
+
+  @Post('applicants/:applicantId/submit')
+  @ApiOperation({ summary: 'Shortlist an Applicant' })
+  @ApiPostResponse('Applicant has been shortlisted')
+  submitLeave(
+      @Param('applicantId', new ParseUUIDPipe) applicantId: string,
+      @SessionUser() user: RequestUser
+  ) {
+      return this.screeningApplicantService.screenApplicant(applicantId,user)
+  }
+}
 
 /**
  * INTERVIEW CONTROLLER SECTION
