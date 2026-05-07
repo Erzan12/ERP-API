@@ -433,7 +433,7 @@ export class CareerPostingService {
           data: {
             actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
             actionable_id: recruitment.id,
-            action: 'create',
+            action: 'creation',
             acted_by: requestUser.id
           }
         })
@@ -668,7 +668,7 @@ export class CareerPostingService {
           data: {
             actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
             actionable_id: careerPostingId,
-            action: "submit",
+            action: "submission",
             acted_by: requestUser.id
           }
         });
@@ -735,7 +735,7 @@ export class CareerPostingService {
           data: {
             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
             actionable_id: careerPostingId,
-            action: "verify",
+            action: "verification",
             acted_by: requestUser.id
           }
         });
@@ -802,7 +802,7 @@ export class CareerPostingService {
           data: {
             actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
             actionable_id: careerPostingId,
-            action: "approve",
+            action: "approval",
             acted_by: requestUser.id
           }
         });
@@ -889,7 +889,7 @@ export class CareerPostingService {
           data: {
             actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
             actionable_id: careerPostingId,
-            action: 'reject',
+            action: 'rejection',
             acted_by: requestUser.id
           }
         })

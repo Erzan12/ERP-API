@@ -87,7 +87,7 @@ export class LeaveCasesService {
                     actionable_id: hrLeaveRequest.id,
 
                     action: {
-                        in: ["verify", "approve"]
+                        in: ["verification", "approval"]
                     }
                 },
 
@@ -113,11 +113,11 @@ export class LeaveCasesService {
             })
 
             const verifier = workflowActions.find(
-                a => a.action === "verify"
+                a => a.action === "verification"
             );
 
             const approver = workflowActions.find(
-                a => a.action === "approve"
+                a => a.action === "approval"
             );
 
             const leave = {
@@ -270,7 +270,7 @@ export class LeaveCasesService {
                 },
 
                 action: {
-                    in: ["verify", "approve"]
+                    in: ["verification", "approval"]
                 }
             },
 
@@ -299,12 +299,12 @@ export class LeaveCasesService {
 
             const verifier = workflowActions.find(a =>
                 a.actionable_id === leave.id &&
-                a.action === "verify"
+                a.action === "verification"
             );
 
             const approver = workflowActions.find(a =>
                 a.actionable_id === leave.id &&
-                a.action === "approve"
+                a.action === "approval"
             );
 
             return {
@@ -465,14 +465,14 @@ export class LeaveCasesService {
                        { 
                             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                             actionable_id: leaveRequest.id,
-                            action: "create",
+                            action: "creation",
                             acted_by: requestUser.id,
                             acted_at: new Date()
                         },
                         {
                             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                             actionable_id: leaveRequest.id,
-                            action: "verify",
+                            action: "verification",
                             acted_by: leave_request.verifier_id,
                             metadata: {
                                 title: "",
@@ -485,7 +485,7 @@ export class LeaveCasesService {
                         {
                             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                             actionable_id: leaveRequest.id,
-                            action: "approve",
+                            action: "approval",
                             acted_by: leave_request.approver_id,
                             metadata: {
                                 title: "",
@@ -626,7 +626,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: "submitted",
+                        action: "submission",
                         acted_by: user.id
                     }
                 });
@@ -699,7 +699,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: "verify",
+                        action: "verification",
                         acted_by: requestUser.id
                     }
                 });
@@ -760,7 +760,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: 'approved',
+                        action: 'approval',
                         acted_by: requestUser.id
                     }
                 })
@@ -827,7 +827,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: 'process',
+                        action: 'processing',
                         acted_by: requestUser.id
                     }
                 })
@@ -926,7 +926,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: 'reject',
+                        action: 'rejection',
                         acted_by: requestUser.id
                     }
                 });
@@ -998,7 +998,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: 'cancelled',
+                        action: 'cancellation',
                         acted_by: requestUser.id
                     }
                 })

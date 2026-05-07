@@ -182,7 +182,7 @@ export class PerformanceEvaluationService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.EMPLOYEE_EVALUATION,
                         actionable_id: evaluationId,
-                        action: "submit",
+                        action: "submission",
                         acted_by: requestUser.id
                     }
                 })
@@ -253,7 +253,7 @@ export class PerformanceEvaluationService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.EMPLOYEE_EVALUATION,
                         actionable_id: evaluationId,
-                        action: "acknowledge",
+                        action: "acknowledgment",
                         acted_by: requestUser.id
                     }
                 })
