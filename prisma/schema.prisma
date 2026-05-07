@@ -37,7 +37,9 @@ enum StatusEnum {
 enum CareerPostingStatus {
   draft
   submitted
+  for_verification
   verified
+  for_approval
   approved
   rejected
 }
@@ -139,47 +141,83 @@ enum LeaveTransactionType {
 }
 
 enum WorkflowActionType {
+  for_acknowledgment
+  for_approval
+  for_appraisal
+  for_evaluation
+  for_interview
+  for_reevaluation
+  for_regularization
+  for_promotion
+  for_processing
+  for_verification
+
   draft
+
+  evaluate
+  evaluated
+  evaluation
 
   create
   created
+  creation
   
   submit
   submitted
+  submission
 
   verify
   verified
+  verification
 
   approve
   approved
+  approval
 
   acknowledge
-  completed
+  acknowledgment
 
+  completed
+  
   reject
   rejected
+  rejection
 
   cancel
   cancelled
+  cancellation
 
   process
   processed
+  processing
 
   return
   returned
 
   escalate
+  escalation
 
   reopen
+  reopening
 
   hold
   resume
+  resumption
 
   screen
+  screening
+
   shortlist
+  shortlisting
+
   set_interview
+  interview_scheduling
+
   accept
+  acceptance
+
   onboard
+  onboarding
 }
 
 ////////////////////////////////////////
@@ -261,13 +299,8 @@ model User {
   security_questions       Json?
   security_clearance_level Int?
 
-  // Workflow action
-  workflow_actions  WorkflowAction[]
-
-  // Workflow roles
-  relieved_requests HrLeaveRequest[] @relation("Reliever")
-  verified_requests HrLeaveRequest[] @relation("Verifier")
-  approved_requests HrLeaveRequest[] @relation("Approver")
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  person   Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -281,17 +314,6 @@ model User {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-
-  // Cascade delete tokens when user is removed
-  password_reset_token         PasswordResetToken[]
-  user_token                   UserToken[]
-  user_roles                   UserRole[]
-  user_permission              UserPermission[]
-  PermissionTemplateDepartment PermissionTemplateDepartment[]
-  audit_trail                  AuditTrail[]
-
-  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
-  person   Person   @relation(fields: [person_id], references: [id], onDelete: Cascade)
 
   //linked user to createdby and updatedby columns
   positionsCreated                         Position[]                         @relation("PositionCreatedBy")
@@ -358,6 +380,24 @@ model User {
   HrLeaveCategoryUpdatedBy                 HrLeaveCategory[]                  @relation("HrLeaveCategoryUpdatedBy")
   HrLeaveRequestCreatedBy                  HrLeaveRequest[]                   @relation("HrLeaveRequestCreatedBy")
   HrLeaveRequestUpdatedBy                  HrLeaveRequest[]                   @relation("HrLeaveRequestUpdatedBy")
+
+  // Workflow action
+  workflow_actions  WorkflowAction[]
+
+  relieved_requests HrLeaveRequest[] @relation("LeaveRequestReliever")
+  //verified_requests HrLeaveRequest[] @relation("LeaveRequestVerifier")
+  //approved_requests HrLeaveRequest[] @relation("LeaveRequestApprover")
+
+  //employee_evaluations_verified HrEmployeeEvaluation[] @relation("EmployeeEvaluationVerifier")
+  //employee_evaluations_approved HrEmployeeEvaluation[] @relation("EmployeeEvaluationApprover")
+
+  // Cascade delete tokens when user is removed
+  password_reset_token         PasswordResetToken[]
+  user_token                   UserToken[]
+  user_roles                   UserRole[]
+  user_permission              UserPermission[]
+  PermissionTemplateDepartment PermissionTemplateDepartment[]
+  audit_trail                  AuditTrail[]
 
   @@index([person_id])
   @@index([employee_id])
@@ -560,8 +600,8 @@ model Employee {
   evaluations_received HrEmployeeEvaluation[] @relation("HrEmployeeEvaluations")
   evaluations_given    HrEmployeeEvaluation[] @relation("EmployeeGivenEvaluations")
 
-  verified_requests HrEmployeeEvaluation[] @relation("Verifier")
-  approved_requests HrEmployeeEvaluation[] @relation("Approver")
+  //verified_requests HrEmployeeEvaluation[] @relation("Verifier")
+  //approved_requests HrEmployeeEvaluation[] @relation("Approver")
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -655,8 +695,8 @@ model HrEmployeeEvaluation {
 
   employee  Employee @relation("HrEmployeeEvaluations", fields: [employee_id], references: [id])
   evaluator Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id])
-  verifier Employee? @relation("Verifier", fields: [verifier_id], references: [id])
-  approver Employee? @relation("Approver", fields: [approver_id], references: [id])
+  //verifier  User? @relation("EmployeeEvaluationVerifier", fields: [verifier_id], references: [id])
+  //approver  User? @relation("EmployeeEvaluationApprover", fields: [approver_id], references: [id])
   
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -812,6 +852,8 @@ model CareerPosting {
   published_on     DateTime?
   employment_type  EmploymentType?
   employee_type    EmployeeType?
+  //verifier_id      String?             @db.Uuid
+  //approver_id      String?             @db.Uuid
   status           CareerPostingStatus @default(draft)
   is_active        Boolean             @default(true)
 
@@ -820,6 +862,9 @@ model CareerPosting {
 
   createdBy User? @relation("CareerPostingCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("CareerPostingUpdatedBy", fields: [updated_by], references: [id])
+
+  //verifier User @relation("CareerPostingVerifier", fields: [verifier_id], references: [id])
+  //approver User @relation("CareerPostingApprover", fields: [approver_id], references: [id])
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -983,12 +1028,13 @@ model HrLeaveCategory {
   updated_at          DateTime             @updatedAt
   hrLeaveBalances     HrLeaveBalance[]
   //hrLeaveTransactions HrLeaveTransaction[]
-  hrLeaveDates        HrLeaveDates[]
+  hrLeaveRequest        HrLeaveRequest[]
 }
 
 model HrLeaveRequest {
   id                String             @id @default(uuid()) @db.Uuid
   employee_id       String             @db.Uuid
+  leave_category_id String             @db.Uuid
   date_from         DateTime
   date_to           DateTime
   reason            String
@@ -998,9 +1044,7 @@ model HrLeaveRequest {
   status            LeaveRequestStatus @default(draft)
   is_active         Boolean            @default(true)
 
-  reliever_id String @db.Uuid
-  verifier_id String @db.Uuid
-  approver_id String @db.Uuid 
+  reliever_id String  @db.Uuid
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -1011,11 +1055,11 @@ model HrLeaveRequest {
   createdBy User? @relation("HrLeaveRequestCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("HrLeaveRequestUpdatedBy", fields: [updated_by], references: [id])
 
-  employee Employee @relation(fields: [employee_id], references: [id])
-  reliever User @relation("Reliever", fields: [reliever_id], references: [id])
-  verifier User @relation("Verifier", fields: [verifier_id], references: [id])
-  approver User @relation("Approver", fields: [approver_id], references: [id])
+  category  HrLeaveCategory @relation(fields: [leave_category_id], references: [id])
 
+  employee Employee @relation(fields: [employee_id], references: [id])
+  reliever User  @relation("LeaveRequestReliever", fields: [reliever_id], references: [id])
+  
   //hr_leave_transactions HrLeaveTransaction[]
   hr_leave_dates        HrLeaveDates[]
 
@@ -1043,7 +1087,6 @@ model HrLeaveDates {
   id                  String   @id @default(uuid()) @db.Uuid
   hr_leave_request_id String   @db.Uuid
   employee_id         String   @db.Uuid
-  leave_category_id   String   @db.Uuid
   fraction            Float    @default(1.0) //if halday = 0.5 and fullday = 1.0
   leave_date          DateTime
 
@@ -1052,7 +1095,6 @@ model HrLeaveDates {
 
   hr_leave_request HrLeaveRequest  @relation(fields: [hr_leave_request_id], references: [id])
   employee         Employee       @relation(fields: [employee_id], references: [id])
-  category         HrLeaveCategory @relation(fields: [leave_category_id], references: [id])
 }
 
 //Hr Leave Transaction (audit trail for employee leave)
@@ -1076,7 +1118,6 @@ model HrLeaveDates {
 //Hr Leave Request Action will record per user action per status
 //will be keep for now, for experimental purpose or might be useful in the future
 
-
 ////////////////////////////////////////
 // AUDIT TRAIL & DATABASE CONTROL
 ////////////////////////////////////////
@@ -1090,8 +1131,7 @@ model WorkflowAction {
   
   //who performed the action
   acted_by         String              @db.Uuid
-  acted_at         DateTime            @default(now())
-  remarks          String?
+  acted_at         DateTime?           @default(now())           
   metadata         Json?
 
   //acted_by_employee Employee       @relation(fields: [acted_by], references: [id])
