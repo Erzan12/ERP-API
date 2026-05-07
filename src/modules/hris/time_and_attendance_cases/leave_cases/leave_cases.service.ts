@@ -10,6 +10,136 @@ import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request.dto';
 export class LeaveCasesService {
     constructor (private readonly prisma: PrismaService) {}
 
+    async getLeaveCase(hrLeaveRequestId: string, user: RequestUser) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        try {
+            const hrLeaveRequest = await this.prisma.hrLeaveRequest.findUnique({
+                where: { id: hrLeaveRequestId, is_active: true },
+                include: {
+                    category: {
+                        select: {
+                            id: true,
+                            category_name: true,
+                        }
+                    },
+                    hr_leave_dates: true,
+                    employee: {
+                        select: {
+                            person: {
+                                select: {
+                                    first_name: true,
+                                    middle_name: true,
+                                    last_name: true
+                                }
+                            }
+                        }
+                    },
+                    reliever: {
+                        select: {
+                            employee: {
+                                select: {
+                                    person: {
+                                        select: {
+                                            first_name: true,
+                                            middle_name: true,
+                                            last_name: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+            });
+
+            if (!hrLeaveRequest) {
+                throw new NotFoundException ("Leave Request not found")
+            }
+
+            const workflowActions = await this.prisma.workflowAction.findMany({
+                where: {
+                    actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+
+                    actionable_id: hrLeaveRequest.id,
+
+                    action: {
+                        in: ["verify", "approve"]
+                    }
+                },
+
+                include: {
+                    acted_by_user: {
+                        select: {
+                            id: true,
+
+                            employee:{
+                                select: {
+                                    person: {
+                                        select: {
+                                            first_name: true,
+                                            middle_name: true,
+                                            last_name: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+
+            const verifier = workflowActions.find(
+                a => a.action === "verify"
+            );
+
+            const approver = workflowActions.find(
+                a => a.action === "approve"
+            );
+
+            const leave = {
+                ...hrLeaveRequest,
+
+                verifier: verifier?.acted_by_user ?? null,
+
+                approver: approver?.acted_by_user ?? null,
+            };
+
+            return {
+                status: 'success',
+                message: 'Here is the Leave Request',
+                hrLeaveRequest: leave
+            }
+        } catch (e) {
+            if (e instanceof NotFoundException) {
+                throw e;
+            }
+        }
+    }
+
     async getLeaveCases(user: RequestUser, dto: LeaveRequestPaginationDto) {
         const { search, status, sortBy, order, page, perPage } = dto;
 
@@ -87,7 +217,39 @@ export class LeaveCasesService {
                     ...whereConditions
                 },
                 include: {
+                    category: {
+                        select: {
+                            id: true,
+                            category_name: true,
+                        }
+                    },
                     hr_leave_dates: true,
+                    employee: {
+                        select: {
+                            person: {
+                                select: {
+                                    first_name: true,
+                                    middle_name: true,
+                                    last_name: true
+                                }
+                            }
+                        }
+                    },
+                    reliever: {
+                        select: {
+                            employee: {
+                                select: {
+                                    person: {
+                                        select: {
+                                            first_name: true,
+                                            middle_name: true,
+                                            last_name: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 },
                 skip,
                 take: perPage,
@@ -97,13 +259,70 @@ export class LeaveCasesService {
             }),
         ]);
 
+        const leaveIds = leaves.map(l => l.id);
+
+        const workflowActions = await this.prisma.workflowAction.findMany({
+            where: {
+                actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+
+                actionable_id: {
+                    in: leaveIds
+                },
+
+                action: {
+                    in: ["verify", "approve"]
+                }
+            },
+
+            include: {
+                acted_by_user: {
+                    select: {
+                        id: true,
+
+                        employee:{
+                            select: {
+                                person: {
+                                    select: {
+                                        first_name: true,
+                                        middle_name: true,
+                                        last_name: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        const formattedLeaves = leaves.map(leave => {
+
+            const verifier = workflowActions.find(a =>
+                a.actionable_id === leave.id &&
+                a.action === "verify"
+            );
+
+            const approver = workflowActions.find(a =>
+                a.actionable_id === leave.id &&
+                a.action === "approve"
+            );
+
+            return {
+                ...leave,
+
+                verifier: verifier?.acted_by_user ?? null,
+
+                approver: approver?.acted_by_user ?? null,
+            };
+        });
+
         return {
             status: 'success',
             message: 'List of Leave Cases',
             count: total,
             page,
             perPage,
-            leaves
+            leaves: formattedLeaves
         }
     }
 
@@ -232,7 +451,9 @@ export class LeaveCasesService {
                         }
                     },
                     include: {
-                        hr_leave_dates: true
+                        hr_leave_dates: true,
+                        reliever: true,
+                        employee: true,
                     }
                 });
 

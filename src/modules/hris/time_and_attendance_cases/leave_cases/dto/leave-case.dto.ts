@@ -14,7 +14,7 @@ export class CreateLeaveRequestDto {
     @IsUUID()
     @IsNotEmpty()
     @ApiProperty({
-        example: 'Employee UUID',
+        example: 'Leave Category UUID',
         description: 'The employee uuid PK'
     })
     leave_category_id: string;
@@ -92,12 +92,12 @@ export class RecordLeaveDatesDto {
     })
     leave_date: string;
 
-    @IsUUID()
-    @IsNotEmpty()
-    @ApiProperty({
-        example: 'Leave type/category UUID PK'
-    })
-    leave_type: string;
+    // @IsUUID()
+    // @IsNotEmpty()
+    // @ApiProperty({
+    //     example: 'Leave type/category UUID PK'
+    // })
+    // leave_type: string;
 
     @IsNumber()
     @IsNotEmpty()
