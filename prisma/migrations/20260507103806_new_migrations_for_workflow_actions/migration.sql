@@ -8,9 +8,6 @@
 
 */
 -- AlterEnum
-ALTER TYPE "CareerPostingStatus" ADD VALUE 'for_approval';
-
--- AlterEnum
 -- This migration adds more than one value to an enum.
 -- With PostgreSQL versions 11 and earlier, this is not possible
 -- in a single migration. This can be worked around by creating
@@ -19,7 +16,6 @@ ALTER TYPE "CareerPostingStatus" ADD VALUE 'for_approval';
 
 
 ALTER TYPE "WorkflowActionType" ADD VALUE 'for_acknowledgment';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_approval';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'for_appraisal';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'for_evaluation';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'for_interview';
