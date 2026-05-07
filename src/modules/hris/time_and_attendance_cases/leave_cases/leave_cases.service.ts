@@ -209,6 +209,7 @@ export class LeaveCasesService {
                 const leaveRequest = await tx.hrLeaveRequest.create({
                     data: {
                         employee_id: leave_request.employee_id,
+                        leave_category_id: leave_request.leave_category_id,
                         date_from: new Date(leave_request.date_from),
                         date_to: new Date(leave_request.date_to),
                         reason: leave_request.reason,
@@ -216,18 +217,15 @@ export class LeaveCasesService {
                         address_on_leave: leave_request.address_on_leave,
                         no_of_days: no_of_days,
                         reliever_id: leave_request.reliever_id,
-                        verifier_id: leave_request.verifier_id,
-                        approver_id: leave_request.approver_id,
-                        created_by: requestUser.id,
-
+                        // verifier_id: leave_request.verifier_id,
+                        // approver_id: leave_request.approver_id,
+                        // verifier_id: verifier
+                        // created_by: requestUser.id,
                         hr_leave_dates: {
                             create: leave_dates.map(d => ({
                                 leave_date: new Date(d.leave_date),
                                 employee: {
                                     connect: { id: leave_request.employee_id }
-                                },
-                                category: {
-                                    connect: { id: d.leave_type }
                                 },
                                 fraction: d.fraction ?? 1.0,
                             })),
@@ -241,13 +239,42 @@ export class LeaveCasesService {
                 if (leaveRequest.employee_id )
 
                 // ADD WORKFLOW ACTION
-                await tx.workflowAction.create({
-                    data: {
-                        actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
-                        actionable_id: leaveRequest.id,
-                        action: "created",
-                        acted_by: requestUser.id
-                    }
+                await tx.workflowAction.createMany({
+                    data: [
+                       { 
+                            actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+                            actionable_id: leaveRequest.id,
+                            action: "create",
+                            acted_by: requestUser.id,
+                            acted_at: new Date()
+                        },
+                        {
+                            actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+                            actionable_id: leaveRequest.id,
+                            action: "verify",
+                            acted_by: leave_request.verifier_id,
+                            metadata: {
+                                title: "",
+                                message: "",
+                                user: "",
+                                role: "verifier",
+                            },
+                            acted_at: null,
+                        },
+                        {
+                            actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+                            actionable_id: leaveRequest.id,
+                            action: "approve",
+                            acted_by: leave_request.approver_id,
+                            metadata: {
+                                title: "",
+                                message: "",
+                                user: "",
+                                role: "approver",
+                            },
+                            acted_at: null,
+                        }
+                    ]  
                 });
 
                 const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
@@ -426,11 +453,19 @@ export class LeaveCasesService {
 
         return this.prisma.$transaction(async (tx) => {
             try {
+                const leave = await tx.hrLeaveRequest.findUnique({
+                    where: { id: hrLeaveRequestId }
+                });
+
+                if (leave?.status !== "for_verification") {
+                    throw new BadRequestException("Invalid! status must be: for_verification");
+                }
+
                 const verifyLeave = await tx.hrLeaveRequest.update({
                     where: { id: hrLeaveRequestId, status: "for_verification" },
                     data: {
                         status: "for_approval",
-                        verifier_id: requestUser.id,
+                        // verifier_id: requestUser.id,
                         updated_by: requestUser.id
                     }
                 });
@@ -460,7 +495,6 @@ export class LeaveCasesService {
             } catch (e) {
                 throw e;
             }
-
         });
     }
     
@@ -496,7 +530,7 @@ export class LeaveCasesService {
                     where: { id: hrLeaveRequestId, status: "for_approval" },
                     data: {
                         status: "for_processing",
-                        approver_id: requestUser.id,
+                        // approver_id: requestUser.id,
                         updated_by: requestUser.id
                     }
                 })
@@ -572,7 +606,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: 'processed',
+                        action: 'process',
                         acted_by: requestUser.id
                     }
                 })
@@ -638,20 +672,34 @@ export class LeaveCasesService {
             // }
 
             try {
-                const rejectLeave = await tx.hrLeaveRequest.update({
+                const leave = await tx.hrLeaveRequest.findUnique({
+                    where: { id: hrLeaveRequestId }
+                });
+
+                if (!leave) {
+                    throw new NotFoundException("Leave Request does not exist");
+                }
+
+                const allowedStatuses = ["for_verification", "for_approval", "for_processing"];
+
+                if (!allowedStatuses.includes(leave.status)) {
+                    throw new BadRequestException("Invalid! status must be: for_verification, for_approval or for_processing");
+                }
+
+                const rejectLeave = await tx.hrLeaveRequest.updateMany({
                     where: { 
                         id: hrLeaveRequestId, 
-                        OR: [
-                            { status: 'for_verification' },
-                            { status: 'for_approval' },
-                            { status: 'for_processing' }
-                        ]
+                        status: { in: ["for_verification", "for_processing", "for_approval"]}
                     },
                     data: {
                         status: 'rejected',
                         updated_by: requestUser.id
                     }
                 });
+
+                if (rejectLeave.count === 0) {
+                    throw new BadRequestException("Update failed due to invalid status");
+                }
 
                 await tx.workflowAction.create({
                     data: {
@@ -672,11 +720,11 @@ export class LeaveCasesService {
                     rejected_by: `${userName} - ${userPosition}`,
                 };
             } catch (e) {
-                // if (e instanceof BadRequestException) {
-                //     throw e; // keep your validation errors
-                // }
+                if (e instanceof BadRequestException) {
+                    throw e; // keep your validation errors
+                }
                 // throw new Error('Invalid status for rejection');
-                throw e;
+                // throw e;
             }
         })
     }

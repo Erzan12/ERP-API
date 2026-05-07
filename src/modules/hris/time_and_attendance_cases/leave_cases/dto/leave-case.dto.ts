@@ -11,6 +11,14 @@ export class CreateLeaveRequestDto {
     })
     employee_id: string;
 
+    @IsUUID()
+    @IsNotEmpty()
+    @ApiProperty({
+        example: 'Employee UUID',
+        description: 'The employee uuid PK'
+    })
+    leave_category_id: string;
+
     @IsDateString()
     @IsNotEmpty()
     @ApiProperty({

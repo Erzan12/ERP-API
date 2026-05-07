@@ -61,7 +61,7 @@ export class LeaveCasesController {
         return this.leaveCasesService.submitLeave(hrLeaveRequestId,user)
     }
 
-    @Post('time-and-attendance-cases/leave-cases/:hrLeaveRequestId/verify')
+    @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/verify')
     @ApiOperation({ summary: 'Verify Leave Request' })
     @ApiPostResponse('Leave Request verified')
     verifyLeave(
