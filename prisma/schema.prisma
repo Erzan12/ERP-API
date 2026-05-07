@@ -139,15 +139,6 @@ enum LeaveTransactionType {
 }
 
 enum WorkflowActionType {
-  for_acknowledgment
-  for_appraisal
-  for_evaluation
-  for_interview
-  for_reevaluation
-  for_regularization
-  for_promotion
-  for_processing
-
   draft
 
   evaluate
