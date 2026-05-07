@@ -873,7 +873,7 @@ export class CareerPostingService {
                 "submitted", 
                 "verified", 
                 // "for_verification", 
-                "for_approval"
+                // "for_approval"
               ] 
             }
           },
