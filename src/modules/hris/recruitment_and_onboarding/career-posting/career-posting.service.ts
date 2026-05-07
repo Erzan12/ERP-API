@@ -659,7 +659,7 @@ export class CareerPostingService {
         const submitRecruitment = await tx.careerPosting.update({
           where: { id: careerPostingId, status: 'draft' },
           data: {
-            status: 'for_verification',
+            // status: 'for_verification',
             updated_by: requestUser.id,
           }
         });
@@ -720,12 +720,13 @@ export class CareerPostingService {
           where: { id: careerPostingId }
         });
 
-        if (careerPosting?.status !== "for_verification") {
-          throw new BadRequestException("Invalid! status must be: submitted");
-        }
+        // if (careerPosting?.status !== "for_verification") {
+        //   throw new BadRequestException("Invalid! status must be: submitted");
+        // }
 
         const verifyCareerPosting = await tx.careerPosting.update({
-          where: { id: careerPostingId, status: "for_verification" },
+          // where: { id: careerPostingId, status: "for_verification" },
+          where: { id: careerPostingId },
           data: {
             status: "verified",
           }
@@ -871,7 +872,7 @@ export class CareerPostingService {
               in: [
                 "submitted", 
                 "verified", 
-                "for_verification", 
+                // "for_verification", 
                 "for_approval"
               ] 
             }

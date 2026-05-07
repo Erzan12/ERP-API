@@ -37,7 +37,6 @@ enum StatusEnum {
 enum CareerPostingStatus {
   draft
   submitted
-  for_verification
   verified
   for_approval
   approved
