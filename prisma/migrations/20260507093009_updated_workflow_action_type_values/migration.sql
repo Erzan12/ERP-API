@@ -35,7 +35,6 @@ ALTER TYPE "WorkflowActionType" ADD VALUE 'for_reevaluation';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'for_regularization';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'for_promotion';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'for_processing';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'for_verification';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluate';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluated';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluation';
