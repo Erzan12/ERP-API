@@ -5,7 +5,7 @@
 
 */
 -- CreateEnum
-CREATE TYPE "CareerPostingStatus" AS ENUM ('draft', 'submitted', 'verified', 'approved', 'rejected');
+CREATE TYPE "CareerPostingStatus" AS ENUM ('draft', 'submitted', 'for_verification', 'verified', 'for_approval', 'approved', 'rejected');
 
 -- AlterTable
 ALTER TABLE "CareerPosting" DROP COLUMN "status",
