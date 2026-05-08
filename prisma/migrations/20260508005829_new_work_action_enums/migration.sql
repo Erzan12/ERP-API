@@ -7,6 +7,7 @@
   - You are about to drop the column `remarks` on the `WorkflowAction` table. All the data in the column will be lost.
 
 */
+
 -- AlterEnum
 -- This migration adds more than one value to an enum.
 -- With PostgreSQL versions 11 and earlier, this is not possible
@@ -14,9 +15,6 @@
 -- multiple migrations, each migration adding only one value to
 -- the enum.
 
-
-ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluate';
-ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluated';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'evaluation';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'creation';
 ALTER TYPE "WorkflowActionType" ADD VALUE 'submission';
