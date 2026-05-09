@@ -11,7 +11,7 @@ CREATE TYPE "LeaveRequestStatus" AS ENUM ('draft', 'for_verification', 'for_appr
 CREATE TYPE "LeaveTransactionType" AS ENUM ('add', 'deduct');
 
 -- CreateEnum
-CREATE TYPE "WorkflowActionType" AS ENUM ('draft', 'created', 'submitted', 'verify', 'verified', 'approve', 'approved', 'reject', 'rejected', 'cancel', 'cancelled', 'process', 'processed', 'return', 'returned', 'escalate', 'reopen', 'hold', 'resume', 'for_acknowledgment', 'for_approval', 'for_evaluation', 'for_interview', 'for_reevaluation', 'for_regularization', 'for_promotion', 'for_processing', 'for_verification', 'evaluate', 'evaluated');
+CREATE TYPE "WorkflowActionType" AS ENUM ('draft', 'created', 'submitted', 'verify', 'verified', 'approve', 'approved', 'reject', 'rejected', 'cancel', 'cancelled', 'process', 'processed', 'return', 'returned', 'escalate', 'reopen', 'hold', 'resume', 'for_acknowledgment', 'for_approval', 'for_evaluation', 'for_interview', 'for_reevaluation', 'for_regularization', 'for_promotion', 'for_processing', 'for_verification', 'evaluate', 'evaluated', 'evaluation', 'creation', 'submission', 'verification', 'approval', 'acknowledgment', 'rejection', 'cancellation', 'processing', 'escalation', 'reopening', 'resumption', 'screening', 'shortlisting', 'interview_scheduling', 'acceptance', 'onboarding');
 
 -- AlterTable
 ALTER TABLE "Employee" DROP COLUMN "employmentHistoryId",
