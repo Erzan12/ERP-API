@@ -8,7 +8,7 @@
 
 */
 -- DropForeignKey
-ALTER TABLE "HrEmployeeEvaluation" DROP CONSTRAINT "HrEmployeeEvaluation_approver_id_fkey";
+ALTER TABLE "HrEmployeeEvaluation" DROP CONSTRAINT IF EXISTS "HrEmployeeEvaluation_approver_id_fkey";
 
 -- DropForeignKey
 ALTER TABLE "HrEmployeeEvaluation" DROP CONSTRAINT "HrEmployeeEvaluation_verifier_id_fkey";
