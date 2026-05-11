@@ -602,24 +602,81 @@ export class UserManagementService {
     };
   }
 
-  async viewNewEmployeeWithoutUserAccount(user: RequestUser) {
-    const isAdmin = user.roles.some((role) => role.name === 'Administrator');
-    const isManager = user.roles.some((role) => role.name === 'Manager');
+  async viewNewEmployeeWithoutUserAccount(user: RequestUser, dto: UserManagementPaginationDto) {
+    const { search, status, sortBy, order, page, perPage } = dto;
 
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: true,
-      },
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
     });
 
-    if (!requestUser) {
-      throw new BadRequestException('User does not exist');
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
     }
+
+    const ROLES = {
+      ADMINISTRATOR: 'Administrator',
+      SUPER_ADMINISTRATOR: 'Super Administrator',
+      MANAGER: 'Manager',
+      HR_CLERK: 'HR Clerk',
+      HR_STAFF: 'HR Staff',
+    } as const;
+
+    const allowedRoles = [ ROLES.ADMINISTRATOR, ROLES.SUPER_ADMINISTRATOR, ROLES.MANAGER, ROLES.HR_CLERK, ROLES.HR_STAFF];
+    const canView = requestUser?.user_roles.some(role => 
+      allowedRoles.includes(
+        role.role_name as typeof allowedRoles[number],
+      ),
+    );
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    // const userRole = requestUser.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    // if (!allowedRoles.includes(userRole)) {
+    //   throw new ForbiddenException('Access denied');
+    // }
+
+    // pagination area
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: Prisma.EmployeeWhereInput = {
+      user_id: null, user: null
+    }
+
+    const isAdmin = requestUser.user_roles.some(
+      (role) => role.role_name === ROLES.ADMINISTRATOR,
+    );
+
+    const isManager = requestUser.user_roles.some(
+      (role) => role.role_name === ROLES.MANAGER,
+    );
+
+    // const requestUser = await this.prisma.user.findUnique({
+    //   where: { id: user.id },
+    //   include: {
+    //     employee: true,
+    //   },
+    // });
+
+    // if (!requestUser) {
+    //   throw new BadRequestException('User does not exist');
+    // }
 
     // Find the manager's department (if not admin) -> if admin can view all employee from every dept without user account
     let departmentFilter = {};
-    if (!isAdmin) {
+    if (isAdmin) {
       await this.prisma.employee.findUnique({
         where: { id: requestUser.employee.id },
         select: { department_id: true },
@@ -675,6 +732,120 @@ export class UserManagementService {
         employees: newEmployees,
       },
     };
+  }
+
+  async getManagers(user: RequestUser) {
+
+    const getManager = await this.prisma.user.findMany({
+      where: { 
+        employee: {
+          position: {
+            // Get all managerial roles
+            name: {
+              in: ['hr manager', 'it manager'],
+              mode: 'insensitive'
+            },
+          }
+        } 
+      },
+      select: {
+        id: true,
+        username: true,
+        is_active: true,
+        last_login: true,
+        email: true,
+        employee: {
+          select: {
+            company: {
+              select: {
+                id: true,
+                name: true,
+              }
+            },
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              }
+            },
+            employee_id: true,
+            position: {
+              select: {
+                id: true,
+                name: true,
+              }
+            },
+            division: {
+              select: {
+                id: true,
+                name: true,
+              }
+            },
+            hire_date: true,
+            salary: true,
+            pay_frequency: true,
+            employment_status: {
+              select: {
+                label: true,
+              }
+            },
+            employment_type: true,
+            employee_type: true,
+            monthly_equivalent_salary: true,
+            archive_date: true,
+            other_employee_data: true,
+            corporate_rank_id: true,
+            department: {
+              select: {
+                id: true,
+                name: true,
+                division_id: true,
+                is_active: true,
+                employees: {
+                  where: {
+                    NOT: {
+                      position: {
+                        name: {
+                          in: ['hr manager', 'it manager'],
+                          mode: 'insensitive',
+                        },
+                      },
+                    },
+                  },
+                  select: {
+                    id: true,
+                    person: {
+                      select: {
+                        first_name: true,
+                        last_name: true,
+                      }
+                    },
+                    department: {
+                      select: {
+                        name: true,
+                      }
+                    },
+                    position: {
+                      select: {
+                        name: true,
+                      }
+                    },
+                    employee_id: true
+                  }
+                }
+              }
+            },
+          }
+        }
+      }
+    })
+
+    return {
+      status: 'success',
+      message: 'List of Managers with Department and Employees',
+      getManager
+    }
   }
 
   // async getUsersWithRolesAndPermissions() {

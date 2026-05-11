@@ -161,8 +161,23 @@ export class UserManagementControllerV2 {
   @ApiGetResponse('Here are the list of new employees without user accounts')
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
-  viewNewEmployees(@SessionUser() user: RequestUser) {
-    return this.userManagementService.viewNewEmployeeWithoutUserAccount(user);
+  viewNewEmployees(
+    @SessionUser() user: RequestUser,
+    @Query() dto: UserManagementPaginationDto
+  ) {
+    return this.userManagementService.viewNewEmployeeWithoutUserAccount(user, dto);
+  }
+
+  @Get('get-managers')
+  @ApiOperation({ summary: 'Get Managers with department and employees' })
+  @ApiGetResponse('Here are the list of Managers with departments and employees')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
+  getManagers(
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.userManagementService.getManagers(user);
   }
 
   // @Get('with_roles_permissions')
