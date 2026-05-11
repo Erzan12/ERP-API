@@ -32,7 +32,7 @@ export class UserManagementService {
   ) {}
 
   async getUsers(user: RequestUser, dto: UserManagementPaginationDto) {
-    const { search, status, sortBy, order, page, perPage } = dto;
+    const { search, status, department, sortBy, order, page, perPage } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -65,6 +65,16 @@ export class UserManagementService {
     const whereCondition: Prisma.UserWhereInput = {
       ...(status && {
         is_active: status === 'active',
+      }),
+
+      ...(department && {
+        employee: {
+          department: {
+            is: {
+              id: department
+            },
+          },
+        },
       }),
     };
 
@@ -131,7 +141,35 @@ export class UserManagementService {
           ...whereCondition,
           ...whereConditions,
         },
-        include: {
+        select: {
+          id: true,
+          username: true,
+          email: true,
+          is_active: true,
+          employee: {
+            select: {
+              id: true,
+              position: {
+                select: {
+                  id: true,
+                  name: true,
+                }
+              },
+              department: {
+                select: {
+                  id: true,
+                  name: true,
+                }
+              },
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                }
+              }
+            }
+          },
           user_roles: {
             select: {
               id: true,
@@ -736,7 +774,32 @@ export class UserManagementService {
 
   async getManagers(user: RequestUser) {
 
-    const getManager = await this.prisma.user.findMany({
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    const managers = await this.prisma.user.findMany({
       where: { 
         employee: {
           position: {
@@ -841,10 +904,14 @@ export class UserManagementService {
       }
     })
 
+    if (managers.length === 0) {
+      throw new NotFoundException("No employee's or user with position manager as of now")
+    }
+
     return {
       status: 'success',
       message: 'List of Managers with Department and Employees',
-      getManager
+      managers
     }
   }
 
