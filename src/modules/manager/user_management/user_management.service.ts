@@ -19,7 +19,8 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Request } from 'express';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { AuthService } from 'src/auth/auth.service';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
+import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
 
 @Injectable()
 export class UserManagementService {
@@ -30,31 +31,153 @@ export class UserManagementService {
     private readonly authService: AuthService,
   ) {}
 
-  async viewUserAccount(user: RequestUser) {
-    const canViewAllUsers = user.roles.some(
-      (role) => role.name === 'Administrator',
-      'Manager',
-    );
+  async getUsers(user: RequestUser, dto: UserManagementPaginationDto) {
+    const { search, status, sortBy, order, page, perPage } = dto;
 
-    const users = await this.prisma.user.findMany({
-      where: canViewAllUsers ? {} : { id: user.id },
-      select: {
-        id: true,
-        username: true,
-        user_roles: {
-          select: {
-            role_name: true,
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    //pagination area
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: Prisma.UserWhereInput = {
+      ...(status && {
+        is_active: status === 'active',
+      }),
+    };
+
+    let whereConditions: Prisma.UserWhereInput = {};
+
+    if (search) {
+      whereConditions = {
+        OR: [
+          {
+            person: {
+              first_name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            }
+          },
+          {
+            person: {
+              middle_name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            }
+          },
+          {
+            person: {
+              last_name: {
+                contains: search,
+                mode: 'insensitive',
+              },
+            }
+          },
+          {
+            email: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+          {
+            username: {
+              contains: search,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      };
+    }
+
+    const allowSortFields = [
+      "id",
+      "created_at",
+    ]
+
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
+    const [total, users] = await this.prisma.$transaction([
+      this.prisma.user.count({
+        where: {
+          ...whereCondition,
+          ...whereConditions,
+        },
+      }),
+      this.prisma.user.findMany({
+        where: { 
+          ...whereCondition,
+          ...whereConditions,
+        },
+        include: {
+          user_roles: {
+            select: {
+              id: true,
+              role_name: true,
+            },
+          },
+          createdBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                },
+              },
+            },
+          },
+          updatedBy: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                },
+              },
+            },
           },
         },
-        is_active: true,
-      },
-    });
+        skip,
+        take: perPage,
+        orderBy: {
+          [safeSortBy]: order,
+        },
+      }),
+    ]);
+
+
     return {
       status: 'success',
-      message: canViewAllUsers ? 'All User Accounts' : 'User Account',
-      data: {
-        user_accounts: users,
-      },
+      message: 'List of User Accounts',
+      count: total,
+      page,
+      perPage,
+      // totalPage: Math.ceil(total / perPage),
+      users
     };
   }
 
