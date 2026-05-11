@@ -7,6 +7,7 @@ import {
   Req,
   Param,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { UserManagementService } from './user_management.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -38,6 +39,7 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
+import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
 
 @ApiTags('User Management')
 @Controller({ path: 'users', version: '2' })
@@ -52,8 +54,11 @@ export class UserManagementControllerV2 {
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
-  viewUsers(@SessionUser() user: RequestUser) {
-    return this.userManagementService.viewUserAccount(user);
+  viewUsers(
+    @SessionUser() user: RequestUser,
+    @Query() dto: UserManagementPaginationDto,
+  ) {
+    return this.userManagementService.getUsers(user, dto);
   }
 
   //create user account
