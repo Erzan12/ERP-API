@@ -18,6 +18,10 @@ export class UserManagementPaginationDto {
   // @Transform(({ value }) => value === 'true')
   // @ApiPropertyOptional({ default: '' })
   // is_active?: boolean;
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ default: '' })
+  department?: string;
 
   @IsOptional()
   @IsString()
