@@ -79,6 +79,11 @@ $ docker exec -it nestjs-app npx prisma generate
 $ docker exec -it nestjs-app npx prisma migrate reset
 ```
 
+6. In Prisma, you can create an empty/manual migration using:
+```bash
+$ docker exec -it nestjs-app npx prisma migrate dev --create-only --name your_migration_name
+```
+
 ## Step 3: Accessing the system
 1. First, open bash terminal, run(to make sure containers are running): 
 ```bash
