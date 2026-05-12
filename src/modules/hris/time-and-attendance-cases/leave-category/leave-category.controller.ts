@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
-import { LeaveCategoryService } from './leave_category.service';
+import { LeaveCategoryService } from './leave-category.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 import { ACTION_READ, ACTION_UPDATE, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
