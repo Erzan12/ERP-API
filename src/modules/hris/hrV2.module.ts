@@ -27,10 +27,10 @@ import { RegularizationReviewsService } from './performance_management/regulariz
 import { RegularizationReviewsController } from './performance_management/regularization_reviews/regularization_reviews.controller';
 import { PerformanceCompetencyController } from './performance_management/performance_competency/performance_competency.controller';
 import { PerformanceCompetencyService } from './performance_management/performance_competency/performance_competency.service';
-import { LeaveCategoryController } from './time_and_attendance_cases/leave_category/leave_category.controller';
-import { LeaveCategoryService } from './time_and_attendance_cases/leave_category/leave_category.service';
-import { LeaveCasesService } from './time_and_attendance_cases/leave_cases/leave_cases.service';
-import { LeaveCasesController } from './time_and_attendance_cases/leave_cases/leave_cases.controller';
+import { LeaveCategoryController } from './time-and-attendance-cases/leave-category/leave-category.controller';
+import { LeaveCategoryService } from './time-and-attendance-cases/leave-category/leave-category.service';
+import { LeaveCasesService } from './time-and-attendance-cases/leave-cases/leave-cases.service';
+import { LeaveCasesController } from './time-and-attendance-cases/leave-cases/leave-cases.controller';
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 
 @Module({

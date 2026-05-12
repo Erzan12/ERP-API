@@ -11,24 +11,24 @@
 ALTER TABLE "HrEmployeeEvaluation" DROP CONSTRAINT IF EXISTS "HrEmployeeEvaluation_approver_id_fkey";
 
 -- DropForeignKey
-ALTER TABLE "HrEmployeeEvaluation" DROP CONSTRAINT "HrEmployeeEvaluation_verifier_id_fkey";
+ALTER TABLE "HrEmployeeEvaluation" DROP CONSTRAINT IF EXISTS "HrEmployeeEvaluation_verifier_id_fkey";
 
 -- DropForeignKey
-ALTER TABLE "HrLeaveDates" DROP CONSTRAINT "HrLeaveDates_leave_category_id_fkey";
+ALTER TABLE "HrLeaveDates" DROP CONSTRAINT IF EXISTS "HrLeaveDates_leave_category_id_fkey";
 
 -- DropForeignKey
-ALTER TABLE "HrLeaveRequest" DROP CONSTRAINT "HrLeaveRequest_approver_id_fkey";
+ALTER TABLE "HrLeaveRequest" DROP CONSTRAINT IF EXISTS "HrLeaveRequest_approver_id_fkey";
 
 -- DropForeignKey
-ALTER TABLE "HrLeaveRequest" DROP CONSTRAINT "HrLeaveRequest_verifier_id_fkey";
+ALTER TABLE "HrLeaveRequest" DROP CONSTRAINT IF EXISTS "HrLeaveRequest_verifier_id_fkey";
 
 -- AlterTable
-ALTER TABLE "HrLeaveDates" DROP COLUMN "leave_category_id";
+ALTER TABLE "HrLeaveDates" DROP COLUMN IF EXISTS "leave_category_id";
 
 -- AlterTable
-ALTER TABLE "HrLeaveRequest" DROP COLUMN "approver_id",
-DROP COLUMN "verifier_id",
-ADD COLUMN     "leave_category_id" UUID;
+ALTER TABLE "HrLeaveRequest" DROP COLUMN IF EXISTS "approver_id",
+DROP COLUMN IF EXISTS "verifier_id",
+ADD COLUMN IF NOT EXISTS "leave_category_id" UUID;
 
 -- AlterTable
 ALTER TABLE "WorkflowAction" DROP COLUMN "remarks",
