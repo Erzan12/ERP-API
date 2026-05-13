@@ -3,7 +3,7 @@ import { LeaveCasesService } from './leave-cases.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 import { Can } from 'src/utils/decorators/can.decorator';
-import { ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
+import { ACTION_CREATE, ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateLeaveRequestWithDetailsDto } from './dto/leave-case.dto';
@@ -15,10 +15,10 @@ export class LeaveCasesController {
     constructor (private readonly leaveCasesService: LeaveCasesService) {}
 
     @Get('time-and-attendance-cases/leaves')
-    @ApiOperation({ summary: 'List of all Leave Cases' })
+    @ApiOperation({ summary: 'List of all Leave Request' })
     @ApiGetResponse('List of Leave Cases')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-    getLeaveCases(
+    getLeaves(
         @SessionUser() user: RequestUser,
         @Query() dto: LeaveRequestPaginationDto,
     ) {
@@ -51,9 +51,9 @@ export class LeaveCasesController {
         type: CreateLeaveRequestWithDetailsDto,
         description: 'Payload to create Leave Request'
     })
-    @ApiOperation({ summary: 'Leave Request Creation' })
+    @ApiOperation({ summary: 'Create Leave Request' })
     @ApiPostResponse('Leave Request successfully created')
-    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
     createLeaveRequest(
         @Body() dto: CreateLeaveRequestWithDetailsDto,
         @SessionUser() user: RequestUser,
