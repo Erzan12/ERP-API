@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { LeaveCompensation } from "@prisma/client";
 import { Type } from "class-transformer";
-import { IsDateString, IsInt, IsNotEmpty, IsNumber, IsString, IsUUID, ValidateNested } from "class-validator";
+import { IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsString, IsUUID, ValidateNested } from "class-validator";
 
 export class CreateLeaveRequestDto {
     @IsUUID()
@@ -98,6 +99,19 @@ export class RecordLeaveDatesDto {
     //     example: 'Leave type/category UUID PK'
     // })
     // leave_type: string;
+
+    @IsNotEmpty()
+    @IsNotEmpty()
+    @IsEnum(LeaveCompensation, { each: true,
+    message:
+        'Leave Compensation must be with_pay or without_pay',
+    })
+    @ApiProperty({
+    enum: LeaveCompensation,
+    example: LeaveCompensation,
+    description: 'The Leave Compensation for this leave date',
+    })
+    leave_compensation: LeaveCompensation;
 
     @IsNumber()
     @IsNotEmpty()

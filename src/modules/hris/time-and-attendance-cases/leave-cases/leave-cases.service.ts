@@ -1,5 +1,5 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { LeaveCompensation, Prisma, PrismaClient } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateLeaveRequestWithDetailsDto } from './dto/leave-case.dto';
@@ -446,6 +446,7 @@ export class LeaveCasesService {
                                 employee: {
                                     connect: { id: leave_request.employee_id }
                                 },
+                                leave_compensation: d.leave_compensation,
                                 fraction: d.fraction ?? 1.0,
                             })),
                         }
