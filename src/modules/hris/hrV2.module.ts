@@ -32,6 +32,8 @@ import { LeaveCategoryService } from './time-and-attendance-cases/leave-category
 import { LeaveCasesService } from './time-and-attendance-cases/leave-cases/leave-cases.service';
 import { LeaveCasesController } from './time-and-attendance-cases/leave-cases/leave-cases.controller';
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
+import { ExtendedLeaveCasesService } from './time-and-attendance-cases/extended-leave-cases/extended-leave-cases.service';
+import { ExtendedLeaveCasesController } from './time-and-attendance-cases/extended-leave-cases/extended-leave-cases.controller';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
@@ -47,7 +49,8 @@ import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-u
     LeaveCategoryService,
     LeaveCasesService,
     AttachmentUploadService,
-    ScreeningApplicantService
+    ScreeningApplicantService,
+    ExtendedLeaveCasesService
     // ScreeningApplicantService,
   ],
   controllers: [
@@ -63,6 +66,7 @@ import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-u
     ScreeningApplicantController,
     LeaveCategoryController,
     LeaveCasesController,
+    ExtendedLeaveCasesController
   ],
   exports: [HrV2Module],
 })
