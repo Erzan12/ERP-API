@@ -1,5 +1,6 @@
 export const WORKFLOW_ENTITY = {
   LEAVE_REQUEST: "LeaveRequest",
+  EXTENDED_LEAVE_REQUEST: "ExtendedLeaveRequest",
   APPLICANT: "Applicant",
   EMPLOYEE_EVALUATION: "EmployeeEvaluation",
   CAREER_POSTING: 'CareerPosting',
