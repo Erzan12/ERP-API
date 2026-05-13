@@ -7252,6 +7252,18 @@
             "type": "string",
             "example": "2026-04-10"
           },
+          "leave_compensation": {
+            "type": "string",
+            "enum": [
+              "with_pay",
+              "without_pay"
+            ],
+            "example": {
+              "with_pay": "with_pay",
+              "without_pay": "without_pay"
+            },
+            "description": "The Leave Compensation for this leave date"
+          },
           "fraction": {
             "type": "number",
             "example": 1
@@ -7259,6 +7271,7 @@
         },
         "required": [
           "leave_date",
+          "leave_compensation",
           "fraction"
         ]
       },
