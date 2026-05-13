@@ -4582,7 +4582,7 @@
     },
     "/v2/hris/time-and-attendance-cases/leaves": {
       "get": {
-        "operationId": "LeaveCasesController_getLeaveCases_v2",
+        "operationId": "LeaveCasesController_getLeaves_v2",
         "parameters": [
           {
             "name": "search",
@@ -4663,7 +4663,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "List of all Leave Cases",
+        "summary": "List of all Leave Request",
         "tags": [
           "Human Resources - Time and Attendance Cases (Leave Cases)"
         ]
@@ -4773,7 +4773,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Leave Request Creation",
+        "summary": "Create Leave Request",
         "tags": [
           "Human Resources - Time and Attendance Cases (Leave Cases)"
         ]
@@ -5010,6 +5010,153 @@
         "summary": "Cancel Leave Request",
         "tags": [
           "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/extended-leaves": {
+      "get": {
+        "operationId": "ExtendedLeaveCasesController_getExtendedLeaves_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of Extended Leave Cases"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Extended Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/extended-leave/status-count": {
+      "get": {
+        "operationId": "ExtendedLeaveCasesController_getStatusCountActive_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all Extended Leave Request stats"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Extended Leave Request status",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}": {
+      "get": {
+        "operationId": "ExtendedLeaveCasesController_getExtendedLeave_v2",
+        "parameters": [
+          {
+            "name": "extendedHrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Extended Leave Request"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single Extended Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
+        ]
+      },
+      "post": {
+        "operationId": "ExtendedLeaveCasesController_createExtendedLeaveRequest_v2",
+        "parameters": [
+          {
+            "name": "extendedHrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Extended Leave Request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExtendedLeaveRequestWithDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Extended Leave Request successfully created"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create Extended Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
         ]
       }
     },
@@ -7291,6 +7438,144 @@
         "required": [
           "leave_request",
           "leave_dates"
+        ]
+      },
+      "CreateExtendedLeaveRequestDto": {
+        "type": "object",
+        "properties": {
+          "leave_request_id": {
+            "type": "string",
+            "example": "Leave Request UUID",
+            "description": "The leave request uuid PK"
+          },
+          "extension_date_from": {
+            "type": "string",
+            "example": "2026-04-10",
+            "description": "Date start of employee extended leave request"
+          },
+          "extension_date_to": {
+            "type": "string",
+            "example": "2026-04-10",
+            "description": "Date end of the employee extended leave request"
+          },
+          "return_date": {
+            "type": "string",
+            "example": "2026-04-11",
+            "description": "Date return of the employee after extended leave request"
+          },
+          "extended_leave_request_status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "for_verification",
+              "for_approval",
+              "for_processing",
+              "processed",
+              "cancelled",
+              "rejected"
+            ],
+            "example": {
+              "draft": "draft",
+              "for_verification": "for_verification",
+              "for_approval": "for_approval",
+              "for_processing": "for_processing",
+              "processed": "processed",
+              "cancelled": "cancelled",
+              "rejected": "rejected"
+            },
+            "description": "The status of Extended Leave Request"
+          },
+          "reason_for_extension": {
+            "type": "string",
+            "example": "I will go for vacation",
+            "description": "The reason of employee leave request"
+          },
+          "contact_number": {
+            "type": "string",
+            "example": "09633263341",
+            "description": "Telephone or cellphone number of employee"
+          },
+          "address_on_leave": {
+            "type": "string",
+            "example": "Hotel California",
+            "description": "The employee address while on leave"
+          },
+          "reliever_id": {
+            "type": "string",
+            "example": "User UUID for reliver while on leave",
+            "description": "The uuid of reliever user while employee is on leave"
+          },
+          "verifier_id": {
+            "type": "string",
+            "example": "User UUID for verifier of this extended leave request",
+            "description": "The uuid of verifier user for this extended leave request"
+          },
+          "approver_id": {
+            "type": "string",
+            "example": "User UUID for extended leave request approver",
+            "description": "The uuid of approver user for this extended leave request"
+          }
+        },
+        "required": [
+          "leave_request_id",
+          "extension_date_from",
+          "extension_date_to",
+          "return_date",
+          "extended_leave_request_status",
+          "reason_for_extension",
+          "contact_number",
+          "address_on_leave",
+          "reliever_id",
+          "verifier_id",
+          "approver_id"
+        ]
+      },
+      "RecordExtendedLeaveDatesDto": {
+        "type": "object",
+        "properties": {
+          "leave_date": {
+            "type": "string",
+            "example": "2026-04-10"
+          },
+          "leave_compensation": {
+            "type": "string",
+            "enum": [
+              "with_pay",
+              "without_pay"
+            ],
+            "example": {
+              "with_pay": "with_pay",
+              "without_pay": "without_pay"
+            },
+            "description": "The Leave Compensation for this leave date"
+          },
+          "fraction": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "leave_date",
+          "leave_compensation",
+          "fraction"
+        ]
+      },
+      "CreateExtendedLeaveRequestWithDetailsDto": {
+        "type": "object",
+        "properties": {
+          "extended_leave_request": {
+            "$ref": "#/components/schemas/CreateExtendedLeaveRequestDto"
+          },
+          "extended_leave_dates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RecordExtendedLeaveDatesDto"
+            }
+          }
+        },
+        "required": [
+          "extended_leave_request",
+          "extended_leave_dates"
         ]
       },
       "CreatePermissionTemplateDto": {

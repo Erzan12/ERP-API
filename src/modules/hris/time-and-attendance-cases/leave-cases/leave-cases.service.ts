@@ -640,27 +640,27 @@ export class LeaveCasesService {
 
         // Execute queries
         const [counts] = await Promise.all([
-        this.prisma.hrLeaveRequest.groupBy({
-            by: ['status'],
-            where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
-            _count: { _all: true },
-        }),
-        this.prisma.hrLeaveRequest.count({
-            where: { is_active: true }, // We always want this count regardless of the filter
-        }),
+            this.prisma.hrLeaveRequest.groupBy({
+                by: ['status'],
+                where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
+                _count: { _all: true },
+            }),
+            this.prisma.hrLeaveRequest.count({
+                where: { is_active: true }, // We always want this count regardless of the filter
+            }),
         ]);
 
         // Build the response object with defaults
         const result = {
-        all: 0,
-        draft: 0,
-        for_verification: 0,
-        for_approval: 0,
-        for_processing: 0,
-        processed: 0,
-        cancelled: 0,
-        rejected: 0,
-        // isActive: totalActiveCount,
+            all: 0,
+            draft: 0,
+            for_verification: 0,
+            for_approval: 0,
+            for_processing: 0,
+            processed: 0,
+            cancelled: 0,
+            rejected: 0,
+            // isActive: totalActiveCount,
         };
 
         // Populate the result based on the DB response
@@ -680,7 +680,7 @@ export class LeaveCasesService {
 
         return {
         status: 'success',
-        message: 'Here is the status count for leave requests',
+        message: 'Here is the status count for Leave Requests',
         result,
         };
     }
