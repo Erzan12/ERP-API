@@ -5160,6 +5160,240 @@
         ]
       }
     },
+    "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/submit": {
+      "post": {
+        "operationId": "ExtendedLeaveCasesController_submitExtendedLeave_v2",
+        "parameters": [
+          {
+            "name": "extendedHrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Extended Leave Request submitted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Submit Extended Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/verify": {
+      "post": {
+        "operationId": "ExtendedLeaveCasesController_verifyExtendedLeave_v2",
+        "parameters": [
+          {
+            "name": "extendedHrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Extended Leave Request verified"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Verify Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/approve": {
+      "post": {
+        "operationId": "ExtendedLeaveCasesController_approveExtendedLeave_v2",
+        "parameters": [
+          {
+            "name": "extendedHrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Extended Leave Request approved"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Approve Extended Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave/{extendedHrLeaveRequestId}/process": {
+      "post": {
+        "operationId": "ExtendedLeaveCasesController_processExtendedLeave_v2",
+        "parameters": [
+          {
+            "name": "extendedHrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Extended Leave Request processed"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Process Extended Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave/{extendedHrLeaveRequestId}/reject": {
+      "post": {
+        "operationId": "ExtendedLeaveCasesController_rejectExtendedLeave_v2",
+        "parameters": [
+          {
+            "name": "extendedHrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Extended Leave Request rejected"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Reject Extended Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/leave/{extendedHrLeaveRequestId}/cancel": {
+      "post": {
+        "operationId": "ExtendedLeaveCasesController_cancelExtendedLeave_v2",
+        "parameters": [
+          {
+            "name": "extendedHrLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Extended Leave Request cancelled"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Cancel Extended Leave Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
