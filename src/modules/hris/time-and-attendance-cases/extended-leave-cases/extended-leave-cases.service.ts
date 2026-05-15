@@ -128,31 +128,36 @@ export class ExtendedLeaveCasesService {
 
         return this.prisma.$transaction(async (tx) => {
             try {
-                const existingLeaveRequest = await this.prisma.hrExtendedLeaveRequest.findUnique({
-                    where: { 
-                        id: extendedHrLeaveRequestId, 
-                        hr_leave_request: {
-                            is_active: true,
-                        }, 
-                    }
-                })
+                // const existingLeaveRequest = await this.prisma.hrExtendedLeaveRequest.findUnique({
+                //     where: { 
+                //         id: extendedHrLeaveRequestId, 
+                //         hr_leave_request: {
+                //             is_active: true,
+                //         }, 
+                //     }
+                // })
 
-                if (!existingLeaveRequest) {
-                    throw new NotFoundException ("Leave Request does not exist")
-                }
+                // if (!existingLeaveRequest) {
+                //     throw new NotFoundException ("Leave Request does not exist")
+                // }
 
                 // query first the leave request to connect
-                const leaveRequest = await this.prisma.hrLeaveRequest.findUnique({
+                const leaveRequest = await this.prisma.hrLeaveRequest.findFirst({
                     where: {
                         id: extended_leave_request.leave_request_id,
+                        status: 'processed', // or LeaveRequestStatus.processed
+                        is_active: true,
                     },
                     select: {
+                        id: true,
                         employee_id: true,
                     },
                 });
 
                 if (!leaveRequest) {
-                    throw new Error('Leave request not found');
+                    throw new BadRequestException(
+                        'Leave request must be processed before extension can be created',
+                    );
                 }
 
                 const extendedLeaveRequest = await this.prisma.hrExtendedLeaveRequest.create({
@@ -161,7 +166,7 @@ export class ExtendedLeaveCasesService {
                         reliever_id: extended_leave_request.reliever_id,
                         extension_date_from: new Date(extended_leave_request.extension_date_from),
                         extension_date_to: new Date(extended_leave_request.extension_date_to),
-                        return_date: extended_leave_request.return_date && null,
+                        return_date: extended_leave_request.return_date || null,
                         extended_leave_request_status: extended_leave_request.extended_leave_request_status,
                         reason_for_extension: extended_leave_request.reason_for_extension,
                         contact_no_while_on_leave: extended_leave_request.contact_number,
@@ -174,7 +179,7 @@ export class ExtendedLeaveCasesService {
                                 },
                                 hr_leave_request: {
                                     connect: {
-                                        id: extended_leave_request.leave_request_id,
+                                        id: leaveRequest.id,
                                     },
                                 },
                                 leave_compensation: d.leave_compensation,
@@ -405,5 +410,405 @@ export class ExtendedLeaveCasesService {
             message: 'Here is the status count for Extended Leave Requests',
             result,
         };
+    }
+
+    async submitExtendedLeave(extendedHrLeaveRequestId: string, user: RequestUser) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async (tx) => {
+            try {
+                const submitExtendedLeave = await tx.hrExtendedLeaveRequest.update({
+                    where: { id: extendedHrLeaveRequestId, extended_leave_request_status: "draft" },
+                    data: {
+                        extended_leave_request_status: "for_verification"
+                    }
+                });
+
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
+                        actionable_id: extendedHrLeaveRequestId,
+                        action: "submission",
+                        acted_by: user.id
+                    }
+                });
+
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPostion = requestUser.employee.position.name;
+
+                return {
+                    status: 'status',
+                    message: 'Extended Leave Submitted',
+                    submitExtendedLeave,
+                    submitted_by: `${userName} - ${userPostion}`,
+                };
+            } catch (e) {
+                throw e;
+            }
+        })
+    }
+
+    async verifyExtendedLeave(extendedHrLeaveRequestId: string, user: RequestUser) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async (tx) => {
+            try {
+                // validate extended leave status
+                const  leave = await tx.hrLeaveRequest.findUnique({
+                    where: { id: extendedHrLeaveRequestId }
+                });
+
+                if (leave?.status !== "for_verification") {
+                    throw new BadRequestException("Invalid! status must be: for_verification");
+                }
+
+                const verifyExtendedLeave = await tx.hrExtendedLeaveRequest.update({
+                    where: { id: extendedHrLeaveRequestId, extended_leave_request_status: "for_verification" },
+                    data: {
+                        extended_leave_request_status: "for_approval",
+                        updated_by: requestUser.id
+                    }
+                });
+
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
+                        actionable_id: extendedHrLeaveRequestId,
+                        action: "verification",
+                        acted_by: requestUser.id
+                    }
+                });
+
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
+
+                return {
+                    status: 'success',
+                    message: 'Extended Leave Request Verified',
+                    verifyExtendedLeave,
+                    verified_by: `${userName} - ${userPosition}`
+                };
+            } catch (e) {
+                throw e;
+            }
+        })
+    }
+
+    async approveExtendedLeave(extendedHrLeaveRequestId: string, user: RequestUser) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async(tx) => {
+            try {
+                const approveExtendedLeave = await tx.hrExtendedLeaveRequest.update({
+                    where: { id: extendedHrLeaveRequestId, extended_leave_request_status: "for_approval"},
+                    data: {
+                        extended_leave_request_status: "for_approval",
+                        updated_by: requestUser.id,
+                    }
+                });
+
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
+                        actionable_id: extendedHrLeaveRequestId,
+                        action: 'approval',
+                        acted_by: requestUser.id
+                    }
+                });
+
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
+
+                return {
+                    status: 'success',
+                    message: 'Extended Leave Request Approved',
+                    approveExtendedLeave,
+                    approved_by: `${userName} - ${userPosition}`,
+                };
+            } catch (e) {
+                throw e;
+            }
+        })
+    }
+
+    async processExtendedLeave(extendedHrLeaveRequestId: string, user: RequestUser) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async(tx) => {
+            try {
+                const processExtendedLeave = await tx.hrLeaveRequest.update({
+                    where: { id: extendedHrLeaveRequestId, status: "for_processing" },
+                    data: {
+                        status: 'processed',
+                        updated_by: requestUser.id
+                    }
+                });
+
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+                        actionable_id: extendedHrLeaveRequestId,
+                        action: 'processing',
+                        acted_by: requestUser.id
+                    }
+                });
+
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
+
+                return {
+                    status: 'success',
+                    message: 'Extended Leave Request Processed',
+                    processExtendedLeave,
+                    processed_by: `${userName} - ${userPosition}`,
+                };
+                
+            } catch (e) {
+                throw e;
+            }
+        })
+    }
+
+    async rejectExtendedLeave(extendedHrLeaveRequestId: string, user: RequestUser) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async (tx) => {
+            try {
+                const leave = await tx.hrExtendedLeaveRequest.findUnique({
+                    where: { id: extendedHrLeaveRequestId }
+                });
+
+                if (!leave) {
+                    throw new NotFoundException("Leave Request does not exist");
+                }
+
+                const allowedStatuses = ["for_verification", "for_approval", "for_processing"];
+
+                if (!allowedStatuses.includes(leave.extended_leave_request_status)) {
+                    throw new BadRequestException("Invalid! status must be: for_verification, for_approval or for_processing");
+                }
+
+                const rejectExtendedLeave = await tx.hrExtendedLeaveRequest.updateMany({
+                    where: {
+                        id: extendedHrLeaveRequestId,
+                        extended_leave_request_status: { in: ["for_verification", "for_processing", "for_approval"]}
+                    },
+                    data: {
+                        extended_leave_request_status: 'rejected',
+                        updated_by: requestUser.id
+                    }
+                });
+
+                if (rejectExtendedLeave.count === 0) {
+                    throw new BadRequestException("Update failed due to invalid status");
+                }
+
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
+                        actionable_id: extendedHrLeaveRequestId,
+                        action: 'rejection',
+                        acted_by: requestUser.id
+                    }
+                });
+
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
+
+                return {
+                    status: 'success',
+                    message: 'Extended Leave Request Rejected',
+                    rejectExtendedLeave,
+                    rejected_by: `${userName} - ${userPosition}`,
+                };
+            } catch (e) {
+                if (e instanceof BadRequestException) {
+                    throw e; // keep your validation errors
+                }
+            }
+        })
+    }
+
+    async cancelExtendedLeave(extendedHrLeaveRequestId: string, user: RequestUser) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async(tx) => {
+            try {
+                const cancelExtendedLeave = await tx.hrExtendedLeaveRequest.updateManyAndReturn({
+                    where: {
+                        id: extendedHrLeaveRequestId,
+                        OR: [
+                            { extended_leave_request_status: 'draft' },
+                            { extended_leave_request_status: 'for_verification' },
+                            { extended_leave_request_status: 'for_approval' },
+                            { extended_leave_request_status: 'processed' },
+                        ]
+                    },
+                    data: {
+                        extended_leave_request_status: 'cancelled',
+                        updated_by: requestUser.id
+                    }
+                });
+
+                await tx.workflowAction.create({
+                    data: {
+                        actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
+                        actionable_id: extendedHrLeaveRequestId,
+                        action: 'cancellation',
+                        acted_by: requestUser.id
+                    }
+                });
+
+                const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+                const userPosition = requestUser.employee.position.name;
+
+                return {
+                    status: 'success',
+                    message: 'Extended Leave Request',
+                    cancelExtendedLeave,
+                    cancelled_by: `${userName} - ${userPosition}`,
+                }
+            } catch (e) {
+                throw e;
+            }
+        })
     }
 }
