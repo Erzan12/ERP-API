@@ -8,6 +8,7 @@ import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { UserManagementService } from './user_management.service';
 import { UserManagementControllerV2 } from './user_managementV2.controller';
+import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 
 @Module({
   imports: [AuthModule],
@@ -20,6 +21,7 @@ import { UserManagementControllerV2 } from './user_managementV2.controller';
     JwtService,
     MailService,
     AuditService,
+    AttachmentUploadService
   ],
   exports: [AuthService, UserManagementService],
 })
