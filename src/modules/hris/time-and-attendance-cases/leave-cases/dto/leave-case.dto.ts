@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { LeaveCompensation } from "@prisma/client";
 import { Type } from "class-transformer";
-import { IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsString, IsUUID, ValidateNested } from "class-validator";
+import { IsDateString, IsEnum, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
 
 export class CreateLeaveRequestDto {
     @IsUUID()
@@ -101,7 +101,6 @@ export class RecordLeaveDatesDto {
     // leave_type: string;
 
     @IsNotEmpty()
-    @IsNotEmpty()
     @IsEnum(LeaveCompensation, { each: true,
     message:
         'Leave Compensation must be with_pay or without_pay',
@@ -114,7 +113,6 @@ export class RecordLeaveDatesDto {
     leave_compensation: LeaveCompensation;
 
     @IsNumber()
-    @IsNotEmpty()
     @ApiProperty({
         example: 1.0
     })
@@ -131,4 +129,133 @@ export class CreateLeaveRequestWithDetailsDto {
     @ValidateNested({each: true})
     @Type(() => RecordLeaveDatesDto)
     leave_dates: RecordLeaveDatesDto[];
+}
+
+export class UpdateLeaveRequestDto {
+    @IsOptional()
+    @IsUUID()
+    @ApiProperty({
+        example: 'Leave Category UUID',
+        description: 'The employee uuid PK'
+    })
+    leave_category_id?: string;
+
+    @IsOptional()
+    @IsDateString()
+    @ApiProperty({
+        example: '2026-04-10',
+        description: 'Date start of employee leave request'
+    })
+    date_from?: string;
+
+    @IsOptional()
+    @IsDateString()
+    @ApiProperty({
+        example: '2026-04-10',
+        description: 'Date end of the employee leave request'
+    })
+    date_to?: string;
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        example: 'I will go for vacation',
+        description: 'The reason of employee leave request'
+    })
+    reason?: string;
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        example: '09633263341',
+        description: 'Telephone or cellphone number of employee'
+    })
+    contact_number?: string;
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        example: 'Hotel California',
+        description: 'The employee address while on leave'
+    })
+    address_on_leave?: string;
+    
+    @IsOptional()
+    @IsUUID()
+    @ApiProperty({
+        example: 'User UUID for reliver while on leave',
+        description: 'The uuid of reliever user while employee is on leave'
+    })
+    reliever_id?: string;
+
+    @IsOptional()
+    @IsUUID()
+    @ApiProperty({
+        example: 'User UUID for verifier of this leave request',
+        description: 'The uuid of verifier user for this leave request'
+    })
+    verifier_id?: string;
+
+    @IsOptional()
+    @IsUUID()
+    @ApiProperty({
+        example: 'User UUID for leave request approver',
+        description: 'The uuid of approver user for this user leave request'
+    })
+    approver_id?: string;
+}
+
+export class UpdateRecordLeaveDatesDto {
+    @IsOptional()
+    @IsUUID()
+    @ApiProperty({
+        example: 'a6b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+        description: 'The unique primary key ID of the specific leave date record (leave empty for new dates)'
+    })
+    id?: string;
+
+    @IsOptional()
+    @IsDateString()
+    @ApiProperty({
+        example: '2026-04-10',
+    })
+    leave_date?: string;
+
+    // @IsUUID()
+    // @IsNotEmpty()
+    // @ApiProperty({
+    //     example: 'Leave type/category UUID PK'
+    // })
+    // leave_type: string;
+
+    @IsOptional()
+    @IsEnum(LeaveCompensation, { each: true,
+    message:
+        'Leave Compensation must be with_pay or without_pay',
+    })
+    @ApiProperty({
+    enum: LeaveCompensation,
+    example: LeaveCompensation,
+    description: 'The Leave Compensation for this leave date',
+    })
+    leave_compensation?: LeaveCompensation;
+
+    @IsOptional()
+    @IsNumber()
+    @ApiProperty({
+        example: 1.0
+    })
+    fraction?: number;
+}
+
+export class UpdateLeaveRequestWithDetailsDto {
+    @ApiProperty({ type: () => UpdateLeaveRequestDto })
+    @ValidateNested()
+    @Type(() => UpdateLeaveRequestDto)
+    update_leave_request: UpdateLeaveRequestDto;
+
+    @ApiProperty({ type: () => [UpdateRecordLeaveDatesDto] })
+    @ValidateNested({each: true})
+    @Type(() => UpdateRecordLeaveDatesDto)
+    update_leave_dates: UpdateRecordLeaveDatesDto[];
 }
