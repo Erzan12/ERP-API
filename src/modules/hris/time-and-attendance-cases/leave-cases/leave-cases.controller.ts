@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 import { LeaveCasesService } from './leave-cases.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
+import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 import { Can } from 'src/utils/decorators/can.decorator';
-import { ACTION_APPROVE, ACTION_CANCEL, ACTION_CREATE, ACTION_PROCESS, ACTION_READ, ACTION_REJECT, ACTION_SUBMIT, ACTION_VERIFY, EMPLOYEE_MASTERLIST, LEAVE_REQUEST } from 'src/utils/constants/ability.constant';
+import { ACTION_APPROVE, ACTION_CANCEL, ACTION_CREATE, ACTION_PROCESS, ACTION_READ, ACTION_REJECT, ACTION_SUBMIT, ACTION_UPDATE, ACTION_VERIFY, EMPLOYEE_MASTERLIST, LEAVE_REQUEST } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateLeaveRequestWithDetailsDto } from './dto/leave-case.dto';
+import { CreateLeaveRequestWithDetailsDto, UpdateLeaveRequestWithDetailsDto } from './dto/leave-case.dto';
 import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request.dto';
 
 @ApiTags('Human Resources - Time and Attendance Cases (Leave Cases)')
@@ -59,6 +59,26 @@ export class LeaveCasesController {
         @SessionUser() user: RequestUser,
     ) {
         return this.leaveCasesService.createLeaveCase(user, dto)
+    }
+
+    @Put('time-and-attendance-cases/leave/:leaveCaseId')
+    @ApiBody({
+       type:  UpdateLeaveRequestWithDetailsDto,
+       description: 'Payload to updated leave request/case',
+    })
+    @ApiOperation({ summary: 'Update a current leave request/case'})
+    @ApiPatchResponse('Leave Request updated successfully')
+    @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+    updateLeaveRequest(
+        @Param('leaveCaseId', new ParseUUIDPipe()) leaveCaseId: string,
+        @Body() dto: UpdateLeaveRequestWithDetailsDto,
+        @SessionUser() user: RequestUser, 
+    ) {
+        return this.leaveCasesService.updateLeaveCase(
+            user,
+            leaveCaseId,
+            dto,
+        )
     }
 
     // LEAVE REQUEST WORKFLOW STATUS
