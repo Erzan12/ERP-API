@@ -1,3 +1,4 @@
 export const TRANSACTION_TYPE = {
-  APPLICANT: 'Applicant',
+  APPLICANT_DOC: 'Applicant Document',
+  USER_AVATAR: 'User Avatar'
 };
