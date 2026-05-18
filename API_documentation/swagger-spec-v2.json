@@ -4779,6 +4779,56 @@
         ]
       }
     },
+    "/v2/hris/time-and-attendance-cases/leave/{leaveCaseId}": {
+      "put": {
+        "operationId": "LeaveCasesController_updateLeaveRequest_v2",
+        "parameters": [
+          {
+            "name": "leaveCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to updated leave request/case",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLeaveRequestWithDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Leave Request updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current leave request/case",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Leave Cases)"
+        ]
+      }
+    },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/submit": {
       "post": {
         "operationId": "LeaveCasesController_submitLeave_v2",
@@ -7672,6 +7722,121 @@
         "required": [
           "leave_request",
           "leave_dates"
+        ]
+      },
+      "UpdateLeaveRequestDto": {
+        "type": "object",
+        "properties": {
+          "leave_category_id": {
+            "type": "string",
+            "example": "Leave Category UUID",
+            "description": "The employee uuid PK"
+          },
+          "date_from": {
+            "type": "string",
+            "example": "2026-04-10",
+            "description": "Date start of employee leave request"
+          },
+          "date_to": {
+            "type": "string",
+            "example": "2026-04-10",
+            "description": "Date end of the employee leave request"
+          },
+          "reason": {
+            "type": "string",
+            "example": "I will go for vacation",
+            "description": "The reason of employee leave request"
+          },
+          "contact_number": {
+            "type": "string",
+            "example": "09633263341",
+            "description": "Telephone or cellphone number of employee"
+          },
+          "address_on_leave": {
+            "type": "string",
+            "example": "Hotel California",
+            "description": "The employee address while on leave"
+          },
+          "reliever_id": {
+            "type": "string",
+            "example": "User UUID for reliver while on leave",
+            "description": "The uuid of reliever user while employee is on leave"
+          },
+          "verifier_id": {
+            "type": "string",
+            "example": "User UUID for verifier of this leave request",
+            "description": "The uuid of verifier user for this leave request"
+          },
+          "approver_id": {
+            "type": "string",
+            "example": "User UUID for leave request approver",
+            "description": "The uuid of approver user for this user leave request"
+          }
+        },
+        "required": [
+          "leave_category_id",
+          "date_from",
+          "date_to",
+          "reason",
+          "contact_number",
+          "address_on_leave",
+          "reliever_id",
+          "verifier_id",
+          "approver_id"
+        ]
+      },
+      "UpdateRecordLeaveDatesDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a6b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+            "description": "The unique primary key ID of the specific leave date record (leave empty for new dates)"
+          },
+          "leave_date": {
+            "type": "string",
+            "example": "2026-04-10"
+          },
+          "leave_compensation": {
+            "type": "string",
+            "enum": [
+              "with_pay",
+              "without_pay"
+            ],
+            "example": {
+              "with_pay": "with_pay",
+              "without_pay": "without_pay"
+            },
+            "description": "The Leave Compensation for this leave date"
+          },
+          "fraction": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "id",
+          "leave_date",
+          "leave_compensation",
+          "fraction"
+        ]
+      },
+      "UpdateLeaveRequestWithDetailsDto": {
+        "type": "object",
+        "properties": {
+          "update_leave_request": {
+            "$ref": "#/components/schemas/UpdateLeaveRequestDto"
+          },
+          "update_leave_dates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UpdateRecordLeaveDatesDto"
+            }
+          }
+        },
+        "required": [
+          "update_leave_request",
+          "update_leave_dates"
         ]
       },
       "CreateExtendedLeaveRequestDto": {

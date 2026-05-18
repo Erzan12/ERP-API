@@ -33,6 +33,9 @@ import { PrismaService } from './config/prisma/prisma.service';
 import { DivisionService } from './modules/master/division/division.service';
 import { MailService } from './jobs/mail/mail.service';
 import { UserLocationService } from './modules/master/user_location/user_location.service';
+import { AttachmentUploadService } from './jobs/attachment-upload/attachment-upload.service';
+import { MulterModule } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @Module({
   imports: [
@@ -40,6 +43,9 @@ import { UserLocationService } from './modules/master/user_location/user_locatio
     ConfigModule.forRoot({
       isGlobal: true, // makes config available app-wide
       envFilePath: '.env', // optional: default is .env
+    }),
+    MulterModule.register({
+      storage: memoryStorage(),
     }),
     LandingModule,
     AuthModule,
@@ -83,8 +89,10 @@ import { UserLocationService } from './modules/master/user_location/user_locatio
     CompanyService,
     EmploymentStatusService,
     UserLocationService,
+    AttachmentUploadService
     // HealthCheckService,
   ],
+  exports: [AttachmentUploadService],
   controllers: [
     // EmployeeControllerV1,
     AuthController,
