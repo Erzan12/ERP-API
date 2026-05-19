@@ -38,8 +38,7 @@ import {
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { memoryStorage } from 'multer';
 
 /**
  * Applicant CONTROLLER SECTION
@@ -93,16 +92,17 @@ export class ApplicantsController {
   @Post('applicants')
   @UseInterceptors(
     FilesInterceptor('files', 5, {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const timestamp = Date.now();
-          const ext = extname(file.originalname);
-          const name = file.originalname.replace(ext, '').replace(/\s+/g, '-');
+      // storage: diskStorage({
+      //   destination: './uploads',
+      //   filename: (req, file, cb) => {
+      //     const timestamp = Date.now();
+      //     const ext = extname(file.originalname);
+      //     const name = file.originalname.replace(ext, '').replace(/\s+/g, '-');
 
-          cb(null, `${name}-${timestamp}${ext}`);
-        },
-      }),
+      //     cb(null, `${name}-${timestamp}${ext}`);
+      //   },
+      // }),
+      storage: memoryStorage(),
     }),
   )
   @ApiConsumes('multipart/form-data')
