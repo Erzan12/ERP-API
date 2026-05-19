@@ -35,6 +35,43 @@ export class UserManagementService {
     private readonly uploadService: AttachmentUploadService
   ) {}
 
+  async getUser(user: RequestUser, userId: string) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    const getUser = await this.prisma.user.findUnique({
+      where: { id: userId, is_active: true },
+    })
+
+    return {
+      status: 'success',
+      message: 'Here is the User',
+      getUser,
+    }
+  }
+
   async getUsers(user: RequestUser, dto: UserManagementPaginationDto) {
     const { search, status, department, sortBy, order, page, perPage } = dto;
 
@@ -150,6 +187,7 @@ export class UserManagementService {
           username: true,
           email: true,
           is_active: true,
+          avatar: true,
           employee: {
             select: {
               id: true,
@@ -335,13 +373,19 @@ export class UserManagementService {
           },
         });
 
+        // const attachment = await this.uploadService.avatarUpload({
+        //   file,
+        //   transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+        //   transaction_id: newUser.id,
+        //   // file_desc: file_desc,
+        //   user_id: user.id,
+        // }, tx);
         const attachment = await this.uploadService.avatarUpload({
-          file,
-          transaction_type: TRANSACTION_TYPE.USER_AVATAR,
-          transaction_id: newUser.id,
-          // file_desc: file_desc,
-          user_id: user.id,
-        });
+            file,
+            transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+            transaction_id: newUser.id,
+            user_id: user.id,
+        }, tx);
 
         const empDept = await this.prisma.employee.findUnique({
           where: { id: employee.id },
@@ -351,70 +395,6 @@ export class UserManagementService {
         if (!empDept) {
           throw new BadRequestException('Employee Department does not exist');
         }
-
-        //optional role permission creation upon creating user account
-        // if (createUserWithRoleDto.role_name?.length) {
-        //   const rolePermissions = await this.prisma.rolePermission.findFirst({
-        //     where: {
-        //       id: createUserWithRoleDto.role_name,
-        //     },
-        //   });
-
-        //   // const userRolesMap = new Map<string, any>();
-        //   // const userRolesMap = new Map<string, { id: number }>();
-
-        //   const userRolesMap = new Map<string, any>();
-
-        //   for (const rp of rolePermissions) {
-        //     const key = `${rp.role_id}-${rp.sub_module_id}`;
-
-        //     let userRole = userRolesMap.get(key);
-
-        //     if (!userRole) {
-        //       // Check if UserRole already exists
-        //       userRole = await tx.userRole.findFirst({
-        //         where: {
-        //           user_id: newUser.id,
-        //           role_id: rp.role_id,
-        //         },
-        //       });
-
-        //       // If not exists, create it
-        //       if (!userRole) {
-        //         userRole = await tx.userRole.create({
-        //           data: {
-        //             user_id: newUser.id,
-        //             role_id: rp.role_id,
-        //             role_name: rp.role_name,
-        //             created_at: new Date(),
-        //           },
-        //         });
-        //       }
-
-        //       userRolesMap.set(key, userRole);
-        //     }
-
-        //     // Ensure no duplicate permission
-        //     const existingPermission = await tx.userPermission.findFirst({
-        //       where: {
-        //         user_id: newUser.id,
-        //         user_role_id: userRole.id,
-        //         role_permission_id: rp.id,
-        //       },
-        //     });
-
-        //     if (!existingPermission) {
-        //       await tx.userPermission.create({
-        //         data: {
-        //           user_id: newUser.id,
-        //           user_role_id: userRole.id,
-        //           role_permission_id: rp.id,
-        //           action: rp.action,
-        //         },
-        //       });
-        //     }
-        //   }
-        // }
 
         //use only role name instead of role permission ids when adding role to user
         if (dto.role_name) {
@@ -835,6 +815,7 @@ export class UserManagementService {
         username: true,
         is_active: true,
         last_login: true,
+        avatar: true,
         email: true,
         employee: {
           select: {
