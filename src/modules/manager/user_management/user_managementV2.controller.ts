@@ -49,6 +49,18 @@ import { UserDetailsDto } from './dto/user-details.dto';
 export class UserManagementControllerV2 {
   constructor(private userManagementService: UserManagementService) {}
 
+  @Get(':userId')
+  @ApiOperation({ summary: 'Get User Account' })
+  @ApiGetResponse('Here is the User')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  getUser(
+    @SessionUser() user: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+  ) {
+    return this.userManagementService.getUser(user, userId)
+  }
+
   //view user accounts
   //to set up viewuser accounts in service
   @Get()
