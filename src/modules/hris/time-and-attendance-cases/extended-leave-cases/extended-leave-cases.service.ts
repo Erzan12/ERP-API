@@ -10,7 +10,7 @@ export class ExtendedLeaveCasesService {
     constructor(private readonly prisma: PrismaService) {}
 
     async getExtendedLeaves(user: RequestUser) {
-        // Auth check first
+        //Auth check first
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
             include: {
