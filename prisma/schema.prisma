@@ -140,6 +140,11 @@ enum LeaveTransactionType {
   deduct
 }
 
+enum LeaveCompensation {
+  with_pay
+  without_pay
+}
+
 enum WorkflowActionType {
   for_acknowledgment
   for_approval
@@ -160,6 +165,8 @@ enum WorkflowActionType {
   create
   created
   creation
+
+  update
   
   submit
   submitted
@@ -217,6 +224,22 @@ enum WorkflowActionType {
 
   onboard
   onboarding
+}
+
+enum VesselType {
+  vessel_cargo
+  tugboat
+  barge
+}
+
+enum OvertimeStatus {
+  draft
+  for_verification
+  for_approval
+  for_processing
+  processed
+  cancelled
+  rejected
 }
 
 ////////////////////////////////////////
@@ -290,6 +313,7 @@ model User {
   username                 String   @unique
   password                 String
   email                    String   @unique
+  avatar                   String?
   is_active                Boolean  @default(true)
   password_reset           String?
   require_reset            Int      @default(1)
@@ -379,13 +403,22 @@ model User {
   HrLeaveCategoryUpdatedBy                 HrLeaveCategory[]                  @relation("HrLeaveCategoryUpdatedBy")
   HrLeaveRequestCreatedBy                  HrLeaveRequest[]                   @relation("HrLeaveRequestCreatedBy")
   HrLeaveRequestUpdatedBy                  HrLeaveRequest[]                   @relation("HrLeaveRequestUpdatedBy")
+  HrExtendedLeaveRequestCreatedBy          HrExtendedLeaveRequest[]           @relation("HrExtendedLeaveRequestCreatedBy")
+  HrExtendedLeaveRequestUpdatedBy          HrExtendedLeaveRequest[]           @relation("HrExtendedLeaveRequestUpdatedBy")
+  VesselCreatedBy                          Vessel[]                           @relation("VesselCreatedBy")
+  VesselUpdatedBy                          Vessel[]                           @relation("VesselUpdatedBy")
+  HrOvertimeRequestCreatedBy               HrOvertimeRequest[]                @relation("HrOvertimeRequestCreatedBy")
+  HrOvertimeRequestUpdatedBy               HrOvertimeRequest[]                @relation("HrOvertimeRequestUpdatedBy")
+  HrOvertimeRateCreatedBy                  HrOvertimeRate[]                   @relation("HrOvertimeRateCreatedBy")
+  HrOvertimeRateUpdatedBy                  HrOvertimeRate[]                   @relation("HrOvertimeRateUpdatedBy")
 
   // Workflow action
   workflow_actions  WorkflowAction[]
 
-  relieved_requests HrLeaveRequest[] @relation("LeaveRequestReliever")
-  //verified_requests HrLeaveRequest[] @relation("LeaveRequestVerifier")
-  //approved_requests HrLeaveRequest[] @relation("LeaveRequestApprover")
+  relieved_requests         HrLeaveRequest[] @relation("LeaveRequestReliever")
+  relieved_extended_request HrExtendedLeaveRequest[] @relation("ExtendedLeaveRequestReliever")
+  //verified_requests       HrLeaveRequest[] @relation("LeaveRequestVerifier")
+  //approved_requests       HrLeaveRequest[] @relation("LeaveRequestApprover")
 
   //employee_evaluations_verified HrEmployeeEvaluation[] @relation("EmployeeEvaluationVerifier")
   //employee_evaluations_approved HrEmployeeEvaluation[] @relation("EmployeeEvaluationApprover")
@@ -422,6 +455,8 @@ model UserLocation {
   updated_at DateTime @default(now())
 
   careerPosting CareerPosting[]
+  employee      Employee[]
+  companies     Company[]
 
   @@index([location_name])
   @@index([address_line_1])
@@ -475,15 +510,18 @@ model PasswordResetToken {
 ////////////////////////////////////////
 
 model Company {
-  id           String  @id @default(uuid()) @db.Uuid
-  name         String
-  address      String?
-  telephone_no String?
-  fax_no       String?
-  company_tin  String?
-  abbreviation String  @unique
-  is_top_20000 Int     @default(0)
-  is_active    Boolean @default(true)
+  id                String  @id @default(uuid()) @db.Uuid
+  user_location_id  String? @db.Uuid
+  name              String
+  address           String?
+  telephone_no      String?
+  fax_no            String?
+  company_tin       String?
+  abbreviation      String  @unique
+  is_top_20000      Int     @default(0)
+  is_active         Boolean @default(true)
+
+  userLocation      UserLocation? @relation(fields: [user_location_id], references: [id])
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -494,6 +532,7 @@ model Company {
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
   employee   Employee[]
+  vessel     Vessel[]
 
   @@index([name])
   @@index([abbreviation])
@@ -584,6 +623,7 @@ model Employee {
   position_id               String          @db.Uuid
   division_id               String          @db.Uuid
   user_id                   String?         @db.Uuid
+  user_location_id          String?         @db.Uuid
   hire_date                 DateTime
   salary                    Decimal
   pay_frequency             String
@@ -617,6 +657,7 @@ model Employee {
   person            Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
   position          Position         @relation(fields: [position_id], references: [id])
   division          Division         @relation(fields: [division_id], references: [id])
+  user_location     UserLocation?    @relation(fields: [user_location_id], references: [id])
 
   user                      User?
   employment_history        EmploymentHistory[]
@@ -627,7 +668,10 @@ model Employee {
   leave_requests     HrLeaveRequest[]
   //leave_transactions HrLeaveTransaction[]
   //leave_actions      HrLeaveRequestAction[]
-  leave_dates        HrLeaveDates[]  
+  leave_dates        HrLeaveDates[]
+
+  // Overtime system
+  overtimes          HrOvertimeRequest[]  
 
   @@index([department_id])
   @@index([company_id])
@@ -658,6 +702,88 @@ model EmploymentHistory {
   updated_at DateTime @updatedAt
 
   employee Employee @relation(fields: [employee_id], references: [id])
+}
+
+model Vessel {
+  id  String  @id @default(uuid()) @db.Uuid
+  company_id  String    @db.Uuid
+  photo       String? @db.Text
+  name        String
+  type        VesselType  
+  is_active   Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("VesselCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("VesselUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  company       Company       @relation(fields: [company_id], references: [id])
+  
+  vesselDetails VesselDetails?
+  overtimes     HrOvertimeRequest[] 
+
+  @@index([company_id])
+}
+
+model VesselDetails {
+  id                  String    @id @default(uuid()) @db.Uuid
+  vessel_id           String    @unique @db.Uuid
+  price_sold          String?
+  price_paid          String?
+  length_loa          String?
+  length_lbp          String?
+  breadth             String?
+  depth               String?
+  draft               String?
+  year_built          String?
+  builder             String?
+  place_built         String?
+  jap_dwt             String?
+  bale_capacity       String?
+  grain_capacity      String?
+  hatch_size          String?
+  hatch_type          String?
+  hull_type           String
+  hull_number         String
+  fuel_type           String
+  gearbox_ratio       String?
+  year_last_drydocked String?
+  place_last_drydocked  String?
+  phil_dwt              Decimal?
+  gross_tonnage         String?
+  net_tonnage           String?
+  main_engine           String?
+  main_engine_rating    String?
+  main_engine_actual_rating   String?
+  model_serial_no       String?
+  estimated_fuel_consumption  String?
+  bow_thrusters         String?
+  propeller             String?
+  call_sign             String?
+  imo_no                String?
+  mmsi_no               String
+  maiden_voyage         DateTime?
+  min_main_engine_rating        Float?
+  max_main_engine_rating        Float?
+  auxillary_engine_1_rating     Float?
+  auxillary_engine_2_rating     Float?
+  auxillary_engine_3_rating     Float?
+  generator_set_rating          Float?
+  crane_rating                  Float
+  is_coupled_generator          Boolean?
+  min_service_knots             Float?
+  max_service_knots             Float?
+  bank_account_number           String?
+  bank_account_name             String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  vessel Vessel @relation(fields: [vessel_id], references: [id])                 
 }
 
 model HrEmployeeEvaluation {
@@ -1061,8 +1187,89 @@ model HrLeaveRequest {
   
   //hr_leave_transactions HrLeaveTransaction[]
   hr_leave_dates        HrLeaveDates[]
+  hr_extended_leave_request  HrExtendedLeaveRequest[]
 
   //actions HrLeaveRequestAction[]
+}
+
+model HrExtendedLeaveRequest {
+  id                            String    @id @default(uuid()) @db.Uuid
+  leave_request_id              String    @db.Uuid
+  reliever_id                   String    @db.Uuid
+  extension_date_from           DateTime
+  extension_date_to             DateTime
+  return_date                   DateTime?
+  extended_leave_request_status LeaveRequestStatus
+  reason_for_extension          String
+  address_while_on_leave        String
+  contact_no_while_on_leave     String
+  is_active                     Boolean   @default(true)
+  
+  created_by   String? @db.Uuid
+  updated_by   String? @db.Uuid
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  createdBy User? @relation("HrExtendedLeaveRequestCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrExtendedLeaveRequestUpdatedBy", fields: [updated_by], references: [id])
+
+  reliever User  @relation("ExtendedLeaveRequestReliever", fields: [reliever_id], references: [id])
+
+  hr_leave_dates   HrLeaveDates[]
+  hr_leave_request HrLeaveRequest @relation(fields: [leave_request_id], references: [id])
+
+  @@index([leave_request_id])
+}
+
+model HrOvertimeRequest {
+  id                 String    @id @default(uuid()) @db.Uuid
+  employee_id        String    @db.Uuid
+  vessel_id          String?   @db.Uuid
+  overtime_rate_id   String?   @db.Uuid
+  date_filed         DateTime  @default(now()) 
+  ot_date            DateTime
+  time_from          DateTime?   @db.Time
+  time_to            DateTime?   @db.Time
+  total_hours        Float
+  rate               Decimal?  @db.Decimal(10,2)
+  reason             String?   @db.Text
+  is_active          Boolean   @default(true)
+  status             OvertimeStatus @default(draft)
+  computed           Boolean?  @default(false)
+  
+  created_by   String? @db.Uuid
+  updated_by   String? @db.Uuid
+
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  createdBy    User? @relation("HrOvertimeRequestCreatedBy", fields: [created_by], references: [id])
+  updatedBy    User? @relation("HrOvertimeRequestUpdatedBy", fields: [updated_by], references: [id])
+
+  employee           Employee  @relation(fields: [employee_id], references: [id])
+  vessel             Vessel?   @relation(fields: [vessel_id], references: [id])
+  overtimeRate       HrOvertimeRate? @relation(fields: [overtime_rate_id], references: [id])
+
+  @@index([employee_id, vessel_id, overtime_rate_id])
+}
+
+model HrOvertimeRate {
+  id        String  @id @default(uuid()) @db.Uuid
+  type      String  @db.Text
+  rate      Float    
+  is_active Boolean @default(true)
+
+  created_by   String? @db.Uuid
+  updated_by   String? @db.Uuid
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  createdBy User? @relation("HrOvertimeRateCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrOvertimeRateUpdatedBy", fields: [updated_by], references: [id])
+
+  overtimeRequests HrOvertimeRequest[]
 }
 
 //Hr Leave Balance (per year, per type)
@@ -1083,17 +1290,20 @@ model HrLeaveBalance {
 }
 
 model HrLeaveDates {
-  id                  String   @id @default(uuid()) @db.Uuid
-  hr_leave_request_id String   @db.Uuid
-  employee_id         String   @db.Uuid
-  fraction            Float    @default(1.0) //if halday = 0.5 and fullday = 1.0
-  leave_date          DateTime
+  id                            String   @id @default(uuid()) @db.Uuid
+  hr_leave_request_id           String   @db.Uuid
+  hr_extended_leave_request_id  String?  @db.Uuid
+  employee_id                   String   @db.Uuid
+  leave_compensation            LeaveCompensation
+  fraction                      Float    @default(1.0) //if halday = 0.5 and fullday = 1.0
+  leave_date                    DateTime
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  hr_extended_leave_request HrExtendedLeaveRequest? @relation(fields: [hr_extended_leave_request_id], references: [id])
   hr_leave_request HrLeaveRequest  @relation(fields: [hr_leave_request_id], references: [id])
-  employee         Employee       @relation(fields: [employee_id], references: [id])
+  employee         Employee        @relation(fields: [employee_id], references: [id])
 }
 
 //Hr Leave Transaction (audit trail for employee leave)
