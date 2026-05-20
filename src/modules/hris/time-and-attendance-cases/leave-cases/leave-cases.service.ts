@@ -1,8 +1,8 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { LeaveCompensation, Prisma, PrismaClient } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateLeaveRequestWithDetailsDto } from './dto/leave-case.dto';
+import { CreateLeaveRequestWithDetailsDto, UpdateLeaveRequestWithDetailsDto, UpdateRecordLeaveDatesDto } from './dto/leave-case.dto';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request.dto';
 
@@ -446,6 +446,7 @@ export class LeaveCasesService {
                                 employee: {
                                     connect: { id: leave_request.employee_id }
                                 },
+                                leave_compensation: d.leave_compensation,
                                 fraction: d.fraction ?? 1.0,
                             })),
                         }
@@ -611,6 +612,261 @@ export class LeaveCasesService {
         });
     }
 
+    async updateLeaveCase(user: RequestUser, leaveCaseId: string, dto: UpdateLeaveRequestWithDetailsDto) {
+        const { update_leave_request, update_leave_dates } = dto;
+
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async (tx) => {
+            // 1. Verify the main leave request exists and can be edited
+            const existingLeaveCase = await tx.hrLeaveRequest.findUnique({
+                where: { 
+                    id: leaveCaseId, 
+                    is_active: true, 
+                    status: "draft" 
+                }
+            });
+
+            if (!existingLeaveCase) {
+                throw new NotFoundException("Leave Case does not exist, is inactive, or is no longer a draft");
+            }
+
+            // 2. Process your leave dates list
+            if (update_leave_dates && update_leave_dates.length > 0) {
+                for (const d of update_leave_dates) {
+
+                    if (d.id) {
+                        // UPDATE an existing row using its specific record ID
+                        await tx.hrLeaveDates.update({
+                            where: { id: d.id },
+                            data: {
+                                leave_date: d.leave_date ? new Date(d.leave_date) : undefined,
+                                leave_compensation: d.leave_compensation,
+                                fraction: d.fraction,
+                            }
+                        });
+                    } else {
+                        // CREATE a new row because no record ID was provided
+                        // This explicitly ensures leave_date is provided, satisfying TypeScript!
+                        if (!d.leave_date) {
+                            throw new BadRequestException("leave_date is required for new date entries");
+                        }
+                        if (!d.leave_compensation) {
+                            throw new BadRequestException("leave_compensation is required for new date entries");
+                        }
+
+                        await tx.hrLeaveDates.create({
+                            data: {
+                                hr_leave_request_id: leaveCaseId,
+                                employee_id: existingLeaveCase.employee_id,
+                                leave_date: new Date(d.leave_date),
+                                leave_compensation: d.leave_compensation,
+                                fraction: d.fraction ?? 1.0,
+                            }
+                        });
+                    }
+                }
+            }
+
+            // 3. Dynamically fetch ALL active rows for this case from DB to get the true total
+            const allCurrentDates = await tx.hrLeaveDates.findMany({
+                where: { hr_leave_request_id: leaveCaseId }
+            });
+
+            const total_no_of_days = allCurrentDates.reduce(
+                (sum, item) => sum + (item.fraction ?? 1.0),
+                0
+            );
+
+            // 2. WORKFLOW LOGIC: Fetch current pending workflow routing lines
+            const pendingWorkflowActions = await tx.workflowAction.findMany({
+                where: {
+                    actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+                    actionable_id: leaveCaseId,
+                    action: { in: ["verification", "approval"] }, // Match your exact WorkflowActionType enum values
+                    acted_at: null // Ensures we only look at uncompleted steps
+                }
+            });
+
+            const currentVerificationStep = pendingWorkflowActions.find(a => a.action === "verification");
+            const currentApprovalStep = pendingWorkflowActions.find(a => a.action === "approval");
+
+
+            // 3. Handle Verifier Update/Patch
+            if (update_leave_request.verifier_id) {
+                // Fetch name from User table (since WorkflowAction.acted_by maps to User)
+                const targetUser = await tx.user.findUnique({ 
+                    where: { id: update_leave_request.verifier_id },
+                    include: {
+                        employee: {
+                            select: {
+                                person: {
+                                    select: {
+                                        first_name: true,
+                                        last_name: true,
+                                    }
+                                }
+                            }   
+                        }
+                    }
+                });
+                const verifierName = targetUser ? `${targetUser.employee.person.first_name ?? ''} ${targetUser.employee.person.last_name ?? ''}`.trim() : "Unknown User";
+
+                if (currentVerificationStep) {
+                    // If assigned verifier changed, update the row
+                    if (currentVerificationStep.acted_by !== update_leave_request.verifier_id) {
+                        await tx.workflowAction.update({
+                            where: { id: currentVerificationStep.id },
+                            data: {
+                                acted_by: update_leave_request.verifier_id,
+                                metadata: {
+                                    title: "Verify Leave Request",
+                                    message: "You have a new Verify Request",
+                                    user: verifierName,
+                                    role: "verifier",
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    // Edge case safety net: If it didn't exist for some reason, create it
+                    await tx.workflowAction.create({
+                        data: {
+                            actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+                            actionable_id: leaveCaseId,
+                            action: "verification",
+                            acted_by: update_leave_request.verifier_id,
+                            acted_at: null,
+                            metadata: {
+                                title: "Verify Leave Request",
+                                message: "You have a new Verify Request",
+                                user: verifierName,
+                                role: "verifier",
+                            }
+                        }
+                    });
+                }
+            }
+
+            // 4. Handle Approver Update/Patch
+            if (update_leave_request.approver_id) {
+                const targetUser = await tx.user.findUnique({ 
+                    where: { id: update_leave_request.approver_id },
+                    include: {
+                        employee: {
+                            select: {
+                                person: {
+                                    select: {
+                                        first_name: true,
+                                        last_name: true,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                const approverName = targetUser ? `${targetUser.employee.person.first_name ?? ''} ${targetUser.employee.person.last_name ?? ''}`.trim() : "Unknown User";
+
+                if (currentApprovalStep) {
+                    // If assigned approver changed, update the row
+                    if (currentApprovalStep.acted_by !== update_leave_request.approver_id) {
+                        await tx.workflowAction.update({
+                            where: { id: currentApprovalStep.id },
+                            data: {
+                                acted_by: update_leave_request.approver_id,
+                                metadata: {
+                                    title: "Approve Leave Request",
+                                    message: "You have a new Approval Request",
+                                    user: approverName,
+                                    role: "approver",
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    // Edge case safety net: Create if missing
+                    await tx.workflowAction.create({
+                        data: {
+                            actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+                            actionable_id: leaveCaseId,
+                            action: "approval",
+                            acted_by: update_leave_request.approver_id,
+                            acted_at: null,
+                            metadata: {
+                                title: "Approve Leave Request",
+                                message: "You have a new Approval Request",
+                                user: approverName,
+                                role: "approver",
+                            }
+                        }
+                    });
+                }
+            }
+
+            // 5. Update the parent master Leave Request (IDs REMOVED FROM HERE)
+            const updatedLeaveCase = await tx.hrLeaveRequest.update({
+                where: { id: leaveCaseId },
+                data: {
+                    leave_category_id: update_leave_request.leave_category_id ?? undefined,
+                    date_from: update_leave_request.date_from ? new Date(update_leave_request.date_from) : undefined,
+                    date_to: update_leave_request.date_to ? new Date(update_leave_request.date_to) : undefined,
+                    reason: update_leave_request.reason ?? undefined,
+                    contact_number: update_leave_request.contact_number ?? undefined,
+                    address_on_leave: update_leave_request.address_on_leave ?? undefined,
+                    no_of_days: total_no_of_days, 
+                    reliever_id: update_leave_request.reliever_id ?? undefined,
+                    // Note: verifier_id and approver_id are omitted completely because they don't exist here!
+                },
+            });
+
+            // 3. Optional: Log the "update" action itself for history trail
+            await tx.workflowAction.create({
+                data: {
+                    actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+                    actionable_id: leaveCaseId,
+                    action: "update",
+                    acted_by: requestUser.id, // The person performing the edit
+                    acted_at: new Date(),
+                    metadata: {
+                        title: "Leave Request updated",
+                        message: "Leave Request draft details were modified",
+                        user: `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`, // Adjust based on your RequestUser object
+                        role: "creator",
+                    }
+                }
+            });
+
+            return {
+                status: 'success',
+                message: 'Leave Request updated successfully',
+                updatedLeaveCase
+            };
+        });
+    }
+
     async statusCount(user: RequestUser) {
         // Count per status and also if isActive is true or false
         // const { is_active } = dto;
@@ -639,27 +895,27 @@ export class LeaveCasesService {
 
         // Execute queries
         const [counts] = await Promise.all([
-        this.prisma.hrLeaveRequest.groupBy({
-            by: ['status'],
-            where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
-            _count: { _all: true },
-        }),
-        this.prisma.hrLeaveRequest.count({
-            where: { is_active: true }, // We always want this count regardless of the filter
-        }),
+            this.prisma.hrLeaveRequest.groupBy({
+                by: ['status'],
+                where: whereCondition, // This is {} if filter is empty, meaning "Fetch All"
+                _count: { _all: true },
+            }),
+            this.prisma.hrLeaveRequest.count({
+                where: { is_active: true }, // We always want this count regardless of the filter
+            }),
         ]);
 
         // Build the response object with defaults
         const result = {
-        all: 0,
-        draft: 0,
-        for_verification: 0,
-        for_approval: 0,
-        for_processing: 0,
-        processed: 0,
-        cancelled: 0,
-        rejected: 0,
-        // isActive: totalActiveCount,
+            all: 0,
+            draft: 0,
+            for_verification: 0,
+            for_approval: 0,
+            for_processing: 0,
+            processed: 0,
+            cancelled: 0,
+            rejected: 0,
+            // isActive: totalActiveCount,
         };
 
         // Populate the result based on the DB response
@@ -679,7 +935,7 @@ export class LeaveCasesService {
 
         return {
         status: 'success',
-        message: 'Here is the status count for leave requests',
+        message: 'Here is the status count for Leave Requests',
         result,
         };
     }

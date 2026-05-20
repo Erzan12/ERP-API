@@ -8,7 +8,6 @@ import {
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import { MailService } from 'src/jobs/mail/mail.service';
-import { CreateUserWithRoleDto } from './dto/create-user-with-role-permission.dto';
 import {
   DeactivateUserAccountDto,
   ReactivateUserAccountDto,
@@ -21,6 +20,10 @@ import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { AuthService } from 'src/auth/auth.service';
 import { Prisma, User } from '@prisma/client';
 import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
+import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
+import { TRANSACTION_TYPE } from 'src/utils/constants/transaction-type.constants';
+import { UserDetailsDto } from './dto/user-details.dto';
+import { connect } from 'http2';
 
 @Injectable()
 export class UserManagementService {
@@ -29,7 +32,45 @@ export class UserManagementService {
     private readonly mailService: MailService,
     private readonly auditService: AuditService,
     private readonly authService: AuthService,
+    private readonly uploadService: AttachmentUploadService
   ) {}
+
+  async getUser(user: RequestUser, userId: string) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+            employee: {
+            include: {
+                person: true,
+                position: true,
+            },
+            },
+            user_roles: true,
+        },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+
+    if (!canView) {
+        throw new ForbiddenException('You are not authorized to perform this action');
+    }
+
+    const getUser = await this.prisma.user.findUnique({
+      where: { id: userId, is_active: true },
+    })
+
+    return {
+      status: 'success',
+      message: 'Here is the User',
+      getUser,
+    }
+  }
 
   async getUsers(user: RequestUser, dto: UserManagementPaginationDto) {
     const { search, status, department, sortBy, order, page, perPage } = dto;
@@ -146,6 +187,7 @@ export class UserManagementService {
           username: true,
           email: true,
           is_active: true,
+          avatar: true,
           employee: {
             select: {
               id: true,
@@ -221,21 +263,22 @@ export class UserManagementService {
 
   //refactored version no more role_ids and module_ids in user account creation will be basing on the permission_tempalte model
   async createUserAccount(
-    createUserWithRoleDto: CreateUserWithRoleDto,
+    dto: UserDetailsDto,
     user: RequestUser,
     req: Request,
-    userId: string,
+    // userId: string,
+    file: Express.Multer.File
   ) {
     return this.prisma.$transaction(async (tx) => {
       try {
-        const plainPassword = createUserWithRoleDto.user_details.password;
+        const plainPassword = dto.password;
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
         const existingUser = await this.prisma.user.findFirst({
           where: {
             OR: [
-              { username: createUserWithRoleDto.user_details.username },
-              { email: createUserWithRoleDto.user_details.email },
+              { username: dto.username },
+              { email: dto.email },
             ],
           },
         });
@@ -290,7 +333,7 @@ export class UserManagementService {
 
         const employee = await this.prisma.employee.findUnique({
           where: {
-            employee_id: createUserWithRoleDto.user_details.employee_id,
+            employee_id: dto.employee_id,
           },
           include: { person: true },
         });
@@ -299,24 +342,29 @@ export class UserManagementService {
           throw new BadRequestException('Employee not found');
         }
 
-        const userExist = await this.prisma.user.findUnique({
-          where: { employee_id: employee.id },
-        });
+        // const userExist = await this.prisma.user.findFirst({
+        //   where: {
+        //     employee_id: employee.id,
+        //   },
+        //   include: {
+        //     person: true,
+        //   },
+        // });
 
-        if (userExist) {
-          throw new BadRequestException('User already exist');
-        }
+        // if (userExist) {
+        //   throw new BadRequestException('User already exist');
+        // }
 
         const newUser = await tx.user.create({
           data: {
             employee_id: employee.id,
             person_id: employee.person.id,
-            username: createUserWithRoleDto.user_details.username,
-            email: createUserWithRoleDto.user_details.email,
+            username: dto.username,
+            email: dto.email,
             password: hashedPassword,
             is_active: true,
             require_reset: 1,
-            created_by: admin,
+            // created_by: ,
             created_at: new Date(),
           },
           include: {
@@ -324,6 +372,20 @@ export class UserManagementService {
             user_roles: true,
           },
         });
+
+        // const attachment = await this.uploadService.avatarUpload({
+        //   file,
+        //   transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+        //   transaction_id: newUser.id,
+        //   // file_desc: file_desc,
+        //   user_id: user.id,
+        // }, tx);
+        const attachment = await this.uploadService.avatarUpload({
+            file,
+            transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+            transaction_id: newUser.id,
+            user_id: user.id,
+        }, tx);
 
         const empDept = await this.prisma.employee.findUnique({
           where: { id: employee.id },
@@ -334,76 +396,12 @@ export class UserManagementService {
           throw new BadRequestException('Employee Department does not exist');
         }
 
-        //optional role permission creation upon creating user account
-        // if (createUserWithRoleDto.role_name?.length) {
-        //   const rolePermissions = await this.prisma.rolePermission.findFirst({
-        //     where: {
-        //       id: createUserWithRoleDto.role_name,
-        //     },
-        //   });
-
-        //   // const userRolesMap = new Map<string, any>();
-        //   // const userRolesMap = new Map<string, { id: number }>();
-
-        //   const userRolesMap = new Map<string, any>();
-
-        //   for (const rp of rolePermissions) {
-        //     const key = `${rp.role_id}-${rp.sub_module_id}`;
-
-        //     let userRole = userRolesMap.get(key);
-
-        //     if (!userRole) {
-        //       // Check if UserRole already exists
-        //       userRole = await tx.userRole.findFirst({
-        //         where: {
-        //           user_id: newUser.id,
-        //           role_id: rp.role_id,
-        //         },
-        //       });
-
-        //       // If not exists, create it
-        //       if (!userRole) {
-        //         userRole = await tx.userRole.create({
-        //           data: {
-        //             user_id: newUser.id,
-        //             role_id: rp.role_id,
-        //             role_name: rp.role_name,
-        //             created_at: new Date(),
-        //           },
-        //         });
-        //       }
-
-        //       userRolesMap.set(key, userRole);
-        //     }
-
-        //     // Ensure no duplicate permission
-        //     const existingPermission = await tx.userPermission.findFirst({
-        //       where: {
-        //         user_id: newUser.id,
-        //         user_role_id: userRole.id,
-        //         role_permission_id: rp.id,
-        //       },
-        //     });
-
-        //     if (!existingPermission) {
-        //       await tx.userPermission.create({
-        //         data: {
-        //           user_id: newUser.id,
-        //           user_role_id: userRole.id,
-        //           role_permission_id: rp.id,
-        //           action: rp.action,
-        //         },
-        //       });
-        //     }
-        //   }
-        // }
-
         //use only role name instead of role permission ids when adding role to user
-        if (createUserWithRoleDto.role_name) {
+        if (dto.role_name) {
           // 1️⃣ Find the role
           const role = await tx.role.findFirst({
             where: {
-              name: createUserWithRoleDto.role_name,
+              name: dto.role_name,
               is_active: true,
             },
           });
@@ -475,7 +473,7 @@ export class UserManagementService {
         );
 
         const actorUser: User | null = await this.prisma.user.findUnique({
-          where: { id: userId },
+          where: { id: requestUser.id },
         });
 
         await this.auditService.logUserCreation({
@@ -497,6 +495,7 @@ export class UserManagementService {
           username: newUser.username,
           password: plainPassword,
           reset_token: createdToken.password_token,
+          attachment
           // user_permission_template: templates
         };
       } catch (error) {
@@ -816,6 +815,7 @@ export class UserManagementService {
         username: true,
         is_active: true,
         last_login: true,
+        avatar: true,
         email: true,
         employee: {
           select: {
