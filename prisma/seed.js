@@ -33,7 +33,7 @@ async function main() {
   );
 
   // 2. Seed Persons
-  const hrPerson = await prisma.person.create({
+  const hrManagerPerson = await prisma.person.create({
     data: {
       first_name: 'Jane',
       last_name: 'Doe',
@@ -41,13 +41,45 @@ async function main() {
     },
   });
 
-  const itPerson = await prisma.person.create({
+  const itManagerPerson = await prisma.person.create({
     data: {
       first_name: 'Alfred',
       last_name: 'Sanchez',
       date_of_birth: new Date('1985-05-01'),
     },
   });
+
+  const hrStaffPerson = await prisma.person.create({
+    data: {
+      first_name: 'Amanda',
+      last_name: 'Nunez',
+      date_of_birth: new Date('2000-02-24')
+    }
+  })
+
+  const hrClerkPerson = await prisma.person.create({
+    data:{
+      first_name: 'Adrian',
+      last_name: 'Wazawski',
+      date_of_birth: new Date('1999-05-23')
+    }
+  })
+
+  const itStaffPerson = await prisma.person.create({
+    data: {
+      first_name: 'James',
+      last_name: 'Wilson',
+      date_of_birth: new Date('1995-06-02')
+    }
+  })
+
+  const itClerkPerson = await prisma.person.create({
+    data: {
+      first_name: 'Claire',
+      last_name: 'Johnson',
+      date_of_birth: new Date('2001-06-27')
+    }
+  })
 
   const adminPerson = await prisma.person.create({
     data: {
@@ -57,13 +89,13 @@ async function main() {
     },
   });
 
-  const superAdminPerson = await prisma.person.create({
-    data: {
-      first_name: 'Super Administrator',
-      last_name: 'IT',
-      date_of_birth: new Date('2000-05-12'),
-    },
-  });
+  // const superAdminPerson = await prisma.person.create({
+  //   data: {
+  //     first_name: 'Super Administrator',
+  //     last_name: 'IT',
+  //     date_of_birth: new Date('2000-05-12'),
+  //   },
+  // });
 
   // 3. Create Divisions
   const assetMgmt = await prisma.division.create({
@@ -189,15 +221,14 @@ async function main() {
     },
   });
 
-    // 5. Create Positions
-  const [itManager, hrManager, itStaff, hrClerk] = await Promise.all([
-    // prisma.position.create({
-    //   data: {
-    //     name: 'administrator',
-    //     department_id: itDept.id,
-    //   },
-    // }),
+  const employeeModule = await prisma.module.create({
+    data: {
+      name: 'Employee Dashboard',
+    },
+  });
 
+  // 5. Create Positions & Match the order per position when destructuring
+  const positions = await Promise.all([
     prisma.position.create({
       data: {
         name: 'it administrator',
@@ -211,31 +242,66 @@ async function main() {
         department_id: itDept.id,
       },
     }),
+
     prisma.position.create({
       data: {
         name: 'it staff',
         department_id: itDept.id,
       },
     }),
+
+    prisma.position.create({
+      data: {
+        name: 'it clerk',
+        department_id: itDept.id,
+      },
+    }),
+
     prisma.position.create({
       data: {
         name: 'hr manager',
         department_id: hrDept.id,
       },
     }),
+
     prisma.position.create({
       data: {
         name: 'hr clerk',
         department_id: hrDept.id,
       },
     }),
+
+    prisma.position.create({
+      data: {
+        name: 'hr staff',
+        department_id: hrDept.id,
+      },
+    }),
   ]);
+
+  const [
+    itAdministrator,
+    itManager,
+    itStaff,
+    itClerk,
+    hrManager,
+    hrClerk,
+    hrStaff,
+  ] = positions;
 
   // 6. Create SubModules
   await prisma.subModule.createMany({
     data: [
       { name: 'Dashboard', module_id: hrModule.id },
       { name: 'Employee Masterlist', module_id: hrModule.id },
+      { name: 'Career Posting', module_id: hrModule.id },
+      { name: 'Hiring Pipeline', module_id: hrModule.id },
+      { name: 'Regularization Review', module_id: hrModule.id },
+      { name: 'Performance Competency', module_id: hrModule.id },
+      { name: 'Leave Category', module_id: hrModule.id},
+      { name: 'Leave Cases', module_id: hrModule.id },
+      { name: 'Extended Leave Cases', module_id: hrModule.id },
+      { name: 'Performance Evaluation', module_id: employeeModule.id },
       { name: 'User Account', module_id: managerModule.id },
       { name: 'Permission Template', module_id: managerModule.id},
       { name: 'Dashboard', module_id: managerModule.id },
@@ -253,7 +319,7 @@ async function main() {
   const subModules = await prisma.subModule.findMany();
 
   // 6.5 Create Permissions for submodules
-  const defaultActions = ['create', 'read', 'update', 'delete', 'note', 'verify', 'approve'];
+  const defaultActions = ['create', 'read', 'update', 'delete', 'note', 'verify', 'approve', 'evaluate', 'submit', 'acknowledge', 'reject', 'cancel', 'process', 'return', 'escalate', 'reopen', 'hold', 'screen', 'shortlist', 'set_interview', 'accept', 'onboard'];
 
   await prisma.subModuleAction.createMany({
     data: defaultActions.map(action => ({ action, is_active: true })),
@@ -286,15 +352,19 @@ async function main() {
   const roleNames = [
     'Super Administrator',
     'Administrator',
+    'IT Staff',
+    'IT Manager',
+    'IT Clerk',
+    'Network Manager',
+    'Jr. Systems Developer',
+    'Sr. Systems Developer',
+    'HR Clerk',
+    'HR Staff',
+    'HR Manager',
     'Supervisor',
     'Guest',
     'Staff',
     'Executive',
-    'HR Clerk',
-    'HR Staff',
-    'Network Manager',
-    'Jr. Systems Developer',
-    'Sr. Systems Developer',
     'Eportal User',
     'Manager'
   ];
@@ -311,9 +381,11 @@ async function main() {
 
   const superAdminRole = roleRecords.find((r) => r.name === 'Super Administrator');
   const adminRole = roleRecords.find((r) => r.name === 'Administrator');
-  const hrRole = roleRecords.find((r) => r.name === 'HR Clerk');
-  const itRole = roleRecords.find((r) => r.name === 'IT Staff');
-  const manRole = roleRecords.find((r) => r.name === 'Manager');
+  const itStaffRole = roleRecords.find((r) => r.name === 'IT Staff');
+  const itClerkRole = roleRecords.find((r) => r.name === 'IT Clerk');
+  const hrManagerRole = roleRecords.find((r) => r.name === 'HR Manager');
+  const hrClerkRole = roleRecords.find((r) => r.name === 'HR Clerk');
+  const hrStaffRole = roleRecords.find((r) => r.name === 'HR Staff');
 
   // Create Employement Status
   // async function main() {
@@ -351,7 +423,7 @@ async function main() {
 
   const superAdminEmployee = await prisma.employee.create({
     data: {
-      person_id: superAdminPerson.id,
+      person_id: itStaffPerson.id,
       employee_id: 'EMP-IT-001',
       company_id: abisc.id,
       department_id: itDept.id,
@@ -366,9 +438,9 @@ async function main() {
     },
   });
   
-  const hrEmployee = await prisma.employee.create({
+  const hrManagerEmployee = await prisma.employee.create({
     data: {
-      person_id: hrPerson.id,
+      person_id: hrManagerPerson.id,
       employee_id: 'EMP-HR-001',
       company_id: abisc.id,
       department_id: hrDept.id,
@@ -383,9 +455,9 @@ async function main() {
     },
   });
 
-  const itEmployee = await prisma.employee.create({
+  const itManagerEmployee = await prisma.employee.create({
     data: {
-      person_id: itPerson.id,
+      person_id: itManagerPerson.id,
       employee_id: 'EMP-IT-002',
       company_id: abisc.id,
       department_id: itDept.id,
@@ -407,7 +479,7 @@ async function main() {
       company_id: abisc.id,
       department_id: itDept.id,
       hire_date: new Date('2025-05-12'),
-      position_id: itStaff.id,
+      position_id: itAdministrator.id,
       division_id: assetMgmt.id,
       salary: 20000,
       pay_frequency: 'Monthly',
@@ -417,20 +489,71 @@ async function main() {
     },
   });
 
+  const hrStaffEmployee = await prisma.employee.create({
+    data: {
+      person_id: hrStaffPerson.id,
+      employee_id: 'EMP-HR-002',
+      company_id: abisc.id,
+      department_id: hrDept.id,
+      hire_date: new Date('2026-04-20'),
+      position_id: hrStaff.id,
+      division_id: corpServices.id,
+      salary: 20000,
+      pay_frequency: 'Monthly',
+      employment_status_id: activeRegularStatus.id,
+      monthly_equivalent_salary: 20000,
+      corporate_rank_id: 2,
+    },
+  });
+
+  const hrClerkEmployee = await prisma.employee.create({
+    data: {
+      person_id: hrClerkPerson.id,
+      employee_id: 'EMP-HR-003',
+      company_id: abisc.id,
+      department_id: hrDept.id,
+      hire_date: new Date('2026-03-20'),
+      position_id: hrClerk.id,
+      division_id: corpServices.id,
+      salary: 15000,
+      pay_frequency: 'Monthly',
+      employment_status_id: activeRegularStatus.id,
+      monthly_equivalent_salary: 15000,
+      corporate_rank_id: 2,
+    },
+  });
+
+  const itClerkEmployee = await prisma.employee.create({
+    data: {
+      person_id: itClerkPerson.id,
+      employee_id: 'EMP-IT-004',
+      company_id: abisc.id,
+      department_id: itDept.id,
+      hire_date: new Date('2026-02-15'),
+      position_id: itClerk.id,
+      division_id: corpServices.id,
+      salary: 20000,
+      pay_frequency: 'Monthly',
+      employment_status_id: activeRegularStatus.id,
+      monthly_equivalent_salary: 20000,
+      corporate_rank_id: 2,
+    },
+  });
+
   // 11. Update division/department heads
-  await prisma.division.update({ where: { id: assetMgmt.id }, data: { division_head_id: itEmployee.id } });
-  await prisma.division.update({ where: { id: corpServices.id }, data: { division_head_id: hrEmployee.id } });
-  await prisma.department.update({ where: { id: itDept.id }, data: { department_head_id: itEmployee.id } });
-  await prisma.department.update({ where: { id: hrDept.id }, data: { department_head_id: hrEmployee.id } });
+  await prisma.division.update({ where: { id: assetMgmt.id }, data: { division_head_id: itManagerEmployee.id } });
+  await prisma.division.update({ where: { id: corpServices.id }, data: { division_head_id: hrManagerEmployee.id } });
+  await prisma.department.update({ where: { id: itDept.id }, data: { department_head_id: itManagerEmployee.id } });
+  await prisma.department.update({ where: { id: hrDept.id }, data: { department_head_id: hrManagerEmployee.id } });
 
   // 12. Create Users
   const superAdminUser = await prisma.user.create({
     data: {
       employee_id: superAdminEmployee.id,
-      username: 'superadmin',
+      username: 'james_wilson',
       email: 'superadmin@abas.com',
       password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
-      person_id: superAdminPerson.id,
+      person_id: itStaffPerson.id,
       require_reset: 0,
       security_clearance_level: 9
     }
@@ -440,7 +563,7 @@ async function main() {
     data: {
       employee_id: adminEmployee.id,
       username: 'admin',
-      email: 'admin@yourdomain.com',
+      email: 'admin@abas.com',
       password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
       person_id: adminPerson.id,
       require_reset: 0,
@@ -448,103 +571,88 @@ async function main() {
     },
   });
 
-  const hrUser = await prisma.user.create({
+  const hrManagerUser = await prisma.user.create({
     data: {
-      employee_id: hrEmployee.id,
-      username: 'hr.staff',
-      email: 'hr@abas.com',
+      employee_id: hrManagerEmployee.id,
+      username: 'hr.manager',
+      email: 'hrmanager@abas.com',
       password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
-      person_id: hrPerson.id,
+      person_id: hrManagerPerson.id,
       require_reset: 0,
       security_clearance_level: 5
     },
-    
   });
 
-  const itUser = await prisma.user.create({
+  const itManagerUser = await prisma.user.create({
     data: {
-      employee_id: itEmployee.id,
+      employee_id: itManagerEmployee.id,
       username: 'it.manager',
-      email: 'it@abas.com',
+      email: 'itmanager@abas.com',
       password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
-      person_id: itPerson.id,
+      person_id: itManagerPerson.id,
       require_reset: 0,
       security_clearance_level: 5
     },
   });
 
-  // list of submodules
-  const dashboardOnly = ['Dashboard'];
-  const fullAccess = ['Employee Masterlist', 'User Account', 'Inbox', 'Audit Trail', 'Mastertables', 'User Token Keys', 'System Management'];
+  const hrStaffUser = await prisma.user.create({
+    data: {
+      employee_id: hrStaffEmployee.id,
+      username: 'hr.staff',
+      email: 'hrstaff@abas.com',
+      password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
+      person_id: hrStaffPerson.id,
+      require_reset: 0,
+      security_clearance_level: 5
+    },
+  });
 
-  // list of actions/permissions
-  const dashboardActions = ['read']; // or ['view'] depending on your SubModuleAction
-  const fullActions = ['create', 'read', 'update', 'delete'];
+  const hrClerkUser = await prisma.user.create({
+    data: {
+      employee_id: hrClerkEmployee.id,
+      username: 'hr.clerk',
+      email: 'hrclerk@abas.com',
+      password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
+      person_id: hrClerkPerson.id,
+      require_reset: 0,
+      security_clearance_level: 5
+    },
+  });
 
-  const allSubModules = await prisma.subModule.findMany();
-  const allSubModulePermissions = await prisma.subModulePermission.findMany();
-  const allSubModuleActions = await prisma.subModuleAction.findMany();
+  const itClerkUser = await prisma.user.create({
+    data: {
+      employee_id: itClerkEmployee.id,
+      username: 'it.clerk',
+      email: 'itclerk@abas.com',
+      password: '$2y$10$feH1XYEQwtdpy2f62ALLxugQyk0Qi9PBdr4svi5IbJn8A8Z9U7XHu',
+      person_id: itClerkPerson.id,
+      require_reset: 0,
+      security_clearance_level: 5
+    },
+  });
 
-  const subModuleActionMap = new Map(
-    allSubModuleActions.map(action => [action.action, action.id])
-  );
-
-  // Map of subModulePermission: { action, sub_module_id, id }
-  const subModulePermissionMap = new Map();
-  for (const perm of allSubModulePermissions) {
-    subModulePermissionMap.set(`${perm.sub_module_id}-${perm.action}`, perm.id);
-  }
-
-  const rolePermissionPayload = [];
-
-  for (const sub of allSubModules) {
-    const isDashboard = dashboardOnly.includes(sub.name);
-    const actionsToAssign = isDashboard ? dashboardActions : fullActions;
-
-    for (const action of actionsToAssign) {
-      const subModulePermissionId = subModulePermissionMap.get(`${sub.id}-${action}`);
-      if (!subModulePermissionId) continue; // skip if permission not found
-
-      // const department_id_uuid = uuidv4();
-
-      rolePermissionPayload.push({
-        action,
-        sub_module_id: sub.id,
-        role_id: superAdminRole.id,
-        role_name: superAdminRole.name,
-        sub_module_permission_id: subModulePermissionId,
-        department_id:  itDept.id
-      });
-
-      rolePermissionPayload.push({
-        action,
-        sub_module_id: sub.id,
-        role_id: adminRole.id,
-        role_name: adminRole.name,
-        sub_module_permission_id: subModulePermissionId,
-        department_id:  itDept.id
-      });
-    }
-  }
-
-  if (rolePermissionPayload.length > 0) {
-    await prisma.rolePermission.createMany({
-      data: rolePermissionPayload,
-      skipDuplicates: true,
-    });
-  }
-  console.log(`✅ Super Administrator and Administrator role permissions created for ${rolePermissionPayload.length} actions.`);
-  // i also want to add role permission for the admin user the role permission is a role like Administrator and assigned to a existing submodulepermission
-
+  
   // Assuming you have:
   const userId = adminUser.id; // your user ID
   const roleId = adminRole.id; // admin role ID
 
-  //for super admin
+  // for super admin
   const superUserId = superAdminUser.id;
   const superRoleId = superAdminRole.id;
 
-  // Create UserRole linking user to role
+  // for hr manager 
+  const hrManagerUserId = hrManagerUser.id;
+  const hrManagerRoleId = hrManagerRole.id;
+
+  // for hr staff 
+  const hrStaffUserId = hrStaffUser.id;
+  const hrStaffRoleId = hrStaffRole.id;
+
+  /// for hr clear
+  const hrClerkUserId = hrClerkUser.id;
+  const hrClerkRoleId = hrClerkRole.id;
+
+    // Create UserRole linking user to role
   const userRole = await prisma.userRole.create({
     data: {
       user_id: userId,
@@ -558,6 +666,30 @@ async function main() {
       user_id: superUserId,
       role_id: superRoleId,
       role_name: 'Super Administrator',
+    }
+  })
+
+  const hrManRole = await prisma.userRole.create({
+    data: {
+      user_id: hrManagerUserId,
+      role_id: hrManagerRoleId,
+      role_name: 'HR Manager',
+    }
+  })
+
+  const hrClrkRole = await prisma.userRole.create({
+    data: {
+      user_id: hrClerkUserId,
+      role_id: hrClerkRoleId,
+      role_name: 'HR Clerk',
+    }
+  })
+
+  const hrStffRole = await prisma.userRole.create({
+    data: {
+      user_id: hrStaffUserId,
+      role_id: hrStaffRoleId,
+      role_name: 'HR Staff',
     }
   })
 
@@ -583,6 +715,27 @@ async function main() {
     role_permission_id: rp.id,
   }));
 
+  const hrManagerPermissionsData = rolePermissions.map((rp) => ({
+    action: rp.action,
+    user_id: hrManagerUserId,
+    user_role_id: hrManRole.id,
+    role_permission_id: rp.id,
+  }));
+
+  const hrClerkPermissionsData = rolePermissions.map((rp) => ({
+    action: rp.action,
+    user_id: hrClerkUserId,
+    user_role_id: hrClerkRole.id,
+    role_permission_id: rp.id,
+  }));
+
+  const hrStaffPermissionsData = rolePermissions.map((rp) => ({
+    action: rp.action,
+    user_id: hrStaffUserId,
+    user_role_id: hrStaffRole.id,
+    role_permission_id: rp.id,
+  }));
+
   await prisma.userPermission.createMany({
     data: userPermissionsData,
     skipDuplicates: true, // avoid duplicates on rerun
@@ -593,35 +746,167 @@ async function main() {
     skipDuplicates: true, // avoid duplicates on rerun
   })
 
+  await prisma.userPermission.createMany({
+    data: hrManagerPermissionsData,
+    skipDuplicates: true, // avoid duplicates on rerun
+  })
+
+  await prisma.userPermission.createMany({
+    data: hrClerkPermissionsData,
+    skipDuplicates: true, // avoid duplicates on rerun
+  })
+
+  await prisma.userPermission.createMany({
+    data: hrStaffPermissionsData,
+    skipDuplicates: true, // avoid duplicates on rerun
+  })
+
   console.log(`✅ Assigned ${userPermissionsData.length} permissions to user ${userId}`);
   console.log(`✅ Assigned ${superUserPermissionsData.length} permissions to Super user ${userId}`);
+
+  // list of submodules
+  const dashboardOnly = ['Dashboard'];
+  const hrModules = ['Career Posting', 'Hiring Pipeline', 'Regularization Review', 'Performance Competency', 'Leave Category', 'Extended Leave Cases', 'Performance Evaluation']
+  const fullAccess = ['Employee Masterlist', 'User Account', 'Inbox', 'Audit Trail', 'Mastertables', 'User Token Keys', 'System Management'];
+
+  // list of actions/permissions
+  const dashboardActions = ['read']; // or ['view'] depending on your SubModuleAction
+  const fullActions = ['create', 'read', 'update', 'delete', 'note', 'verify', 'approve', 'evaluate', 'submit', 'acknowledge', 'reject', 'cancel', 'process', 'return', 'escalate', 'reopen', 'hold', 'screen', 'shortlist', 'set_interview', 'accept', 'onboard'];
+
+  const allSubModules = await prisma.subModule.findMany();
+  const allSubModulePermissions = await prisma.subModulePermission.findMany();
+  const allSubModuleActions = await prisma.subModuleAction.findMany();
+
+  const subModuleActionMap = new Map(
+    allSubModuleActions.map(action => [action.action, action.id])
+  );
+
+  // Map of subModulePermission: { action, sub_module_id, id }
+  const subModulePermissionMap = new Map();
+  for (const perm of allSubModulePermissions) {
+    subModulePermissionMap.set(`${perm.sub_module_id}-${perm.action}`, perm.id);
+  }
+
+  const rolePermissionPayload = [];
+
+  for (const sub of allSubModules) {
+    const isDashboard = dashboardOnly.includes(sub.name);
+    // const isHRIS = fullActions.includes(sub.name)
+    const actionsToAssign = isDashboard ? dashboardActions : fullActions;
+    // const HRISactionsToAssign = isHRIS;
+
+    for (const action of actionsToAssign) {
+      const subModulePermissionId = subModulePermissionMap.get(`${sub.id}-${action}`);
+      if (!subModulePermissionId) continue; // skip if permission not found
+
+      // const department_id_uuid = uuidv4();
+
+      rolePermissionPayload.push({
+        action,
+        sub_module_id: sub.id,
+        role_id: superAdminRole.id,
+        role_name: superAdminRole.name,
+        sub_module_permission_id: subModulePermissionId,
+        department_id:  itDept.id
+      });
+
+      rolePermissionPayload.push({
+        action,
+        sub_module_id: sub.id,
+        role_id: adminRole.id,
+        role_name: adminRole.name,
+        sub_module_permission_id: subModulePermissionId,
+        department_id:  itDept.id
+      });
+
+      rolePermissionPayload.push({
+        action,
+        sub_module_id: sub.id,
+        role_id: hrManagerRole.id,
+        role_name: hrManagerRole.name,
+        sub_module_permission_id: subModulePermissionId,
+        department_id:  hrDept.id
+      });
+
+      rolePermissionPayload.push({
+        action,
+        sub_module_id: sub.id,
+        role_id: hrClerkRole.id,
+        role_name: hrClerkRole.name,
+        sub_module_permission_id: subModulePermissionId,
+        department_id:  hrDept.id
+      });
+
+      rolePermissionPayload.push({
+        action,
+        sub_module_id: sub.id,
+        role_id: hrStaffRole.id,
+        role_name: hrStaffRole.name,
+        sub_module_permission_id: subModulePermissionId,
+        department_id:  hrDept.id
+      });
+    }
+  }
+
+  if (rolePermissionPayload.length > 0) {
+    await prisma.rolePermission.createMany({
+      data: rolePermissionPayload,
+      skipDuplicates: true,
+    });
+  }
+  console.log(`✅ Super Administrator and Administrator role permissions created for ${rolePermissionPayload.length} actions.`);
+  // i also want to add role permission for the admin user the role permission is a role like Administrator and assigned to a existing submodulepermission
 
   // 15. Seed Password Reset Tokens
   await prisma.passwordResetToken.createMany({
     data: [
       {
         password_token: uuidv4(),
-        user_id: hrUser.id,
+        user_id: hrManagerUser.id,
         expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
-        isUsed: false,
+        isUsed: true,
       },
       {
         password_token: uuidv4(),
-        user_id: itUser.id,
+        user_id: itManagerUser.id,
         expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
-        isUsed: false,
+        isUsed: true,
       },
       {
         password_token: uuidv4(),
         user_id: adminUser.id,
         expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
-        isUsed: false,
+        isUsed: true,
       },
       {
         password_token: uuidv4(),
         user_id: superAdminUser.id,
         expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
-        isUsed: false,
+        isUsed: true,
+      },
+      {
+        password_token: uuidv4(),
+        user_id: hrStaffUser.id,
+        expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
+        isUsed: true,
+      },
+      {
+        password_token: uuidv4(),
+        user_id: hrClerkUser.id,
+        expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
+        isUsed: true,
+      },
+      // {
+      //   password_token: uuidv4(),
+      //   user_id: itStaffUser.id,
+      //   expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
+      //   isUsed: true,
+      // },
+      {
+        password_token: uuidv4(),
+        user_id: itClerkUser.id,
+        expires_at: new Date(now.getTime() + 1000 * 60 * 60 * 24),
+        isUsed: true,
       },
     ],
   });
@@ -631,28 +916,47 @@ async function main() {
     data: [
       {
         user_token: uuidv4(),
-        user_id: hrUser.id,
-        isUsed: false,
+        user_id: hrManagerUser.id,
+        isUsed: true,
       },
       {
         user_token: uuidv4(),
-        user_id: itUser.id,
-        isUsed: false,
+        user_id: itManagerUser.id,
+        isUsed: true,
       },
       {
         user_token: uuidv4(),
         user_id: adminUser.id,
-        isUsed: false,
+        isUsed: true,
       },
       {
         user_token: uuidv4(),
         user_id: superAdminUser.id,
-        isUsed: false,
+        isUsed: true,
+      },
+      {
+        user_token: uuidv4(),
+        user_id: hrStaffUser.id,
+        isUsed: true,
+      },
+      {
+        user_token: uuidv4(),
+        user_id: hrClerkUser.id,
+        isUsed: true,
+      },
+      // {
+      //   user_token: uuidv4(),
+      //   user_id: itSta.id,
+      //   isUsed: true,
+      // },
+      {
+        user_token: uuidv4(),
+        user_id: itClerkUser.id,
+        isUsed: true,
       },
     ],
   });
   console.log('✅ Seeding completed successfully.');
-
 }
 
 main()

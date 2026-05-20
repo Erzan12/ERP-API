@@ -14,9 +14,13 @@ export const ACTION_READ = 'read';
 export const ACTION_UPDATE = 'update';
 export const ACTION_DELETE = 'delete';
 // export const ACTION_MANAGE = 'manage';
-export const ACTION_VERIFY = 'verify';
 export const ACTION_NOTE = 'note';
+export const ACTION_SUBMIT = 'submit';
+export const ACTION_VERIFY = 'verify';
 export const ACTION_APPROVE = 'approve';
+export const ACTION_PROCESS = 'process';
+export const ACTION_REJECT = 'reject';
+export const ACTION_CANCEL = 'cancel';
 
 //SUBMODULES FOR ADMISTRATOR - OR IN CONTROLLER SUBJECT
 export const MASTERTABLES = 'mastertables';
@@ -28,6 +32,8 @@ export const SYSTEM_MANAGEMENT = 'system management';
 export const EMPLOYEE_MASTERLIST = 'employee masterlist';
 export const ROLES_AND_STRUCTURE = 'roles and structure';
 export const ROLE_MANAGEMENT = 'role management';
+export const EXTENDED_LEAVE_REQUEST = 'extended leave request'
+export const LEAVE_REQUEST = 'leave request'
 
 //SUBMODULE FOR MANAGER - OR IN CONTROLLER SUBJECT
 export const USER_ACCOUNT = 'user account';
