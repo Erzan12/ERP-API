@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { buildFileUrl, MINIO_BUCKETS, minioClient } from '../../config/prisma/minio/minio.config';
+import { buildFileUrl, MINIO_BUCKETS, minioClient } from '../../config/minio/minio.config';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
