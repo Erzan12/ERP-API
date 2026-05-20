@@ -19,6 +19,7 @@ import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 import { Prisma } from '@prisma/client';
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
+import { TRANSACTION_TYPE } from 'src/utils/constants/transaction-type.constants';
 
 @Injectable()
 export class HiringPipelineService {
@@ -398,7 +399,7 @@ export class HiringPipelineService {
 
         const attachments = await this.uploadService.attachFiles({
           files,
-          transaction_type: 'Applicant',
+          transaction_type: TRANSACTION_TYPE.APPLICANT_DOC,
           transaction_id: applicant.id,
           // file_desc: file_desc,
           user_id: user.id,
