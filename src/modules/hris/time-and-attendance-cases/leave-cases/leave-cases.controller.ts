@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 import { LeaveCasesService } from './leave-cases.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
+import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 import { Can } from 'src/utils/decorators/can.decorator';
-import { ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
+import { ACTION_APPROVE, ACTION_CANCEL, ACTION_CREATE, ACTION_PROCESS, ACTION_READ, ACTION_REJECT, ACTION_SUBMIT, ACTION_UPDATE, ACTION_VERIFY, EMPLOYEE_MASTERLIST, LEAVE_REQUEST } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateLeaveRequestWithDetailsDto } from './dto/leave-case.dto';
+import { CreateLeaveRequestWithDetailsDto, UpdateLeaveRequestWithDetailsDto } from './dto/leave-case.dto';
 import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request.dto';
 
 @ApiTags('Human Resources - Time and Attendance Cases (Leave Cases)')
@@ -15,10 +15,10 @@ export class LeaveCasesController {
     constructor (private readonly leaveCasesService: LeaveCasesService) {}
 
     @Get('time-and-attendance-cases/leaves')
-    @ApiOperation({ summary: 'List of all Leave Cases' })
+    @ApiOperation({ summary: 'List of all Leave Request' })
     @ApiGetResponse('List of Leave Cases')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-    getLeaveCases(
+    getLeaves(
         @SessionUser() user: RequestUser,
         @Query() dto: LeaveRequestPaginationDto,
     ) {
@@ -51,9 +51,9 @@ export class LeaveCasesController {
         type: CreateLeaveRequestWithDetailsDto,
         description: 'Payload to create Leave Request'
     })
-    @ApiOperation({ summary: 'Leave Request Creation' })
+    @ApiOperation({ summary: 'Create Leave Request' })
     @ApiPostResponse('Leave Request successfully created')
-    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
     createLeaveRequest(
         @Body() dto: CreateLeaveRequestWithDetailsDto,
         @SessionUser() user: RequestUser,
@@ -61,10 +61,31 @@ export class LeaveCasesController {
         return this.leaveCasesService.createLeaveCase(user, dto)
     }
 
+    @Put('time-and-attendance-cases/leave/:leaveCaseId')
+    @ApiBody({
+       type:  UpdateLeaveRequestWithDetailsDto,
+       description: 'Payload to updated leave request/case',
+    })
+    @ApiOperation({ summary: 'Update a current leave request/case'})
+    @ApiPatchResponse('Leave Request updated successfully')
+    @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+    updateLeaveRequest(
+        @Param('leaveCaseId', new ParseUUIDPipe()) leaveCaseId: string,
+        @Body() dto: UpdateLeaveRequestWithDetailsDto,
+        @SessionUser() user: RequestUser, 
+    ) {
+        return this.leaveCasesService.updateLeaveCase(
+            user,
+            leaveCaseId,
+            dto,
+        )
+    }
+
     // LEAVE REQUEST WORKFLOW STATUS
     @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/submit')
     @ApiOperation({ summary: 'Submit Leave Request' })
     @ApiPostResponse('Leave Request submitted')
+    // @Can({ action: ACTION_SUBMIT, subject: LEAVE_REQUEST })
     submitLeave(
         @Param('hrLeaveRequestId', new ParseUUIDPipe) hrLeaveRequestId: string,
         @SessionUser() user: RequestUser
@@ -75,6 +96,7 @@ export class LeaveCasesController {
     @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/verify')
     @ApiOperation({ summary: 'Verify Leave Request' })
     @ApiPostResponse('Leave Request verified')
+    // @Can({ action: ACTION_VERIFY, subject: LEAVE_REQUEST })
     verifyLeave(
         @Param('hrLeaveRequestId', new ParseUUIDPipe) hrLeaveRequestId: string,
         @SessionUser() user: RequestUser
@@ -85,6 +107,7 @@ export class LeaveCasesController {
     @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/approve')
     @ApiOperation({ summary: 'Approve Leave Request' })
     @ApiPostResponse('Leave Request approved')
+    // @Can({ action: ACTION_APPROVE, subject: LEAVE_REQUEST })
     approveLeave(
         @Param('hrLeaveRequestId', new ParseUUIDPipe) hrLeaveRequestId: string,
         @SessionUser() user: RequestUser
@@ -95,6 +118,7 @@ export class LeaveCasesController {
     @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/process')
     @ApiOperation({ summary: 'Process Leave Request' })
     @ApiPostResponse('Leave Request processed')
+    // @Can({ action: ACTION_PROCESS, subject: LEAVE_REQUEST })
     processLeave(
         @Param('hrLeaveRequestId', new ParseUUIDPipe) hrLeaveRequestId: string,
         @SessionUser() user: RequestUser
@@ -105,6 +129,7 @@ export class LeaveCasesController {
     @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/reject')
     @ApiOperation({ summary: 'Reject Leave Request' })
     @ApiPostResponse('Leave Request rejected')
+    // @Can({ action: ACTION_REJECT, subject: LEAVE_REQUEST })
     rejectLeave(
         @Param('hrLeaveRequestId', new ParseUUIDPipe) hrLeaveRequestId: string,
         @SessionUser() user: RequestUser
@@ -115,6 +140,7 @@ export class LeaveCasesController {
     @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/cancel')
     @ApiOperation({ summary: 'Cancel Leave Request' })
     @ApiPostResponse('Leave Request cancelled')
+    // @Can({ action: ACTION_CANCEL, subject: LEAVE_REQUEST })
     cancelLeave(
         @Param('hrLeaveRequestId', new ParseUUIDPipe) hrLeaveRequestId: string,
         @SessionUser() user: RequestUser

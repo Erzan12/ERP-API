@@ -8,9 +8,11 @@ import {
   Param,
   ParseUUIDPipe,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserManagementService } from './user_management.service';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPostResponse,
@@ -23,7 +25,6 @@ import {
   DeactivateUserAccountDto,
   ReactivateUserAccountDto,
 } from './dto/user-account-status.dto';
-import { CreateUserWithRoleDto } from './dto/create-user-with-role-permission.dto';
 import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
 
 import {
@@ -40,11 +41,25 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
 import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UserDetailsDto } from './dto/user-details.dto';
 
 @ApiTags('User Management')
 @Controller({ path: 'users', version: '2' })
 export class UserManagementControllerV2 {
   constructor(private userManagementService: UserManagementService) {}
+
+  @Get(':userId')
+  @ApiOperation({ summary: 'Get User Account' })
+  @ApiGetResponse('Here is the User')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  getUser(
+    @SessionUser() user: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+  ) {
+    return this.userManagementService.getUser(user, userId)
+  }
 
   //view user accounts
   //to set up viewuser accounts in service
@@ -63,9 +78,27 @@ export class UserManagementControllerV2 {
 
   //create user account
   @Post()
+  @UseInterceptors(FileInterceptor('avatar'))
+  @ApiConsumes('multipart/form-data')
+  // @ApiBody({
+  //   type: CreateUserWithRoleDto,
+  //   description: 'Payload to create User Account',
+  // })
   @ApiBody({
-    type: CreateUserWithRoleDto,
-    description: 'Payload to create User Account',
+    schema: {
+      type: 'object',
+      properties: {
+        employee_id: { type: 'string' },
+        username: { type: 'string' },
+        email: { type: 'string' },
+        password: { type: 'string' },
+        role_name: { type: 'string' },
+        avatar: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
   })
   @ApiOperation({ summary: 'Create a new user account' })
   @ApiPostResponse('User Account created successfully')
@@ -73,16 +106,18 @@ export class UserManagementControllerV2 {
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
   createUser(
-    @Body() createUserWithRoleDto: CreateUserWithRoleDto,
+    @Body() dto: UserDetailsDto,
     @SessionUser() user: RequestUser,
     @Req() req: Request,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
+    // @Param('userId', new ParseUUIDPipe()) userId: string,
+    @UploadedFile() file: Express.Multer.File,
   ) {
     return this.userManagementService.createUserAccount(
-      createUserWithRoleDto,
+      dto,
       user,
       req,
-      userId,
+      // userId,
+      file,
     );
   }
 
