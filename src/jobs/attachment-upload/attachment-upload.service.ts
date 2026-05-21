@@ -155,15 +155,20 @@ export class AttachmentUploadService {
 
         const fileName = `avatars/${randomUUID()}.${extension}`;
 
-        await minioClient.putObject(
-            bucket,
-            fileName,
-            file.buffer,
-            file.size,
-            {
-                'Content-Type': file.mimetype,
-            },
-        );
+        try {
+            await minioClient.putObject(
+                bucket,
+                fileName,
+                file.buffer,
+                file.size,
+                {
+                    'Content-Type': file.mimetype,
+                },
+            );
+        } catch (err) {
+            console.error('MINIO ERROR:', err);
+            throw err;
+        }
 
         const avatarUrl =
             `${process.env.MINIO_PUBLIC_URL}/${bucket}/${fileName}`;
@@ -194,6 +199,14 @@ export class AttachmentUploadService {
                 file_size: file.size,
                 created_by: user_id,
             },
+        });
+
+        console.log('FILE DEBUG:', {
+            exists: !!file,
+            buffer: !!file?.buffer,
+            size: file?.size,
+            mimetype: file?.mimetype,
+            originalname: file?.originalname,
         });
 
         return {

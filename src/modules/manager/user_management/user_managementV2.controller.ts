@@ -43,6 +43,7 @@ import { Request } from 'express';
 import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserDetailsDto } from './dto/user-details.dto';
+import { memoryStorage } from 'multer';
 
 @ApiTags('User Management')
 @Controller({ path: 'users', version: '2' })
@@ -78,7 +79,15 @@ export class UserManagementControllerV2 {
 
   //create user account
   @Post()
-  @UseInterceptors(FileInterceptor('avatar'))
+  // @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+    }),
+  )
   @ApiConsumes('multipart/form-data')
   // @ApiBody({
   //   type: CreateUserWithRoleDto,
