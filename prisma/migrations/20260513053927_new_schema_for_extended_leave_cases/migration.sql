@@ -7,7 +7,7 @@
 
 */
 -- AlterTable
-ALTER TABLE "HrExtendedLeaveRequest" DROP COLUMN "extension_date_from ",
+ALTER TABLE "HrExtendedLeaveRequest" DROP COLUMN "extension_date_from",
 ADD COLUMN     "extension_date_from" TIMESTAMP(3) NOT NULL;
 
 -- AlterTable
