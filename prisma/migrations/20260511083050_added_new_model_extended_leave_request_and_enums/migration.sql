@@ -6,7 +6,7 @@ CREATE TABLE "HrExtendedLeaveRequest" (
     "id" UUID NOT NULL,
     "leave_request_id" UUID NOT NULL,
     "reliever_id" UUID NOT NULL,
-    "extension_date_from " TIMESTAMP(3) NOT NULL,
+    "extension_date_from" TIMESTAMP(3) NOT NULL,
     "extension_date_to" TIMESTAMP(3) NOT NULL,
     "return_date" TIMESTAMP(3) NULL,
     "extended_leave_request_status" "LeaveRequestStatus" NOT NULL,
