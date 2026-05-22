@@ -129,9 +129,7 @@ export class ModuleService {
     return {
       status: 'success',
       message: 'Here is the module with its submodule',
-      data: {
-        module,
-      },
+      module,
     };
   }
 
