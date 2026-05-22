@@ -50,18 +50,6 @@ import { memoryStorage } from 'multer';
 export class UserManagementControllerV2 {
   constructor(private userManagementService: UserManagementService) {}
 
-  @Get(':userId')
-  @ApiOperation({ summary: 'Get User Account' })
-  @ApiGetResponse('Here is the User')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  getUser(
-    @SessionUser() user: RequestUser,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
-  ) {
-    return this.userManagementService.getUser(user, userId)
-  }
-
   //view user accounts
   //to set up viewuser accounts in service
   @Get()
@@ -75,6 +63,42 @@ export class UserManagementControllerV2 {
     @Query() dto: UserManagementPaginationDto,
   ) {
     return this.userManagementService.getUsers(user, dto);
+  }
+
+  @Get('get-managers')
+  @ApiOperation({ summary: 'Get Managers with department and employees' })
+  @ApiGetResponse('Here are the list of Managers with departments and employees')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
+  getManagers(
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.userManagementService.getManagers(user);
+  }
+
+  @Get('new_employees')
+  @ApiOperation({ summary: 'Get the new employees without user accounts' })
+  @ApiGetResponse('Here are the list of new employees without user accounts')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  viewNewEmployees(
+    @SessionUser() user: RequestUser,
+    @Query() dto: UserManagementPaginationDto
+  ) {
+    return this.userManagementService.viewNewEmployeeWithoutUserAccount(user, dto);
+  }
+
+  @Get(':userId')
+  @ApiOperation({ summary: 'Get User Account' })
+  @ApiGetResponse('Here is the User')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  getUser(
+    @SessionUser() user: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+  ) {
+    return this.userManagementService.getUser(user, userId)
   }
 
   //create user account
@@ -198,30 +222,6 @@ export class UserManagementControllerV2 {
       reactivateUserAccountDto,
       user,
     );
-  }
-
-  @Get('new_employees')
-  @ApiOperation({ summary: 'Get the new employees without user accounts' })
-  @ApiGetResponse('Here are the list of new employees without user accounts')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  viewNewEmployees(
-    @SessionUser() user: RequestUser,
-    @Query() dto: UserManagementPaginationDto
-  ) {
-    return this.userManagementService.viewNewEmployeeWithoutUserAccount(user, dto);
-  }
-
-  @Get('get-managers')
-  @ApiOperation({ summary: 'Get Managers with department and employees' })
-  @ApiGetResponse('Here are the list of Managers with departments and employees')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
-  getManagers(
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.userManagementService.getManagers(user);
   }
 
   // @Get('with_roles_permissions')
