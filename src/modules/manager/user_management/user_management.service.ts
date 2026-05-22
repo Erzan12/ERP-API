@@ -269,240 +269,226 @@ export class UserManagementService {
     // userId: string,
     file: Express.Multer.File
   ) {
-    return this.prisma.$transaction(async (tx) => {
-      try {
-        const plainPassword = dto.password;
-        const hashedPassword = await bcrypt.hash(plainPassword, 10);
+    const plainPassword = dto.password;
+    const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-        const existingUser = await this.prisma.user.findFirst({
-          where: {
-            OR: [
-              { username: dto.username },
-              { email: dto.email },
-            ],
-          },
-        });
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { username: dto.username },
+          { email: dto.email },
+        ],
+      },
+    });
 
-        if (existingUser) {
-          throw new BadRequestException(
-            'Username or email address already exist!',
-          );
-        }
+    if (existingUser) {
+      throw new BadRequestException(
+        'Username or email address already exist!',
+      );
+    }
 
-        const requestUser = await this.prisma.user.findUnique({
-          where: { id: user.id },
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
           include: {
-            employee: {
-              include: {
-                person: true,
-                position: true,
-              },
-            },
-            user_roles: true,
+            person: true,
+            position: true,
           },
-        });
+        },
+        user_roles: true,
+      },
+    });
 
-        if (
-          !requestUser ||
-          !requestUser.employee ||
-          !requestUser.employee.person
-        ) {
-          throw new BadRequestException(
-            `Creator (manager) information not found.`,
-          );
-        }
+    if (
+      !requestUser ||
+      !requestUser.employee ||
+      !requestUser.employee.person
+    ) {
+      throw new BadRequestException(
+        `Creator (manager) information not found.`,
+      );
+    }
 
-        const admin = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const adminPos = requestUser.employee.position.name;
+    const admin = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    const adminPos = requestUser.employee.position.name;
 
-        // scalable approach
-        const allowedRoles = [
-          'Administrator',
-          'Super Administrator',
-          'Manager',
-        ];
-        const isAdmin = requestUser.user_roles.some((role) =>
-          allowedRoles.includes(role.role_name),
-        );
+    // scalable approach
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'Manager',
+    ];
+    const isAdmin = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
-        if (!isAdmin) {
-          throw new ForbiddenException(
-            'User is not allowed create User Account',
-          );
-        }
+    if (!isAdmin) {
+      throw new ForbiddenException(
+        'User is not allowed create User Account',
+      );
+    }
 
-        const employee = await this.prisma.employee.findUnique({
+    const employee = await this.prisma.employee.findUnique({
+      where: {
+        employee_id: dto.employee_id,
+      },
+      include: { person: true },
+    });
+
+    if (!employee) {
+      throw new BadRequestException('Employee not found');
+    }
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          employee_id: employee.id,
+          person_id: employee.person.id,
+          username: dto.username,
+          email: dto.email,
+          password: hashedPassword,
+          is_active: true,
+          require_reset: 1,
+          // created_by: ,
+          created_at: new Date(),
+        },
+        include: {
+          employee: true,
+          user_roles: true,
+        },
+      });
+
+      const attachment = await this.uploadService.avatarUpload({
+          file,
+          transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+          transaction_id: newUser.id,
+          user_id: user.id,
+      }, tx);
+
+      const empDept = await this.prisma.employee.findUnique({
+        where: { id: employee.id },
+        include: { department: true },
+      });
+
+      if (!empDept) {
+        throw new BadRequestException('Employee Department does not exist');
+      }
+
+      //use only role name instead of role permission ids when adding role to user
+      if (dto.role_name) {
+        // Find the role
+        const role = await tx.role.findFirst({
           where: {
-            employee_id: dto.employee_id,
+            name: dto.role_name,
+            is_active: true,
           },
-          include: { person: true },
         });
 
-        if (!employee) {
-          throw new BadRequestException('Employee not found');
+        if (!role) {
+          throw new BadRequestException('Invalid role name');
         }
 
-        // const userExist = await this.prisma.user.findFirst({
-        //   where: {
-        //     employee_id: employee.id,
-        //   },
-        //   include: {
-        //     person: true,
-        //   },
-        // });
-
-        // if (userExist) {
-        //   throw new BadRequestException('User already exist');
-        // }
-
-        const newUser = await tx.user.create({
-          data: {
-            employee_id: employee.id,
-            person_id: employee.person.id,
-            username: dto.username,
-            email: dto.email,
-            password: hashedPassword,
+        // Get all role permissions for that role
+        const rolePermissions = await tx.rolePermission.findMany({
+          where: {
+            role_id: role.id,
             is_active: true,
-            require_reset: 1,
-            // created_by: ,
+          },
+        });
+
+        if (!rolePermissions.length) {
+          throw new BadRequestException('No permissions found for this role');
+        }
+
+        // Create UserRole (only once)
+        const userRole = await tx.userRole.create({
+          data: {
+            user_id: newUser.id,
+            role_id: role.id,
+            role_name: role.name,
             created_at: new Date(),
           },
-          include: {
-            employee: true,
-            user_roles: true,
-          },
         });
 
-        // const attachment = await this.uploadService.avatarUpload({
-        //   file,
-        //   transaction_type: TRANSACTION_TYPE.USER_AVATAR,
-        //   transaction_id: newUser.id,
-        //   // file_desc: file_desc,
-        //   user_id: user.id,
-        // }, tx);
-        const attachment = await this.uploadService.avatarUpload({
-            file,
-            transaction_type: TRANSACTION_TYPE.USER_AVATAR,
-            transaction_id: newUser.id,
-            user_id: user.id,
-        }, tx);
-
-        const empDept = await this.prisma.employee.findUnique({
-          where: { id: employee.id },
-          include: { department: true },
-        });
-
-        if (!empDept) {
-          throw new BadRequestException('Employee Department does not exist');
-        }
-
-        //use only role name instead of role permission ids when adding role to user
-        if (dto.role_name) {
-          // 1️⃣ Find the role
-          const role = await tx.role.findFirst({
-            where: {
-              name: dto.role_name,
-              is_active: true,
-            },
-          });
-
-          if (!role) {
-            throw new BadRequestException('Invalid role name');
-          }
-
-          // 2️⃣ Get all role permissions for that role
-          const rolePermissions = await tx.rolePermission.findMany({
-            where: {
-              role_id: role.id,
-              is_active: true,
-            },
-          });
-
-          if (!rolePermissions.length) {
-            throw new BadRequestException('No permissions found for this role');
-          }
-
-          // 3️⃣ Create UserRole (only once)
-          const userRole = await tx.userRole.create({
+        // Create UserPermissions
+        for (const rp of rolePermissions) {
+          await tx.userPermission.create({
             data: {
               user_id: newUser.id,
-              role_id: role.id,
-              role_name: role.name,
-              created_at: new Date(),
+              user_role_id: userRole.id,
+              role_permission_id: rp.id,
+              action: rp.action,
             },
           });
-
-          // 4️⃣ Create UserPermissions
-          for (const rp of rolePermissions) {
-            await tx.userPermission.create({
-              data: {
-                user_id: newUser.id,
-                user_role_id: userRole.id,
-                role_permission_id: rp.id,
-                action: rp.action,
-              },
-            });
-          }
         }
-
-        // Create password reset token
-        const tokenKey = crypto.randomBytes(64).toString('hex');
-        const createdToken = await tx.passwordResetToken.create({
-          data: {
-            user_id: newUser.id,
-            password_token: tokenKey,
-            expires_at: new Date(Date.now() + 60 * 60 * 24 * 3 * 1000),
-          },
-        });
-
-        // Generate user session token
-        const userToken = crypto.randomBytes(64).toString('hex');
-        await tx.userToken.create({
-          data: {
-            user_id: newUser.id,
-            user_token: userToken,
-          },
-        });
-
-        // Send welcome email
-        await this.mailService.sendWelcomeMail(
-          newUser.email,
-          newUser.username,
-          plainPassword,
-          tokenKey,
-        );
-
-        const actorUser: User | null = await this.prisma.user.findUnique({
-          where: { id: requestUser.id },
-        });
-
-        await this.auditService.logUserCreation({
-          actorUserId: actorUser?.id,
-          actorEmail: actorUser?.email,
-          newUser,
-          req,
-        });
-
-        return {
-          status: 'success',
-          message: `User ${newUser.username} with Employee ID ${newUser.employee?.employee_id} created with temporary password.`,
-          created_by: {
-            id: requestUser.id,
-            name: admin,
-            position: adminPos,
-          },
-          user_id: newUser.id,
-          username: newUser.username,
-          password: plainPassword,
-          reset_token: createdToken.password_token,
-          attachment
-          // user_permission_template: templates
-        };
-      } catch (error) {
-        console.error('Create user failed:', error);
-        throw error;
       }
+
+      // Create password reset token
+      const tokenKey = crypto.randomBytes(64).toString('hex');
+      const createdToken = await tx.passwordResetToken.create({
+        data: {
+          user_id: newUser.id,
+          password_token: tokenKey,
+          expires_at: new Date(Date.now() + 60 * 60 * 24 * 3 * 1000),
+        },
+      });
+
+      // Generate user session token
+      const userToken = crypto.randomBytes(64).toString('hex');
+
+      await tx.userToken.create({
+        data: {
+          user_id: newUser.id,
+          user_token: userToken,
+        },
+      });
+
+      return {
+        newUser,
+        tokenKey,
+        createdToken,
+        attachment,
+      };
+    })
+
+    // Destructure result — now accessible outside
+    const { newUser, tokenKey, createdToken, attachment } = result;
+
+    // Send welcome email
+    await this.mailService.sendWelcomeMail(
+      newUser.email,
+      newUser.username,
+      plainPassword,
+      tokenKey,
+    );
+
+    const actorUser: User | null = await this.prisma.user.findUnique({
+      where: { id: requestUser.id },
     });
+
+    await this.auditService.logUserCreation({
+      actorUserId: actorUser?.id,
+      actorEmail: actorUser?.email,
+      newUser,
+      req,
+    });
+
+    return {
+      status: 'success',
+      message: `User ${newUser.username} with Employee ID ${newUser.employee?.employee_id} created with temporary password.`,
+      created_by: {
+        id: requestUser.id,
+        name: admin,
+        position: adminPos,
+      },
+      user_id: newUser.id,
+      username: newUser.username,
+      password: plainPassword,
+      reset_token: createdToken.password_token,
+      attachment
+      // user_permission_template: templates
+    };
   }
 
   async resendInvitation(dto: UserEmailResetTokenDto, user: RequestUser) {
