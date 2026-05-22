@@ -215,9 +215,7 @@ export class RoleService {
     return {
       status: 'success',
       message: 'Here is the Role',
-      data: {
-        role,
-      },
+      role,
     };
   }
 

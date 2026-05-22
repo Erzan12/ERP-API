@@ -350,6 +350,7 @@ export class UserManagementService {
           password: hashedPassword,
           is_active: true,
           require_reset: 0,
+          avatar: null,
           // created_by: ,
           created_at: new Date(),
         },
@@ -453,15 +454,29 @@ export class UserManagementService {
     // Destructure result — now accessible outside
     const { newUser, tokenKey, createdToken } = result;
 
-    let attachment = null;
+    // let attachment = null;
 
+    // if (file) {
+    //   attachment = await this.uploadService.avatarUpload({
+    //     file,
+    //     transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+    //     transaction_id: newUser.id,
+    //     user_id: user.id,
+    //   });
+    // }
+
+    let attachment = null;
     if (file) {
-      attachment = await this.uploadService.avatarUpload({
-        file,
-        transaction_type: TRANSACTION_TYPE.USER_AVATAR,
-        transaction_id: newUser.id,
-        user_id: user.id,
-      });
+        try {
+            attachment = await this.uploadService.avatarUpload({
+                file,
+                transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+                transaction_id: newUser.id,
+                user_id: user.id,
+            });
+        } catch (avatarError: any) {
+            console.error('Avatar upload failed (non-fatal):', avatarError?.message);
+        }
     }
 
     // const attachment = await this.uploadService.avatarUpload({
