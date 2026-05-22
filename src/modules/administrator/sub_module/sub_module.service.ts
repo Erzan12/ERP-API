@@ -169,9 +169,7 @@ export class SubModuleService {
     return {
       status: 'success',
       message: 'Here is the Submodule',
-      data: {
-        subModule,
-      },
+      subModule,
     };
   }
 
