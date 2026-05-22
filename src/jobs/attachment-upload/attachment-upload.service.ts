@@ -122,7 +122,6 @@ export class AttachmentUploadService {
             file: Express.Multer.File;
             transaction_type: string;
             transaction_id: string;
-            document_type?: string;
             user_id?: string;
         },
         tx?: Prisma.TransactionClient,
@@ -170,11 +169,11 @@ export class AttachmentUploadService {
                 data: { 
                     avatar: avatarUrl 
                 },
-                select: { 
-                    id: true, 
-                    username: true, 
-                    avatar: true 
-                },
+                // select: { 
+                //     id: true, 
+                //     username: true, 
+                //     avatar: true 
+                // },
             });
 
             // Create attachment record

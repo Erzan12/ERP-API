@@ -65,9 +65,9 @@ export class PermissionsGuard implements CanActivate {
       user.roles,
     );
 
-    this.logger.debug(
-      'User roles structure: ' + JSON.stringify(user.roles, null, 2),
-    );
+    // this.logger.debug(
+    //   'User roles structure: ' + JSON.stringify(user.roles, null, 2),
+    // );
 
     // // Debug all granted permissions
     // this.logger.debug(
