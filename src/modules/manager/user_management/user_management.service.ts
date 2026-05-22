@@ -359,14 +359,7 @@ export class UserManagementService {
         },
       });
 
-      const attachment = await this.uploadService.avatarUpload({
-          file,
-          transaction_type: TRANSACTION_TYPE.USER_AVATAR,
-          transaction_id: newUser.id,
-          user_id: user.id,
-      }, tx);
-
-      const empDept = await this.prisma.employee.findUnique({
+      const empDept = await tx.employee.findUnique({
         where: { id: employee.id },
         include: { department: true },
       });
@@ -412,16 +405,22 @@ export class UserManagementService {
         });
 
         // Create UserPermissions
-        for (const rp of rolePermissions) {
-          await tx.userPermission.create({
-            data: {
-              user_id: newUser.id,
-              user_role_id: userRole.id,
-              role_permission_id: rp.id,
-              action: rp.action,
-            },
-          });
-        }
+        // await tx.userPermission.create({
+        //   data: {
+        //     user_id: newUser.id,
+        //     user_role_id: userRole.id,
+        //     role_permission_id: rp.id,
+        //     action: rp.action,
+        //   },
+        // });
+        await tx.userPermission.createMany({
+          data: rolePermissions.map(rp => ({
+            user_id: newUser.id,
+            user_role_id: userRole.id,
+            role_permission_id: rp.id,
+            action: rp.action,
+          })),
+        });
       }
 
       // Create password reset token
@@ -448,12 +447,29 @@ export class UserManagementService {
         newUser,
         tokenKey,
         createdToken,
-        attachment,
       };
     })
 
     // Destructure result — now accessible outside
-    const { newUser, tokenKey, createdToken, attachment } = result;
+    const { newUser, tokenKey, createdToken } = result;
+
+    let attachment = null;
+
+    if (file) {
+      attachment = await this.uploadService.avatarUpload({
+        file,
+        transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+        transaction_id: newUser.id,
+        user_id: user.id,
+      });
+    }
+
+    // const attachment = await this.uploadService.avatarUpload({
+    //   file,
+    //   transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+    //   transaction_id: newUser.id,
+    //   user_id: user.id,
+    // }, tx);
 
     // Send welcome email
     await this.mailService.sendWelcomeMail(

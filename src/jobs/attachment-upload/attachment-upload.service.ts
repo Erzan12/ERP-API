@@ -128,82 +128,66 @@ export class AttachmentUploadService {
         tx?: Prisma.TransactionClient,
     ) {
         const prisma = tx || this.prisma;
-
         const { file, transaction_type, transaction_id, user_id } = params;
+
+        console.log('AVATAR UPLOAD PARAMS:', {
+            transaction_id,
+            transaction_type,
+            user_id,
+            file_name: file?.originalname,
+        });
 
         if (!file) {
             throw new BadRequestException('No avatar uploaded');
         }
 
-        const allowedMimeTypes = [
-            'image/jpeg',
-            'image/png',
-            'image/webp',
-        ];
-
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
         if (!allowedMimeTypes.includes(file.mimetype)) {
             throw new BadRequestException('Invalid image type');
         }
 
         const bucket = MINIO_BUCKETS.AVATARS;
-
-        const extension =
-            file.originalname.split('.').pop()?.toLowerCase() || 'jpg';
-
-        // const fileName =
-        //     `${transaction_id}/${randomUUID()}.${extension}`;
-
+        const extension = file.originalname.split('.').pop()?.toLowerCase() || 'jpg';
         const fileName = `avatars/${randomUUID()}.${extension}`;
-
-        const avatarUrl =
-            `${process.env.MINIO_PUBLIC_URL}/${bucket}/${fileName}`;
+        const avatarUrl = buildFileUrl(bucket, fileName);
 
         try {
+            // Upload to MinIO
             await minioClient.putObject(
-                bucket,
-                fileName,
-                file.buffer,
-                file.size,
-                {
-                    'Content-Type': file.mimetype,
-                },
-            );
-            
+                bucket, 
+                fileName, 
+                file.buffer, 
+                file.size, 
+            {
+                'Content-Type': file.mimetype,
+            });
+
+            // Update the EXISTING user's avatar (not create a new one)
             const user = await prisma.user.update({
-                where: {
-                    id: transaction_id,
+                where: { 
+                    id: transaction_id 
                 },
-
-                data: {
-                    avatar: buildFileUrl(bucket, fileName),
+                data: { 
+                    avatar: avatarUrl 
                 },
-
-                select: {
-                    id: true,
-                    username: true,
-                    avatar: true,
+                select: { 
+                    id: true, 
+                    username: true, 
+                    avatar: true 
                 },
             });
-            console.log('USER UPDATED:', user);
 
+            // Create attachment record
             await prisma.attachments.create({
                 data: {
                     transaction_type,
                     transaction_id,
                     file_name: file.originalname,
-                    file_path: `${avatarUrl}`,
+                    file_path: avatarUrl,
                     mime_type: file.mimetype,
                     file_size: file.size,
                     created_by: user_id,
                 },
-            });
-
-            console.log('FILE DEBUG:', {
-                exists: !!file,
-                buffer: !!file?.buffer,
-                size: file?.size,
-                mimetype: file?.mimetype,
-                originalname: file?.originalname,
             });
 
             return {
@@ -212,17 +196,125 @@ export class AttachmentUploadService {
             };
 
         } catch (err: any) {
-            // console.error('PRISMA USER UPDATE ERROR:', err);
-            console.error('PRISMA USER UPDATE ERROR:', {
+            console.error('AVATAR UPLOAD ERROR:', {
                 message: err?.message,
-                stack: err?.stack,
                 code: err?.code,
                 meta: err?.meta,
             });
-            console.error('MINIO ERROR:', err);
             throw err;
         }
     }
+    // async avatarUpload(
+    //     params: {
+    //         file: Express.Multer.File;
+    //         transaction_type: string;
+    //         transaction_id: string;
+    //         document_type?: string;
+    //         user_id?: string;
+    //     },
+    //     tx?: Prisma.TransactionClient,
+    // ) {
+    //     const prisma = tx || this.prisma;
+
+    //     const { file, transaction_type, transaction_id, user_id } = params;
+
+    //     if (!file) {
+    //         throw new BadRequestException('No avatar uploaded');
+    //     }
+
+    //     const allowedMimeTypes = [
+    //         'image/jpeg',
+    //         'image/png',
+    //         'image/webp',
+    //     ];
+
+    //     if (!allowedMimeTypes.includes(file.mimetype)) {
+    //         throw new BadRequestException('Invalid image type');
+    //     }
+
+    //     const bucket = MINIO_BUCKETS.AVATARS;
+
+    //     const extension =
+    //         file.originalname.split('.').pop()?.toLowerCase() || 'jpg';
+
+    //     // const fileName =
+    //     //     `${transaction_id}/${randomUUID()}.${extension}`;
+
+    //     const fileName = `avatars/${randomUUID()}.${extension}`;
+
+    //     // const avatarUrl =
+    //     //     `${process.env.MINIO_PUBLIC_URL}/${bucket}/${fileName}`;
+
+    //     try {
+    //         const avatarFileName = `avatars/${randomUUID()}.${file.originalname.split('.').pop()?.toLowerCase() || 'jpg'}`;
+    //         const bucket = MINIO_BUCKETS.AVATARS;
+
+    //         await minioClient.putObject(
+    //             bucket,
+    //             fileName,
+    //             file.buffer,
+    //             file.size,
+    //             {
+    //                 'Content-Type': file.mimetype,
+    //             },
+    //         );
+
+    //         const avatarUrl = buildFileUrl(bucket, avatarFileName);
+            
+    //         const user = await prisma.user.update({
+    //             where: {
+    //                 id: transaction_id,
+    //             },
+
+    //             data: {
+    //                 avatar: buildFileUrl(bucket, fileName),
+    //             },
+
+    //             select: {
+    //                 id: true,
+    //                 username: true,
+    //                 avatar: true,
+    //             },
+    //         });
+    //         console.log('USER UPDATED:', user);
+
+    //         await prisma.attachments.create({
+    //             data: {
+    //                 transaction_type,
+    //                 transaction_id,
+    //                 file_name: file.originalname,
+    //                 file_path: `${avatarUrl}`,
+    //                 mime_type: file.mimetype,
+    //                 file_size: file.size,
+    //                 created_by: user_id,
+    //             },
+    //         });
+
+    //         console.log('FILE DEBUG:', {
+    //             exists: !!file,
+    //             buffer: !!file?.buffer,
+    //             size: file?.size,
+    //             mimetype: file?.mimetype,
+    //             originalname: file?.originalname,
+    //         });
+
+    //         return {
+    //             ...user,
+    //             avatar_url: avatarUrl,
+    //         };
+
+    //     } catch (err: any) {
+    //         // console.error('PRISMA USER UPDATE ERROR:', err);
+    //         console.error('PRISMA USER UPDATE ERROR:', {
+    //             message: err?.message,
+    //             stack: err?.stack,
+    //             code: err?.code,
+    //             meta: err?.meta,
+    //         });
+    //         console.error('MINIO ERROR:', err);
+    //         throw err;
+    //     }
+    // }
 
     // with root directory storage
     // async avatarUpload(params: {
