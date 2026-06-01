@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { buildFileUrl, MINIO_BUCKETS, minioClient } from '../../config/minio/minio.config';
@@ -131,8 +131,12 @@ export class AttachmentUploadService {
 
         const { file, transaction_type, transaction_id, user_id } = params;
 
+        // if (!file) {
+        //     throw new BadRequestException('No avatar uploaded');
+        // }
+
         if (!file) {
-            throw new BadRequestException('No avatar uploaded');
+            return null;
         }
 
         const allowedMimeTypes = [
@@ -155,15 +159,33 @@ export class AttachmentUploadService {
 
         const fileName = `avatars/${randomUUID()}.${extension}`;
 
-        await minioClient.putObject(
-            bucket,
-            fileName,
-            file.buffer,
-            file.size,
-            {
-                'Content-Type': file.mimetype,
-            },
-        );
+        // await minioClient.putObject(
+        //     bucket,
+        //     fileName,
+        //     file.buffer,
+        //     file.size,
+        //     {
+        //         'Content-Type': file.mimetype,
+        //     },
+        // );
+
+        try {
+            await minioClient.putObject(
+                bucket,
+                fileName,
+                file.buffer,
+                file.size,
+                {
+                    'Content-Type': file.mimetype,
+                },
+            );
+        } catch (error) {
+            console.error('MinIO upload failed:', error);
+
+            throw new InternalServerErrorException(
+                'Failed to upload avatar',
+            );
+        }
 
         const avatarUrl =
             `${process.env.MINIO_PUBLIC_URL}/${bucket}/${fileName}`;

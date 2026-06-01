@@ -274,7 +274,7 @@ export class UserManagementService {
         const plainPassword = dto.password;
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-        const existingUser = await this.prisma.user.findFirst({
+        const existingUser = await tx.user.findFirst({
           where: {
             OR: [
               { username: dto.username },
@@ -289,7 +289,7 @@ export class UserManagementService {
           );
         }
 
-        const requestUser = await this.prisma.user.findUnique({
+        const requestUser = await tx.user.findUnique({
           where: { id: user.id },
           include: {
             employee: {
@@ -331,7 +331,7 @@ export class UserManagementService {
           );
         }
 
-        const employee = await this.prisma.employee.findUnique({
+        const employee = await tx.employee.findUnique({
           where: {
             employee_id: dto.employee_id,
           },
@@ -355,6 +355,8 @@ export class UserManagementService {
         //   throw new BadRequestException('User already exist');
         // }
 
+        console.log('Creating user...');
+
         const newUser = await tx.user.create({
           data: {
             employee_id: employee.id,
@@ -373,6 +375,8 @@ export class UserManagementService {
           },
         });
 
+        console.log('User created:', newUser.id);
+
         // const attachment = await this.uploadService.avatarUpload({
         //   file,
         //   transaction_type: TRANSACTION_TYPE.USER_AVATAR,
@@ -380,14 +384,32 @@ export class UserManagementService {
         //   // file_desc: file_desc,
         //   user_id: user.id,
         // }, tx);
-        const attachment = await this.uploadService.avatarUpload({
-            file,
-            transaction_type: TRANSACTION_TYPE.USER_AVATAR,
-            transaction_id: newUser.id,
-            user_id: user.id,
-        }, tx);
 
-        const empDept = await this.prisma.employee.findUnique({
+        console.log('Uploading avatar...');
+        // const attachment = await this.uploadService.avatarUpload({
+        //     file,
+        //     transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+        //     transaction_id: newUser.id,
+        //     user_id: user.id,
+        // }, tx);
+
+        let attachment = null;
+
+        if (file) {
+            attachment = await this.uploadService.avatarUpload(
+              {
+                file,
+                transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+                transaction_id: newUser.id,
+                user_id: user.id,
+              },
+              tx,
+            );
+        }
+
+        console.log('Avatar uploaded');
+
+        const empDept = await tx.employee.findUnique({
           where: { id: employee.id },
           include: { department: true },
         });
@@ -396,6 +418,7 @@ export class UserManagementService {
           throw new BadRequestException('Employee Department does not exist');
         }
 
+        console.log('Creating role...');
         //use only role name instead of role permission ids when adding role to user
         if (dto.role_name) {
           // 1️⃣ Find the role
@@ -464,15 +487,18 @@ export class UserManagementService {
           },
         });
 
-        // Send welcome email
-        await this.mailService.sendWelcomeMail(
-          newUser.email,
-          newUser.username,
-          plainPassword,
-          tokenKey,
-        );
+        // // Send welcome email
+        // console.log('Sending email...');
+        // await this.mailService.sendWelcomeMail(
+        //   newUser.email,
+        //   newUser.username,
+        //   plainPassword,
+        //   tokenKey,
+        // );
 
-        const actorUser: User | null = await this.prisma.user.findUnique({
+        // console.log('Email sent');
+
+        const actorUser: User | null = await tx.user.findUnique({
           where: { id: requestUser.id },
         });
 
