@@ -5566,7 +5566,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance/overtime-rate": {
+    "/v2/hris/time-and-attendance/overtime-rates": {
       "get": {
         "operationId": "OvertimeRateController_getOvertimeRates_v2",
         "parameters": [],
@@ -5591,6 +5591,83 @@
           }
         },
         "summary": "List of Overtime Rates",
+        "tags": [
+          "Overtime Cases - Overtime Rates"
+        ]
+      },
+      "post": {
+        "operationId": "OvertimeRateController_createOvertimeRate_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOvertimeRateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Overtime rate created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a overtime rate",
+        "tags": [
+          "Overtime Cases - Overtime Rates"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance/overtime-rates/{overtimeRateId}": {
+      "get": {
+        "operationId": "OvertimeRateController_getOvertimeRate_v2",
+        "parameters": [
+          {
+            "name": "overtimeRateId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get a single Overtime Rate"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single id Overtime Rate",
         "tags": [
           "Overtime Cases - Overtime Rates"
         ]
@@ -8413,6 +8490,23 @@
         "required": [
           "extended_leave_request",
           "extended_leave_dates"
+        ]
+      },
+      "CreateOvertimeRateDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "Regular Day"
+          },
+          "rate": {
+            "type": "number",
+            "example": 0.25
+          }
+        },
+        "required": [
+          "type",
+          "rate"
         ]
       },
       "CreatePermissionTemplateDto": {

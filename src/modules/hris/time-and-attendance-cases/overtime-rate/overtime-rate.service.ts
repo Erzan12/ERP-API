@@ -1,6 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
+import { CreateOvertimeRateDto } from './dto/overtime-rate.dto';
 
 @Injectable()
 export class OvertimeRateService {
@@ -33,6 +34,7 @@ export class OvertimeRateService {
         }
 
         const overtimeRates = await this.prisma.hrOvertimeRate.findMany({
+            where: { is_active: true },
             include: {
                 overtimeRequests: true,
             }
@@ -46,6 +48,95 @@ export class OvertimeRateService {
             status: 'success',
             message: 'List of overtime rates available',
             overtimeRates
+        }
+    }
+
+    async getOvertimeRate(user: RequestUser, overtimeRateId: string) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+    
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        const overtimeRate = await this.prisma.hrOvertimeRate.findUnique({
+            where: { id: overtimeRateId, is_active: true }
+        })
+
+        if(!overtimeRate || overtimeRate.is_active === false){
+            throw new BadRequestException("Overtime rate not found or is inactive")
+        }
+
+        return {
+            status: 'success',
+            message: 'Here is the overtime rate',
+            overtimeRate
+        }
+    }
+
+    async createOvertimeRate(user: RequestUser, dto: CreateOvertimeRateDto) {
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+    
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        const overtimeRate = await this.prisma.hrOvertimeRate.create({
+            data: {
+                type: dto.type,
+                rate: dto.rate,
+                created_by: user.id
+            },
+            include: {
+                overtimeRequests: true,
+            }
+        })
+
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
+
+        return {
+            status: 'success',
+            message: 'Overtime Rate created successfully',
+            overtimeRate,
+            created_by: `${userName} - ${userPosition}`,
         }
     }
 }
