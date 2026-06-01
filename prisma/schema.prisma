@@ -747,9 +747,9 @@ model VesselDetails {
   grain_capacity      String?
   hatch_size          String?
   hatch_type          String?
-  hull_type           String
-  hull_number         String
-  fuel_type           String
+  hull_type           String?
+  hull_number         String?
+  fuel_type           String?
   gearbox_ratio       String?
   year_last_drydocked String?
   place_last_drydocked  String?
@@ -765,7 +765,7 @@ model VesselDetails {
   propeller             String?
   call_sign             String?
   imo_no                String?
-  mmsi_no               String
+  mmsi_no               String?
   maiden_voyage         DateTime?
   min_main_engine_rating        Float?
   max_main_engine_rating        Float?
@@ -773,7 +773,7 @@ model VesselDetails {
   auxillary_engine_2_rating     Float?
   auxillary_engine_3_rating     Float?
   generator_set_rating          Float?
-  crane_rating                  Float
+  crane_rating                  Float?
   is_coupled_generator          Boolean?
   min_service_knots             Float?
   max_service_knots             Float?
@@ -1595,4 +1595,11 @@ view RegularizationEligibility {
 
   // Relations (Optional, but helpful for deep queries)
   employee Employee @relation(fields: [employeeId], references: [id])
+}
+
+// user_location and vessel list view
+view WorkAssignment {
+  id   String
+  name String
+  type String
 }
