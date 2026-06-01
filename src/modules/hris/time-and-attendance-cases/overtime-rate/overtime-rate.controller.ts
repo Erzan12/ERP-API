@@ -1,19 +1,20 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OvertimeRateService } from './overtime-rate.service';
-import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
-import { ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
+import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
+import { ACTION_CREATE, ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
 import { subject } from '@casl/ability';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
+import { CreateOvertimeRateDto } from './dto/overtime-rate.dto';
 
 @ApiTags("Overtime Cases - Overtime Rates")
 @Controller({path: 'hris', version: '2'})
 export class OvertimeRateController {
     constructor(private readonly overtimeService: OvertimeRateService) {}
 
-    @Get("/time-and-attendance/overtime-rate")
+    @Get("/time-and-attendance/overtime-rates")
     @ApiOperation({ summary: 'List of Overtime Rates' })
     @ApiGetResponse('List of Overtime Rates')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
@@ -21,5 +22,27 @@ export class OvertimeRateController {
         @SessionUser() user: RequestUser
     ) {
         return this.overtimeService.getOvertimeRates(user);
+    }
+
+    @Get("/time-and-attendance/overtime-rates/:overtimeRateId")
+    @ApiOperation({ summary: 'Get a single id Overtime Rate' })
+    @ApiGetResponse('Get a single Overtime Rate')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getOvertimeRate(
+        @SessionUser() user: RequestUser,
+        @Param('overtimeRateId', new ParseUUIDPipe()) overtimeRateId: string
+    ) {
+        return this.overtimeService.getOvertimeRate(user, overtimeRateId);
+    }
+
+    @Post("/time-and-attendance/overtime-rates")
+    @ApiOperation({ summary: 'Create a overtime rate' })
+    @ApiPostResponse('Overtime rate created successfully')
+    @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
+    createOvertimeRate(
+        @SessionUser() user: RequestUser,
+        @Body() dto: CreateOvertimeRateDto
+    ) {
+        return this.overtimeService.createOvertimeRate(user, dto);
     }
 }
