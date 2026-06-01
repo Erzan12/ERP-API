@@ -5671,6 +5671,53 @@
         "tags": [
           "Overtime Cases - Overtime Rates"
         ]
+      },
+      "put": {
+        "operationId": "OvertimeRateController_updateOvertimeRate_v2",
+        "parameters": [
+          {
+            "name": "overtimeRateId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOvertimeRateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Overtime rate updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a overtime rate",
+        "tags": [
+          "Overtime Cases - Overtime Rates"
+        ]
       }
     },
     "/v2/manager/permission-template": {
@@ -8507,6 +8554,28 @@
         "required": [
           "type",
           "rate"
+        ]
+      },
+      "UpdateOvertimeRateDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "Regular Day"
+          },
+          "rate": {
+            "type": "number",
+            "example": 0.25
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": "true or false"
+          }
+        },
+        "required": [
+          "type",
+          "rate",
+          "is_active"
         ]
       },
       "CreatePermissionTemplateDto": {
