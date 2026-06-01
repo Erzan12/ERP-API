@@ -36,6 +36,7 @@ export class OvertimeRateController {
     }
 
     @Post("/time-and-attendance/overtime-rates")
+    @ApiBody({ type: CreateOvertimeRateDto, description: 'Payload to create overtime rate' })
     @ApiOperation({ summary: 'Create a overtime rate' })
     @ApiPostResponse('Overtime rate created successfully')
     @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
