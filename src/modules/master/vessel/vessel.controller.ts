@@ -13,6 +13,14 @@ import { CreateVesselWithDetailsDto } from './dto/vessel.dto';
 export class VesselController {
     constructor (private readonly vesselService: VesselService) {}
 
+    @Get('vessels/vessel-user-location-list')
+    @Can({ action: ACTION_READ, subject: MASTERTABLES})
+    getVesselUserLoc(
+        @SessionUser() user: RequestUser
+    ) {
+        return this.vesselService.getVesselUserLoc(user);
+    }
+
     @Get('vessels/:vesselId')
     @ApiOperation({ summary: 'Get a single vessel' })
     @ApiGetResponse('Here is the vessel')

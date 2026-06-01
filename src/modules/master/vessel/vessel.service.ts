@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateVesselDetailsDto, CreateVesselWithDetailsDto } from './dto/vessel.dto';
@@ -6,6 +6,49 @@ import { CreateVesselDetailsDto, CreateVesselWithDetailsDto } from './dto/vessel
 @Injectable()
 export class VesselService {
     constructor (private readonly prisma: PrismaService) {}
+
+    async getVesselUserLoc(user: RequestUser) {
+         // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+    
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        const locations = await this.prisma.vesselWorkLocationListView.findMany({
+            orderBy: {
+                name: 'desc'
+            }
+        });
+
+        if(!locations) {
+            throw new NotFoundException("No vessel and user locations found")
+        }
+
+        return {
+            status: 'success',
+            message: 'List of vessel and user location available',
+            locations
+        }
+    }
 
     async getVessels(user: RequestUser) {
         // Auth check first
