@@ -5648,6 +5648,7 @@
         "parameters": [],
         "requestBody": {
           "required": true,
+          "description": "Payload to create overtime rate",
           "content": {
             "application/json": {
               "schema": {
