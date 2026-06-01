@@ -1596,3 +1596,10 @@ view RegularizationEligibility {
   // Relations (Optional, but helpful for deep queries)
   employee Employee @relation(fields: [employeeId], references: [id])
 }
+
+// user_location and vessel list view
+view WorkAssignment {
+  id   String
+  name String
+  type String
+}
