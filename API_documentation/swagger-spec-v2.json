@@ -5566,6 +5566,36 @@
         ]
       }
     },
+    "/v2/hris/time-and-attendance/overtime-rate": {
+      "get": {
+        "operationId": "OvertimeRateController_getOvertimeRates_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of Overtime Rates"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of Overtime Rates",
+        "tags": [
+          "Overtime Cases - Overtime Rates"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
