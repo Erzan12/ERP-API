@@ -171,6 +171,7 @@ export class OvertimeRateService {
             data: {
                 type: dto.type ?? undefined,
                 rate: dto.rate ?? undefined,
+                is_active: dto.is_active ?? undefined,
                 updated_by: user.id
             },
             include: {

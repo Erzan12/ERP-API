@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
+import { IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString } from "class-validator";
 
 export class CreateOvertimeRateDto {
     @ApiProperty({
@@ -24,7 +24,7 @@ export class UpdateOvertimeRateDto {
     })
     @IsOptional()
     @IsString()
-    type: string;
+    type?: string;
 
     @ApiProperty({
         example: .25
@@ -32,5 +32,12 @@ export class UpdateOvertimeRateDto {
     @IsOptional()
     @IsNumber()
     @IsPositive()
-    rate: number;
+    rate?: number;
+
+    @IsBoolean()
+    @ApiProperty({
+        example: 'true or false',
+    })
+    @IsOptional()
+    is_active?: boolean;
 }

@@ -23,7 +23,7 @@ export class UpdateLeaveCategory {
     @IsBoolean()
     @ApiProperty({
         example: 'true or false',
-    description: 'The status of this Leave Category',
+        description: 'The status of this Leave Category',
     })
     @IsOptional()
     is_active?: boolean;
