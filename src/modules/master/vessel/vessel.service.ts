@@ -39,7 +39,7 @@ export class VesselService {
             }
         });
 
-        if(!locations) {
+        if(locations.length === 0) {
             throw new NotFoundException("No vessel and user locations found")
         }
 
