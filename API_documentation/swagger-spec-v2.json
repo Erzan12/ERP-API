@@ -2769,6 +2769,20 @@
         ]
       }
     },
+    "/v2/mastertable/vessels/vessel-user-location-list": {
+      "get": {
+        "operationId": "VesselController_getVesselUserLoc_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Mastertable - Vessel"
+        ]
+      }
+    },
     "/v2/mastertable/vessels/{vesselId}": {
       "get": {
         "operationId": "VesselController_getVessel_v2",
