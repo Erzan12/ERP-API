@@ -33,7 +33,7 @@ export class VesselService {
             throw new ForbiddenException('You are not authorized to perform this action');
         }
 
-        const locations = await this.prisma.vesselWorkLocationListView.findMany({
+        const locations = await this.prisma.workAssignment.findMany({
             orderBy: {
                 name: 'desc'
             }
