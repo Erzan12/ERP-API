@@ -1,12 +1,12 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 import { VesselService } from './vessel.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
-import { ACTION_CREATE, ACTION_READ, MASTERTABLES } from 'src/utils/constants/ability.constant';
+import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
+import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, EMPLOYEE_MASTERLIST, MASTERTABLES } from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
-import { CreateVesselWithDetailsDto } from './dto/vessel.dto';
+import { CreateVesselWithDetailsDto, UpdateVesselWithDetailsDto } from './dto/vessel.dto';
 
 @ApiTags('Mastertable - Vessel')
 @Controller({path: 'mastertable', version: '2'})
@@ -52,5 +52,22 @@ export class VesselController {
         @Body() dto: CreateVesselWithDetailsDto,
     ) {
         return this.vesselService.createVessel(user, dto)
+    }
+
+    @Put('vessels/:vesselId')
+    @ApiBody({ type: UpdateVesselWithDetailsDto, description: 'Payload to update vessel' })
+    @ApiOperation({ summary: 'Update a current vessel' })
+    @ApiPatchResponse('Vessel updated successfully')
+    @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+    updateVessel(
+        @SessionUser() user: RequestUser,
+        @Body() dto: UpdateVesselWithDetailsDto,
+        @Param('vesselId', new ParseUUIDPipe()) vesselId: string
+    ) {
+        return this.vesselService.updateVessel(
+            user,
+            dto,
+            vesselId
+        )
     }
 }
