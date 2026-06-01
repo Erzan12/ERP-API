@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OvertimeRateService } from './overtime-rate.service';
 import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
@@ -47,6 +47,7 @@ export class OvertimeRateController {
     }
 
     @Put("/time-and-attendance/overtime-rates/:overtimeRateId")
+    @ApiBody({ type: UpdateOvertimeRateDto, description: 'Payload to update overtime rate' })
     @ApiOperation({ summary: 'Update a overtime rate' })
     @ApiPatchResponse('Overtime rate updated successfully')
     @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
