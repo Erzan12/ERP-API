@@ -2769,6 +2769,176 @@
         ]
       }
     },
+    "/v2/mastertable/vessels/vessel-user-location-list": {
+      "get": {
+        "operationId": "VesselController_getVesselUserLoc_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Mastertable - Vessel"
+        ]
+      }
+    },
+    "/v2/mastertable/vessels/{vesselId}": {
+      "get": {
+        "operationId": "VesselController_getVessel_v2",
+        "parameters": [
+          {
+            "name": "vesselId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the vessel"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single vessel",
+        "tags": [
+          "Mastertable - Vessel"
+        ]
+      },
+      "put": {
+        "operationId": "VesselController_updateVessel_v2",
+        "parameters": [
+          {
+            "name": "vesselId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update vessel",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVesselWithDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vessel updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current vessel",
+        "tags": [
+          "Mastertable - Vessel"
+        ]
+      }
+    },
+    "/v2/mastertable/vessels": {
+      "get": {
+        "operationId": "VesselController_getVessels_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of vessels retrieved"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get all vessels",
+        "tags": [
+          "Mastertable - Vessel"
+        ]
+      },
+      "post": {
+        "operationId": "VesselController_createVessel_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create vessel",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVesselWithDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Vessel created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a new vessel",
+        "tags": [
+          "Mastertable - Vessel"
+        ]
+      }
+    },
     "/v2/hris/employees": {
       "get": {
         "operationId": "EmployeeMasterlistController_getEmployees_v2",
@@ -5444,6 +5614,162 @@
         ]
       }
     },
+    "/v2/hris/time-and-attendance/overtime-rates": {
+      "get": {
+        "operationId": "OvertimeRateController_getOvertimeRates_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of Overtime Rates"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of Overtime Rates",
+        "tags": [
+          "Overtime Cases - Overtime Rates"
+        ]
+      },
+      "post": {
+        "operationId": "OvertimeRateController_createOvertimeRate_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create overtime rate",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOvertimeRateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Overtime rate created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a overtime rate",
+        "tags": [
+          "Overtime Cases - Overtime Rates"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance/overtime-rates/{overtimeRateId}": {
+      "get": {
+        "operationId": "OvertimeRateController_getOvertimeRate_v2",
+        "parameters": [
+          {
+            "name": "overtimeRateId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get a single Overtime Rate"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single id Overtime Rate",
+        "tags": [
+          "Overtime Cases - Overtime Rates"
+        ]
+      },
+      "put": {
+        "operationId": "OvertimeRateController_updateOvertimeRate_v2",
+        "parameters": [
+          {
+            "name": "overtimeRateId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update overtime rate",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOvertimeRateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Overtime rate updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a overtime rate",
+        "tags": [
+          "Overtime Cases - Overtime Rates"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -6792,6 +7118,578 @@
           "isActive"
         ]
       },
+      "CreateVesselDto": {
+        "type": "object",
+        "properties": {
+          "company_id": {
+            "type": "string",
+            "example": "Company UUID"
+          },
+          "name": {
+            "type": "string",
+            "example": "MV Gigabites"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "vessel_cargo",
+              "tugboat",
+              "barge"
+            ],
+            "example": "vessel_cargo",
+            "description": "The vessel type of this vessel"
+          }
+        },
+        "required": [
+          "company_id",
+          "name",
+          "type"
+        ]
+      },
+      "CreateVesselDetailsDto": {
+        "type": "object",
+        "properties": {
+          "price_sold": {
+            "type": "string",
+            "example": "999,999"
+          },
+          "price_paid": {
+            "type": "string",
+            "example": "950,000"
+          },
+          "length_loa": {
+            "type": "string",
+            "example": ""
+          },
+          "length_lbp": {
+            "type": "string",
+            "example": ""
+          },
+          "breadth": {
+            "type": "string",
+            "example": ""
+          },
+          "depth": {
+            "type": "string",
+            "example": ""
+          },
+          "draft": {
+            "type": "string",
+            "example": ""
+          },
+          "year_built": {
+            "type": "string",
+            "example": ""
+          },
+          "builder": {
+            "type": "string",
+            "example": ""
+          },
+          "place_built": {
+            "type": "string",
+            "example": ""
+          },
+          "jap_dwt": {
+            "type": "string",
+            "example": ""
+          },
+          "bale_capacity": {
+            "type": "string",
+            "example": ""
+          },
+          "grain_capacity": {
+            "type": "string",
+            "example": ""
+          },
+          "hatch_size": {
+            "type": "string",
+            "example": ""
+          },
+          "hatch_type": {
+            "type": "string",
+            "example": ""
+          },
+          "hull_type": {
+            "type": "string",
+            "example": ""
+          },
+          "hull_number": {
+            "type": "string",
+            "example": ""
+          },
+          "fuel_type": {
+            "type": "string",
+            "example": ""
+          },
+          "gearbox_ratio": {
+            "type": "string",
+            "example": ""
+          },
+          "year_last_drydock": {
+            "type": "string",
+            "example": ""
+          },
+          "place_last_drydock": {
+            "type": "string",
+            "example": ""
+          },
+          "phil_dwt": {
+            "type": "number",
+            "example": 1000.4
+          },
+          "gross_tonnage": {
+            "type": "string",
+            "example": "998"
+          },
+          "net_tonnage": {
+            "type": "string",
+            "example": ""
+          },
+          "main_engine": {
+            "type": "string",
+            "example": ""
+          },
+          "main_engine_rating": {
+            "type": "string",
+            "example": ""
+          },
+          "main_engine_actual_rating": {
+            "type": "string",
+            "example": ""
+          },
+          "model_serial_no": {
+            "type": "string",
+            "example": ""
+          },
+          "estimated_fuel_consumption": {
+            "type": "string",
+            "example": ""
+          },
+          "bow_thrusters": {
+            "type": "string",
+            "example": ""
+          },
+          "propeller": {
+            "type": "string",
+            "example": ""
+          },
+          "call_sign": {
+            "type": "string",
+            "example": ""
+          },
+          "imo_no": {
+            "type": "string",
+            "example": ""
+          },
+          "mmsi_no": {
+            "type": "string",
+            "example": ""
+          },
+          "maiden_voyage": {
+            "type": "string",
+            "example": "2026-04-10",
+            "description": "Date end of the employee leave request"
+          },
+          "min_main_engine_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "max_main_engine_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "auxillary_engine_1_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "auxillary_engine_2_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "auxillary_engine_3_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "generator_set_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "crane_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "is_coupled_generator": {
+            "type": "boolean",
+            "example": true
+          },
+          "min_service_knots": {
+            "type": "number",
+            "example": 90
+          },
+          "max_service_knots": {
+            "type": "number",
+            "example": 100
+          },
+          "bank_account_number": {
+            "type": "string",
+            "example": ""
+          },
+          "bank_account_name": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "required": [
+          "price_sold",
+          "price_paid",
+          "length_loa",
+          "length_lbp",
+          "breadth",
+          "depth",
+          "draft",
+          "year_built",
+          "builder",
+          "place_built",
+          "jap_dwt",
+          "bale_capacity",
+          "grain_capacity",
+          "hatch_size",
+          "hatch_type",
+          "hull_type",
+          "hull_number",
+          "fuel_type",
+          "gearbox_ratio",
+          "year_last_drydock",
+          "place_last_drydock",
+          "phil_dwt",
+          "gross_tonnage",
+          "net_tonnage",
+          "main_engine",
+          "main_engine_rating",
+          "main_engine_actual_rating",
+          "model_serial_no",
+          "estimated_fuel_consumption",
+          "bow_thrusters",
+          "propeller",
+          "call_sign",
+          "imo_no",
+          "mmsi_no",
+          "maiden_voyage",
+          "min_main_engine_rating",
+          "max_main_engine_rating",
+          "auxillary_engine_1_rating",
+          "auxillary_engine_2_rating",
+          "auxillary_engine_3_rating",
+          "generator_set_rating",
+          "crane_rating",
+          "is_coupled_generator",
+          "min_service_knots",
+          "max_service_knots",
+          "bank_account_number",
+          "bank_account_name"
+        ]
+      },
+      "CreateVesselWithDetailsDto": {
+        "type": "object",
+        "properties": {
+          "vessel": {
+            "$ref": "#/components/schemas/CreateVesselDto"
+          },
+          "vessel_details": {
+            "$ref": "#/components/schemas/CreateVesselDetailsDto"
+          }
+        },
+        "required": [
+          "vessel",
+          "vessel_details"
+        ]
+      },
+      "UpdateVesselDto": {
+        "type": "object",
+        "properties": {
+          "company_id": {
+            "type": "string",
+            "example": "Company UUID"
+          },
+          "name": {
+            "type": "string",
+            "example": "MV Gigabites"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "vessel_cargo",
+              "tugboat",
+              "barge"
+            ],
+            "example": "vessel_cargo",
+            "description": "The vessel type of this vessel"
+          }
+        },
+        "required": [
+          "company_id",
+          "name",
+          "type"
+        ]
+      },
+      "UpdateVesselDetailsDto": {
+        "type": "object",
+        "properties": {
+          "price_sold": {
+            "type": "string",
+            "example": "999,999"
+          },
+          "price_paid": {
+            "type": "string",
+            "example": "950,000"
+          },
+          "length_loa": {
+            "type": "string",
+            "example": ""
+          },
+          "length_lbp": {
+            "type": "string",
+            "example": ""
+          },
+          "breadth": {
+            "type": "string",
+            "example": ""
+          },
+          "depth": {
+            "type": "string",
+            "example": ""
+          },
+          "draft": {
+            "type": "string",
+            "example": ""
+          },
+          "year_built": {
+            "type": "string",
+            "example": ""
+          },
+          "builder": {
+            "type": "string",
+            "example": ""
+          },
+          "place_built": {
+            "type": "string",
+            "example": ""
+          },
+          "jap_dwt": {
+            "type": "string",
+            "example": ""
+          },
+          "bale_capacity": {
+            "type": "string",
+            "example": ""
+          },
+          "grain_capacity": {
+            "type": "string",
+            "example": ""
+          },
+          "hatch_size": {
+            "type": "string",
+            "example": ""
+          },
+          "hatch_type": {
+            "type": "string",
+            "example": ""
+          },
+          "hull_type": {
+            "type": "string",
+            "example": ""
+          },
+          "hull_number": {
+            "type": "string",
+            "example": ""
+          },
+          "fuel_type": {
+            "type": "string",
+            "example": ""
+          },
+          "gearbox_ratio": {
+            "type": "string",
+            "example": ""
+          },
+          "year_last_drydock": {
+            "type": "string",
+            "example": ""
+          },
+          "place_last_drydock": {
+            "type": "string",
+            "example": ""
+          },
+          "phil_dwt": {
+            "type": "number",
+            "example": 1000.4
+          },
+          "gross_tonnage": {
+            "type": "string",
+            "example": "998"
+          },
+          "net_tonnage": {
+            "type": "string",
+            "example": ""
+          },
+          "main_engine": {
+            "type": "string",
+            "example": ""
+          },
+          "main_engine_rating": {
+            "type": "string",
+            "example": ""
+          },
+          "main_engine_actual_rating": {
+            "type": "string",
+            "example": ""
+          },
+          "model_serial_no": {
+            "type": "string",
+            "example": ""
+          },
+          "estimated_fuel_consumption": {
+            "type": "string",
+            "example": ""
+          },
+          "bow_thrusters": {
+            "type": "string",
+            "example": ""
+          },
+          "propeller": {
+            "type": "string",
+            "example": ""
+          },
+          "call_sign": {
+            "type": "string",
+            "example": ""
+          },
+          "imo_no": {
+            "type": "string",
+            "example": ""
+          },
+          "mmsi_no": {
+            "type": "string",
+            "example": ""
+          },
+          "maiden_voyage": {
+            "type": "string",
+            "example": "2026-04-10",
+            "description": "Date end of the employee leave request"
+          },
+          "min_main_engine_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "max_main_engine_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "auxillary_engine_1_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "auxillary_engine_2_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "auxillary_engine_3_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "generator_set_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "crane_rating": {
+            "type": "number",
+            "example": 100
+          },
+          "is_coupled_generator": {
+            "type": "boolean",
+            "example": true
+          },
+          "min_service_knots": {
+            "type": "number",
+            "example": 90
+          },
+          "max_service_knots": {
+            "type": "number",
+            "example": 100
+          },
+          "bank_account_number": {
+            "type": "string",
+            "example": ""
+          },
+          "bank_account_name": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "required": [
+          "price_sold",
+          "price_paid",
+          "length_loa",
+          "length_lbp",
+          "breadth",
+          "depth",
+          "draft",
+          "year_built",
+          "builder",
+          "place_built",
+          "jap_dwt",
+          "bale_capacity",
+          "grain_capacity",
+          "hatch_size",
+          "hatch_type",
+          "hull_type",
+          "hull_number",
+          "fuel_type",
+          "gearbox_ratio",
+          "year_last_drydock",
+          "place_last_drydock",
+          "phil_dwt",
+          "gross_tonnage",
+          "net_tonnage",
+          "main_engine",
+          "main_engine_rating",
+          "main_engine_actual_rating",
+          "model_serial_no",
+          "estimated_fuel_consumption",
+          "bow_thrusters",
+          "propeller",
+          "call_sign",
+          "imo_no",
+          "mmsi_no",
+          "maiden_voyage",
+          "min_main_engine_rating",
+          "max_main_engine_rating",
+          "auxillary_engine_1_rating",
+          "auxillary_engine_2_rating",
+          "auxillary_engine_3_rating",
+          "generator_set_rating",
+          "crane_rating",
+          "is_coupled_generator",
+          "min_service_knots",
+          "max_service_knots",
+          "bank_account_number",
+          "bank_account_name"
+        ]
+      },
+      "UpdateVesselWithDetailsDto": {
+        "type": "object",
+        "properties": {
+          "update_vessel": {
+            "$ref": "#/components/schemas/UpdateVesselDto"
+          },
+          "update_vessel_details": {
+            "$ref": "#/components/schemas/UpdateVesselDetailsDto"
+          }
+        },
+        "required": [
+          "update_vessel",
+          "update_vessel_details"
+        ]
+      },
       "CreatePersonDto": {
         "type": "object",
         "properties": {
@@ -7975,6 +8873,45 @@
         "required": [
           "extended_leave_request",
           "extended_leave_dates"
+        ]
+      },
+      "CreateOvertimeRateDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "Regular Day"
+          },
+          "rate": {
+            "type": "number",
+            "example": 0.25
+          }
+        },
+        "required": [
+          "type",
+          "rate"
+        ]
+      },
+      "UpdateOvertimeRateDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "Regular Day"
+          },
+          "rate": {
+            "type": "number",
+            "example": 0.25
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": "true or false"
+          }
+        },
+        "required": [
+          "type",
+          "rate",
+          "is_active"
         ]
       },
       "CreatePermissionTemplateDto": {

@@ -17,6 +17,8 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { UserLocationService } from './user_location/user_location.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { UserLocationControllerV2 } from './user_location/user_locationV2.controller';
+import { VesselController } from './vessel/vessel.controller';
+import { VesselService } from './vessel/vessel.service';
 
 @Module({
   imports: [AuthModule],
@@ -32,6 +34,7 @@ import { UserLocationControllerV2 } from './user_location/user_locationV2.contro
     CreatePositionDto,
     CreateCompanyDto,
     UserLocationService,
+    VesselService,
   ],
   controllers: [
     PositionControllerV2,
@@ -40,6 +43,7 @@ import { UserLocationControllerV2 } from './user_location/user_locationV2.contro
     DivisionControllerV2,
     EmploymentStatusControllerV2,
     UserLocationControllerV2,
+    VesselController,
   ],
   exports: [],
 })
