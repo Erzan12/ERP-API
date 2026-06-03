@@ -31,17 +31,22 @@ export class MailService {
     }
 
     const mailOption = {
-      from: '"AV Human Resource" dummybusiness29@gmail.com',
+      from: '"AV Human Resource" anjelou.felizarta.15@gmail.com',
       to,
-      subject: 'Welcome to the ABAS-v3 system! Here is your Temporary password',
+      subject: 'Welcome to the ABAS-v3 system!',
       html: `
                 <h3>Hello ${username},</h3>
                 <p>Your account has been created successfully.</p>
+
                 <p><strong>Username:</strong> ${username} </p>
-                <p><strong>Temporary Password:</strong> ${plainPassword} </p>
+                <!-- <p><strong>Temporary Password:</strong> ${plainPassword} </p> -->
+
                 <p>Please login and change your password immediately</p>
                 <p>Click below to reset your password:</p>
-                <a href="https://api.avegabros.net/auth/reset-password?token=${token}">Reset Password</a>
+
+                <a href="http://localhost:3000/auth/reset-password?token=${token}">
+                  Reset Password
+                </a>
             `,
     };
 
@@ -65,7 +70,7 @@ export class MailService {
                 <p><strong>Username:</strong> ${username} </p>
                 <p>Please login and change your password immediately</p>
                 <p>Click below to reset your password:</p>
-                <a href="https://api.avegabros.net/auth/reset-password?token=${token}">Reset Password</a>
+                <a href="http://localhost:3000/auth/reset-password?token=${token}">Reset Password</a>
             `,
     };
 
