@@ -472,12 +472,17 @@ export class UserManagementService {
 
         // // Send welcome email
         // console.log('Sending email...');
-        await this.mailService.sendWelcomeMail(
-          newUser.email,
-          newUser.username,
-          plainPassword,
-          tokenKey,
-        );
+        try {
+          await this.mailService.sendWelcomeMail(
+            newUser.email,
+            newUser.username,
+            plainPassword,
+            tokenKey,
+          );
+        } catch (err) {
+          console.error('MAIL ERROR:', err);
+          throw err;
+        }
 
         // console.log('Email sent');
 
