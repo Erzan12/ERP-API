@@ -184,6 +184,11 @@ export class AuthService {
     };
   }
 
+  //forgot password
+  async forgotPassword() {
+    
+  }
+
   //generate reset token
   async generateResetToken(userId: string) {
     // Delete old unused tokens
