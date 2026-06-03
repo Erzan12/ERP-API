@@ -8,7 +8,7 @@ export class ResetPasswordWithTokenDto {
   newPassword: string;
 }
 
-export class UserEmailResetTokenDto {
+export class ResendInvitationTokenDto {
   @IsEmail()
   @ApiProperty({
     example: 'employee.email@gmail.com',
