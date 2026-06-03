@@ -5,6 +5,7 @@ dotenv.config();
 
 const useSSL = process.env.MINIO_USE_SSL === 'true';
 const port = parseInt(process.env.MINIO_PORT || '443', 10);
+const MINIO_PUBLIC_URL = process.env.MINIO_PUBLIC_URL || '';
 
 console.log('MinIO config:', {
     endpoint: process.env.MINIO_ENDPOINT,
@@ -21,8 +22,6 @@ export const minioClient = new Minio.Client({
     accessKey: process.env.MINIO_ACCESS_KEY || '',
     secretKey: process.env.MINIO_SECRET_KEY || '',
 });
-
-export const MINIO_PUBLIC_URL = process.env.MINIO_PUBLIC_URL || '';
 
 // Bucket names hardcoded here — not secrets, no need for .env
 export const MINIO_BUCKETS = {
