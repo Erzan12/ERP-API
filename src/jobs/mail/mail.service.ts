@@ -8,12 +8,13 @@ export class MailService {
 
   constructor(private readonly configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
+      host: 'mail.avegabros.com',
+      // port: 587,
+      port: 465,
+      secure: true,
       auth: {
-        user: this.configService.get('SMTP_USER'), //use env variable in prod
-        pass: this.configService.get('SMTP_PASS'), //you App Password in gmail
+        user: this.configService.get('SMTP_USER'),
+        pass: this.configService.get('SMTP_PASS'), 
       },
     });
   }
@@ -31,7 +32,7 @@ export class MailService {
     }
 
     const mailOption = {
-      from: '"AV Human Resource" anjelou.felizarta.15@gmail.com',
+      from: 'AV Human Resource <noreply@avegabros.com>',
       to,
       subject: 'Welcome to the ABAS-v3 system!',
       html: `
