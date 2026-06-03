@@ -41,7 +41,7 @@ export class MailService {
                 <p><strong>Temporary Password:</strong> ${plainPassword} </p>
                 <p>Please login and change your password immediately</p>
                 <p>Click below to reset your password:</p>
-                <a href="http://localhost:3000/auth/reset-password?token=${token}">Reset Password</a>
+                <a href="https://api.avegabros.net/auth/reset-password?token=${token}">Reset Password</a>
             `,
     };
 
@@ -65,7 +65,7 @@ export class MailService {
                 <p><strong>Username:</strong> ${username} </p>
                 <p>Please login and change your password immediately</p>
                 <p>Click below to reset your password:</p>
-                <a href="http://localhost:3000/auth/reset-password?token=${token}">Reset Password</a>
+                <a href="https://api.avegabros.net/auth/reset-password?token=${token}">Reset Password</a>
             `,
     };
 
