@@ -10,10 +10,10 @@ export enum CivilStatus {
   WIDOWED   = 'widowed',
 }
 
-export enum StatusEnum {
-  ACTIVE   = 'active',
-  INACTIVE = 'inactive',
-}
+// export enum StatusEnum {
+//   ACTIVE   = 'active',
+//   INACTIVE = 'inactive',
+// }
 
 export enum CareerPostingStatus {
   ALL       = 'all',
@@ -45,13 +45,13 @@ export enum LandBasedCategory {
   MANAGERIAL_AND_SUPERVISORY = 'managerial_and_supervisory'
 }
 
-export enum ApplicationSource {
-  COMPANY_WEBSITE = 'company_website',
-  WALK_IN         = 'walk_in',
-  REFERRAL        = 'referral',
-  LINKEDIN        = 'linkedIn',
-  JOBSTREET       = 'jobstreet',
-}
+// export enum ApplicationSource {
+//   COMPANY_WEBSITE = 'company_website',
+//   WALK_IN         = 'walk_in',
+//   REFERRAL        = 'referral',
+//   LINKEDIN        = 'linkedIn',
+//   JOBSTREET       = 'jobstreet',
+// }
 
 export enum ApplicationStatus {
   APPLIED       = 'applied',
@@ -87,10 +87,10 @@ export enum EvaluationStageStatus {
   COMPLETE = 'complete'
 }
 
-export enum PerformanceRating {
-  UNSATISFACTORY = 'unsatisfactory',
-  NEEDS_IMPROVEMENT = 'needs_improvement',
-  MEETS_EXPECTATIONS = 'meets_expectations',
-  EXCEED_EXPECTATIONS = 'exceed_expectations',
-  EXCEPTIONAL = 'exceptional'
-}
+// export enum PerformanceRating {
+//   UNSATISFACTORY = 'unsatisfactory',
+//   NEEDS_IMPROVEMENT = 'needs_improvement',
+//   MEETS_EXPECTATIONS = 'meets_expectations',
+//   EXCEED_EXPECTATIONS = 'exceed_expectations',
+//   EXCEPTIONAL = 'exceptional'
+// }

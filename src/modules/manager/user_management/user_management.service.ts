@@ -365,7 +365,7 @@ export class UserManagementService {
             email: dto.email,
             password: hashedPassword,
             is_active: true,
-            require_reset: 1,
+            require_reset: 0,
             // created_by: ,
             created_at: new Date(),
           },
@@ -489,12 +489,12 @@ export class UserManagementService {
 
         // // Send welcome email
         // console.log('Sending email...');
-        // await this.mailService.sendWelcomeMail(
-        //   newUser.email,
-        //   newUser.username,
-        //   plainPassword,
-        //   tokenKey,
-        // );
+        await this.mailService.sendWelcomeMail(
+          newUser.email,
+          newUser.username,
+          plainPassword,
+          tokenKey,
+        );
 
         // console.log('Email sent');
 
