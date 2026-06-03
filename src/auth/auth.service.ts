@@ -2,16 +2,19 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
+  ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
-import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
+import { ResetPasswordWithTokenDto, ResendInvitationTokenDto } from './dto/reset-password-with-token.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-permisison.helper';
+import { MailService } from 'src/jobs/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +22,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly auditService: AuditService,
+    private readonly mailService: MailService
   ) {}
 
   //For first time log in password reset with token from user or person registration/creation
@@ -109,6 +113,77 @@ export class AuthService {
     };
   }
 
+  async resendInvitation(dto: ResendInvitationTokenDto, user: RequestUser) {
+    const actingUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!actingUser || !actingUser.employee || !actingUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const admin = `${actingUser.employee.person.first_name} ${actingUser.employee.person.last_name}`;
+    const adminPos = actingUser.employee.position.name;
+
+    // scalable approach
+    const allowedRoles = ['Administrator', 'Super Administrator', 'Manager'];
+    const isAdmin = actingUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException('User is not allowed create User Account');
+    }
+
+    const invitedUser = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (!invitedUser) {
+      throw new NotFoundException('User not found or email does not exist');
+    }
+
+    if (invitedUser.require_reset === 0) {
+      throw new BadRequestException(
+        'User has already completed first log in reset password.',
+      );
+    }
+
+    // Call Auth service to regenerate token
+    const resetToken = await this.generateResetToken(
+      invitedUser.id,
+    );
+    // const { password_token } = token;
+
+    await this.mailService.sendResetTokenEmail(
+      invitedUser.email,
+      invitedUser.username,
+      // newUser.password,
+      resetToken.token.password_token,
+    );
+
+    return {
+      status: 'success',
+      message: `Invitation resent to ${invitedUser.email}`,
+      user_id: invitedUser.id,
+      reset_token: resetToken.token,
+      user_name: invitedUser.username,
+      updated_by: {
+        name: admin,
+        position: adminPos,
+      },
+    };
+  }
+
   //generate reset token
   async generateResetToken(userId: string) {
     // Delete old unused tokens
@@ -122,7 +197,7 @@ export class AuthService {
     const tokenKey = crypto.randomBytes(64).toString('hex');
 
     const expiresAt = new Date(
-      Date.now() + 1000 * 60 * 60 * 24 * 3, // 3 days
+      Date.now() + 1000 * 60 * 60 * 24 * 1, // 1 day
     );
 
     const token = await this.prisma.passwordResetToken.create({

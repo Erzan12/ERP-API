@@ -117,6 +117,48 @@
         ]
       }
     },
+    "/v2/auth/resend-invitation": {
+      "post": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "AuthController_newResetToken_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload for new user reset token",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendInvitationTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Password reset done! you can now log in!"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Resend password reset email if reset password link is expired after 1 day",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
     "/v2/auth/verify": {
       "get": {
         "operationId": "AuthController_verify_v2",
@@ -6481,6 +6523,18 @@
         },
         "required": [
           "newPassword"
+        ]
+      },
+      "ResendInvitationTokenDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "employee.email@gmail.com"
+          }
+        },
+        "required": [
+          "email"
         ]
       },
       "CreateSubModuleDto": {

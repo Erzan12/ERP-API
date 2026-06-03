@@ -13,7 +13,6 @@ import {
   ReactivateUserAccountDto,
 } from './dto/user-account-status.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Request } from 'express';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
@@ -23,7 +22,6 @@ import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 import { TRANSACTION_TYPE } from 'src/utils/constants/transaction-type.constants';
 import { UserDetailsDto } from './dto/user-details.dto';
-import { connect } from 'http2';
 
 @Injectable()
 export class UserManagementService {
@@ -31,7 +29,6 @@ export class UserManagementService {
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
     private readonly auditService: AuditService,
-    private readonly authService: AuthService,
     private readonly uploadService: AttachmentUploadService
   ) {}
 
@@ -365,7 +362,7 @@ export class UserManagementService {
             email: dto.email,
             password: hashedPassword,
             is_active: true,
-            require_reset: 0,
+            require_reset: 1,
             // created_by: ,
             created_at: new Date(),
           },
@@ -377,21 +374,7 @@ export class UserManagementService {
 
         console.log('User created:', newUser.id);
 
-        // const attachment = await this.uploadService.avatarUpload({
-        //   file,
-        //   transaction_type: TRANSACTION_TYPE.USER_AVATAR,
-        //   transaction_id: newUser.id,
-        //   // file_desc: file_desc,
-        //   user_id: user.id,
-        // }, tx);
-
         console.log('Uploading avatar...');
-        // const attachment = await this.uploadService.avatarUpload({
-        //     file,
-        //     transaction_type: TRANSACTION_TYPE.USER_AVATAR,
-        //     transaction_id: newUser.id,
-        //     user_id: user.id,
-        // }, tx);
 
         let attachment = null;
 
@@ -474,7 +457,7 @@ export class UserManagementService {
           data: {
             user_id: newUser.id,
             password_token: tokenKey,
-            expires_at: new Date(Date.now() + 60 * 60 * 24 * 3 * 1000),
+            expires_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1), // 1 day
           },
         });
 
@@ -529,77 +512,6 @@ export class UserManagementService {
         throw error;
       }
     });
-  }
-
-  async resendInvitation(dto: UserEmailResetTokenDto, user: RequestUser) {
-    const actingUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!actingUser || !actingUser.employee || !actingUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const admin = `${actingUser.employee.person.first_name} ${actingUser.employee.person.last_name}`;
-    const adminPos = actingUser.employee.position.name;
-
-    // scalable approach
-    const allowedRoles = ['Administrator', 'Super Administrator', 'Manager'];
-    const isAdmin = actingUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!isAdmin) {
-      throw new ForbiddenException('User is not allowed create User Account');
-    }
-
-    const invitedUser = await this.prisma.user.findUnique({
-      where: { email: dto.email },
-    });
-
-    if (!invitedUser) {
-      throw new NotFoundException('User not found.');
-    }
-
-    if (invitedUser.require_reset === 0) {
-      throw new BadRequestException(
-        'User has already completed account setup.',
-      );
-    }
-
-    // Call Auth service to regenerate token
-    const resetToken = await this.authService.generateResetToken(
-      invitedUser.id,
-    );
-    // const { password_token } = token;
-
-    await this.mailService.sendResetTokenEmail(
-      invitedUser.email,
-      invitedUser.username,
-      // newUser.password,
-      resetToken.token.password_token,
-    );
-
-    return {
-      status: 'success',
-      message: `Invitation resent to ${user.email}`,
-      user_id: invitedUser.id,
-      reset_token: resetToken.token,
-      user_name: invitedUser.username,
-      updated_by: {
-        name: admin,
-        position: adminPos,
-      },
-    };
   }
 
   async deactivateUserAccount(
