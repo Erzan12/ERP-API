@@ -117,6 +117,88 @@
         ]
       }
     },
+    "/v2/auth/forgot-password/request-otp": {
+      "post": {
+        "operationId": "AuthController_forgotPassword_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload for forgot password",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Forgot password request otp has been requested"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Forgot password request otp has been requested",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/v2/auth/forgot-password/verify-otp": {
+      "post": {
+        "operationId": "AuthController_verifyForgotPassword_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to verify otp",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Forgot password request otp has been requested"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Forgot password request otp has been requested",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
     "/v2/auth/resend-invitation": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
@@ -6522,6 +6604,40 @@
           }
         },
         "required": [
+          "newPassword"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "example": "employee.email@gmail.com"
+          }
+        },
+        "required": [
+          "identifier"
+        ]
+      },
+      "VerifyForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "example": "employee.email@gmail.com"
+          },
+          "otp": {
+            "type": "string",
+            "example": "OTP code"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "new password"
+          }
+        },
+        "required": [
+          "identifier",
+          "otp",
           "newPassword"
         ]
       },

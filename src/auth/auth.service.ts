@@ -4,17 +4,23 @@ import {
   UnauthorizedException,
   ForbiddenException,
   NotFoundException,
+  Inject,
+  forwardRef,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
-import { ResetPasswordWithTokenDto, ResendInvitationTokenDto } from './dto/reset-password-with-token.dto';
+import { ResetPasswordWithTokenDto, ResendInvitationTokenDto, VerifyForgotPasswordDto, ForgotPasswordDto } from './dto/reset-password-with-token.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-permisison.helper';
 import { MailService } from 'src/jobs/mail/mail.service';
+import { generateOtp, OTP_VERIFICATION } from 'src/utils/constants/otp-verification.constants';
+import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
+import { addMinutes } from 'date-fns/addMinutes';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +28,10 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly auditService: AuditService,
-    private readonly mailService: MailService
+    private readonly mailService: MailService,
+    
+    @Inject(forwardRef(() => UserManagementService))
+    private readonly userManagementService: UserManagementService
   ) {}
 
   //For first time log in password reset with token from user or person registration/creation
@@ -185,8 +194,135 @@ export class AuthService {
   }
 
   //forgot password
-  async forgotPassword() {
-    
+  async forgotPassword(dto: ForgotPasswordDto) {
+    const user = await this.userManagementService.findByIdentifier(dto.identifier);
+
+    if (!user) {
+      return { message: "If account exists, OTP sent" };
+    }
+
+    const existingOtp = await this.prisma.otpVerification.findFirst({
+      where: {
+        user_id: user.id,
+        purpose: OTP_VERIFICATION.FORGOT_PASSWORD,
+        is_used: false,
+        expires_at: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (existingOtp) {
+      throw new BadRequestException(
+        "An OTP has already been sent. Please wait until it expires."
+      );
+    }
+
+    const otp = generateOtp();
+
+    const generatedOtp = await this.prisma.otpVerification.create({
+      data: {
+        user_id: user.id,
+        code: otp,
+        purpose: OTP_VERIFICATION.FORGOT_PASSWORD,
+        expires_at: addMinutes(new Date(), 10),
+      },
+    });
+
+    try {
+      await this.mailService.sendOtp(user.email, otp);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Failed to send OTP email.',
+      )
+    }
+
+    return {
+      status: 'success',
+      message: 'Generated OTP successfully',
+      generatedOtp
+    }
+  }
+
+  async verifyForgotPassword(dto: VerifyForgotPasswordDto) {
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dto.identifier);
+
+    const user = isEmail
+
+    ? await this.prisma.user.findUnique({
+        where: { email: dto.identifier },
+      })
+    : await this.prisma.user.findFirst({
+        where: {
+          employee: {
+            mobile_numbers: {
+              some: {
+                mobile_number: dto.identifier,
+              }
+            }
+          }
+        },
+      });
+
+    if (!user) throw new BadRequestException("Invalid request");
+
+    const otpRecord = await this.prisma.otpVerification.findFirst({
+      where: {
+        user_id: user.id,
+        code: dto.otp,
+        purpose: OTP_VERIFICATION.FORGOT_PASSWORD,
+        is_used: false,
+        expires_at: { gt: new Date() },
+      },
+    });
+
+    if (!otpRecord) {
+      throw new BadRequestException("Invalid or expired OTP");
+    }
+
+    // password history check
+    const history = await this.prisma.passwordHistory.findMany({
+      where: { user_id: user.id },
+      take: 5,
+      orderBy: { created_at: "desc" },
+    });
+
+    for (const h of history) {
+      const reused = await bcrypt.compare(dto.newPassword, h.password_hash);
+      if (reused) {
+        throw new BadRequestException("Password already used before");
+      }
+    }
+
+    if (await bcrypt.compare(dto.newPassword, user.password)) {
+      throw new BadRequestException("Same as current password");
+    }
+
+    const hashed = await bcrypt.hash(dto.newPassword, 10);
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.passwordHistory.create({
+        data: {
+          user_id: user.id,
+          password_hash: user.password,
+        },
+      });
+
+      await tx.user.update({
+        where: { id: user.id },
+        data: { password: hashed },
+      });
+
+      await tx.otpVerification.update({
+        where: { id: otpRecord.id },
+        data: {
+          is_used: true,
+          used_at: new Date(),
+        },
+      });
+    });
+
+    return { message: "Password reset successful" };
   }
 
   //generate reset token

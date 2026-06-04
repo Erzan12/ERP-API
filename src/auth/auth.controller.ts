@@ -7,7 +7,7 @@ import {
   ApiSecurityClearance,
 } from 'src/utils/helpers/swagger-response.helper';
 import { LoginDto } from './dto/login.dto';
-import { ResetPasswordWithTokenDto, ResendInvitationTokenDto } from './dto/reset-password-with-token.dto';
+import { ResetPasswordWithTokenDto, ResendInvitationTokenDto, ForgotPasswordDto, VerifyForgotPasswordDto } from './dto/reset-password-with-token.dto';
 import { Public } from 'src/utils/decorators/public.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
@@ -86,6 +86,38 @@ export class AuthController {
       // ipAddress,
       // userAgent,
     );
+  }
+
+  @Public()
+  @Post('forgot-password/request-otp')
+  @ApiBody({
+    type: ForgotPasswordDto,
+    description: 'Payload for forgot password',
+  })
+  @ApiOperation({ summary: 'Forgot password request otp has been requested' })
+  @ApiPostResponse('Forgot password request otp has been requested')
+  // @Can({ action: ACTION_CREATE, subject:  })
+  forgotPassword(
+    @Body() dto: ForgotPasswordDto,
+    // @SessionUser() user: RequestUser,
+  ) {
+    return this.authService.forgotPassword(dto)
+  }
+
+  @Public()
+  @Post('forgot-password/verify-otp')
+  @ApiBody({
+    type: VerifyForgotPasswordDto,
+    description: 'Payload to verify otp',
+  })
+  @ApiOperation({ summary: 'Forgot password request otp has been requested' })
+  @ApiPostResponse('Forgot password request otp has been requested')
+  // @Can({ action: ACTION_CREATE, subject:  })
+  verifyForgotPassword(
+    @Body() dto: VerifyForgotPasswordDto,
+    // @SessionUser() user: RequestUser,
+  ) {
+    return this.authService.verifyForgotPassword(dto)
   }
 
   //for expired first time login reset token key
