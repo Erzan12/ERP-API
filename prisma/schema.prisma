@@ -305,6 +305,23 @@ model EmailAddress {
   @@index([person_id])
 }
 
+model MobileNumber {
+  id            String  @id @default(uuid()) @db.Uuid
+  employee_id   String  @db.Uuid
+  mobile_number String  @unique
+
+  is_primary    Boolean  @default(true)
+  is_verified   Boolean  @default(false)
+  verified_at  DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  employee   Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  @@index([employee_id]) 
+}
+
 model User {
   id                       String   @id @default(uuid()) @db.Uuid
   token_version            Int      @default(0)
@@ -411,6 +428,8 @@ model User {
   HrOvertimeRequestUpdatedBy               HrOvertimeRequest[]                @relation("HrOvertimeRequestUpdatedBy")
   HrOvertimeRateCreatedBy                  HrOvertimeRate[]                   @relation("HrOvertimeRateCreatedBy")
   HrOvertimeRateUpdatedBy                  HrOvertimeRate[]                   @relation("HrOvertimeRateUpdatedBy")
+  PasswordHistoryCreatedBy                 PasswordHistory[]                  @relation("PasswordHistoryCreatedBy")
+  PasswordHistoryUpdatedBy                 PasswordHistory[]                  @relation("PasswordHistoryUpdatedBy")
 
   // Workflow action
   workflow_actions  WorkflowAction[]
@@ -424,12 +443,14 @@ model User {
   //employee_evaluations_approved HrEmployeeEvaluation[] @relation("EmployeeEvaluationApprover")
 
   // Cascade delete tokens when user is removed
+  passwordHistories            PasswordHistory[]
   password_reset_token         PasswordResetToken[]
   user_token                   UserToken[]
   user_roles                   UserRole[]
   user_permission              UserPermission[]
   PermissionTemplateDepartment PermissionTemplateDepartment[]
   audit_trail                  AuditTrail[]
+  otp_verifications            OtpVerification[]
 
   @@index([person_id])
   @@index([employee_id])
@@ -501,6 +522,25 @@ model PasswordResetToken {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model PasswordHistory {
+  id              String   @id @default(uuid()) @db.Uuid
+  user_id         String   @db.Uuid
+  password_hash   String
+
+  created_by      String?  @db.Uuid
+  updated_by      String?  @db.Uuid
+
+  createdBy User? @relation("PasswordHistoryCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("PasswordHistoryUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
 }
@@ -672,6 +712,9 @@ model Employee {
 
   // Overtime system
   overtimes          HrOvertimeRequest[]  
+
+  // Additional details
+  mobile_numbers     MobileNumber[]
 
   @@index([department_id])
   @@index([company_id])
@@ -1330,6 +1373,23 @@ model HrLeaveDates {
 ////////////////////////////////////////
 // AUDIT TRAIL & DATABASE CONTROL
 ////////////////////////////////////////
+model OtpVerification {
+  id      String  @id @default(uuid()) @db.Uuid
+
+  user_id String  @db.Uuid
+  
+  code    String
+  purpose String  // FORGOT_PASSWORD, LOGIN, VERIFY_PHONE .etc
+
+  is_used    Boolean @default(false)
+  expires_at DateTime
+  used_at    DateTime?
+
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade) 
+}
+
 model WorkflowAction {
   id               String              @id @default(uuid()) @db.Uuid
  
