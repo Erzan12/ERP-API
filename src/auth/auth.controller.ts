@@ -1,17 +1,21 @@
 import { Body, Controller, Post, Query, Get, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiLoginResponse,
   ApiPostResponse,
+  ApiSecurityClearance,
 } from 'src/utils/helpers/swagger-response.helper';
 import { LoginDto } from './dto/login.dto';
-import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
+import { ResetPasswordWithTokenDto, ResendInvitationTokenDto, ForgotPasswordDto, VerifyForgotPasswordDto } from './dto/reset-password-with-token.dto';
 import { Public } from 'src/utils/decorators/public.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { Response } from 'express';
+import { ACTION_CREATE, SEC_LVL_5, USER_TOKEN_KEY } from 'src/utils/constants/ability.constant';
+import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
+import { Can } from 'src/utils/decorators/can.decorator';
 
 @ApiTags('Authentication')
 @Controller({ path: 'auth', version: '2' })
@@ -82,6 +86,56 @@ export class AuthController {
       // ipAddress,
       // userAgent,
     );
+  }
+
+  @Public()
+  @Post('forgot-password/request-otp')
+  @ApiBody({
+    type: ForgotPasswordDto,
+    description: 'Payload for forgot password',
+  })
+  @ApiOperation({ summary: 'Forgot password request otp has been requested' })
+  @ApiPostResponse('Forgot password request otp has been requested')
+  // @Can({ action: ACTION_CREATE, subject:  })
+  forgotPassword(
+    @Body() dto: ForgotPasswordDto,
+    // @SessionUser() user: RequestUser,
+  ) {
+    return this.authService.forgotPassword(dto)
+  }
+
+  @Public()
+  @Post('forgot-password/verify-otp')
+  @ApiBody({
+    type: VerifyForgotPasswordDto,
+    description: 'Payload to verify otp',
+  })
+  @ApiOperation({ summary: 'Forgot password request otp has been requested' })
+  @ApiPostResponse('Forgot password request otp has been requested')
+  // @Can({ action: ACTION_CREATE, subject:  })
+  verifyForgotPassword(
+    @Body() dto: VerifyForgotPasswordDto,
+    // @SessionUser() user: RequestUser,
+  ) {
+    return this.authService.verifyForgotPassword(dto)
+  }
+
+  //for expired first time login reset token key
+  @Post('resend-invitation')
+  @ApiBody({
+    type: ResendInvitationTokenDto,
+    description: 'Payload for new user reset token',
+  })
+  @ApiOperation({ summary: 'Resend password reset email if reset password link is expired after 1 day' })
+  @ApiPostResponse('Password reset done! you can now log in!')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  @Can({ action: ACTION_CREATE, subject: USER_TOKEN_KEY })
+  newResetToken(
+    @Body() dto: ResendInvitationTokenDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.authService.resendInvitation(dto, user);
   }
 
   @Get('/verify')

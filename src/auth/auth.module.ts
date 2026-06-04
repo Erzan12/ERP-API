@@ -9,6 +9,8 @@ import { MailService } from 'src/jobs/mail/mail.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { CaslAbilityService } from 'src/middleware/casl/casl.service';
 import { CaslModule } from 'src/middleware/casl/casl.module';
+import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
+import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 
 @Module({
   imports: [CaslModule],
@@ -22,6 +24,8 @@ import { CaslModule } from 'src/middleware/casl/casl.module';
     ConfigService,
     AuditService,
     CaslAbilityService,
+    UserManagementService,
+    AttachmentUploadService
   ],
   exports: [AuthModule, JwtStrategy],
 })
