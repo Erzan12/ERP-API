@@ -32,6 +32,29 @@ export class UserManagementService {
     private readonly uploadService: AttachmentUploadService
   ) {}
 
+  async findByIdentifier(identifier: string) {
+    const isEmail =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+
+    if (isEmail) {
+      return this.prisma.user.findUnique({
+        where: { email: identifier },
+      });
+    }
+
+    return this.prisma.user.findFirst({
+      where: {
+        employee: {
+          mobile_numbers: {
+            some: {
+              mobile_number: identifier,
+            }
+          }
+        },
+      },
+    });
+  }
+
   async getUser(user: RequestUser, userId: string) {
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
