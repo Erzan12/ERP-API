@@ -25,7 +25,6 @@ import {
   DeactivateUserAccountDto,
   ReactivateUserAccountDto,
 } from './dto/user-account-status.dto';
-import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
 
 import {
   ACTION_READ,
@@ -152,24 +151,6 @@ export class UserManagementControllerV2 {
       // userId,
       file,
     );
-  }
-
-  //for expired first time login reset token key
-  @Post('resend-invitation')
-  @ApiBody({
-    type: UserEmailResetTokenDto,
-    description: 'Payload for new user reset token',
-  })
-  @ApiOperation({ summary: 'Reset token for first time log in' })
-  @ApiPostResponse('Password reset done! you can now log in!')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  @Can({ action: ACTION_CREATE, subject: USER_TOKEN_KEY })
-  newResetToken(
-    @Body() dto: UserEmailResetTokenDto,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.userManagementService.resendInvitation(dto, user);
   }
 
   //first login password reset token
