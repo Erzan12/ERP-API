@@ -93,7 +93,7 @@
         },
         "responses": {
           "201": {
-            "description": "User reset password successfully"
+            "description": "Password reset successfully"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -175,7 +175,7 @@
         },
         "responses": {
           "201": {
-            "description": "Forgot password request otp has been requested"
+            "description": "OTP has been verified"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -193,7 +193,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Forgot password request otp has been requested",
+        "summary": "Verify the authenticity of the OTP",
         "tags": [
           "Authentication"
         ]
