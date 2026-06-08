@@ -10,7 +10,7 @@ import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-paginati
 export class LeaveCasesService {
     constructor (private readonly prisma: PrismaService) {}
 
-    async getLeaveCase(hrLeaveRequestId: string, user: RequestUser) {
+    async getLeaveCase(leaveRequestId: string, user: RequestUser) {
         // Auth check first
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
@@ -37,8 +37,8 @@ export class LeaveCasesService {
         }
 
         try {
-            const hrLeaveRequest = await this.prisma.hrLeaveRequest.findUnique({
-                where: { id: hrLeaveRequestId, is_active: true },
+            const leaveRequest = await this.prisma.hrLeaveRequest.findUnique({
+                where: { id: leaveRequestId, is_active: true },
                 include: {
                     category: {
                         select: {
@@ -76,27 +76,23 @@ export class LeaveCasesService {
                 },
             });
 
-            if (!hrLeaveRequest) {
+            if (!leaveRequest) {
                 throw new NotFoundException ("Leave Request not found")
             }
 
             const workflowActions = await this.prisma.workflowAction.findMany({
                 where: {
                     actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
-
-                    actionable_id: hrLeaveRequest.id,
-
+                    actionable_id: leaveRequest.id,
                     action: {
                         in: ["verification", "approval"]
                     }
                 },
-
                 include: {
                     acted_by_user: {
                         select: {
                             id: true,
-
-                            employee:{
+                            employee: {
                                 select: {
                                     person: {
                                         select: {
@@ -121,17 +117,15 @@ export class LeaveCasesService {
             );
 
             const leave = {
-                ...hrLeaveRequest,
-
+                ...leaveRequest,
                 verifier: verifier?.acted_by_user ?? null,
-
                 approver: approver?.acted_by_user ?? null,
             };
 
             return {
                 status: 'success',
                 message: 'Here is the Leave Request',
-                hrLeaveRequest: leave
+                leaveRequest: leave
             }
         } catch (e) {
             if (e instanceof NotFoundException) {
