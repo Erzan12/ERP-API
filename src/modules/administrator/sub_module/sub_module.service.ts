@@ -59,6 +59,20 @@ export class SubModuleService {
         where: {
           ...whereCondition,
         },
+        include: {
+          module: {
+           select: {
+            id: true,
+            name: true
+           }
+          },
+          sub_module_permissions: {
+            select: {
+              id: true,
+              action: true,
+            }
+          }
+        },
         // select: {
         //   id: true,
         //   name: true,
