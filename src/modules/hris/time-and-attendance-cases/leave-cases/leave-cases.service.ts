@@ -4,7 +4,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateLeaveRequestWithDetailsDto, UpdateLeaveRequestWithDetailsDto, UpdateRecordLeaveDatesDto } from './dto/leave-case.dto';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
-import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request.dto';
+import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-pagination.dto';
 
 @Injectable()
 export class LeaveCasesService {
@@ -183,16 +183,16 @@ export class LeaveCasesService {
             whereConditions.OR = terms.flatMap((term) => [
                 {
                     employee: {
-                    person: {
-                        first_name: { contains: term, mode: 'insensitive' },
-                    },
+                        person: {
+                            first_name: { contains: term, mode: 'insensitive' },
+                        },
                     },
                 },
                 {
                     employee: {
-                    person: {
-                        last_name: { contains: term, mode: 'insensitive' },
-                    },
+                        person: {
+                            last_name: { contains: term, mode: 'insensitive' },
+                        },
                     },
                 },
             ]);
@@ -264,21 +264,17 @@ export class LeaveCasesService {
         const workflowActions = await this.prisma.workflowAction.findMany({
             where: {
                 actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
-
                 actionable_id: {
                     in: leaveIds
                 },
-
                 action: {
                     in: ["verification", "approval"]
                 }
             },
-
             include: {
                 acted_by_user: {
                     select: {
                         id: true,
-
                         employee:{
                             select: {
                                 person: {
@@ -296,22 +292,17 @@ export class LeaveCasesService {
         })
 
         const formattedLeaves = leaves.map(leave => {
-
             const verifier = workflowActions.find(a =>
                 a.actionable_id === leave.id &&
                 a.action === "verification"
             );
-
             const approver = workflowActions.find(a =>
                 a.actionable_id === leave.id &&
                 a.action === "approval"
             );
-
             return {
                 ...leave,
-
                 verifier: verifier?.acted_by_user ?? null,
-
                 approver: approver?.acted_by_user ?? null,
             };
         });
