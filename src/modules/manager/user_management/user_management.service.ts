@@ -16,7 +16,6 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Request } from 'express';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
-import { AuthService } from 'src/auth/auth.service';
 import { Prisma, User } from '@prisma/client';
 import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
@@ -499,7 +498,7 @@ export class UserManagementService {
           await this.mailService.sendWelcomeMail(
             newUser.email,
             newUser.username,
-            plainPassword,
+            // plainPassword,
             tokenKey,
           );
         } catch (err) {

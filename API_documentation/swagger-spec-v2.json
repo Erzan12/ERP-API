@@ -93,7 +93,7 @@
         },
         "responses": {
           "201": {
-            "description": "User reset password successfully"
+            "description": "Password reset successfully"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -175,7 +175,7 @@
         },
         "responses": {
           "201": {
-            "description": "Forgot password request otp has been requested"
+            "description": "OTP has been verified"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -193,7 +193,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Forgot password request otp has been requested",
+        "summary": "Verify the authenticity of the OTP",
         "tags": [
           "Authentication"
         ]
@@ -4876,7 +4876,7 @@
     },
     "/v2/hris/time-and-attendance-cases/leaves": {
       "get": {
-        "operationId": "LeaveCasesController_getLeaves_v2",
+        "operationId": "LeaveCasesController_getLeaveRequest_v2",
         "parameters": [
           {
             "name": "search",
@@ -4939,7 +4939,7 @@
         ],
         "responses": {
           "200": {
-            "description": "List of Leave Cases"
+            "description": "List of Leave Request"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -4993,12 +4993,12 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance-cases/leaves/{hrLeaveRequestId}": {
+    "/v2/hris/time-and-attendance-cases/leaves/{leaveRequestId}": {
       "get": {
-        "operationId": "LeaveCasesController_getLeaveCase_v2",
+        "operationId": "LeaveCasesController_getLeaveRequests_v2",
         "parameters": [
           {
-            "name": "hrLeaveRequestId",
+            "name": "leaveRequestId",
             "required": true,
             "in": "path",
             "schema": {
@@ -5764,7 +5764,7 @@
         },
         "summary": "List of Overtime Rates",
         "tags": [
-          "Overtime Cases - Overtime Rates"
+          "Human Resources - Time and Attendance Cases (Overtime Rates)"
         ]
       },
       "post": {
@@ -5803,7 +5803,7 @@
         },
         "summary": "Create a overtime rate",
         "tags": [
-          "Overtime Cases - Overtime Rates"
+          "Human Resources - Time and Attendance Cases (Overtime Rates)"
         ]
       }
     },
@@ -5842,7 +5842,7 @@
         },
         "summary": "Get a single id Overtime Rate",
         "tags": [
-          "Overtime Cases - Overtime Rates"
+          "Human Resources - Time and Attendance Cases (Overtime Rates)"
         ]
       },
       "put": {
@@ -5890,7 +5890,135 @@
         },
         "summary": "Update a overtime rate",
         "tags": [
-          "Overtime Cases - Overtime Rates"
+          "Human Resources - Time and Attendance Cases (Overtime Rates)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/overtimes": {
+      "get": {
+        "operationId": "OvertimeCasesController_getOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of Overtime Requests"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of Overtime Requests",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}": {
+      "get": {
+        "operationId": "OvertimeCasesController_getOvertimeRequests_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Overtime Request"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
         ]
       }
     },
