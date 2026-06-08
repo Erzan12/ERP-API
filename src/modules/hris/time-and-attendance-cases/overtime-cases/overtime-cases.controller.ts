@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { OvertimeCasesService } from './overtime-cases.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
@@ -18,10 +18,21 @@ export class OvertimeCasesController {
     @ApiOperation({ summary: 'List of Overtime Requests' })
     @ApiGetResponse('List of Overtime Requests')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-    getOvertimes(
+    getOvertimeRequest(
         @SessionUser() user: RequestUser,
         @Query() dto: OvertimeCasesPaginationDto
     ) {
         return this.overtimeCasesService.getOvertimeCases(user, dto);
+    }
+
+    @Get('time-and-attendance-cases/overtimes/:overtimeRequestId')
+    @ApiOperation({ summary: 'Get a single Overtime Request' })
+    @ApiGetResponse('Here is the Overtime Request')
+    @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+    getOvertimeRequests(
+        @SessionUser() user: RequestUser,
+        @Param("overtimeRequestId", new ParseUUIDPipe) overtimeRequestId: string,
+    ) {
+        return this.overtimeCasesService.getOvertimeCase(user, overtimeRequestId)
     }
 }
