@@ -72,7 +72,7 @@ export class AuthController {
   @Public()
   @Post('reset-password')
   @ApiOperation({ summary: 'User reset password' })
-  @ApiPostResponse('User reset password successfully')
+  @ApiPostResponse('Password reset successfully')
   passwordResetWithToken(
     @Query('token') token: string,
     @Body() resetPasswordWithTokenDto: ResetPasswordWithTokenDto,
@@ -110,8 +110,8 @@ export class AuthController {
     type: VerifyForgotPasswordDto,
     description: 'Payload to verify otp',
   })
-  @ApiOperation({ summary: 'Forgot password request otp has been requested' })
-  @ApiPostResponse('Forgot password request otp has been requested')
+  @ApiOperation({ summary: 'Verify the authenticity of the OTP' })
+  @ApiPostResponse('OTP has been verified')
   // @Can({ action: ACTION_CREATE, subject:  })
   verifyForgotPassword(
     @Body() dto: VerifyForgotPasswordDto,
