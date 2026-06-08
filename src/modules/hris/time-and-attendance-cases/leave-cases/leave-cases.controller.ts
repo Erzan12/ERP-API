@@ -7,7 +7,7 @@ import { ACTION_APPROVE, ACTION_CANCEL, ACTION_CREATE, ACTION_PROCESS, ACTION_RE
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateLeaveRequestWithDetailsDto, UpdateLeaveRequestWithDetailsDto } from './dto/leave-case.dto';
-import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request.dto';
+import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-pagination.dto';
 
 @ApiTags('Human Resources - Time and Attendance Cases (Leave Cases)')
 @Controller({path:'hris', version: '2'})
@@ -16,13 +16,13 @@ export class LeaveCasesController {
 
     @Get('time-and-attendance-cases/leaves')
     @ApiOperation({ summary: 'List of all Leave Request' })
-    @ApiGetResponse('List of Leave Cases')
+    @ApiGetResponse('List of Leave Request')
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getLeaves(
         @SessionUser() user: RequestUser,
         @Query() dto: LeaveRequestPaginationDto,
     ) {
-        return this.leaveCasesService.getLeaveCases(user, dto)
+        return this.leaveCasesService.getLeaveCases(user, dto);
     }
 
     @Get('time-and-attendance-cases/leaves/status-count')
