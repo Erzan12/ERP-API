@@ -36,6 +36,8 @@ import { ExtendedLeaveCasesService } from './time-and-attendance-cases/extended-
 import { ExtendedLeaveCasesController } from './time-and-attendance-cases/extended-leave-cases/extended-leave-cases.controller';
 import { OvertimeRateService } from './time-and-attendance-cases/overtime-rate/overtime-rate.service';
 import { OvertimeRateController } from './time-and-attendance-cases/overtime-rate/overtime-rate.controller';
+import { OvertimeCasesService } from './time-and-attendance-cases/overtime-cases/overtime-cases.service';
+import { OvertimeCasesController } from './time-and-attendance-cases/overtime-cases/overtime-cases.controller';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
@@ -53,7 +55,8 @@ import { OvertimeRateController } from './time-and-attendance-cases/overtime-rat
     AttachmentUploadService,
     ScreeningApplicantService,
     ExtendedLeaveCasesService,
-    OvertimeRateService
+    OvertimeRateService,
+    OvertimeCasesService
     // ScreeningApplicantService,
   ],
   controllers: [
@@ -70,7 +73,8 @@ import { OvertimeRateController } from './time-and-attendance-cases/overtime-rat
     LeaveCategoryController,
     LeaveCasesController,
     ExtendedLeaveCasesController,
-    OvertimeRateController
+    OvertimeRateController,
+    OvertimeCasesController
   ],
   exports: [HrV2Module],
 })
