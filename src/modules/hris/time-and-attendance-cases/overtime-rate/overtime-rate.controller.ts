@@ -9,7 +9,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateOvertimeRateDto, UpdateOvertimeRateDto } from './dto/overtime-rate.dto';
 
-@ApiTags("Overtime Cases - Overtime Rates")
+@ApiTags("Human Resources - Time and Attendance Cases (Overtime Rates)")
 @Controller({path: 'hris', version: '2'})
 export class OvertimeRateController {
     constructor(private readonly overtimeService: OvertimeRateService) {}

@@ -4,13 +4,13 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateLeaveRequestWithDetailsDto, UpdateLeaveRequestWithDetailsDto, UpdateRecordLeaveDatesDto } from './dto/leave-case.dto';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
-import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request.dto';
+import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-pagination.dto';
 
 @Injectable()
 export class LeaveCasesService {
     constructor (private readonly prisma: PrismaService) {}
 
-    async getLeaveCase(hrLeaveRequestId: string, user: RequestUser) {
+    async getLeaveCase(leaveRequestId: string, user: RequestUser) {
         // Auth check first
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
@@ -37,8 +37,8 @@ export class LeaveCasesService {
         }
 
         try {
-            const hrLeaveRequest = await this.prisma.hrLeaveRequest.findUnique({
-                where: { id: hrLeaveRequestId, is_active: true },
+            const leaveRequest = await this.prisma.hrLeaveRequest.findUnique({
+                where: { id: leaveRequestId, is_active: true },
                 include: {
                     category: {
                         select: {
@@ -76,27 +76,23 @@ export class LeaveCasesService {
                 },
             });
 
-            if (!hrLeaveRequest) {
+            if (!leaveRequest) {
                 throw new NotFoundException ("Leave Request not found")
             }
 
             const workflowActions = await this.prisma.workflowAction.findMany({
                 where: {
                     actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
-
-                    actionable_id: hrLeaveRequest.id,
-
+                    actionable_id: leaveRequest.id,
                     action: {
                         in: ["verification", "approval"]
                     }
                 },
-
                 include: {
                     acted_by_user: {
                         select: {
                             id: true,
-
-                            employee:{
+                            employee: {
                                 select: {
                                     person: {
                                         select: {
@@ -121,17 +117,15 @@ export class LeaveCasesService {
             );
 
             const leave = {
-                ...hrLeaveRequest,
-
+                ...leaveRequest,
                 verifier: verifier?.acted_by_user ?? null,
-
                 approver: approver?.acted_by_user ?? null,
             };
 
             return {
                 status: 'success',
                 message: 'Here is the Leave Request',
-                hrLeaveRequest: leave
+                leaveRequest: leave
             }
         } catch (e) {
             if (e instanceof NotFoundException) {
@@ -183,16 +177,16 @@ export class LeaveCasesService {
             whereConditions.OR = terms.flatMap((term) => [
                 {
                     employee: {
-                    person: {
-                        first_name: { contains: term, mode: 'insensitive' },
-                    },
+                        person: {
+                            first_name: { contains: term, mode: 'insensitive' },
+                        },
                     },
                 },
                 {
                     employee: {
-                    person: {
-                        last_name: { contains: term, mode: 'insensitive' },
-                    },
+                        person: {
+                            last_name: { contains: term, mode: 'insensitive' },
+                        },
                     },
                 },
             ]);
@@ -264,21 +258,17 @@ export class LeaveCasesService {
         const workflowActions = await this.prisma.workflowAction.findMany({
             where: {
                 actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
-
                 actionable_id: {
                     in: leaveIds
                 },
-
                 action: {
                     in: ["verification", "approval"]
                 }
             },
-
             include: {
                 acted_by_user: {
                     select: {
                         id: true,
-
                         employee:{
                             select: {
                                 person: {
@@ -296,22 +286,17 @@ export class LeaveCasesService {
         })
 
         const formattedLeaves = leaves.map(leave => {
-
             const verifier = workflowActions.find(a =>
                 a.actionable_id === leave.id &&
                 a.action === "verification"
             );
-
             const approver = workflowActions.find(a =>
                 a.actionable_id === leave.id &&
                 a.action === "approval"
             );
-
             return {
                 ...leave,
-
                 verifier: verifier?.acted_by_user ?? null,
-
                 approver: approver?.acted_by_user ?? null,
             };
         });
