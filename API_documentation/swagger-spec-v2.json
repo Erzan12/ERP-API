@@ -4939,7 +4939,7 @@
         ],
         "responses": {
           "200": {
-            "description": "List of Leave Cases"
+            "description": "List of Leave Request"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -5891,6 +5891,95 @@
         "summary": "Update a overtime rate",
         "tags": [
           "Overtime Cases - Overtime Rates"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/overtimes": {
+      "get": {
+        "operationId": "OvertimeCasesController_getOvertimes_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of Overtime Requests"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of Overtime Requests",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
         ]
       }
     },
