@@ -313,7 +313,17 @@ export class PermissionTemplateService {
         },
         include: {
           permission_template_role_permissions: {
-            include: { role_permissions: true },
+            include: { 
+              role_permissions: {
+                include: {
+                  sub_module_permission: {
+                    include: {
+                      sub_module: true,
+                    }
+                  }
+                }
+              }
+            },
           },
         },
       });
@@ -328,7 +338,7 @@ export class PermissionTemplateService {
 
       for (const ptrp of templateDept.permission_template_role_permissions) {
         const rp = ptrp.role_permissions;
-        const key = `${rp.role_id}-${rp.sub_module_id}`;
+        const key = `${rp.role_id}-${rp.sub_module_permission.sub_module_id}`;
 
         let userRole = userRolesMap.get(key);
 

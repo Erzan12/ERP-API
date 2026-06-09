@@ -2,25 +2,15 @@ import {
   Injectable,
   BadRequestException,
   ForbiddenException,
-  NotFoundException,
-  ConflictException,
 } from '@nestjs/common';
-
-import {
-  CivilStatus,
-  Gender,
-} from '../../../../utils/decorators/global.enums.decorator';
-
 import { RequestUser } from '../../../../utils/types/request-user.interface';
-
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import {
   CreateEmployeeWithDetailsDto,
   UpdateEmployeeWithDetailsDto,
 } from './dto/employee-person.dto';
-
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Gender, CivilStatus, Prisma } from '@prisma/client';
 
 @Injectable()
 export class EmployeeMasterlistService {

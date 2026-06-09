@@ -532,6 +532,28 @@
         "tags": [
           "Administrator - Submodule"
         ]
+      },
+      "delete": {
+        "operationId": "SubModuleControllerV2_deleteSubmodule_v2",
+        "parameters": [
+          {
+            "name": "subModuleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a submodule ",
+        "tags": [
+          "Administrator - Submodule"
+        ]
       }
     },
     "/v2/administrator/sub-module/permissions/{id}": {
@@ -5360,7 +5382,66 @@
     "/v2/hris/time-and-attendance-cases/extended-leaves": {
       "get": {
         "operationId": "ExtendedLeaveCasesController_getExtendedLeaves_v2",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of Extended Leave Cases"
@@ -8402,7 +8483,9 @@
               "all",
               "draft",
               "submitted",
+              "for_verification",
               "verified",
+              "for_approval",
               "approved",
               "rejected"
             ],
@@ -9064,6 +9147,7 @@
               "draft",
               "for_verification",
               "for_approval",
+              "approved",
               "for_processing",
               "processed",
               "cancelled",
@@ -9073,6 +9157,7 @@
               "draft": "draft",
               "for_verification": "for_verification",
               "for_approval": "for_approval",
+              "approved": "approved",
               "for_processing": "for_processing",
               "processed": "processed",
               "cancelled": "cancelled",
