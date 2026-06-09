@@ -4,9 +4,8 @@ import { computeEvaluationStatus, getExpectedDueDate } from 'src/utils/helpers/c
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateEvaluationDto } from './dto/evaluation.dto';
 import { PREVIOUS_STAGE_MAP, } from 'src/utils/constants/evaluation.constants';
-import { Prisma } from '@prisma/client';
+import { EvaluationStage, EvaluationStatus, Prisma } from '@prisma/client';
 import { RegularizationReviewDto } from 'src/utils/dtos/regularization-pagination.dto';
-import { EvaluationStage, EvaluationStatus } from 'src/utils/decorators/global.enums.decorator';
 import { computeOverallStatus } from 'src/utils/helpers/compute-overall-status.helper';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 
