@@ -3,7 +3,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateExtendedLeaveRequestWithDetailsDto } from './dto/extended-leave-request.dto';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
-import { Prisma } from '@prisma/client';
+import { LeaveRequestStatus, Prisma, WorkflowActionType } from '@prisma/client';
 
 @Injectable()
 export class ExtendedLeaveCasesService {
@@ -145,7 +145,7 @@ export class ExtendedLeaveCasesService {
                 const leaveRequest = await this.prisma.hrLeaveRequest.findFirst({
                     where: {
                         id: extended_leave_request.leave_request_id,
-                        status: 'processed', // or LeaveRequestStatus.processed
+                        status: LeaveRequestStatus.processed, // or LeaveRequestStatus.processed
                         is_active: true,
                     },
                     select: {
@@ -292,7 +292,7 @@ export class ExtendedLeaveCasesService {
                         { 
                             actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
                             actionable_id: extendedLeaveRequest.id,
-                            action: "creation",
+                            action: WorkflowActionType.creation,
                             acted_by: requestUser.id,
                             acted_at: new Date(),
                             metadata: {
@@ -305,7 +305,7 @@ export class ExtendedLeaveCasesService {
                         {
                             actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
                             actionable_id: extendedLeaveRequest.id,
-                            action: "verification",
+                            action: WorkflowActionType.verification,
                             acted_by: extended_leave_request.verifier_id,
                             metadata: {
                                 title: "Verify Extended Leave Request",
@@ -318,7 +318,7 @@ export class ExtendedLeaveCasesService {
                         {
                             actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
                             actionable_id: extendedLeaveRequest.id,
-                            action: "approval",
+                            action: WorkflowActionType.approval,
                             acted_by: extended_leave_request.approver_id,
                             metadata: {
                                 title: "Approve Leave Request",
@@ -441,9 +441,9 @@ export class ExtendedLeaveCasesService {
         return this.prisma.$transaction(async (tx) => {
             try {
                 const submitExtendedLeave = await tx.hrExtendedLeaveRequest.update({
-                    where: { id: extendedHrLeaveRequestId, extended_leave_request_status: "draft" },
+                    where: { id: extendedHrLeaveRequestId, extended_leave_request_status: LeaveRequestStatus.draft },
                     data: {
-                        extended_leave_request_status: "for_verification"
+                        extended_leave_request_status: LeaveRequestStatus.for_verification
                     }
                 });
 
@@ -451,7 +451,7 @@ export class ExtendedLeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
                         actionable_id: extendedHrLeaveRequestId,
-                        action: "submission",
+                        action: WorkflowActionType.submission,
                         acted_by: user.id
                     }
                 });
@@ -504,14 +504,14 @@ export class ExtendedLeaveCasesService {
                     where: { id: extendedHrLeaveRequestId }
                 });
 
-                if (leave?.status !== "for_verification") {
+                if (leave?.status !== LeaveRequestStatus.for_verification) {
                     throw new BadRequestException("Invalid! status must be: for_verification");
                 }
 
                 const verifyExtendedLeave = await tx.hrExtendedLeaveRequest.update({
-                    where: { id: extendedHrLeaveRequestId, extended_leave_request_status: "for_verification" },
+                    where: { id: extendedHrLeaveRequestId, extended_leave_request_status: LeaveRequestStatus.for_verification },
                     data: {
-                        extended_leave_request_status: "for_approval",
+                        extended_leave_request_status: LeaveRequestStatus.for_approval,
                         updated_by: requestUser.id
                     }
                 });
@@ -520,7 +520,7 @@ export class ExtendedLeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
                         actionable_id: extendedHrLeaveRequestId,
-                        action: "verification",
+                        action: WorkflowActionType.verification,
                         acted_by: requestUser.id
                     }
                 });
@@ -569,9 +569,9 @@ export class ExtendedLeaveCasesService {
         return this.prisma.$transaction(async(tx) => {
             try {
                 const approveExtendedLeave = await tx.hrExtendedLeaveRequest.update({
-                    where: { id: extendedHrLeaveRequestId, extended_leave_request_status: "for_approval"},
+                    where: { id: extendedHrLeaveRequestId, extended_leave_request_status: LeaveRequestStatus.for_approval},
                     data: {
-                        extended_leave_request_status: "for_approval",
+                        extended_leave_request_status: LeaveRequestStatus.approved,
                         updated_by: requestUser.id,
                     }
                 });
@@ -580,7 +580,7 @@ export class ExtendedLeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
                         actionable_id: extendedHrLeaveRequestId,
-                        action: 'approval',
+                        action: WorkflowActionType.approval,
                         acted_by: requestUser.id
                     }
                 });
@@ -629,9 +629,9 @@ export class ExtendedLeaveCasesService {
         return this.prisma.$transaction(async(tx) => {
             try {
                 const processExtendedLeave = await tx.hrLeaveRequest.update({
-                    where: { id: extendedHrLeaveRequestId, status: "for_processing" },
+                    where: { id: extendedHrLeaveRequestId, status: LeaveRequestStatus.for_processing },
                     data: {
-                        status: 'processed',
+                        status: LeaveRequestStatus.processed,
                         updated_by: requestUser.id
                     }
                 });
@@ -640,7 +640,7 @@ export class ExtendedLeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: extendedHrLeaveRequestId,
-                        action: 'processing',
+                        action: WorkflowActionType.processing,
                         acted_by: requestUser.id
                     }
                 });
@@ -697,7 +697,7 @@ export class ExtendedLeaveCasesService {
                     throw new NotFoundException("Leave Request does not exist");
                 }
 
-                const allowedStatuses = ["for_verification", "for_approval", "for_processing"];
+                const allowedStatuses: LeaveRequestStatus[] = [LeaveRequestStatus.for_verification, LeaveRequestStatus.for_approval, LeaveRequestStatus.for_processing];
 
                 if (!allowedStatuses.includes(leave.extended_leave_request_status)) {
                     throw new BadRequestException("Invalid! status must be: for_verification, for_approval or for_processing");
@@ -706,10 +706,10 @@ export class ExtendedLeaveCasesService {
                 const rejectExtendedLeave = await tx.hrExtendedLeaveRequest.updateMany({
                     where: {
                         id: extendedHrLeaveRequestId,
-                        extended_leave_request_status: { in: ["for_verification", "for_processing", "for_approval"]}
+                        extended_leave_request_status: { in: [LeaveRequestStatus.for_verification, LeaveRequestStatus.for_approval, LeaveRequestStatus.for_processing]}
                     },
                     data: {
-                        extended_leave_request_status: 'rejected',
+                        extended_leave_request_status: LeaveRequestStatus.rejected,
                         updated_by: requestUser.id
                     }
                 });
@@ -722,7 +722,7 @@ export class ExtendedLeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
                         actionable_id: extendedHrLeaveRequestId,
-                        action: 'rejection',
+                        action: WorkflowActionType.rejection,
                         acted_by: requestUser.id
                     }
                 });
@@ -776,14 +776,14 @@ export class ExtendedLeaveCasesService {
                     where: {
                         id: extendedHrLeaveRequestId,
                         OR: [
-                            { extended_leave_request_status: 'draft' },
-                            { extended_leave_request_status: 'for_verification' },
-                            { extended_leave_request_status: 'for_approval' },
-                            { extended_leave_request_status: 'processed' },
+                            { extended_leave_request_status: LeaveRequestStatus.draft },
+                            { extended_leave_request_status: LeaveRequestStatus.for_verification },
+                            { extended_leave_request_status: LeaveRequestStatus.for_approval },
+                            { extended_leave_request_status: LeaveRequestStatus.processed },
                         ]
                     },
                     data: {
-                        extended_leave_request_status: 'cancelled',
+                        extended_leave_request_status: LeaveRequestStatus.cancelled,
                         updated_by: requestUser.id
                     }
                 });
@@ -792,7 +792,7 @@ export class ExtendedLeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
                         actionable_id: extendedHrLeaveRequestId,
-                        action: 'cancellation',
+                        action: WorkflowActionType.cancellation,
                         acted_by: requestUser.id
                     }
                 });
