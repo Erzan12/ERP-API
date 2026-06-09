@@ -7,6 +7,7 @@ import {
   Put,
   ParseUUIDPipe,
   Query,
+  Delete,
 } from '@nestjs/common';
 import { Can } from '../../../utils/decorators/can.decorator';
 import { CreateSubModuleDto } from './dto/create-sub-module.dto';
@@ -140,5 +141,14 @@ export class SubModuleControllerV2 {
     @Param('id', new ParseUUIDPipe()) id: string,
   ) {
     return this.subModuleService.updateSubModuleAction(dto, user, id);
+  }
+
+  @Delete('sub-modules/:subModuleId')
+  @ApiOperation({ summary: 'Delete a submodule '})
+  @Can({ action: 'update', subject: 'System Management' })
+  deleteSubmodule(
+    @Param('subModuleId', new ParseUUIDPipe()) subModuleId: string,
+  ) {
+    return this.subModuleService.deleteSubmodule(subModuleId);
   }
 }
