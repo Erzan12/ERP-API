@@ -10,10 +10,10 @@ import {
 import {
   EmployeeType,
   EmploymentType,
-  CareerPostingStatus
 } from 'src/utils/decorators/global.enums.decorator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { CareerPostingStatus } from '@prisma/client';
 
 export class CreateCareerPostingDto {
   @IsUUID()
@@ -170,7 +170,7 @@ export class UpdateCareerPostingDto {
   @Type(() => String)
   @ApiProperty({
     enum: CareerPostingStatus,
-    example: CareerPostingStatus.DRAFT,
+    example: CareerPostingStatus.draft,
     description: 'The status of this career posting'
   })
   status?: CareerPostingStatus;
