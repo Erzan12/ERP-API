@@ -803,7 +803,6 @@ async function main() {
 
       rolePermissionPayload.push({
         action,
-        sub_module_id: sub.id,
         role_id: superAdminRole.id,
         role_name: superAdminRole.name,
         sub_module_permission_id: subModulePermissionId,
@@ -812,7 +811,6 @@ async function main() {
 
       rolePermissionPayload.push({
         action,
-        sub_module_id: sub.id,
         role_id: adminRole.id,
         role_name: adminRole.name,
         sub_module_permission_id: subModulePermissionId,
@@ -821,7 +819,6 @@ async function main() {
 
       rolePermissionPayload.push({
         action,
-        sub_module_id: sub.id,
         role_id: hrManagerRole.id,
         role_name: hrManagerRole.name,
         sub_module_permission_id: subModulePermissionId,
@@ -830,7 +827,6 @@ async function main() {
 
       rolePermissionPayload.push({
         action,
-        sub_module_id: sub.id,
         role_id: hrClerkRole.id,
         role_name: hrClerkRole.name,
         sub_module_permission_id: subModulePermissionId,
@@ -839,7 +835,6 @@ async function main() {
 
       rolePermissionPayload.push({
         action,
-        sub_module_id: sub.id,
         role_id: hrStaffRole.id,
         role_name: hrStaffRole.name,
         sub_module_permission_id: subModulePermissionId,
