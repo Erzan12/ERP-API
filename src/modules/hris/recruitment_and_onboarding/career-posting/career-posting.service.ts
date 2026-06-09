@@ -10,11 +10,10 @@ import {
 } from './dto/career-posting.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma, WorkflowActionType, CareerPostingStatus } from '@prisma/client';
 import {
   RecruitmentPaginationDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
-import { CareerPostingStatus } from 'src/utils/decorators/global.enums.decorator';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 
 @Injectable()
@@ -200,12 +199,12 @@ export class CareerPostingService {
       is_active: true,
     };
 
-    if (parsedStatus && parsedStatus !== CareerPostingStatus.ALL) {
-      if (parsedStatus === CareerPostingStatus.SUBMITTED) {
+    if (parsedStatus && parsedStatus !== CareerPostingStatus.all) {
+      if (parsedStatus === CareerPostingStatus.submitted) {
         whereCondition.status = {
           in: [
-            CareerPostingStatus.SUBMITTED,
-            CareerPostingStatus.VERIFIED,
+            CareerPostingStatus.submitted,
+            CareerPostingStatus.verified,
           ],
         };
       } else {
@@ -433,7 +432,7 @@ export class CareerPostingService {
           data: {
             actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
             actionable_id: recruitment.id,
-            action: 'creation',
+            action: WorkflowActionType.creation,
             acted_by: requestUser.id
           }
         })
@@ -494,7 +493,7 @@ export class CareerPostingService {
     // Determine the resulting status (incoming or existing)
     const nextStatus =
       updateCareerPostingDto.status &&
-      updateCareerPostingDto.status !== CareerPostingStatus.ALL
+      updateCareerPostingDto.status !== CareerPostingStatus.all
         ? updateCareerPostingDto.status
         : careerPosting.status;
 
@@ -503,7 +502,7 @@ export class CareerPostingService {
       updateCareerPostingDto.is_published ?? careerPosting.is_published;
 
     // Validation rule
-    if (nextIsPublished && nextStatus !== CareerPostingStatus.APPROVED) {
+    if (nextIsPublished && nextStatus !== CareerPostingStatus.approved) {
       throw new BadRequestException(
         "Only approved career postings can be published."
       );
@@ -513,7 +512,7 @@ export class CareerPostingService {
 
     if (
       nextIsPublished &&
-      nextStatus === CareerPostingStatus.APPROVED &&
+      nextStatus === CareerPostingStatus.approved &&
       !careerPosting.published_on
     ) {
       publishDate = new Date();
@@ -535,7 +534,7 @@ export class CareerPostingService {
         employee_type: updateCareerPostingDto.employee_type ?? undefined,
         status: 
           updateCareerPostingDto.status && 
-          updateCareerPostingDto.status !== CareerPostingStatus.ALL 
+          updateCareerPostingDto.status !== CareerPostingStatus.all 
             ? updateCareerPostingDto.status 
             : undefined,
         updated_by: user.id,
@@ -657,7 +656,7 @@ export class CareerPostingService {
     return this.prisma.$transaction(async (tx) => {
       try {
         const submitRecruitment = await tx.careerPosting.update({
-          where: { id: careerPostingId, status: 'draft' },
+          where: { id: careerPostingId, status: CareerPostingStatus.draft },
           data: {
             // status: 'for_verification',
             updated_by: requestUser.id,
@@ -668,7 +667,7 @@ export class CareerPostingService {
           data: {
             actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
             actionable_id: careerPostingId,
-            action: "submission",
+            action: WorkflowActionType.submission,
             acted_by: requestUser.id
           }
         });
@@ -728,7 +727,7 @@ export class CareerPostingService {
           // where: { id: careerPostingId, status: "for_verification" },
           where: { id: careerPostingId },
           data: {
-            status: "verified",
+            status: CareerPostingStatus.verified,
           }
         });
 
@@ -736,7 +735,7 @@ export class CareerPostingService {
           data: {
             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
             actionable_id: careerPostingId,
-            action: "verification",
+            action: WorkflowActionType.verification,
             acted_by: requestUser.id
           }
         });
@@ -788,14 +787,14 @@ export class CareerPostingService {
           where: { id: careerPostingId }
         });
 
-        if (careerPosting?.status !== "verified") {
+        if (careerPosting?.status !== CareerPostingStatus.verified) {
           throw new BadRequestException("Invalid! status must be: submitted");
         }
 
         const approveCareerPosting = await tx.careerPosting.update({
-          where: { id: careerPostingId, status: "verified" },
+          where: { id: careerPostingId, status: CareerPostingStatus.verified },
           data: {
-            status: "approved"
+            status: CareerPostingStatus.approved
           }
         });
 
@@ -803,7 +802,7 @@ export class CareerPostingService {
           data: {
             actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
             actionable_id: careerPostingId,
-            action: "approval",
+            action: WorkflowActionType.approval,
             acted_by: requestUser.id
           }
         });
@@ -859,7 +858,7 @@ export class CareerPostingService {
           throw new NotFoundException("Career Posting not found");
         }
 
-        const allowedStatuses = ["submitted", "verified", "for_verification", "for_approval"];
+        const allowedStatuses: CareerPostingStatus[] = [CareerPostingStatus.submitted, CareerPostingStatus.verified, CareerPostingStatus.for_verification, CareerPostingStatus.for_approval];
 
         if (!allowedStatuses.includes(careerPosting.status)){
           throw new BadRequestException("Invalid! status must be: submitted, verified, for_verification or for_approval");
@@ -870,15 +869,15 @@ export class CareerPostingService {
             id: careerPostingId,
             status: { 
               in: [
-                "submitted", 
-                "verified", 
+                CareerPostingStatus.submitted, 
+                CareerPostingStatus.verified, 
                 // "for_verification", 
                 // "for_approval"
               ] 
             }
           },
           data: {
-            status: 'rejected'
+            status: CareerPostingStatus.rejected
           }
         });
 
@@ -890,7 +889,7 @@ export class CareerPostingService {
           data: {
             actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
             actionable_id: careerPostingId,
-            action: 'rejection',
+            action: WorkflowActionType.rejection,
             acted_by: requestUser.id
           }
         })
