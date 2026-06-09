@@ -477,6 +477,9 @@ export class RoleManagementService {
 
       const rolePermissions = await tx.rolePermission.findMany({
         where: { id: { in: rolePermissionIds } },
+        include: {
+          sub_module_permission: true,
+        }
       });
 
       type UserRoleWithRole = Prisma.UserRoleGetPayload<{
@@ -486,7 +489,7 @@ export class RoleManagementService {
       const userRolesMap = new Map<string, UserRoleWithRole>();
 
       for (const rp of rolePermissions) {
-        const key = `${rp.role_id}-${rp.sub_module_id}`;
+        const key = `${rp.role_id}-${rp.sub_module_permission.sub_module_id}`;
 
         // let userRole = userRolesMap.get(key);
         // if (!userRole) {
@@ -629,8 +632,11 @@ export class RoleManagementService {
               include: {
                 role_permission: {
                   include: {
-                    sub_module: true,
-                    sub_module_permission: true,
+                    sub_module_permission: {
+                      include: {
+                        sub_module: true
+                      }
+                    }
                   },
                 },
               },
@@ -649,8 +655,8 @@ export class RoleManagementService {
         role_id: userRole.role?.id,
         role_name: userRole.role?.name,
         action: perm.action,
-        sub_module: perm.role_permission?.sub_module?.name ?? 'N/A',
-        sub_module_id: perm.role_permission?.sub_module?.id ?? null,
+        sub_module: perm.role_permission?.sub_module_permission.sub_module?.name ?? 'N/A',
+        sub_module_id: perm.role_permission?.sub_module_permission.sub_module?.id ?? null,
       })),
     );
 
