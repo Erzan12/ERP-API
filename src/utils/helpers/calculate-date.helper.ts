@@ -1,6 +1,6 @@
-import { addMonths, isAfter } from 'date-fns';
+import { addMonths } from 'date-fns';
 import { STAGE_RULES } from '../constants/evaluation.constants';
-import { EvaluationStage, EvaluationStageStatus } from '../decorators/global.enums.decorator';
+import { EvaluationStageStatus, EvaluationStage } from '@prisma/client';
 
 export function getExpectedDueDate(hireDate: Date, stage: keyof typeof STAGE_RULES) {
   const months = STAGE_RULES[stage];
@@ -21,11 +21,11 @@ export function getExpectedDueDate(hireDate: Date, stage: keyof typeof STAGE_RUL
 
 export function computeEvaluationStatus(evaluation: any, now = new Date()) {
   if (evaluation.completed_at) {
-    return EvaluationStageStatus.COMPLETE;
+    return EvaluationStageStatus.complete;
   }
 
   const hireDate = evaluation.employee?.hire_date;
-  if (!hireDate) return EvaluationStageStatus.PENDING;
+  if (!hireDate) return EvaluationStageStatus.pending;
 
   let deadline: Date;
 
@@ -34,18 +34,18 @@ export function computeEvaluationStatus(evaluation: any, now = new Date()) {
   //   deadline = addMonths(hireDate, 3);
 
   //probation date is adjustable and is not based on hire date of employee
-  if (evaluation.stage === EvaluationStage.THIRD_MONTH_EVALUATION) {
+  if (evaluation.stage === EvaluationStage.third_month_evaluation) {
     deadline = new Date(evaluation.probation_date, 3);
     // deadline = addMonths(hireDate, 3);
-  } else if ( evaluation.stage === EvaluationStage.FIFTH_MONTH_EVALUATION) {
+  } else if ( evaluation.stage === EvaluationStage.fifth_month_evaluation) {
     deadline = addMonths(hireDate, 5);
   } else {
-    return EvaluationStageStatus.PENDING;
+    return EvaluationStageStatus.pending;
   }
 
   if (now > deadline) {
-    return EvaluationStageStatus.OVERDUE;
+    return EvaluationStageStatus.overdue;
   } else {
-    return EvaluationStageStatus.PENDING;
+    return EvaluationStageStatus.pending;
   }
 }
