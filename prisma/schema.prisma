@@ -961,7 +961,6 @@ model RolePermission {
   role_name                String
   action                   String
   sub_module_permission_id String  @db.Uuid
-  sub_module_id            String  @db.Uuid
   department_id            String  @db.Uuid
   position_id              String? @db.Uuid
   is_active                Boolean @default(true)
@@ -979,7 +978,6 @@ model RolePermission {
   position              Position?           @relation(fields: [position_id], references: [id])
   role                  Role                @relation(fields: [role_id], references: [id], onDelete: Cascade)
   sub_module_permission SubModulePermission @relation(fields: [sub_module_permission_id], references: [id], onDelete: Cascade)
-  sub_module            SubModule           @relation(fields: [sub_module_id], references: [id])
 
   permission_template_links PermissionTemplateRolePermission[]
   user_permission           UserPermission[]
@@ -1522,7 +1520,6 @@ model SubModule {
   updated_at DateTime @updatedAt
 
   module                 Module                @relation(fields: [module_id], references: [id], onDelete: Cascade)
-  role_permission        RolePermission[]
   sub_module_permissions SubModulePermission[]
 
   @@index([module_id])
