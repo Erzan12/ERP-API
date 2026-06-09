@@ -35,6 +35,7 @@ enum StatusEnum {
 }
 
 enum CareerPostingStatus {
+  all
   draft
   submitted
   for_verification
@@ -94,6 +95,12 @@ enum EvaluationStage {
   fifth_month_evaluation
 }
 
+enum EvaluationStageStatus {
+  pending
+  overdue
+  complete
+}
+
 enum EvaluationStatus {
   for_evaluation
   for_verification
@@ -129,6 +136,7 @@ enum LeaveRequestStatus {
   draft
   for_verification
   for_approval
+  approved
   for_processing
   processed
   cancelled
