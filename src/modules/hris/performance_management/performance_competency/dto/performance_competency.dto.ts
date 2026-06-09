@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { PerformanceRating, EmployeeType, LandBasedCategory, SeaBasedCategory } from "@prisma/client";
+import { EmployeeType, LandBasedCategory, SeaBasedCategory } from "@prisma/client";
 import { Type } from "class-transformer";
 import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Validate } from "class-validator";
 import { CategoryMatchValidator } from "src/utils/helpers/custom-validator/category-match-validator.dto";
