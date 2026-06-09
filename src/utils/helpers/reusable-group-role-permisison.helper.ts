@@ -8,7 +8,9 @@ export function mapRolesToRequestUser(
       name: string;
       role_permissions: Array<{
         action: string;
-        sub_module: { id: string; name: string };
+        sub_module_permission: {
+          sub_module: { id: string; name: string };
+        }
       }>;
     };
   }>,
@@ -23,11 +25,14 @@ export function mapRolesToRequestUser(
     >();
 
     for (const rp of role.role_permissions) {
-      const key = rp.sub_module.id;
+      const subModule = rp.sub_module_permission.sub_module;
+
+      const key = subModule.id;
+
       if (!subModuleMap.has(key)) {
         subModuleMap.set(key, {
-          id: rp.sub_module.id,
-          name: rp.sub_module.name,
+          id: rp.sub_module_permission.sub_module.id,
+          name: rp.sub_module_permission.sub_module.name,
           actions: [],
         });
       }
