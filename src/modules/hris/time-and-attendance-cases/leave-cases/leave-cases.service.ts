@@ -1,8 +1,8 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { LeaveCompensation, Prisma, PrismaClient } from '@prisma/client';
+import { LeaveRequestStatus, Prisma, WorkflowActionType } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateLeaveRequestWithDetailsDto, UpdateLeaveRequestWithDetailsDto, UpdateRecordLeaveDatesDto } from './dto/leave-case.dto';
+import { CreateLeaveRequestWithDetailsDto, UpdateLeaveRequestWithDetailsDto} from './dto/leave-case.dto';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-pagination.dto';
 
@@ -85,7 +85,7 @@ export class LeaveCasesService {
                     actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                     actionable_id: leaveRequest.id,
                     action: {
-                        in: ["verification", "approval"]
+                        in: [WorkflowActionType.verification, WorkflowActionType.approval]
                     }
                 },
                 include: {
@@ -109,11 +109,11 @@ export class LeaveCasesService {
             })
 
             const verifier = workflowActions.find(
-                a => a.action === "verification"
+                a => a.action === WorkflowActionType.verification
             );
 
             const approver = workflowActions.find(
-                a => a.action === "approval"
+                a => a.action === WorkflowActionType.approval
             );
 
             const leave = {
@@ -262,7 +262,7 @@ export class LeaveCasesService {
                     in: leaveIds
                 },
                 action: {
-                    in: ["verification", "approval"]
+                    in: [WorkflowActionType.verification, WorkflowActionType.approval]
                 }
             },
             include: {
@@ -288,11 +288,11 @@ export class LeaveCasesService {
         const formattedLeaves = leaves.map(leave => {
             const verifier = workflowActions.find(a =>
                 a.actionable_id === leave.id &&
-                a.action === "verification"
+                a.action === WorkflowActionType.verification
             );
             const approver = workflowActions.find(a =>
                 a.actionable_id === leave.id &&
-                a.action === "approval"
+                a.action === WorkflowActionType.approval
             );
             return {
                 ...leave,
@@ -398,7 +398,7 @@ export class LeaveCasesService {
                         },
                         hr_leave_request: {
                             status: {
-                                notIn: ["cancelled", "rejected"]
+                                notIn: [LeaveRequestStatus.cancelled, LeaveRequestStatus.rejected]
                             }
                         }
                     }
@@ -543,7 +543,7 @@ export class LeaveCasesService {
                        { 
                             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                             actionable_id: leaveRequest.id,
-                            action: "creation",
+                            action: WorkflowActionType.creation,
                             acted_by: requestUser.id,
                             acted_at: new Date(),
                             metadata: {
@@ -556,7 +556,7 @@ export class LeaveCasesService {
                         {
                             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                             actionable_id: leaveRequest.id,
-                            action: "verification",
+                            action: WorkflowActionType.verification,
                             acted_by: leave_request.verifier_id,
                             metadata: {
                                 title: "Verify Leave Request",
@@ -569,7 +569,7 @@ export class LeaveCasesService {
                         {
                             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                             actionable_id: leaveRequest.id,
-                            action: "approval",
+                            action: WorkflowActionType.approval,
                             acted_by: leave_request.approver_id,
                             metadata: {
                                 title: "Approve Leave Request",
@@ -631,7 +631,7 @@ export class LeaveCasesService {
                 where: { 
                     id: leaveCaseId, 
                     is_active: true, 
-                    status: "draft" 
+                    status: LeaveRequestStatus.draft 
                 }
             });
 
@@ -691,13 +691,13 @@ export class LeaveCasesService {
                 where: {
                     actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                     actionable_id: leaveCaseId,
-                    action: { in: ["verification", "approval"] }, // Match your exact WorkflowActionType enum values
+                    action: { in: [WorkflowActionType.verification, WorkflowActionType.approval] }, // Match your exact WorkflowActionType enum values
                     acted_at: null // Ensures we only look at uncompleted steps
                 }
             });
 
-            const currentVerificationStep = pendingWorkflowActions.find(a => a.action === "verification");
-            const currentApprovalStep = pendingWorkflowActions.find(a => a.action === "approval");
+            const currentVerificationStep = pendingWorkflowActions.find(a => a.action === WorkflowActionType.verification);
+            const currentApprovalStep = pendingWorkflowActions.find(a => a.action === WorkflowActionType.approval);
 
 
             // 3. Handle Verifier Update/Patch
@@ -742,7 +742,7 @@ export class LeaveCasesService {
                         data: {
                             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                             actionable_id: leaveCaseId,
-                            action: "verification",
+                            action: WorkflowActionType.verification,
                             acted_by: update_leave_request.verifier_id,
                             acted_at: null,
                             metadata: {
@@ -797,7 +797,7 @@ export class LeaveCasesService {
                         data: {
                             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                             actionable_id: leaveCaseId,
-                            action: "approval",
+                            action: WorkflowActionType.approval,
                             acted_by: update_leave_request.approver_id,
                             acted_at: null,
                             metadata: {
@@ -832,7 +832,7 @@ export class LeaveCasesService {
                 data: {
                     actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                     actionable_id: leaveCaseId,
-                    action: "update",
+                    action: WorkflowActionType.update,
                     acted_by: requestUser.id, // The person performing the edit
                     acted_at: new Date(),
                     metadata: {
@@ -954,9 +954,9 @@ export class LeaveCasesService {
         return this.prisma.$transaction(async (tx) => {
             try {
                 const submitLeave = await tx.hrLeaveRequest.update({
-                    where: { id: hrLeaveRequestId, status: "draft" },
+                    where: { id: hrLeaveRequestId, status: LeaveRequestStatus.draft },
                     data: {
-                        status: "for_verification",
+                        status: LeaveRequestStatus.for_verification,
                         updated_by: requestUser.id
                     }
                 });
@@ -965,7 +965,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: "submission",
+                        action: WorkflowActionType.submission,
                         acted_by: user.id
                     }
                 });
@@ -1017,14 +1017,14 @@ export class LeaveCasesService {
                     where: { id: hrLeaveRequestId }
                 });
 
-                if (leave?.status !== "for_verification") {
+                if (leave?.status !== LeaveRequestStatus.for_verification) {
                     throw new BadRequestException("Invalid! status must be: for_verification");
                 }
 
                 const verifyLeave = await tx.hrLeaveRequest.update({
-                    where: { id: hrLeaveRequestId, status: "for_verification" },
+                    where: { id: hrLeaveRequestId, status: LeaveRequestStatus.for_verification },
                     data: {
-                        status: "for_approval",
+                        status: LeaveRequestStatus.for_approval,
                         // verifier_id: requestUser.id,
                         updated_by: requestUser.id
                     }
@@ -1038,7 +1038,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: "verification",
+                        action: WorkflowActionType.verification,
                         acted_by: requestUser.id
                     }
                 });
@@ -1087,9 +1087,9 @@ export class LeaveCasesService {
         return this.prisma.$transaction(async(tx) => {
             try {
                 const approveLeave = await tx.hrLeaveRequest.update({
-                    where: { id: hrLeaveRequestId, status: "for_approval" },
+                    where: { id: hrLeaveRequestId, status: LeaveRequestStatus.for_approval },
                     data: {
-                        status: "for_processing",
+                        status: LeaveRequestStatus.for_processing,
                         // approver_id: requestUser.id,
                         updated_by: requestUser.id
                     }
@@ -1099,7 +1099,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: 'approval',
+                        action: WorkflowActionType.approval,
                         acted_by: requestUser.id
                     }
                 })
@@ -1155,9 +1155,9 @@ export class LeaveCasesService {
         return this.prisma.$transaction(async(tx) => {
             try {
                 const processLeave = await tx.hrLeaveRequest.update({
-                    where: { id: hrLeaveRequestId, status: "for_processing" },
+                    where: { id: hrLeaveRequestId, status: LeaveRequestStatus.for_processing },
                     data: {
-                        status: 'processed',
+                        status: LeaveRequestStatus.processed,
                         updated_by: requestUser.id                  
                     }
                 })
@@ -1166,7 +1166,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: 'processing',
+                        action: WorkflowActionType.processing,
                         acted_by: requestUser.id
                     }
                 })
@@ -1240,7 +1240,7 @@ export class LeaveCasesService {
                     throw new NotFoundException("Leave Request does not exist");
                 }
 
-                const allowedStatuses = ["for_verification", "for_approval", "for_processing"];
+                const allowedStatuses: LeaveRequestStatus[] = [LeaveRequestStatus.for_verification, LeaveRequestStatus.for_approval, LeaveRequestStatus.for_processing];
 
                 if (!allowedStatuses.includes(leave.status)) {
                     throw new BadRequestException("Invalid! status must be: for_verification, for_approval or for_processing");
@@ -1249,10 +1249,10 @@ export class LeaveCasesService {
                 const rejectLeave = await tx.hrLeaveRequest.updateMany({
                     where: { 
                         id: hrLeaveRequestId, 
-                        status: { in: ["for_verification", "for_processing", "for_approval"]}
+                        status: { in: [LeaveRequestStatus.for_verification, LeaveRequestStatus.for_approval, LeaveRequestStatus.for_processing]}
                     },
                     data: {
-                        status: 'rejected',
+                        status: LeaveRequestStatus.rejected,
                         updated_by: requestUser.id
                     }
                 });
@@ -1265,7 +1265,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: 'rejection',
+                        action: WorkflowActionType.rejection,
                         acted_by: requestUser.id
                     }
                 });
@@ -1321,14 +1321,14 @@ export class LeaveCasesService {
                     where: { 
                         id: hrLeaveRequestId,
                         OR: [
-                            { status: 'draft' },
-                            { status: 'for_verification' },
-                            { status: 'for_approval' },
-                            { status: 'processed' },
+                            { status: LeaveRequestStatus.draft },
+                            { status: LeaveRequestStatus.for_verification },
+                            { status: LeaveRequestStatus.for_approval },
+                            { status: LeaveRequestStatus.processed },
                         ]
                     },
                     data: {
-                        status: 'cancelled',
+                        status: LeaveRequestStatus.cancelled,
                         updated_by: requestUser.id
                     }
                 })
@@ -1337,7 +1337,7 @@ export class LeaveCasesService {
                     data: {
                         actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
                         actionable_id: hrLeaveRequestId,
-                        action: 'cancellation',
+                        action: WorkflowActionType.cancellation,
                         acted_by: requestUser.id
                     }
                 })
