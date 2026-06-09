@@ -7,13 +7,9 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import {
-  EmployeeType,
-  EmploymentType,
-  CareerPostingStatus
-} from 'src/utils/decorators/global.enums.decorator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { CareerPostingStatus, EmployeeType, EmploymentType } from '@prisma/client';
 
 export class CreateCareerPostingDto {
   @IsUUID()
@@ -56,7 +52,7 @@ export class CreateCareerPostingDto {
   @Type(() => String)
   @ApiProperty({
     enum: EmployeeType,
-    example: EmployeeType.LAND_BASED,
+    example: EmployeeType.land_based,
     description: 'The employee type of this career posting',
   })
   employee_type: EmployeeType;
@@ -68,7 +64,7 @@ export class CreateCareerPostingDto {
   @Type(() => String)
   @ApiProperty({
     enum: EmploymentType,
-    example: EmploymentType.FULL_TIME,
+    example: EmploymentType.full_time,
     description: 'The employment type of this career posting',
   })
   employment_type: EmploymentType;
@@ -128,7 +124,7 @@ export class UpdateCareerPostingDto {
   @Type(() => String)
   @ApiProperty({
     enum: EmployeeType,
-    example: EmployeeType.LAND_BASED,
+    example: EmployeeType.land_based,
     description: 'The employee type of this career posting',
   })
   employee_type?: EmployeeType;
@@ -157,7 +153,7 @@ export class UpdateCareerPostingDto {
   @Type(() => String)
   @ApiProperty({
     enum: EmploymentType,
-    example: EmploymentType.FULL_TIME,
+    example: EmploymentType.full_time,
     description: 'The employment type of this career posting',
   })
   employment_type?: EmploymentType;
@@ -170,7 +166,7 @@ export class UpdateCareerPostingDto {
   @Type(() => String)
   @ApiProperty({
     enum: CareerPostingStatus,
-    example: CareerPostingStatus.DRAFT,
+    example: CareerPostingStatus.draft,
     description: 'The status of this career posting'
   })
   status?: CareerPostingStatus;

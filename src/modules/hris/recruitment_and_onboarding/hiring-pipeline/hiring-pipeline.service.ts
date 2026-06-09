@@ -10,13 +10,9 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
   RecruitmentPaginationDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
-import {
-  ApplicationStatus,
-  InterviewStage,
-} from 'src/utils/decorators/global.enums.decorator';
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
-import { Prisma } from '@prisma/client';
+import { ApplicationStatus, InterviewStage, Prisma, WorkflowActionType } from '@prisma/client';
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 import { TRANSACTION_TYPE } from 'src/utils/constants/transaction-type.constants';
@@ -439,7 +435,7 @@ export class HiringPipelineService {
           data: {
             actionable_type: WORKFLOW_ENTITY.HIRING_PIPELINE,
             actionable_id: applicant.id,
-            action: "creation",
+            action: WorkflowActionType.creation,
             acted_by: requestUser.id,
             acted_at: new Date(),
             metadata: {
@@ -523,7 +519,7 @@ export class HiringPipelineService {
 
     const attachments = await this.uploadService.attachFiles({
       files,
-      transaction_type: 'Applicant',
+      transaction_type: TRANSACTION_TYPE.APPLICANT_DOC,
       transaction_id: applicant.id,
       // file_desc: file_desc,
       user_id: user.id,
@@ -642,9 +638,9 @@ export class HiringPipelineService {
 
     return this.prisma.$transaction(async (tx) => {
       const forInterview = await tx.applicant.update({
-        where: { id: applicantId, application_status: "shortlisted" },
+        where: { id: applicantId, application_status: ApplicationStatus.shortlisted },
         data: {
-          application_status: "for_interview",
+          application_status: ApplicationStatus.for_interview,
           updated_by: requestUser.id,
         }
       });
@@ -653,7 +649,7 @@ export class HiringPipelineService {
         data: {
           actionable_type: WORKFLOW_ENTITY.APPLICANT,
           actionable_id: applicantId,
-          action: "interview_scheduling",
+          action: WorkflowActionType.interview_scheduling,
           acted_by: user.id
         }
       });
@@ -698,9 +694,9 @@ export class HiringPipelineService {
 
     return this.prisma.$transaction(async (tx) => {
       const accepted = await tx.applicant.update({
-        where: { id: applicantId, application_status: "for_interview" },
+        where: { id: applicantId, application_status: ApplicationStatus.for_interview },
         data: {
-          application_status: "accepted",
+          application_status: ApplicationStatus.accepted,
           updated_by: requestUser.id
         }
       });
@@ -709,7 +705,7 @@ export class HiringPipelineService {
         data: {
           actionable_type: WORKFLOW_ENTITY.APPLICANT,
           actionable_id: applicantId,
-          action: "acceptance",
+          action: WorkflowActionType.acceptance,
           acted_by: user.id
         }
       });
@@ -758,14 +754,14 @@ export class HiringPipelineService {
           where: { id: applicantId }
         })
 
-        if (!checkStatus || checkStatus.application_status !== "accepted") {
+        if (!checkStatus || checkStatus.application_status !== ApplicationStatus.accepted) {
           throw new BadRequestException("Applicant must be accepted first before can be onboarded");
         }
 
         const onBoard = await tx.applicant.update({
-          where: { id: applicantId, application_status: "accepted" },
+          where: { id: applicantId, application_status: ApplicationStatus.accepted },
           data: {
-            application_status: "onboarding",
+            application_status: ApplicationStatus.onboarding,
             updated_by: requestUser.id
           }
         });
@@ -774,7 +770,7 @@ export class HiringPipelineService {
           data: {
             actionable_type: WORKFLOW_ENTITY.APPLICANT,
             actionable_id: applicantId,
-            action: "onboarding",
+            action: ApplicationStatus.onboarding,
             acted_by: requestUser.id
           }
         })
@@ -829,7 +825,7 @@ export class HiringPipelineService {
             where: { id: applicantId }
           })
 
-          if (!checkStatus || checkStatus.application_status === "onboarding") {
+          if (!checkStatus || checkStatus.application_status === ApplicationStatus.onboarding) {
             throw new BadRequestException("Applicant is now onboarding cannot be rejected");
           }
 
@@ -838,7 +834,7 @@ export class HiringPipelineService {
               id: applicantId
             },
             data: {
-              application_status: 'rejected',
+              application_status: ApplicationStatus.rejected,
               updated_by: requestUser.id
             }
           });
@@ -847,7 +843,7 @@ export class HiringPipelineService {
             data: {
               actionable_type: WORKFLOW_ENTITY.APPLICANT,
               actionable_id: applicantId,
-              action: 'rejection',
+              action: WorkflowActionType.rejection,
               acted_by: requestUser.id
             }
           });
@@ -930,9 +926,9 @@ export class ScreeningApplicantService {
     return this.prisma.$transaction(async (tx) => {
       try {
         const screenApplicant = await tx.applicant.update({
-          where: { id: applicantId, application_status: "applied" },
+          where: { id: applicantId, application_status: ApplicationStatus.applied },
           data: {
-            application_status: "shortlisted",
+            application_status: ApplicationStatus.shortlisted,
             updated_by: requestUser.id
           }
         });
@@ -941,7 +937,7 @@ export class ScreeningApplicantService {
           data: {
             actionable_type: WORKFLOW_ENTITY.APPLICANT,
             actionable_id: applicantId,
-            action: "shortlisting",
+            action: WorkflowActionType.shortlisting,
             acted_by: user.id
           }
         });
@@ -997,9 +993,9 @@ export class InterviewApplicantService {
     }
 
     const stages = [
-      InterviewStage.INITIAL,
-      InterviewStage.SECOND,
-      InterviewStage.FINAL,
+      InterviewStage.initial,
+      InterviewStage.second,
+      InterviewStage.final,
     ];
 
     //map the ids to the data structure
@@ -1066,12 +1062,12 @@ export class InterviewApplicantService {
 
     // Sequential Logic Check
     if (
-      (currentInterviewer.stage as InterviewStage) !== InterviewStage.INITIAL
+      (currentInterviewer.stage as InterviewStage) !== InterviewStage.initial
     ) {
       const previousStage =
-        (currentInterviewer.stage as InterviewStage) === InterviewStage.FINAL
-          ? InterviewStage.SECOND
-          : InterviewStage.INITIAL;
+        (currentInterviewer.stage as InterviewStage) === InterviewStage.final
+          ? InterviewStage.second
+          : InterviewStage.initial;
 
       const prevAssessment = await this.prisma.interviewer.findFirst({
         where: {
