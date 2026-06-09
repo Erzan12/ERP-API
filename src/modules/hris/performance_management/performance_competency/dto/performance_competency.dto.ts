@@ -1,8 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { PerformanceRating } from "@prisma/client";
+import { PerformanceRating, EmployeeType, LandBasedCategory, SeaBasedCategory } from "@prisma/client";
 import { Type } from "class-transformer";
 import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Validate } from "class-validator";
-import { EmployeeType, LandBasedCategory, SeaBasedCategory } from "src/utils/decorators/global.enums.decorator";
 import { CategoryMatchValidator } from "src/utils/helpers/custom-validator/category-match-validator.dto";
 
 export class CreatePerformanceCompetencyDto {
@@ -19,7 +18,7 @@ export class CreatePerformanceCompetencyDto {
     @Type(() => String)
     @ApiProperty({
         enum: EmployeeType,
-        example: EmployeeType.LAND_BASED,
+        example: EmployeeType.land_based,
         description: 'The deparment group of the employee'
     })
     department_group: EmployeeType;
@@ -86,7 +85,7 @@ export class UpdatePerformanceCompetencyDto {
     @Type(() => String)
     @ApiProperty({
         enum: EmployeeType,
-        example: EmployeeType.LAND_BASED,
+        example: EmployeeType.land_based,
         description: 'The deparment group of the employee'
     })
     department_group?: EmployeeType;
