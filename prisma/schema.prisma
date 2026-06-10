@@ -1562,6 +1562,7 @@ model SubModulePermission {
   sub_module_action SubModuleAction  @relation(fields: [sub_module_action_id], references: [id], onDelete: Cascade)
 
   @@index([sub_module_id])
+  @@unique([sub_module_action_id, sub_module_id])
 }
 
 ////////////////////////////////////////
