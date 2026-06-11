@@ -18,7 +18,7 @@ export class SubModuleService {
   constructor(private prisma: PrismaService) {}
 
   async getSubModules(user: RequestUser, dto: PaginationDto) {
-    const { search, sortBy, order, page, perPage } = dto;
+    const { search, module, sortBy, order, page, perPage } = dto;
 
     const skip = (page - 1) * perPage;
 
@@ -44,6 +44,33 @@ export class SubModuleService {
       // }
 
       whereCondition.OR = orConditions;
+    }
+
+    await this.prisma.module.findUnique({
+      where: { id: module, is_active: true },
+      select: {
+        sub_module: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      }
+    })
+
+    if (module) {
+      const existingModule = await this.prisma.module.findFirst({
+        where: {
+          id: module,
+          is_active: true,
+        },
+      });
+
+      if (!existingModule) {
+        throw new BadRequestException('Module does not exist');
+      }
+
+      whereCondition.module_id = module;
     }
 
     const allowSortFields = ['name', 'module_id', 'created_at', 'updated_at'];

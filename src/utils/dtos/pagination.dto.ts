@@ -10,6 +10,11 @@ export class PaginationDto {
 
   @IsOptional()
   @IsString()
+  @ApiPropertyOptional({ default: '' })
+  module?: string;
+
+  @IsOptional()
+  @IsString()
   @ApiPropertyOptional({ example: 'created_at', default: 'created_at' })
   sortBy: string = 'created_at';
 
