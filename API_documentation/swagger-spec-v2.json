@@ -282,6 +282,15 @@
             }
           },
           {
+            "name": "module",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -620,6 +629,15 @@
             }
           },
           {
+            "name": "module",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -819,6 +837,15 @@
         "parameters": [
           {
             "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -1694,6 +1721,15 @@
             }
           },
           {
+            "name": "module",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -1892,6 +1928,15 @@
         "parameters": [
           {
             "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -2106,6 +2151,15 @@
             }
           },
           {
+            "name": "module",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -2304,6 +2358,15 @@
         "parameters": [
           {
             "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -2518,6 +2581,15 @@
             }
           },
           {
+            "name": "module",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -2715,6 +2787,15 @@
         "parameters": [
           {
             "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -3091,6 +3172,15 @@
         "parameters": [
           {
             "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -6345,6 +6435,15 @@
         "parameters": [
           {
             "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
