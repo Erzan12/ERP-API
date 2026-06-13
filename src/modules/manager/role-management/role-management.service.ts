@@ -53,8 +53,8 @@ export class RoleManagementService {
     }
 
     //prevent sorting by invalid fields(very important)
-    const allowSortFeilds = ['id', 'name', 'created_at', 'updated_at', 'stat'];
-    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
+    const allowSortFields = ['id', 'name', 'created_at', 'updated_at', 'stat'];
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, roles] = await this.prisma.$transaction([
       this.prisma.role.count({

@@ -64,7 +64,7 @@ export class DepartmentService {
       whereCondition.OR = orConditions;
     }
 
-    const allowSortFeilds = [
+    const allowSortFields = [
       'id',
       'created_at',
       'updated_at',
@@ -72,10 +72,10 @@ export class DepartmentService {
       'division_id',
       'sorting',
     ];
-    // if (!allowSortFeilds.includes(sortBy)) {
+    // if (!allowSortFields.includes(sortBy)) {
     //   sortBy;
     // }
-    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, departments] = await this.prisma.$transaction([
       this.prisma.department.count({

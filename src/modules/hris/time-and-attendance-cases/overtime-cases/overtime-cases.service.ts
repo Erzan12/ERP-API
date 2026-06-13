@@ -196,11 +196,11 @@ export class OvertimeCasesService {
             ]);
         }
 
-        const allowSortFeilds = [
+        const allowSortFields = [
             'created_by'
         ]
 
-        const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy: 'created_at';
+        const safeSortBy = allowSortFields.includes(sortBy) ? sortBy: 'created_at';
 
         const [total, overtimes] = await this.prisma.$transaction([
             this.prisma.hrOvertimeRequest.count({
