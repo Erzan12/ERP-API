@@ -166,8 +166,8 @@ export class ModuleService {
       whereCondition.OR = orConditions;
     }
     //prevent sorting by invalied fields (very important)
-    const allowSortFeilds = ['name', 'created_at', 'updated_at', 'isActive'];
-    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
+    const allowSortFields = ['name', 'created_at', 'updated_at', 'isActive'];
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, modules] = await this.prisma.$transaction([
       this.prisma.module.count({
