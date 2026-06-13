@@ -4,12 +4,16 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateExtendedLeaveRequestWithDetailsDto } from './dto/extended-leave-request.dto';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 import { LeaveRequestStatus, Prisma, WorkflowActionType } from '@prisma/client';
+import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-pagination.dto';
+import { contains } from 'class-validator';
 
 @Injectable()
 export class ExtendedLeaveCasesService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async getExtendedLeaves(user: RequestUser) {
+    async getExtendedLeaves(user: RequestUser, dto: LeaveRequestPaginationDto) {
+        const { search, status, order, sortBy, page, perPage } = dto;
+
         //Auth check first
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
@@ -35,21 +39,159 @@ export class ExtendedLeaveCasesService {
             throw new ForbiddenException('You are not authorized to perform this action');
         }
 
-        const extendedLeaves = await this.prisma.hrExtendedLeaveRequest.findMany({
-            where: {
-                hr_leave_request: {
-                    is_active: true,
+        const skip = (page - 1) * perPage;
+
+        const whereCondition: Prisma.HrExtendedLeaveRequestWhereInput = {
+            is_active: true
+        }
+
+        const whereConditions: Prisma.HrExtendedLeaveRequestWhereInput = {};
+
+        if (search) {
+
+            const terms = search.split(' ');
+
+            whereConditions.OR = terms.flatMap((term) => [
+                {
+                    hr_leave_request: {
+                        employee: {
+                            person: {
+                                first_name: { 
+                                    contains: term, 
+                                    mode: 'insensitive'
+                                }
+                            }
+                        }
+                    }
                 },
+                {
+                    hr_leave_request: {
+                        employee: {
+                            person: {
+                                middle_name: { 
+                                    contains: term, 
+                                    mode: 'insensitive'
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    hr_leave_request: {
+                        employee: {
+                            person: {
+                                last_name: { 
+                                    contains: term, 
+                                    mode: 'insensitive'
+                                }
+                            }
+                        }
+                    }
+                },
+            ])
+        }
+
+        const allowSortFields = [
+            'created_by'
+        ];
+
+        const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
+
+        const [total, extendedLeaves] = await this.prisma.$transaction([
+            this.prisma.hrExtendedLeaveRequest.count({
+                where: {
+                    ...whereCondition,
+                    ...whereConditions
+                },
+            }),
+            this.prisma.hrExtendedLeaveRequest.findMany({
+                where: {
+                    ...whereCondition,
+                    ...whereConditions
+                },
+                include: {
+                    reliever: {
+                        select: {
+                            employee: {
+                                select: {
+                                    person: {
+                                        select: {
+                                            first_name: true,
+                                            middle_name: true,
+                                            last_name: true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    hr_leave_dates: true,
+                    hr_leave_request: true,
+                },
+                skip,
+                take: perPage,
+                orderBy: {
+                    [safeSortBy]: order
+                },
+            }),
+        ]);
+
+        const extendedLeaveIds = extendedLeaves.map(l => l.id);
+
+        const workflowActions = await this.prisma.workflowAction.findMany({
+            where: {
+                actionable_type: WORKFLOW_ENTITY.EXTENDED_LEAVE_REQUEST,
+                actionable_id: {
+                    in: extendedLeaveIds
+                },
+                action: {
+                    in: [WorkflowActionType.verification, WorkflowActionType.approval]
+                }
             },
             include: {
-                hr_leave_request: true,
-            },
+                acted_by_user: {
+                    select: {
+                        id: true,
+                        employee: {
+                            select: {
+                                person: {
+                                    select: {
+                                        first_name: true,
+                                        middle_name: true,
+                                        last_name: true,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         })
+
+        
+        const formattedExtendedLeaves = extendedLeaves.map(extendedLeave => {
+            const verifier = workflowActions.find(a => 
+                a.actionable_id === extendedLeave.id &&
+                a.action === WorkflowActionType.verification
+            );
+            const approver = workflowActions.find(a =>
+                a.actionable_id === extendedLeave.id &&
+                a.action === WorkflowActionType.approval
+            );
+            return {
+                ...extendedLeave,
+                verifier: verifier?.acted_by_user ?? null,
+                approver: approver?.acted_by_user ?? null,
+            };
+        });
 
         return {
             status: 'success',
-            message: 'List of Extended Leave Request',
-            extendedLeaves
+            message: 'List of Leave Cases',
+            count: total,
+            page,
+            perPage,
+            extendedLeaves: formattedExtendedLeaves
         }
     }
 
