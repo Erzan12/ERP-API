@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, Session } from '@nestjs/common';
-import { RegularizationReviewsService } from './regularization_reviews.service';
+import { RegularizationReviewsService } from './regularization-reviews.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 import { Can } from 'src/utils/decorators/can.decorator';

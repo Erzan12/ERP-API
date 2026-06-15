@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreatePerformanceCompetencyDto, UpdatePerformanceCompetencyDto } from './dto/performance_competency.dto';
+import { CreatePerformanceCompetencyDto, UpdatePerformanceCompetencyDto } from './dto/performance-competency.dto';
 
 @Injectable()
 export class PerformanceCompetencyService {
