@@ -27,7 +27,7 @@ import {
   ACTION_READ,
   SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
-import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { SubModulePaginationDto } from 'src/utils/dtos/sub-module-pagination.dto';
 
 @ApiTags('Administrator - Submodule')
 @Controller({ path: 'administrator', version: '2' })
@@ -41,7 +41,7 @@ export class SubModuleControllerV2 {
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getSubmodules(
     @SessionUser() user: RequestUser,
-    @Query() dto: PaginationDto,
+    @Query() dto: SubModulePaginationDto,
     // @Query('page') page = 1,
     // @Query('perPage') perPage = 10,
     // @Query('search') search?: string,

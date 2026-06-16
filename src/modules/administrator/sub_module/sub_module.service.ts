@@ -10,14 +10,14 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
 import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { Prisma } from '@prisma/client';
+import { SubModulePaginationDto } from 'src/utils/dtos/sub-module-pagination.dto';
 
 @Injectable()
 export class SubModuleService {
   constructor(private prisma: PrismaService) {}
 
-  async getSubModules(user: RequestUser, dto: PaginationDto) {
+  async getSubModules(user: RequestUser, dto: SubModulePaginationDto) {
     const { search, module, sortBy, order, page, perPage } = dto;
 
     const skip = (page - 1) * perPage;
@@ -46,7 +46,7 @@ export class SubModuleService {
       whereCondition.OR = orConditions;
     }
 
-    await this.prisma.module.findUnique({
+    await this.prisma.module.findFirst({
       where: { id: module, is_active: true },
       select: {
         sub_module: {
