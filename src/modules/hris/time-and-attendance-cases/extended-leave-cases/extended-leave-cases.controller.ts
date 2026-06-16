@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ExtendedLeaveCasesService } from './extended-leave-cases.service';
 import { Can } from 'src/utils/decorators/can.decorator';
@@ -7,6 +7,7 @@ import { ACTION_APPROVE, ACTION_CANCEL, ACTION_CREATE, ACTION_PROCESS, ACTION_RE
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateExtendedLeaveRequestWithDetailsDto } from './dto/extended-leave-request.dto';
+import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-pagination.dto';
 
 @ApiTags('Human Resources - Time and Attendance Cases (Extended Leave Cases)')
 @Controller({path:'hris', version: '2'})
@@ -19,9 +20,9 @@ export class ExtendedLeaveCasesController {
     @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
     getExtendedLeaves(
         @SessionUser() user: RequestUser,
-        // @Query() dto: ExtendedLeave
+        @Query() dto: LeaveRequestPaginationDto
     ) {
-        return this.extendedLeaveCasesService.getExtendedLeaves(user)
+        return this.extendedLeaveCasesService.getExtendedLeaves(user, dto)
     }
 
     @Get('time-and-attendance-cases/extended-leave/status-count')

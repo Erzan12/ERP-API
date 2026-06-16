@@ -192,11 +192,11 @@ export class LeaveCasesService {
             ]);
         }
 
-        const allowSortFeilds = [
+        const allowSortFields = [
             'created_by'
         ];
 
-        const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
+        const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
         const [total, leaves] = await this.prisma.$transaction([
             this.prisma.hrLeaveRequest.count({

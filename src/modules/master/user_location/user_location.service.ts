@@ -60,7 +60,7 @@ export class UserLocationService {
       whereCondition.OR = orConditions;
     }
 
-    const allowSortFeilds = [
+    const allowSortFields = [
       'id',
       'created_at',
       'updated_at',
@@ -68,10 +68,10 @@ export class UserLocationService {
       'province',
       'city',
     ];
-    // if (allowSortFeilds.includes(sortBy)) {
+    // if (allowSortFields.includes(sortBy)) {
     //   sortBy;
     // }
-    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, userLocations] = await this.prisma.$transaction([
       this.prisma.userLocation.count({

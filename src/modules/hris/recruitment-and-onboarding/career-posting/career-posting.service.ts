@@ -519,7 +519,7 @@ export class CareerPostingService {
     }
 
     const recruitment = await this.prisma.careerPosting.update({
-      where: { id: recruitmentId },
+      where: { id: recruitmentId, is_active: true },
       data: {
         position_id: updateCareerPostingDto.position_id ?? undefined,
         slots: updateCareerPostingDto.slots ?? undefined,
