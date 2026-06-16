@@ -351,14 +351,26 @@ export class SubModuleService {
     return {
       status: 'success',
       message: `Added ${subModuleAction.count} new permission(s).`,
-      created_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
+      created_by: `${userName} - ${userPos}`,
       count: subModuleAction.count,
       actions_added: action,
     };
+  }
+
+  async deleteSubmoduleAction(submoduleActionId: string) {
+    const submoduleAction = await this.prisma.subModuleAction.delete({
+      where: { id: submoduleActionId },
+    })
+
+    if (!submoduleAction) {
+      throw new NotFoundException ("Submodule Action does not exist");
+    }
+
+    return {
+      status: 'success',
+      message: 'Sub module action deleted successfully',
+      submoduleAction
+    }
   }
 
   async updateSubmoduleAction(
