@@ -9,6 +9,7 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { Prisma } from '@prisma/client';
+import { ModulePaginationDto } from 'src/utils/dtos/module-pagination.dto';
 
 @Injectable()
 export class ModuleService {
@@ -134,8 +135,8 @@ export class ModuleService {
   }
 
   // with pagination
-  async getModules(user: RequestUser, dto: PaginationDto) {
-    const { search, sortBy, order, page, perPage } = dto;
+  async getModules(user: RequestUser, dto: ModulePaginationDto) {
+    const { search, sub_module_id, sortBy, order, page, perPage } = dto;
 
     //PAGINATION AREA
     const skip = (page - 1) * perPage;
@@ -165,6 +166,42 @@ export class ModuleService {
 
       whereCondition.OR = orConditions;
     }
+
+    await this.prisma.subModule.findFirst({
+      where: { id: sub_module_id, is_active: true },
+      select: {
+        module: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      }
+    })
+
+    if (sub_module_id) {
+      const existingSubModule = await this.prisma.subModule.findFirst({
+        where: {
+          id: sub_module_id,
+          is_active: true,
+        },
+      });
+
+      if (!existingSubModule) {
+        throw new NotFoundException('Submodule does not exist');
+      }
+
+      // whereCondition.sub_module = {
+      //   some: {
+      //     id: sub_module_id,
+      //     is_active: true,
+      //   },
+      // };
+
+      // alternate
+      whereCondition.id = existingSubModule.module_id;
+    }
+
     //prevent sorting by invalied fields (very important)
     const allowSortFields = ['name', 'created_at', 'updated_at', 'isActive'];
     const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
