@@ -565,7 +565,7 @@
         ]
       }
     },
-    "/v2/administrator/sub-module/actions/{subModuleActionId}": {
+    "/v2/administrator/sub-module/permissions/{subModuleActionId}": {
       "put": {
         "operationId": "SubModuleControllerV2_updateSubmoduleAction_v2",
         "parameters": [
@@ -651,6 +651,30 @@
           }
         },
         "summary": "Update a current Submodule details and permissions",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/v2/administrator/sub-module/permissions/{submoduleActionId}": {
+      "delete": {
+        "operationId": "SubModuleControllerV2_deleteSubmoduleAction_v2",
+        "parameters": [
+          {
+            "name": "submoduleActionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a submodule action",
         "tags": [
           "Administrator - Submodule"
         ]
