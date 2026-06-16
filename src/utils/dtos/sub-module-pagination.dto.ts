@@ -2,11 +2,16 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString } from 'class-validator';
 
-export class PaginationDto {
+export class SubModulePaginationDto {
   @IsOptional()
   @IsString()
   @ApiPropertyOptional({ default: '' })
   search?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ default: '' })
+  module?: string;
 
   @IsOptional()
   @IsString()
