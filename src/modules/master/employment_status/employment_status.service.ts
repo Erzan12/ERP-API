@@ -43,11 +43,11 @@ export class EmploymentStatusService {
       whereCondition.OR = orConditions;
     }
 
-    const allowSortFeilds = ['id', 'created_at', 'updated_at', 'code', 'label'];
-    // if (!allowSortFeilds.includes(sortBy)) {
+    const allowSortFields = ['id', 'created_at', 'updated_at', 'code', 'label'];
+    // if (!allowSortFields.includes(sortBy)) {
     //   sortBy;
     // }
-    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, employmentStatus] = await this.prisma.$transaction([
       this.prisma.employmentStatus.count({

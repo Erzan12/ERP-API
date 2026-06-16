@@ -8,17 +8,17 @@ import { CreateSubModuleDto } from './dto/create-sub-module.dto';
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
-import { UpdateSubModulePermisisonDto } from './dto/update-sub-module-permisison.dto';
+import { UpdateSubmodulePermissionDto, UpdateSubmoduleActionDto } from './dto/update-sub-module.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { Prisma } from '@prisma/client';
+import { SubModulePaginationDto } from 'src/utils/dtos/module-pagination.dto';
 
 @Injectable()
 export class SubModuleService {
   constructor(private prisma: PrismaService) {}
 
-  async getSubModules(user: RequestUser, dto: PaginationDto) {
-    const { search, module, sortBy, order, page, perPage } = dto;
+  async getSubModules(user: RequestUser, dto: SubModulePaginationDto) {
+    const { search, module_id, sortBy, order, page, perPage } = dto;
 
     const skip = (page - 1) * perPage;
 
@@ -46,8 +46,8 @@ export class SubModuleService {
       whereCondition.OR = orConditions;
     }
 
-    await this.prisma.module.findUnique({
-      where: { id: module, is_active: true },
+    await this.prisma.module.findFirst({
+      where: { id: module_id, is_active: true },
       select: {
         sub_module: {
           select: {
@@ -58,19 +58,19 @@ export class SubModuleService {
       }
     })
 
-    if (module) {
+    if (module_id) {
       const existingModule = await this.prisma.module.findFirst({
         where: {
-          id: module,
+          id: module_id,
           is_active: true,
         },
       });
 
       if (!existingModule) {
-        throw new BadRequestException('Module does not exist');
+        throw new NotFoundException('Module does not exist');
       }
 
-      whereCondition.module_id = module;
+      whereCondition.module_id = module_id;
     }
 
     const allowSortFields = ['name', 'module_id', 'created_at', 'updated_at'];
@@ -94,9 +94,13 @@ export class SubModuleService {
            }
           },
           sub_module_permissions: {
+            // where: { 
+            //   is_active: true 
+            // }, 
             select: {
               id: true,
               action: true,
+              is_active: true
             }
           }
         },
@@ -357,16 +361,16 @@ export class SubModuleService {
     };
   }
 
-  async updateSubModuleAction(
-    dto: UpdateSubModulePermisisonDto,
+  async updateSubmoduleAction(
+    dto: UpdateSubmoduleActionDto,
     user: RequestUser,
-    subModulePermissionId: string,
+    subModuleActionId: string,
   ) {
     const { action, is_active } = dto;
 
     const existingSubModulePermission =
       await this.prisma.subModuleAction.findFirst({
-        where: { id: subModulePermissionId },
+        where: { id: subModuleActionId },
       });
 
     if (!existingSubModulePermission) {
@@ -378,7 +382,7 @@ export class SubModuleService {
     // }
 
     const updateSubModulePermission = await this.prisma.subModuleAction.update({
-      where: { id: subModulePermissionId },
+      where: { id: subModuleActionId },
       data: {
         id: existingSubModulePermission.id,
         action,
@@ -533,69 +537,210 @@ export class SubModuleService {
     }
   }
 
-  // async unassignSubmodulePermissions(unassignSubmodulePermissionsDto: UnassignSubmodulePermissionsDto, user) {
-  //     const { sub_module_id, sub_module_permission_id } = unassignSubmodulePermissionsDto;
+  async updateSubmodule(dto: UpdateSubmodulePermissionDto, user: RequestUser) {
+    const { sub_module_id, name, actions, is_active } = dto;
 
-  //     const existingSubModule= await this.prisma.subModule.findFirst({
-  //         where: { id: unassignSubmodulePermissionsDto.sub_module_id },
-  //     });
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
 
-  //     if (!existingSubModule){
-  //         throw new BadRequestException('Selected Sub Module does not exist');
-  //     }
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException('User does not exist.');
+    }
 
-  //     const existingSubModulePermission = await this.prisma.subModulePermission.findMany({
-  //         where: { id: {
-  //             in: unassignSubmodulePermissionsDto.sub_module_permission_id
-  //         },
-  //     },
-  //     });
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
 
-  //     if(!existingSubModulePermission){
-  //         throw new BadRequestException('Selected Sub Module Permissions does not exist');
-  //     };
+    const canUpdate = requestUser.user_roles.some(role =>
+      allowedRoles.includes(role.role_name),
+    );
 
-  //     const requestUser = await this.prisma.user.findUnique({
-  //         where: { id: user.id },
-  //         include:{
-  //             employee: {
-  //                 include: {
-  //                     person: true,
-  //                     position: true,
-  //                 }
-  //             }
-  //         }
-  //     })
+    if (!canUpdate) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
 
-  //     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-  //         throw new BadRequestException(`User does not exist.`);
-  //     }
+    // Validate Submodule
+    const existingSubModule =
+      await this.prisma.subModule.findUnique({
+        where: {
+          id: sub_module_id,
+        },
+      });
 
-  //     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-  //     const userPos = requestUser.employee.position.name;
+    if (!existingSubModule) {
+      throw new BadRequestException(
+        'Selected Sub Module does not exist',
+      );
+    }
 
-  //     const unassignSubmodulePermissions = await this.prisma.subModulePermission.updateMany({
-  //         where: {
-  //             id: {
+    // Execute Transaction
+    const result = await this.prisma.$transaction(
+      async tx => {
+        // Update submodule details
+        await tx.subModule.update({
+          where: {
+            id: sub_module_id,
+          },
+          data: {
+            ...(name && { name }),
+            ...(is_active !== undefined && {
+              is_active,
+            }),
+            updated_by: user.id,
+          },
+        });
 
-  //             }
-  //         },
-  //         data: {
-  //             stat: 1,
-  //         }
-  //     })
+        // Get current permissions
+        const existingPermissions =
+          await tx.subModulePermission.findMany({
+            where: {
+              sub_module_id,
+            },
+          });
 
-  //     return {
-  //         status: 'success',
-  //         message: `New module has been added to the system!`,
-  //         created_by: {
-  //                 id: requestUser.id,
-  //                 name: userName,
-  //                 position: userPos,
-  //         },
-  //         data: {
-  //             unassignSubmodulePermissions
-  //         }
-  //     }
-  // }
+        const existingActions =
+          existingPermissions.map(
+            permission => permission.action,
+          );
+
+        const actionsToRemove =
+          existingActions.filter(
+            action => !actions.includes(action),
+          );
+
+        // Deactivate removed permissions
+        if (actionsToRemove.length > 0) {
+          await tx.subModulePermission.updateMany({
+            where: {
+              sub_module_id,
+              action: {
+                in: actionsToRemove,
+              },
+            },
+            data: {
+              is_active: false,
+              updated_by: user.id,
+            },
+          });
+        }
+
+        // Get all action definitions once
+        const actionRecords =
+          await tx.subModuleAction.findMany({
+            where: {
+              action: {
+                in: actions,
+              },
+            },
+          });
+
+        const actionMap = new Map(
+          actionRecords.map(action => [
+            action.action,
+            action,
+          ]),
+        );
+
+        // Process incoming actions
+        for (const action of actions) {
+          const actionRecord =
+            actionMap.get(action);
+
+          if (!actionRecord) {
+            continue;
+          }
+
+          const existingPermission =
+            await tx.subModulePermission.findFirst({
+              where: {
+                sub_module_id,
+                action,
+              },
+            });
+
+          if (existingPermission) {
+            // Reactivate if previously disabled
+            await tx.subModulePermission.update({
+              where: {
+                id: existingPermission.id,
+              },
+              data: {
+                is_active: true,
+                updated_by: user.id,
+              },
+            });
+          } else {
+            // Create new permission
+            await tx.subModulePermission.create({
+              data: {
+                action,
+                sub_module_id,
+                sub_module_action_id:
+                  actionRecord.id,
+                created_by: user.id,
+              },
+            });
+          }
+        }
+
+        // Fetch updated permissions
+        const updatedPermissions =
+          await tx.subModulePermission.findMany({
+            where: {
+              sub_module_id,
+              is_active: true,
+            },
+            include: {
+              sub_module: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          });
+
+        return updatedPermissions;
+      },
+    );
+
+    // ==========================
+    // Format Response
+    // ==========================
+    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    const userPos =
+      requestUser.employee.position?.name ?? '';
+
+    return {
+      status: 'success',
+      message: 'Submodule updated successfully.',
+      updated_by: `${userName} - ${userPos}`,
+      data: {
+        sub_module_id,
+        actions: result.map(
+          permission => permission.action,
+        ),
+        sub_module: result[0]?.sub_module ?? {
+          id: sub_module_id,
+          name,
+        },
+      },
+    };
+  }
 }

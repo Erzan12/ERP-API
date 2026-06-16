@@ -29,9 +29,9 @@ import { SessionUser } from '../../../utils/decorators/session-user.decorator';
 import { RequestUser } from '../../../utils/types/request-user.interface';
 
 import { CreateModuleDto, UpdateModuleDto } from './dto/module.dto';
-import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 import { ModuleService } from './module.service';
+import { ModulePaginationDto } from 'src/utils/dtos/module-pagination.dto';
 
 @ApiTags('Administrator - Module')
 @Controller({ path: 'administrator', version: '2' })
@@ -44,7 +44,7 @@ export class ModuleControllerV2 {
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModules(
     @SessionUser() user: RequestUser,
-    @Query() dto: PaginationDto,
+    @Query() dto: ModulePaginationDto,
     // @Query('page') page = 1,
     // @Query('perPage') perPage = 10,
     // @Query('search') search?: string,
