@@ -438,6 +438,8 @@ model User {
   HrOvertimeRateUpdatedBy                  HrOvertimeRate[]                   @relation("HrOvertimeRateUpdatedBy")
   PasswordHistoryCreatedBy                 PasswordHistory[]                  @relation("PasswordHistoryCreatedBy")
   PasswordHistoryUpdatedBy                 PasswordHistory[]                  @relation("PasswordHistoryUpdatedBy")
+  SalaryGradeCreatedBy                     SalaryGrade[]                      @relation("SalaryGradeCreatedBy")
+  SalaryGradeUpdatedBy                     SalaryGrade[]                      @relation("SalaryGradeUpdatedBy")
 
   // Workflow action
   workflow_actions  WorkflowAction[]
@@ -1376,6 +1378,24 @@ model HrLeaveDates {
 //Hr Leave Request Action will record per user action per status
 //will be keep for now, for experimental purpose or might be useful in the future
 
+model SalaryGrade {
+  id              String  @id @default(uuid()) @db.Uuid
+  grade           String  @db.Text
+  rate            Float
+  level           Int
+  is_confidential Boolean
+  is_active       Boolean @default(true)
+
+  created_by   String? @db.Uuid
+  updated_by   String? @db.Uuid
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  createdBy User? @relation("SalaryGradeCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("SalaryGradeUpdatedBy", fields: [updated_by], references: [id])
+}
+
 ////////////////////////////////////////
 // AUDIT TRAIL & DATABASE CONTROL
 ////////////////////////////////////////
@@ -1545,6 +1565,7 @@ model SubModuleAction {
 model SubModulePermission {
   id                   String @id @default(uuid()) @db.Uuid
   action               String
+  is_active            Boolean @default(true)
   sub_module_action_id String @db.Uuid
   sub_module_id        String @db.Uuid
 
