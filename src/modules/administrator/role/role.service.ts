@@ -74,6 +74,23 @@ export class RoleService {
           ...whereCondition,
         },
         include: {
+          role_permissions: {
+            select: {
+              sub_module_permission: {
+                select: {
+                  id: true,
+                  sub_module_action_id: true,
+                  action: true,
+                  sub_module: {
+                    select: {
+                      id: true,
+                      name: true
+                    }
+                  }
+                }
+              }
+            }
+          },
           createdBy: {
             select: {
               person: {
@@ -104,6 +121,40 @@ export class RoleService {
         },
       }),
     ]);
+
+    const formattedRoles = roles.map(role => {
+      const groupedPermissions = role.role_permissions.reduce(
+        (acc, permission) => {
+          const subModule =
+            permission.sub_module_permission.sub_module;
+
+          const subModuleId = subModule.id;
+
+          if (!acc[subModuleId]) {
+            acc[subModuleId] = {
+              id: permission.sub_module_permission.id, // or subModuleId
+              actions: [],
+              sub_module: {
+                id: subModule.id,
+                name: subModule.name,
+              },
+            };
+          }
+
+          acc[subModuleId].actions.push(
+            permission.sub_module_permission.action,
+          );
+
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
+
+      return {
+        ...role,
+        role_permissions: Object.values(groupedPermissions),
+      };
+    });
 
     // if (roles.length === 0) {
     //   throw new BadRequestException('No available or active roles exist!');
@@ -145,7 +196,7 @@ export class RoleService {
       page,
       perPage,
       // totalPage: Math.ceil(total / perPage),
-      roles,
+      roles: formattedRoles
     };
   }
 

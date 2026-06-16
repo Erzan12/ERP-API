@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
-import { PerformanceCompetencyService } from './performance_competency.service';
+import { PerformanceCompetencyService } from './performance-competency.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
-import { CreatePerformanceCompetencyDto, UpdatePerformanceCompetencyDto } from './dto/performance_competency.dto';
+import { CreatePerformanceCompetencyDto, UpdatePerformanceCompetencyDto } from './dto/performance-competency.dto';
 
 @ApiTags('Human Resources - Performance Management (Performance Competencies)')
 @Controller({path: 'hris', version: '2'})

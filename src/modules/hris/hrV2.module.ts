@@ -10,23 +10,23 @@ import { DashboardControllerV2 } from './dashboard/dashboardV2.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { AdministratorV2Module } from '../administrator/administratorV2.module';
 
-import { CareerPostingService } from './recruitment_and_onboarding/career-posting/career-posting.service';
-import { CareerPostingV2Controller } from './recruitment_and_onboarding/career-posting/career-posting-v2.controller';
+import { CareerPostingService } from './recruitment-and-onboarding/career-posting/career-posting.service';
+import { CareerPostingV2Controller } from './recruitment-and-onboarding/career-posting/career-posting-v2.controller';
 
 import {
   HiringPipelineService,
   InterviewApplicantService,
   ScreeningApplicantService,
-} from './recruitment_and_onboarding/hiring-pipeline/hiring-pipeline.service';
+} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.service';
 import {
   ApplicantsController,
   InterviewApplicantController,
   ScreeningApplicantController,
-} from './recruitment_and_onboarding/hiring-pipeline/hiring-pipelineV2.controller';
-import { RegularizationReviewsService } from './performance_management/regularization_reviews/regularization_reviews.service';
-import { RegularizationReviewsController } from './performance_management/regularization_reviews/regularization_reviews.controller';
-import { PerformanceCompetencyController } from './performance_management/performance_competency/performance_competency.controller';
-import { PerformanceCompetencyService } from './performance_management/performance_competency/performance_competency.service';
+} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipelineV2.controller';
+import { RegularizationReviewsService } from './performance-management/regularization-reviews/regularization-reviews.service';
+import { RegularizationReviewsController } from './performance-management/regularization-reviews/regularization-reviews.controller';
+import { PerformanceCompetencyController } from './performance-management/performance-competency/performance-competency.controller';
+import { PerformanceCompetencyService } from './performance-management/performance-competency/performance-competency.service';
 import { LeaveCategoryController } from './time-and-attendance-cases/leave-category/leave-category.controller';
 import { LeaveCategoryService } from './time-and-attendance-cases/leave-category/leave-category.service';
 import { LeaveCasesService } from './time-and-attendance-cases/leave-cases/leave-cases.service';
@@ -38,6 +38,8 @@ import { OvertimeRateService } from './time-and-attendance-cases/overtime-rate/o
 import { OvertimeRateController } from './time-and-attendance-cases/overtime-rate/overtime-rate.controller';
 import { OvertimeCasesService } from './time-and-attendance-cases/overtime-cases/overtime-cases.service';
 import { OvertimeCasesController } from './time-and-attendance-cases/overtime-cases/overtime-cases.controller';
+import { SalaryGradeService } from './salary-grade/salary-grade.service';
+import { SalaryGradeController } from './salary-grade/salary-grade.controller';
 
 @Module({
   imports: [AuthModule, AdministratorV2Module],
@@ -56,7 +58,8 @@ import { OvertimeCasesController } from './time-and-attendance-cases/overtime-ca
     ScreeningApplicantService,
     ExtendedLeaveCasesService,
     OvertimeRateService,
-    OvertimeCasesService
+    OvertimeCasesService,
+    SalaryGradeService
     // ScreeningApplicantService,
   ],
   controllers: [
@@ -74,7 +77,8 @@ import { OvertimeCasesController } from './time-and-attendance-cases/overtime-ca
     LeaveCasesController,
     ExtendedLeaveCasesController,
     OvertimeRateController,
-    OvertimeCasesController
+    OvertimeCasesController,
+    SalaryGradeController
   ],
   exports: [HrV2Module],
 })

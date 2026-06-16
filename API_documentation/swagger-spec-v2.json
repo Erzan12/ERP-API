@@ -282,7 +282,7 @@
             }
           },
           {
-            "name": "module",
+            "name": "module_id",
             "required": false,
             "in": "query",
             "schema": {
@@ -565,12 +565,12 @@
         ]
       }
     },
-    "/v2/administrator/sub-module/permissions/{id}": {
+    "/v2/administrator/sub-module/actions/{subModuleActionId}": {
       "put": {
-        "operationId": "SubModuleControllerV2_updatePermission_v2",
+        "operationId": "SubModuleControllerV2_updateSubmoduleAction_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "subModuleActionId",
             "required": true,
             "in": "path",
             "schema": {
@@ -580,11 +580,52 @@
         ],
         "requestBody": {
           "required": true,
+          "description": "Payload to update the current sub module action details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubmoduleActionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sub module action updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current sub module action details",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/v2/administrator/sub-module": {
+      "put": {
+        "operationId": "SubModuleControllerV2_updateSubmodule_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
           "description": "Payload to update the current sub module permission",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateSubModulePermisisonDto"
+                "$ref": "#/components/schemas/UpdateSubmodulePermissionDto"
               }
             }
           }
@@ -609,7 +650,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Update a current sub module permission",
+        "summary": "Update a current Submodule details and permissions",
         "tags": [
           "Administrator - Submodule"
         ]
@@ -629,7 +670,7 @@
             }
           },
           {
-            "name": "module",
+            "name": "sub_module_id",
             "required": false,
             "in": "query",
             "schema": {
@@ -837,15 +878,6 @@
         "parameters": [
           {
             "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
-            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -1721,15 +1753,6 @@
             }
           },
           {
-            "name": "module",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -1928,15 +1951,6 @@
         "parameters": [
           {
             "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
-            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -2151,15 +2165,6 @@
             }
           },
           {
-            "name": "module",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -2358,15 +2363,6 @@
         "parameters": [
           {
             "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
-            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -2581,15 +2577,6 @@
             }
           },
           {
-            "name": "module",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -2787,15 +2774,6 @@
         "parameters": [
           {
             "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
-            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -3172,15 +3150,6 @@
         "parameters": [
           {
             "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
-            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -5200,7 +5169,7 @@
         ],
         "requestBody": {
           "required": true,
-          "description": "Payload to updated leave request/case",
+          "description": "Payload to update leave request/case",
           "content": {
             "application/json": {
               "schema": {
@@ -6193,6 +6162,125 @@
         ]
       }
     },
+    "/v2/hris/salary-grades": {
+      "get": {
+        "operationId": "SalaryGradeController_getSalaryGrades_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of Salary Grades"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Salary Grades",
+        "tags": [
+          "Human Resources - Salary Grade"
+        ]
+      },
+      "post": {
+        "operationId": "SalaryGradeController_createSalaryGrade_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Salary Grade",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSalaryGradeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Salary Grade successfully created"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a Salary Grade",
+        "tags": [
+          "Human Resources - Salary Grade"
+        ]
+      }
+    },
+    "/v2/hris/salary-grades/{salaryGradeId}": {
+      "put": {
+        "operationId": "SalaryGradeController_updateSalaryGrade_v2",
+        "parameters": [
+          {
+            "name": "salaryGradeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Salary Grade",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSalaryGradeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Salary Grade updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current Salary Grade",
+        "tags": [
+          "Human Resources - Salary Grade"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
@@ -6435,15 +6523,6 @@
         "parameters": [
           {
             "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "default": "",
-              "type": "string"
-            }
-          },
-          {
-            "name": "module",
             "required": false,
             "in": "query",
             "schema": {
@@ -7018,22 +7097,64 @@
           "sub_module_id"
         ]
       },
-      "UpdateSubModulePermisisonDto": {
+      "UpdateSubmoduleActionDto": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string",
+            "example": "New sub module name",
+            "description": "If you want to update current submodule name"
+          },
           "action": {
             "type": "string",
-            "example": "view, create, update, note, delete",
-            "description": "if you want to update the current actions"
+            "example": "read, create, update, delete",
+            "description": "If you want to update the current action"
           },
           "is_active": {
             "type": "boolean",
             "example": "true or false",
-            "description": "If you want to update the status of the action "
+            "description": "If you want to update the status of the sub module"
           }
         },
         "required": [
+          "name",
           "action",
+          "is_active"
+        ]
+      },
+      "UpdateSubmodulePermissionDto": {
+        "type": "object",
+        "properties": {
+          "sub_module_id": {
+            "type": "string",
+            "example": "PK UUID",
+            "description": "Primary Key ID of a Submodule"
+          },
+          "name": {
+            "type": "string",
+            "example": "New sub module name",
+            "description": "If you want to update current submodule name"
+          },
+          "actions": {
+            "example": [
+              "read, create, update, delete"
+            ],
+            "description": "If you want to update the current actions",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": "true or false",
+            "description": "If you want to update the status of the sub module"
+          }
+        },
+        "required": [
+          "sub_module_id",
+          "name",
+          "actions",
           "is_active"
         ]
       },
@@ -9394,6 +9515,68 @@
           "type",
           "rate",
           "is_active"
+        ]
+      },
+      "CreateSalaryGradeDto": {
+        "type": "object",
+        "properties": {
+          "grade": {
+            "type": "string",
+            "example": "SG25",
+            "description": "Salary grade number 25"
+          },
+          "rate": {
+            "type": "number",
+            "example": "25000",
+            "description": "Monthly salary or rate of an employee"
+          },
+          "level": {
+            "type": "number",
+            "example": "3",
+            "description": "The level of this salary grade"
+          },
+          "is_confidential": {
+            "type": "boolean",
+            "example": false,
+            "description": "If this SG is for confidential type of salary"
+          }
+        },
+        "required": [
+          "grade",
+          "rate",
+          "level",
+          "is_confidential"
+        ]
+      },
+      "UpdateSalaryGradeDto": {
+        "type": "object",
+        "properties": {
+          "grade": {
+            "type": "string",
+            "example": "SG25",
+            "description": "Salary grade number 25"
+          },
+          "rate": {
+            "type": "number",
+            "example": "25000",
+            "description": "Monthly salary or rate of an employee"
+          },
+          "level": {
+            "type": "number",
+            "example": "3",
+            "description": "The level of this salary grade"
+          },
+          "is_confidential": {
+            "type": "boolean",
+            "example": false,
+            "description": "If this SG is for confidential type of salary"
+          }
+        },
+        "required": [
+          "grade",
+          "rate",
+          "level",
+          "is_confidential"
         ]
       },
       "CreatePermissionTemplateDto": {
