@@ -32,8 +32,18 @@ export const SYSTEM_MANAGEMENT = 'system management';
 export const EMPLOYEE_MASTERLIST = 'employee masterlist';
 // export const ROLES_AND_STRUCTURE = 'roles and structure';
 export const ROLE_MANAGEMENT = 'role management';
-export const EXTENDED_LEAVE_REQUEST = 'extended leave request'
-export const LEAVE_REQUEST = 'leave request'
+export const EXTENDED_LEAVE_REQUEST = 'extended leave request';
+export const LEAVE_REQUEST = 'leave request';
+export const SALARY_GRADE = 'salary grade';
+export const OVERTIME_CASE = 'overtime case';
+export const OVERTIME_RATE = 'overtime rate';
+export const HIRING_PIPELINE = 'hiring pipeline';
+export const CAREER_POSTING = 'career posting';
+export const PERFORMANCE_MANAGEMENT = 'performance management';
+export const REGULARIZATION_REVIEW = 'regularization review';
+
+//SUBMODULE FOR EMPLOYEE/CORP SERV
+export const EMPLOYEE_DASHBOARD ='employee dashboard';
 
 //SUBMODULE FOR MANAGER - OR IN CONTROLLER SUBJECT
 export const USER_ACCOUNT = 'user account';
