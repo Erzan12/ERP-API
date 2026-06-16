@@ -6221,6 +6221,45 @@
         "tags": [
           "Human Resources - Salary Grade"
         ]
+      },
+      "post": {
+        "operationId": "SalaryGradeController_createSalaryGrade_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Salary Grade",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSalaryGradeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Salary Grade successfully created"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a Salary Grade",
+        "tags": [
+          "Human Resources - Salary Grade"
+        ]
       }
     },
     "/v2/manager/permission-template": {
@@ -9424,6 +9463,37 @@
           "type",
           "rate",
           "is_active"
+        ]
+      },
+      "CreateSalaryGradeDto": {
+        "type": "object",
+        "properties": {
+          "grade": {
+            "type": "string",
+            "example": "SG25",
+            "description": "Salary grade number 25"
+          },
+          "rate": {
+            "type": "number",
+            "example": "25000",
+            "description": "Monthly salary or rate of an employee"
+          },
+          "level": {
+            "type": "number",
+            "example": "3",
+            "description": "The level of this salary grade"
+          },
+          "is_confidential": {
+            "type": "boolean",
+            "example": false,
+            "description": "If this SG is for confidential type of salary"
+          }
+        },
+        "required": [
+          "grade",
+          "rate",
+          "level",
+          "is_confidential"
         ]
       },
       "CreatePermissionTemplateDto": {
