@@ -127,7 +127,7 @@ export class SubModuleControllerV2 {
   }
 
   //update the submodule actions - inventory of permissions added on a submodule
-  @Put('sub-module/actions/:subModuleActionId')
+  @Put('sub-module/permissions/:subModuleActionId')
   @ApiBody({
     type: UpdateSubmoduleActionDto,
     description: 'Payload to update the current sub module action details',
@@ -166,5 +166,14 @@ export class SubModuleControllerV2 {
     @Param('subModuleId', new ParseUUIDPipe()) subModuleId: string,
   ) {
     return this.subModuleService.deleteSubmodule(subModuleId);
+  }
+
+  @Delete('sub-module/permissions/:submoduleActionId')
+  @ApiOperation({ summary: 'Delete a submodule action' })
+  @Can({ action: 'update', subject: 'System Management' })
+  deleteSubmoduleAction(
+    @Param('submoduleActionId', new ParseUUIDPipe()) submoduleActionId: string,
+  ) {
+    return this.subModuleService.deleteSubmoduleAction(submoduleActionId);
   }
 }
