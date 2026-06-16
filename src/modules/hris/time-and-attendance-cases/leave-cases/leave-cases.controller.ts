@@ -64,7 +64,7 @@ export class LeaveCasesController {
     @Put('time-and-attendance-cases/leave/:leaveCaseId')
     @ApiBody({
        type:  UpdateLeaveRequestWithDetailsDto,
-       description: 'Payload to updated leave request/case',
+       description: 'Payload to update leave request/case',
     })
     @ApiOperation({ summary: 'Update a current leave request/case'})
     @ApiPatchResponse('Leave Request updated successfully')

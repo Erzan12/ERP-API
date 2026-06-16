@@ -1,9 +1,10 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { OvertimeStatus, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 import { OvertimeCasesPaginationDto } from 'src/utils/dtos/overtime-cases-pagination.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
+import { OvertimeCaseDto } from './dto/overtime-case.dto';
 
 @Injectable()
 export class OvertimeCasesService {
@@ -196,11 +197,11 @@ export class OvertimeCasesService {
             ]);
         }
 
-        const allowSortFeilds = [
+        const allowSortFields = [
             'created_by'
         ]
 
-        const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy: 'created_at';
+        const safeSortBy = allowSortFields.includes(sortBy) ? sortBy: 'created_at';
 
         const [total, overtimes] = await this.prisma.$transaction([
             this.prisma.hrOvertimeRequest.count({
@@ -280,7 +281,99 @@ export class OvertimeCasesService {
         }
     }
 
-    // async createOvertimeCase(user: Request, dto: ) {
+    async createOvertimeCase(user: RequestUser, dto: OvertimeCaseDto) {
+        const { employee_id, vessel_id, overtime_rate_id, date_filed, ot_date, time_from, time_to, reason } = dto;
 
-    // }
+        // Auth check first
+        const requestUser = await this.prisma.user.findUnique({
+            where: { id: user.id },
+            include: {
+                employee: {
+                include: {
+                    person: true,
+                    position: true,
+                },
+                },
+                user_roles: true,
+            },
+        });
+
+        if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+            throw new BadRequestException(`User does not exist.`);
+        }
+    
+        const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
+        const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    
+        if (!canView) {
+            throw new ForbiddenException('You are not authorized to perform this action');
+        }
+
+        return this.prisma.$transaction(async (tx) => {
+            try {
+                if (date_filed === null) {
+                    throw new BadRequestException("Date file cannot be empty!");
+                }
+
+                if (ot_date === null) {
+                    throw new BadRequestException("OT Date cannot be empty!");
+                }
+
+                if (time_from === null) {
+                    throw new BadRequestException("Time from cannot be empty");
+                }
+
+                if (time_to === null) {
+                    throw new BadRequestException("Time to cannot be empty");
+                }
+
+                const conflict = await tx.hrOvertimeRequest.findFirst({
+                    where: {
+                        employee_id: employee_id,
+                        ot_date: ot_date,
+                        status: {
+                            notIn: [OvertimeStatus.cancelled, OvertimeStatus.rejected]
+                        }
+                    }
+                });
+
+                if (conflict) {
+                    throw new BadRequestException(
+                        "Conflicting OT Date exist (active request already exist)"
+                    );
+                }
+
+                const employeeSalary = await tx.employee.findFirst({
+                    where: { id: employee_id,  salary: { not: 0 }},
+                    select: {
+                        id: true,
+                        employee_id: true,
+                        salary: true
+                    }
+                })
+
+                const overtimeRate = await tx.hrOvertimeRate.findFirst({
+                    where: { id: overtime_rate_id, is_active: true },
+                    select: {
+                        id: true,
+                        type: true,
+
+                    }
+                })
+
+                // const overtimeRequest = await tx.hrOvertimeRequest.create({
+                //     data: {
+                //         employee_id,
+                //         vessel_id,
+                //         overtime_rate_id,
+                //         date_filed,
+                //         ot_date,
+
+                //     }
+                // })
+            } catch (error) {
+                
+            }
+        })
+    }
 }

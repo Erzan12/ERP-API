@@ -200,7 +200,7 @@ export class HiringPipelineService {
       };
     }
 
-    const allowSortFeilds = [
+    const allowSortFields = [
       'career_id',
       'application_source',
       'applicaiton_status',
@@ -208,10 +208,10 @@ export class HiringPipelineService {
       'created_by',
     ];
 
-    // if (!allowSortFeilds.includes(sortBy)) {
+    // if (!allowSortFields.includes(sortBy)) {
     //   sortBy;
     // }
-    const safeSortBy = allowSortFeilds.includes(sortBy) ? sortBy : 'created_at';
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
     const [total, findApplicants] = await this.prisma.$transaction([
       this.prisma.applicant.count({
         where: {
