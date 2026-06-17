@@ -1547,7 +1547,7 @@ model SubModule {
 
 model SubModuleAction {
   id     String @id @default(uuid()) @db.Uuid
-  action String
+  action String @unique
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
