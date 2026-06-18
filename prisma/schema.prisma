@@ -1565,7 +1565,6 @@ model SubModuleAction {
 model SubModulePermission {
   id                   String @id @default(uuid()) @db.Uuid
   action               String
-  is_active            Boolean @default(true)
   sub_module_action_id String @db.Uuid
   sub_module_id        String @db.Uuid
 
