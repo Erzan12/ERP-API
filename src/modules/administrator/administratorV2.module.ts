@@ -25,6 +25,8 @@ import { SlackModule } from 'src/jobs/slack/slack.module';
 import { HttpModule } from '@nestjs/axios';
 import { SlackService } from 'src/jobs/slack/slack.service';
 import { FileUploadController } from './file-upload/file-upload.controller';
+import { SubModuleActionController } from './sub-module-action/sub-module-action.controller';
+import { SubModuleActionService } from './sub-module-action/sub-module-action.service';
 
 @Module({
   imports: [AuthModule, TerminusModule, SlackModule, HttpModule],
@@ -38,6 +40,7 @@ import { FileUploadController } from './file-upload/file-upload.controller';
     HealthController,
     DbQueryControllerV2,
     FileUploadController,
+    SubModuleActionController,
   ],
   providers: [
     JwtStrategy,
@@ -53,6 +56,7 @@ import { FileUploadController } from './file-upload/file-upload.controller';
     AuditService,
     DbQueryService,
     SlackService,
+    SubModuleActionService,
   ],
   exports: [AdministratorV2Module],
 })
