@@ -13,13 +13,26 @@ import { CreateSubModuleActionDto, UpdateSubmoduleActionDto } from './dto/sub-mo
 export class SubModuleActionController {
     constructor(private submoduleActionService: SubModuleActionService) {} 
 
+    @Get('sub-module/permissions/:subModulePermissionId')
+    @ApiOperation({ summary: 'Get a Submodule action/permission' })
+    @ApiGetResponse(
+        'Here is the Submodule action/permission'
+    )
+    @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+    getSubModulepermission(
+        @Param('subModulePermissionId', new ParseUUIDPipe()) subModulePermissionId: string, 
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.submoduleActionService.getSubModuleAction(subModulePermissionId, user)
+    }
+
     @Get('sub-module/permissions')
     @ApiOperation({ summary: 'Get Submodule actions/permissions' })
     @ApiGetResponse(
         'Here are the list of Submodule actions/permissions available',
     )
     @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
-    getSubModuleActions(@SessionUser() user: RequestUser) {
+    getSubModulePermission(@SessionUser() user: RequestUser) {
         return this.submoduleActionService.getSubModuleActions(user);
     }
 
@@ -34,7 +47,7 @@ export class SubModuleActionController {
     })
     @ApiPostResponse('Permission created successfully')
     @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-    createPermission(
+    createSubModulePermission(
         @Body() addSubModuleDto: CreateSubModuleActionDto,
         @SessionUser() user: RequestUser,
     ) {
