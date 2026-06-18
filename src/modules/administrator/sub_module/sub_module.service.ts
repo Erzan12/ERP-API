@@ -4,11 +4,9 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
-import { CreateSubModuleDto } from './dto/create-sub-module.dto';
+import { CreateSubModuleDto, UpdateSubmoduleDto } from './dto/sub-module.dto';
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
-import { UpdateSubmodulePermissionDto, UpdateSubmoduleActionDto } from './dto/update-sub-module.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { SubModulePaginationDto } from 'src/utils/dtos/module-pagination.dto';
@@ -100,7 +98,6 @@ export class SubModuleService {
             select: {
               id: true,
               action: true,
-              is_active: true
             }
           }
         },
@@ -218,12 +215,11 @@ export class SubModuleService {
   }
 
   //can be upgraded to when creating a submodule it can also set available permissions; right now it can just create submodules cant set permissions
-  async createSubModule(
-    createSubModuleDto: CreateSubModuleDto,
-    user: RequestUser,
-  ) {
+  async createSubModule(dto: CreateSubModuleDto, user: RequestUser) {
+    const { name, module_id, actions } = dto;
+
     const findModule = await this.prisma.module.findUnique({
-      where: { id: createSubModuleDto.module_id },
+      where: { id: dto.module_id },
     });
     if (!findModule) {
       throw new BadRequestException('Module not found!');
@@ -231,13 +227,76 @@ export class SubModuleService {
 
     const subModule = await this.prisma.subModule.create({
       data: {
-        name: createSubModuleDto.name,
-        module_id: createSubModuleDto.module_id,
+        name: dto.name,
+        module_id: dto.module_id,
+        created_by: user.id
       },
       include: {
         module: true,
       },
     });
+
+    // Get all action definitions once
+    const actionRecords =
+      await this.prisma.subModuleAction.findMany({
+        where: {
+          action: {
+            in: actions,
+          },
+          is_active: true
+        },
+      });
+
+    const actionMap = new Map(
+      actionRecords.map(action => [
+        action.action,
+        action,
+      ]),
+    );
+
+    let createdSubModuleWithPermissions;
+
+    for (const action of actions) {
+      const actionRecord =
+        actionMap.get(action);
+
+      if (!actionRecord) {
+        throw new BadRequestException ("Submodule Action not found");
+      }
+
+      await this.prisma.subModulePermission.create({
+        data: {
+          action,
+          sub_module_id: subModule.id,
+          sub_module_action_id:
+            actionRecord.id,
+            created_by: user.id
+        },
+      });
+    };
+
+    // Fetch permissions
+    createdSubModuleWithPermissions =
+      await this.prisma.subModule.findFirst({
+        where: {
+          id: subModule.id,
+          is_active: true,
+        },
+        select: {
+          id: true,
+          name: true,
+          module_id: true,
+          is_active: true,
+          created_by: true,
+          created_at: true,
+          sub_module_permissions: {
+            select: {
+              id: true,
+              action: true,
+            },
+          },
+        },
+      });
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -266,19 +325,12 @@ export class SubModuleService {
         name: userName,
         position: userPos,
       },
-      subModule_id: subModule.id,
-      subModule_name: subModule.name,
+      subModule: createdSubModuleWithPermissions
     };
   }
 
-  async getSubModuleActions(user: RequestUser) {
-    const modules = await this.prisma.subModuleAction.findMany();
-
-    if (modules.length === 0) {
-      throw new NotFoundException(
-        'No Submodule actions yet available or added',
-      );
-    }
+  async updateSubmodule(subModuleId: string, dto: UpdateSubmoduleDto, user: RequestUser) {
+    const { name, module_id, is_active } = dto;
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -294,148 +346,218 @@ export class SubModuleService {
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
+      throw new BadRequestException('User does not exist.');
     }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+
+    const canUpdate = requestUser.user_roles.some(role =>
+      allowedRoles.includes(role.role_name),
     );
 
-    if (!isAdmin) {
+    if (!canUpdate) {
       throw new ForbiddenException(
-        'You are not allowed to perform this action',
+        'You are not authorized to perform this action',
       );
     }
 
-    return {
-      status: 'success',
-      message: 'Here is the list of Submodule Actions available',
-      modules,
-    };
-  }
-
-  //add new submodule permission -> acts as inventory of all permisison/actions that can be assigned to a submodule
-  async addSubModuleAction(dto: AddSubModulePermissionDto, user: RequestUser) {
-    const { action } = dto;
-
-    const permissionsToCreate = action.map((act) => ({
-      action: act,
-    }));
-
-    const subModuleAction = await this.prisma.subModuleAction.createMany({
-      data: permissionsToCreate,
-      skipDuplicates: true, // Optional: skips duplicate "action" entries
-    });
-
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
+    // Validate Submodule
+    const existingSubModule =
+      await this.prisma.subModule.findUnique({
+        where: {
+          id: subModuleId,
         },
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
-
-    return {
-      status: 'success',
-      message: `Added ${subModuleAction.count} new permission(s).`,
-      created_by: `${userName} - ${userPos}`,
-      count: subModuleAction.count,
-      actions_added: action,
-    };
-  }
-
-  async deleteSubmoduleAction(submoduleActionId: string) {
-    const submoduleAction = await this.prisma.subModuleAction.delete({
-      where: { id: submoduleActionId },
-    })
-
-    if (!submoduleAction) {
-      throw new NotFoundException ("Submodule Action does not exist");
-    }
-
-    return {
-      status: 'success',
-      message: 'Sub module action deleted successfully',
-      submoduleAction
-    }
-  }
-
-  async updateSubmoduleAction(
-    dto: UpdateSubmoduleActionDto,
-    user: RequestUser,
-    subModuleActionId: string,
-  ) {
-    const { action, is_active } = dto;
-
-    const existingSubModulePermission =
-      await this.prisma.subModuleAction.findFirst({
-        where: { id: subModuleActionId },
       });
 
-    if (!existingSubModulePermission) {
-      throw new NotFoundException('Sub Module permission does not exist!');
+    if (!existingSubModule) {
+      throw new BadRequestException(
+        'Selected Sub Module does not exist',
+      );
     }
 
-    // if (existingSubModulePermission.stat === 0) {
-    //     throw new ForbiddenException(`${existingSubModulePermission.action} action status is inactive`);
-    // }
-
-    const updateSubModulePermission = await this.prisma.subModuleAction.update({
-      where: { id: subModuleActionId },
+    const subModule = await this.prisma.subModule.update({
+      where: { id: subModuleId, is_active: true },
       data: {
-        id: existingSubModulePermission.id,
-        action,
+        name,
+        module_id,
         is_active,
-      },
-    });
+        updated_by: user.id
+      }
+    })
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-      },
-    });
+    // Execute Transaction
+    // const result = await this.prisma.$transaction(
+    //   async tx => {
+    //     // Update submodule details
+    //     await tx.subModule.update({
+    //       where: {
+    //         id: subModuleId,
+    //       },
+    //       data: {
+    //         ...(name && { name }),
+    //         ...(is_active !== undefined && {
+    //           is_active,
+    //         }),
+    //         updated_by: user.id,
+    //       },
+    //     });
 
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
+    //     // Get current permissions
+    //     const existingPermissions =
+    //       await tx.subModulePermission.findMany({
+    //         where: {
+    //           id: subModuleId,
+    //         },
+    //       });
+
+    //     const existingActions =
+    //       existingPermissions.map(
+    //         permission => permission.action,
+    //       );
+
+    //     const actionsToRemove =
+    //       existingActions.filter(
+    //         action => !actions.includes(action),
+    //       );
+
+    //     // Deactivate removed permissions
+    //     if (actionsToRemove.length > 0) {
+    //       await tx.subModulePermission.updateMany({
+    //         where: {
+    //           id: subModuleId,
+    //           action: {
+    //             in: actionsToRemove,
+    //           },
+    //         },
+    //         data: {
+    //           is_active: false,
+    //           updated_by: user.id,
+    //         },
+    //       });
+    //     }
+
+    //     // Get all action definitions once
+    //     const actionRecords =
+    //       await tx.subModuleAction.findMany({
+    //         where: {
+    //           action: {
+    //             in: actions,
+    //           },
+    //         },
+    //       });
+
+    //     const actionMap = new Map(
+    //       actionRecords.map(action => [
+    //         action.action,
+    //         action,
+    //       ]),
+    //     );
+
+    //     // Process incoming actions
+    //     for (const action of actions) {
+    //       const actionRecord =
+    //         actionMap.get(action);
+
+    //       if (!actionRecord) {
+    //         continue;
+    //       }
+
+    //       const existingPermission =
+    //         await tx.subModulePermission.findFirst({
+    //           where: {
+    //             id: subModuleId,
+    //             action,
+    //           },
+    //         });
+
+    //       if (existingPermission) {
+    //         // Reactivate if previously disabled
+    //         await tx.subModulePermission.update({
+    //           where: {
+    //             id: existingPermission.id,
+    //           },
+    //           data: {
+    //             is_active: true,
+    //             updated_by: user.id,
+    //           },
+    //         });actions
+    //       } else {
+    //         // Create new permission
+    //         await tx.subModulePermission.create({
+    //           data: {
+    //             action,
+    //             sub_module_id: subModuleId,
+    //             sub_module_action_id:
+    //               actionRecord.id,
+    //             created_by: user.id,
+    //           },
+    //         });
+    //       }
+    //     }
+
+    //     // Fetch updated permissions
+    //     const updatedPermissions =
+    //       await tx.subModulePermission.findMany({
+    //         where: {
+    //           id: subModuleId,
+    //           is_active: true,
+    //         },
+    //         include: {
+    //           sub_module: {
+    //             select: {
+    //               id: true,
+    //               name: true,
+    //             },
+    //           },
+    //         },
+    //       });
+
+    //     return updatedPermissions;
+    //   },
+    // );
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userPos = requestUser.employee.position?.name ?? '';
 
     return {
       status: 'success',
-      message: `${existingSubModulePermission.action} action has been updated successfully!`,
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
-      data: {
-        updateSubModulePermission,
-      },
+      message: 'Submodule updated successfully.',
+      updated_by: `${userName} - ${userPos}`,
+      subModule
+      // data: {
+      //   subModuleId,
+      //   actions: result.map(
+      //     permission => permission.action,
+      //   ),
+      //   sub_module: result[0]?.sub_module ?? {
+      //     id: subModuleId,
+      //     name,
+      //   },
+      // },
     };
   }
 
-  // }
+  async deleteSubmodule(subModuleId: string) {
+    const subModule = await this.prisma.subModule.delete({
+      where: { id: subModuleId },
+      include: {
+        sub_module_permissions: true,
+      }
+    })
+
+    return {
+      status: 'success',
+      message: 'Submodule with permissions deleted',
+      subModule
+    }
+  }
+
   async assignSubModulePermissions(
     dto: AssignSubModulePermissionDto,
     user: RequestUser,
@@ -481,34 +603,160 @@ export class SubModuleService {
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
 
-    // Fetch existing permission definitions from AddedSubModPermission
-    const availablePermissions = await this.prisma.subModuleAction.findMany({
-      where: {
-        action: {
-          in: action,
+    // const existingPermissions =
+    //   await this.prisma.subModulePermission.findMany({
+    //     where: {
+    //       sub_module_id,
+    //     },
+    //     include: {
+    //       sub_module_action: true,
+    //     },
+    //   });
+
+    // const existingActions = existingPermissions.map(
+    //   (p) => p.sub_module_action.action,
+    // );
+
+    // const actionsToDelete = existingPermissions
+    //   .filter((p) => !action.includes(p.sub_module_action.action))
+    //   .map((p) => p.id);
+
+    // if (actionsToDelete.length > 0) {
+    //   await this.prisma.subModulePermission.deleteMany({
+    //     where: {
+    //       id: {
+    //         in: actionsToDelete,
+    //       },
+    //     },
+    //   });
+    // }
+
+    // // Fetch existing permission definitions from AddedSubModPermission
+    // const availablePermissions = await this.prisma.subModuleAction.findMany({
+    //   where: {
+    //     action: {
+    //       in: action,
+    //     },
+    //     is_active: true,
+    //   },
+    // });
+
+    // if (availablePermissions.length === 0) {
+    //   throw new BadRequestException('No matching active permissions found.');
+    // }
+    
+    // const actionsToCreate = availablePermissions.filter(
+    //   (perm) => !existingActions.includes(perm.action),
+    // );
+
+    
+
+    // // Create SubModulePermission entries using existing permission IDs
+    // const subModulePermissionsToCreate = availablePermissions.map((perm) => ({
+    //   sub_module_id,
+    //   sub_module_action_id: perm.id,
+    //   action: perm.action, // optional: only if you're storing this string too
+    //   is_active: perm.is_active
+    // }));
+
+    // const result = await this.prisma.subModulePermission.createMany({
+    //   data: subModulePermissionsToCreate,
+    //   skipDuplicates: true,
+    // });
+
+    // const requestedCount = subModulePermissionsToCreate.length;
+    // const createdCount = result.count;
+
+    const existingPermissions =
+      await this.prisma.subModulePermission.findMany({
+        where: {
+          sub_module_id,
         },
+        include: {
+          sub_module_action: true,
+        },
+      });
+
+    const existingActions = existingPermissions.map(
+      (p) => p.sub_module_action.action,
+    );
+
+    // Permissions to remove
+    const actionsToDelete = existingPermissions
+      .filter((p) => !action.includes(p.sub_module_action.action))
+      .map((p) => p.id);
+
+    // Valid actions from master table
+    const availablePermissions =
+      await this.prisma.subModuleAction.findMany({
+        where: {
+          action: {
+            in: action,
+          },
+        },
+      });
+
+    if (availablePermissions.length !== action.length) {
+      throw new BadRequestException(
+        'One or more permissions do not exist.',
+      );
+    }
+
+    // Permissions to add
+    const actionsToCreate = availablePermissions.filter(
+      (perm) => !existingActions.includes(perm.action),
+    );
+
+    const subModulePermissionsToCreate =
+      actionsToCreate.map((perm) => ({
+        sub_module_id,
+        sub_module_action_id: perm.id,
+        action: perm.action,
+        created_by: user.id,
+      }));
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      if (actionsToDelete.length > 0) {
+        await tx.subModulePermission.deleteMany({
+          where: {
+            id: {
+              in: actionsToDelete,
+            },
+          },
+        });
+      }
+
+      return tx.subModulePermission.createMany({
+        data: subModulePermissionsToCreate,
+        skipDuplicates: true,
+      });
+    });
+
+    const updatedSubModule = await this.prisma.subModule.findUnique({
+      where: {
+        id: sub_module_id,
+      },
+      select: {
+        id: true,
+        name: true,
+        module_id: true,
         is_active: true,
+        updated_at: true,
+        sub_module_permissions: {
+          select: {
+            id: true,
+            action: true,
+          },
+          orderBy: {
+            action: 'asc',
+          },
+        },
       },
     });
 
-    if (availablePermissions.length === 0) {
-      throw new BadRequestException('No matching active permissions found.');
-    }
-
-    // Create SubModulePermission entries using existing permission IDs
-    const subModulePermissionsToCreate = availablePermissions.map((perm) => ({
-      sub_module_id,
-      sub_module_action_id: perm.id,
-      action: perm.action, // optional: only if you're storing this string too
-    }));
-
-    const result = await this.prisma.subModulePermission.createMany({
-      data: subModulePermissionsToCreate,
-      skipDuplicates: true,
-    });
-
-    const requestedCount = subModulePermissionsToCreate.length;
+    const requestedCount = action.length;
     const createdCount = result.count;
+    const deletedCount = actionsToDelete.length;
 
     let message = '';
 
@@ -524,234 +772,15 @@ export class SubModuleService {
 
     return {
       status: 'success',
-      message: `Added permissions to Sub Module ${subModule.name}`,
+      message,
+      // message: `Updated permissions for Sub Module ${subModule.name}`,
       created_by: `${userName} - ${userPosition}`,
+      subModule: updatedSubModule,
       data: {
         requested: requestedCount,
         created: createdCount,
-        duplicates: requestedCount - createdCount,
-      },
-    };
-  }
-
-  async deleteSubmodule(subModuleId: string) {
-    const subModule = await this.prisma.subModule.delete({
-      where: { id: subModuleId },
-      include: {
-        sub_module_permissions: true,
-      }
-    })
-
-    return {
-      status: 'success',
-      message: 'Submodule with permissions deleted',
-      subModule
-    }
-  }
-
-  async updateSubmodule(dto: UpdateSubmodulePermissionDto, user: RequestUser) {
-    const { sub_module_id, name, actions, is_active } = dto;
-
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException('User does not exist.');
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canUpdate = requestUser.user_roles.some(role =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canUpdate) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
-    // Validate Submodule
-    const existingSubModule =
-      await this.prisma.subModule.findUnique({
-        where: {
-          id: sub_module_id,
-        },
-      });
-
-    if (!existingSubModule) {
-      throw new BadRequestException(
-        'Selected Sub Module does not exist',
-      );
-    }
-
-    // Execute Transaction
-    const result = await this.prisma.$transaction(
-      async tx => {
-        // Update submodule details
-        await tx.subModule.update({
-          where: {
-            id: sub_module_id,
-          },
-          data: {
-            ...(name && { name }),
-            ...(is_active !== undefined && {
-              is_active,
-            }),
-            updated_by: user.id,
-          },
-        });
-
-        // Get current permissions
-        const existingPermissions =
-          await tx.subModulePermission.findMany({
-            where: {
-              sub_module_id,
-            },
-          });
-
-        const existingActions =
-          existingPermissions.map(
-            permission => permission.action,
-          );
-
-        const actionsToRemove =
-          existingActions.filter(
-            action => !actions.includes(action),
-          );
-
-        // Deactivate removed permissions
-        if (actionsToRemove.length > 0) {
-          await tx.subModulePermission.updateMany({
-            where: {
-              sub_module_id,
-              action: {
-                in: actionsToRemove,
-              },
-            },
-            data: {
-              is_active: false,
-              updated_by: user.id,
-            },
-          });
-        }
-
-        // Get all action definitions once
-        const actionRecords =
-          await tx.subModuleAction.findMany({
-            where: {
-              action: {
-                in: actions,
-              },
-            },
-          });
-
-        const actionMap = new Map(
-          actionRecords.map(action => [
-            action.action,
-            action,
-          ]),
-        );
-
-        // Process incoming actions
-        for (const action of actions) {
-          const actionRecord =
-            actionMap.get(action);
-
-          if (!actionRecord) {
-            continue;
-          }
-
-          const existingPermission =
-            await tx.subModulePermission.findFirst({
-              where: {
-                sub_module_id,
-                action,
-              },
-            });
-
-          if (existingPermission) {
-            // Reactivate if previously disabled
-            await tx.subModulePermission.update({
-              where: {
-                id: existingPermission.id,
-              },
-              data: {
-                is_active: true,
-                updated_by: user.id,
-              },
-            });
-          } else {
-            // Create new permission
-            await tx.subModulePermission.create({
-              data: {
-                action,
-                sub_module_id,
-                sub_module_action_id:
-                  actionRecord.id,
-                created_by: user.id,
-              },
-            });
-          }
-        }
-
-        // Fetch updated permissions
-        const updatedPermissions =
-          await tx.subModulePermission.findMany({
-            where: {
-              sub_module_id,
-              is_active: true,
-            },
-            include: {
-              sub_module: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          });
-
-        return updatedPermissions;
-      },
-    );
-
-    // ==========================
-    // Format Response
-    // ==========================
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos =
-      requestUser.employee.position?.name ?? '';
-
-    return {
-      status: 'success',
-      message: 'Submodule updated successfully.',
-      updated_by: `${userName} - ${userPos}`,
-      data: {
-        sub_module_id,
-        actions: result.map(
-          permission => permission.action,
-        ),
-        sub_module: result[0]?.sub_module ?? {
-          id: sub_module_id,
-          name,
-        },
+        deleted: deletedCount,
+        current_permissions: action,
       },
     };
   }

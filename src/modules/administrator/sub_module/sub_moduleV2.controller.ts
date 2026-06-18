@@ -10,19 +10,17 @@ import {
   Delete,
 } from '@nestjs/common';
 import { Can } from '../../../utils/decorators/can.decorator';
-import { CreateSubModuleDto } from './dto/create-sub-module.dto';
+import { CreateSubModuleDto, UpdateSubmoduleDto } from './dto/sub-module.dto';
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
 import { SessionUser } from '../../../utils/decorators/session-user.decorator';
 import { RequestUser } from '../../../utils/types/request-user.interface';
 import { SubModuleService } from './sub_module.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
 import {
   ApiPatchResponse,
   ApiPostResponse,
   ApiGetResponse,
 } from 'src/utils/helpers/swagger-response.helper';
-import { UpdateSubmodulePermissionDto, UpdateSubmoduleActionDto } from './dto/update-sub-module.dto';
 import {
   ACTION_READ,
   SYSTEM_MANAGEMENT,
@@ -42,23 +40,8 @@ export class SubModuleControllerV2 {
   getSubmodules(
     @SessionUser() user: RequestUser,
     @Query() dto: SubModulePaginationDto,
-    // @Query('page') page = 1,
-    // @Query('perPage') perPage = 10,
-    // @Query('search') search?: string,
-    // @Query('sortBy') sortBy: string = 'created_at',
-    // @Query('order') order: 'asc' | 'desc' = 'asc',
   ) {
     return this.subModuleService.getSubModules(user, dto);
-  }
-
-  @Get('sub-modules/permissions')
-  @ApiOperation({ summary: 'Get Submodule actions/permissions' })
-  @ApiGetResponse(
-    'Here are the list of Submodule actions/permissions available',
-  )
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
-  getSubModuleActions(@SessionUser() user: RequestUser) {
-    return this.subModuleService.getSubModuleActions(user);
   }
 
   @Get('sub-modules/:subModuleId')
@@ -88,25 +71,6 @@ export class SubModuleControllerV2 {
     return this.subModuleService.createSubModule(createSubModuleDto, user);
   }
 
-  @Post('sub-modules/permissions')
-  @ApiBody({
-    type: AddSubModulePermissionDto,
-    description: 'Payload to create permissions for submodule',
-  })
-  @ApiOperation({
-    summary:
-      'Create a new permissions/actions for submodule(acts as inventory of actions for submodules)',
-  })
-  @ApiPostResponse('Permission created successfully')
-  @Can({ action: 'create', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  createPermission(
-    @Body() addSubModuleDto: AddSubModulePermissionDto,
-    @SessionUser() user: RequestUser,
-  ) {
-    console.log('createSubModuleDto:', AddSubModulePermissionDto);
-    return this.subModuleService.addSubModuleAction(addSubModuleDto, user);
-  }
-
   //add permissions to submodules
   @Put('sub-modules/permissions')
   @ApiBody({
@@ -126,37 +90,20 @@ export class SubModuleControllerV2 {
     );
   }
 
-  //update the submodule actions - inventory of permissions added on a submodule
-  @Put('sub-module/permissions/:subModuleActionId')
+  @Put('/sub-module/:subModuleId')
   @ApiBody({
-    type: UpdateSubmoduleActionDto,
-    description: 'Payload to update the current sub module action details',
+    type: UpdateSubmoduleDto,
+    description: 'Payload to update the current sub module',
   })
-  @ApiOperation({ summary: 'Update a current sub module action details' })
-  @ApiPatchResponse('Sub module action updated successfully')
-  @Can({ action: 'update', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  updateSubmoduleAction(
-    @Body() dto: UpdateSubmoduleActionDto,
-    @SessionUser() user: RequestUser,
-    @Param('subModuleActionId', new ParseUUIDPipe()) subModuleActionId: string,
-  ) {
-    return this.subModuleService.updateSubmoduleAction(dto, user, subModuleActionId);
-  }
-
-  @Put('sub-module')
-  @ApiBody({
-    type: UpdateSubmodulePermissionDto,
-    description: 'Payload to update the current sub module permission',
-  })
-  @ApiOperation({ summary: 'Update a current Submodule details and permissions' })
-  @ApiPatchResponse('Sub module permission updated successfully')
+  @ApiOperation({ summary: 'Update a current Submodule details' })
+  @ApiPatchResponse('Sub module updated successfully')
   @Can({ action: 'update', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   updateSubmodule(
-    @Body() dto: UpdateSubmodulePermissionDto,
+    @Body() dto: UpdateSubmoduleDto,
     @SessionUser() user: RequestUser,
-    // @Param('submoduleId', new ParseUUIDPipe()) submoduleId: string,
+    @Param('submoduleId', new ParseUUIDPipe()) submoduleId: string,
   ) {
-    return this.subModuleService.updateSubmodule( dto, user);
+    return this.subModuleService.updateSubmodule(submoduleId, dto, user);
   }
 
   @Delete('sub-modules/:subModuleId')
@@ -166,14 +113,5 @@ export class SubModuleControllerV2 {
     @Param('subModuleId', new ParseUUIDPipe()) subModuleId: string,
   ) {
     return this.subModuleService.deleteSubmodule(subModuleId);
-  }
-
-  @Delete('sub-module/permissions/:submoduleActionId')
-  @ApiOperation({ summary: 'Delete a submodule action' })
-  @Can({ action: 'update', subject: 'System Management' })
-  deleteSubmoduleAction(
-    @Param('submoduleActionId', new ParseUUIDPipe()) submoduleActionId: string,
-  ) {
-    return this.subModuleService.deleteSubmoduleAction(submoduleActionId);
   }
 }
