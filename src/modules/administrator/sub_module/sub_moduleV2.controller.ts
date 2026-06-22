@@ -71,6 +71,22 @@ export class SubModuleControllerV2 {
     return this.subModuleService.createSubModule(createSubModuleDto, user);
   }
 
+  @Put('/sub-module/:subModuleId')
+  @ApiBody({
+    type: UpdateSubmoduleDto,
+    description: 'Payload to update the current sub module',
+  })
+  @ApiOperation({ summary: 'Update a current Submodule details' })
+  @ApiPatchResponse('Sub module updated successfully')
+  @Can({ action: 'update', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  updateSubmodule(
+    @Body() dto: UpdateSubmoduleDto,
+    @SessionUser() user: RequestUser,
+    @Param('subModuleId', new ParseUUIDPipe()) subModuleId: string,
+  ) {
+    return this.subModuleService.updateSubmodule(subModuleId, dto, user);
+  }
+
   //add permissions to submodules
   @Put('sub-modules/permissions')
   @ApiBody({
@@ -88,22 +104,6 @@ export class SubModuleControllerV2 {
       assignSubModulePermissionDto,
       user,
     );
-  }
-
-  @Put('/sub-module/:subModuleId')
-  @ApiBody({
-    type: UpdateSubmoduleDto,
-    description: 'Payload to update the current sub module',
-  })
-  @ApiOperation({ summary: 'Update a current Submodule details' })
-  @ApiPatchResponse('Sub module updated successfully')
-  @Can({ action: 'update', subject: 'System Management' }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  updateSubmodule(
-    @Body() dto: UpdateSubmoduleDto,
-    @SessionUser() user: RequestUser,
-    @Param('submoduleId', new ParseUUIDPipe()) submoduleId: string,
-  ) {
-    return this.subModuleService.updateSubmodule(submoduleId, dto, user);
   }
 
   @Delete('sub-modules/:subModuleId')

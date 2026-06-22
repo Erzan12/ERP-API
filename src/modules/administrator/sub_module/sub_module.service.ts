@@ -384,9 +384,9 @@ export class SubModuleService {
     const subModule = await this.prisma.subModule.update({
       where: { id: subModuleId, is_active: true },
       data: {
-        name,
-        module_id,
-        is_active,
+        name: name ?? undefined,
+        module_id: module_id ?? undefined,
+        is_active: is_active ?? undefined,
         updated_by: user.id
       }
     })

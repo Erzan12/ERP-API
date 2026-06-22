@@ -457,53 +457,12 @@
         ]
       }
     },
-    "/v2/administrator/sub-modules/permissions": {
-      "put": {
-        "operationId": "SubModuleControllerV2_createSubModulePermission_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to assign permissions for submodule",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AssignSubModulePermissionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Permission assigned to a submodule successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Assign a new permission for submodule",
-        "tags": [
-          "Administrator - Submodule"
-        ]
-      }
-    },
     "/v2/administrator/sub-module/{subModuleId}": {
       "put": {
         "operationId": "SubModuleControllerV2_updateSubmodule_v2",
         "parameters": [
           {
-            "name": "submoduleId",
+            "name": "subModuleId",
             "required": true,
             "in": "path",
             "schema": {
@@ -543,6 +502,47 @@
           }
         },
         "summary": "Update a current Submodule details",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/v2/administrator/sub-modules/permissions": {
+      "put": {
+        "operationId": "SubModuleControllerV2_createSubModulePermission_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to assign permissions for submodule",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignSubModulePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Permission assigned to a submodule successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Assign a new permission for submodule",
         "tags": [
           "Administrator - Submodule"
         ]
@@ -7140,28 +7140,6 @@
           "actions"
         ]
       },
-      "AssignSubModulePermissionDto": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
-            "description": "Assign permissions to sub module, also can add multiple permissions at once",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "sub_module_id": {
-            "type": "string",
-            "example": "UUID",
-            "description": "ID of the Sub Module"
-          }
-        },
-        "required": [
-          "action",
-          "sub_module_id"
-        ]
-      },
       "UpdateSubmoduleDto": {
         "type": "object",
         "properties": {
@@ -7185,6 +7163,28 @@
           "name",
           "module_id",
           "is_active"
+        ]
+      },
+      "AssignSubModulePermissionDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
+            "description": "Assign permissions to sub module, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sub_module_id": {
+            "type": "string",
+            "example": "UUID",
+            "description": "ID of the Sub Module"
+          }
+        },
+        "required": [
+          "action",
+          "sub_module_id"
         ]
       },
       "CreateModuleDto": {
