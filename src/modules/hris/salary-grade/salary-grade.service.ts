@@ -137,10 +137,10 @@ export class SalaryGradeService {
         const salaryGrade = await this.prisma.salaryGrade.update({
             where: { id: salaryGradeId, is_active: true },
             data: {
-                grade: dto.grade ?? undefined,
-                rate: dto.rate ?? undefined,
-                level: dto.level ?? undefined,
-                is_confidential: dto.is_confidential ?? undefined,
+                grade: grade ?? undefined,
+                rate: rate ?? undefined,
+                level: level ?? undefined,
+                is_confidential: is_confidential ?? undefined,
                 updated_by: user.id
             }
         })
