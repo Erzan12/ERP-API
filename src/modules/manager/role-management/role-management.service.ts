@@ -309,82 +309,86 @@ export class RoleManagementService {
     };
   }
 
-  async updateRolePermissions(
-    id: string,
-    updateRolePermissionsDto: UpdateRolePermissionsDto,
-    user: RequestUser,
-  ) {
-    const { action_updates = [] } = updateRolePermissionsDto;
+  // async updateRolePermissions(
+  //   roleId: string,
+  //   updateRolePermissionsDto: UpdateRolePermissionsDto,
+  //   user: RequestUser,
+  // ) {
+  //   const { action_updates = [] } = updateRolePermissionsDto;
 
-    const existingRole = await this.prisma.role.findUnique({
-      where: { id },
-      include: {
-        role_permissions: true,
-      },
-    });
+  //   const existingRole = await this.prisma.role.findUnique({
+  //     where: { id: roleId },
+  //     include: {
+  //       role_permissions: {
+  //         select: {
+  //           sub_module_permission: true
+  //         }
+  //       },
+  //     },
+  //   });
 
-    if (!existingRole) {
-      throw new BadRequestException('Role does not exist!');
-    }
+  //   if (!existingRole) {
+  //     throw new BadRequestException('Role does not exist!');
+  //   }
 
-    if (existingRole.role_permissions.length === 0) {
-      throw new BadRequestException('This role has no existing role to update');
-    }
+  //   if (existingRole.role_permissions.length === 0) {
+  //     throw new BadRequestException('This role has no existing role to update');
+  //   }
 
-    const toUpdate = existingRole.role_permissions.filter((perm) =>
-      action_updates.some((update) => update.currentAction === perm.action),
-    );
+  //   const toUpdate = existingRole.role_permissions.filter((perm) =>
+  //     action_updates.some((update) => update.currentAction === perm.sub_module_permission.action),
+  //   );
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-      },
-    });
+  //   const requestUser = await this.prisma.user.findUnique({
+  //     where: { id: user.id },
+  //     include: {
+  //       employee: {
+  //         include: {
+  //           person: true,
+  //           position: true,
+  //         },
+  //       },
+  //     },
+  //   });
 
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
+  //   if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+  //     throw new BadRequestException(`User does not exist.`);
+  //   }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+  //   const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+  //   const userPos = requestUser.employee.position.name;
 
-    const results = await Promise.all(
-      toUpdate.map((perm) => {
-        const updateData = action_updates.find(
-          (u) => u.currentAction === perm.action,
-        );
+  //   const results = await Promise.all(
+  //     toUpdate.map((perm) => {
+  //       const updateData = action_updates.find(
+  //         (u) => u.currentAction === perm.sub_module_permission.action,
+  //       );
 
-        if (!updateData) {
-          throw new ForbiddenException('Updating action failed');
-        }
+  //       if (!updateData) {
+  //         throw new ForbiddenException('Updating action failed');
+  //       }
 
-        return this.prisma.rolePermission.update({
-          where: { id: perm.id },
-          data: {
-            action: updateData.newAction,
-          },
-        });
-      }),
-    );
-    return {
-      status: 'success',
-      message: 'Role Permission successfully updated',
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
-      updated_data: {
-        results,
-      },
-    };
-  }
+  //       return this.prisma.rolePermission.update({
+  //         where: { id: roleId },
+  //         data: {
+  //           action: updateData.newAction,
+  //         },
+  //       });
+  //     }),
+  //   );
+  //   return {
+  //     status: 'success',
+  //     message: 'Role Permission successfully updated',
+  //     updated_by: {
+  //       id: requestUser.id,
+  //       name: userName,
+  //       position: userPos,
+  //     },
+  //     updated_data: {
+  //       results,
+  //     },
+  //   };
+  // }
 
   async addRoleUser(user: RequestUser, userId: string, roleName: string) {
     //find role
@@ -458,6 +462,7 @@ export class RoleManagementService {
       user_role_id: userRole.id,
     };
   }
+
   //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
   async addUserRolePermissions(
     userId: string,
@@ -478,6 +483,7 @@ export class RoleManagementService {
       const rolePermissions = await tx.rolePermission.findMany({
         where: { id: { in: rolePermissionIds } },
         include: {
+          role: true,
           sub_module_permission: true,
         }
       });
@@ -529,7 +535,7 @@ export class RoleManagementService {
                 role: {
                   connect: { id: rp.role_id },
                 },
-                role_name: rp.role_name ?? null,
+                role_name: rp.role.name ?? null,
                 created_at: new Date(),
               },
               include: {
