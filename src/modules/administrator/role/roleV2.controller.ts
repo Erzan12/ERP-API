@@ -13,8 +13,8 @@ import { Can } from '../../../utils/decorators/can.decorator';
 import { SessionUser } from '../../../utils/decorators/session-user.decorator';
 import { RequestUser } from '../../../utils/types/request-user.interface';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
-import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
-import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
+import { CreateRolePermissionDto } from './dto/role-permission.dto';
+import { UpdateRolePermissionsDto } from './dto/role-permission.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
@@ -51,6 +51,16 @@ export class RoleControllerV2 {
     return this.roleService.getRoles(user, dto);
   }
 
+  @Get('roles/role-permissions')
+  @ApiOperation({ summary: 'Get all Role Permissions' })
+  @ApiGetResponse('Here are the list of Role Permissions')
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  getRolePermissions(
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.roleService.getRolePermissions(user);
+  }
+
   @Get('roles/:id')
   @ApiOperation({ summary: 'Get a role' })
   @ApiGetResponse('Here is the Role')
@@ -74,6 +84,20 @@ export class RoleControllerV2 {
     return this.roleService.createRole(createRoleDto, user);
   }
 
+  @Put('roles/role_permission')
+  @ApiOperation({ summary: 'Adding/Updating permission(s) to role' })
+  @ApiPostResponse('Permissions added to role')
+  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  createRolePermission(
+    @Body() createRolePermissionDto: CreateRolePermissionDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.roleService.createRolePermissions(
+      createRolePermissionDto,
+      user,
+    );
+  }
+
   //update role
   @Put('roles/:roleId')
   @ApiOperation({ summary: 'Update current role' })
@@ -88,34 +112,22 @@ export class RoleControllerV2 {
   }
 
   //add role permisison -> combining created role with submodule embedded permissions -> and this role permission can be assigned to a user
-  @Put('roles/role_permission')
-  @ApiOperation({ summary: 'Adding permission to role' })
-  @ApiPostResponse('Permissions added to role')
-  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  createRolePermission(
-    @Body() createRolePermissionDto: CreateRolePermissionDto,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.roleService.createRolePermissions(
-      createRolePermissionDto,
-      user,
-    );
-  }
+
 
   //update role permission
-  @Put('roles/role_permission/:id')
-  @ApiOperation({ summary: 'Updating current permission to role' })
-  @ApiPatchResponse('Permissions updated to role')
-  @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  updateRolePermissions(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() updateRolePermissionsDto: UpdateRolePermissionsDto,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.roleService.updateRolePermissions(
-      id,
-      updateRolePermissionsDto,
-      user,
-    );
-  }
+  // @Put('roles/role_permission/:id')
+  // @ApiOperation({ summary: 'Updating current permission to role' })
+  // @ApiPatchResponse('Permissions updated to role')
+  // @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  // updateRolePermissions(
+  //   @Param('id', new ParseUUIDPipe()) id: string,
+  //   @Body() updateRolePermissionsDto: UpdateRolePermissionsDto,
+  //   @SessionUser() user: RequestUser,
+  // ) {
+  //   return this.roleService.updateRolePermissions(
+  //     id,
+  //     updateRolePermissionsDto,
+  //     user,
+  //   );
+  // }
 }

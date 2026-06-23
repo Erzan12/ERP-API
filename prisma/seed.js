@@ -631,7 +631,6 @@ async function main() {
     },
   });
 
-  
   // Assuming you have:
   const userId = adminUser.id; // your user ID
   const roleId = adminRole.id; // admin role ID
@@ -693,77 +692,6 @@ async function main() {
     }
   })
 
-  // Fetch all RolePermissions for the role
-  const rolePermissions = await prisma.rolePermission.findMany({
-    where: {
-      role_id: roleId,
-    },
-  });
-
-  const superUserPermissionsData = rolePermissions.map((rp) => ({
-    action: rp.action,
-    user_id: superUserId,
-    user_role_id: superUserRole.id,
-    role_permission_id: rp.id,
-  }));
-
-  // Create UserPermissions for this userRole
-  const userPermissionsData = rolePermissions.map((rp) => ({
-    action: rp.action,
-    user_id: userId,
-    user_role_id: userRole.id,
-    role_permission_id: rp.id,
-  }));
-
-  const hrManagerPermissionsData = rolePermissions.map((rp) => ({
-    action: rp.action,
-    user_id: hrManagerUserId,
-    user_role_id: hrManRole.id,
-    role_permission_id: rp.id,
-  }));
-
-  const hrClerkPermissionsData = rolePermissions.map((rp) => ({
-    action: rp.action,
-    user_id: hrClerkUserId,
-    user_role_id: hrClerkRole.id,
-    role_permission_id: rp.id,
-  }));
-
-  const hrStaffPermissionsData = rolePermissions.map((rp) => ({
-    action: rp.action,
-    user_id: hrStaffUserId,
-    user_role_id: hrStaffRole.id,
-    role_permission_id: rp.id,
-  }));
-
-  await prisma.userPermission.createMany({
-    data: userPermissionsData,
-    skipDuplicates: true, // avoid duplicates on rerun
-  });
-
-  await prisma.userPermission.createMany({
-    data: superUserPermissionsData,
-    skipDuplicates: true, // avoid duplicates on rerun
-  })
-
-  await prisma.userPermission.createMany({
-    data: hrManagerPermissionsData,
-    skipDuplicates: true, // avoid duplicates on rerun
-  })
-
-  await prisma.userPermission.createMany({
-    data: hrClerkPermissionsData,
-    skipDuplicates: true, // avoid duplicates on rerun
-  })
-
-  await prisma.userPermission.createMany({
-    data: hrStaffPermissionsData,
-    skipDuplicates: true, // avoid duplicates on rerun
-  })
-
-  console.log(`✅ Assigned ${userPermissionsData.length} permissions to user ${userId}`);
-  console.log(`✅ Assigned ${superUserPermissionsData.length} permissions to Super user ${userId}`);
-
   // list of submodules
   const dashboardOnly = ['Dashboard'];
   const hrModules = ['Career Posting', 'Hiring Pipeline', 'Regularization Review', 'Performance Competency', 'Leave Category', 'Extended Leave Cases', 'Performance Evaluation']
@@ -804,41 +732,41 @@ async function main() {
       rolePermissionPayload.push({
         action,
         role_id: superAdminRole.id,
-        role_name: superAdminRole.name,
+        // role_name: superAdminRole.name,
         sub_module_permission_id: subModulePermissionId,
-        department_id:  itDept.id
+        // department_id:  itDept.id
       });
 
       rolePermissionPayload.push({
         action,
         role_id: adminRole.id,
-        role_name: adminRole.name,
+        // role_name: adminRole.name,
         sub_module_permission_id: subModulePermissionId,
-        department_id:  itDept.id
+        // department_id:  itDept.id
       });
 
       rolePermissionPayload.push({
         action,
         role_id: hrManagerRole.id,
-        role_name: hrManagerRole.name,
+        // role_name: hrManagerRole.name,
         sub_module_permission_id: subModulePermissionId,
-        department_id:  hrDept.id
+        // department_id:  hrDept.id
       });
 
       rolePermissionPayload.push({
         action,
         role_id: hrClerkRole.id,
-        role_name: hrClerkRole.name,
+        // role_name: hrClerkRole.name,
         sub_module_permission_id: subModulePermissionId,
-        department_id:  hrDept.id
+        // department_id:  hrDept.id
       });
 
       rolePermissionPayload.push({
         action,
         role_id: hrStaffRole.id,
-        role_name: hrStaffRole.name,
+        // role_name: hrStaffRole.name,
         sub_module_permission_id: subModulePermissionId,
-        department_id:  hrDept.id
+        // department_id:  hrDept.id
       });
     }
   }
@@ -850,6 +778,83 @@ async function main() {
     });
   }
   console.log(`✅ Super Administrator and Administrator role permissions created for ${rolePermissionPayload.length} actions.`);
+
+  // Fetch all RolePermissions for the role
+  const rolePermissions = await prisma.rolePermission.findMany({
+    where: {
+      role_id: roleId,
+    },
+  });
+
+  const superUserPermissionsData = rolePermissions.map((rp) => ({
+    action: rp.action,
+    user_id: superUserId,
+    user_role_id: superUserRole.id,
+    role_permission_id: rp.id,
+  }));
+
+  // Create UserPermissions for this userRole
+  const userPermissionsData = rolePermissions.map((rp) => ({
+    action: rp.action,
+    user_id: userId,
+    user_role_id: userRole.id,
+    role_permission_id: rp.id,
+  }));
+
+  const hrManagerPermissionsData = rolePermissions.map((rp) => ({
+    action: rp.action,
+    user_id: hrManagerUserId,
+    user_role_id: hrManRole.id,
+    role_permission_id: rp.id,
+  }));
+
+  const hrClerkPermissionsData = rolePermissions.map((rp) => ({
+    action: rp.action,
+    user_id: hrClerkUserId,
+    user_role_id: hrClrkRole.id,
+    role_permission_id: rp.id,
+  }));
+
+  const hrStaffPermissionsData = rolePermissions.map((rp) => ({
+    action: rp.action,
+    user_id: hrStaffUserId,
+    user_role_id: hrStffRole.id,
+    role_permission_id: rp.id,
+  }));
+
+  console.log('Role Permissions Count:', rolePermissions.length);
+  console.log(rolePermissions);
+
+  const result = await prisma.userPermission.createMany({
+    data: userPermissionsData,
+    skipDuplicates: true, // avoid duplicates on rerun
+  });
+
+  console.log(result);
+
+  await prisma.userPermission.createMany({
+    data: superUserPermissionsData,
+    skipDuplicates: true, // avoid duplicates on rerun
+  })
+
+  await prisma.userPermission.createMany({
+    data: hrManagerPermissionsData,
+    skipDuplicates: true, // avoid duplicates on rerun
+  })
+
+  await prisma.userPermission.createMany({
+    data: hrClerkPermissionsData,
+    skipDuplicates: true, // avoid duplicates on rerun
+  })
+
+  await prisma.userPermission.createMany({
+    data: hrStaffPermissionsData,
+    skipDuplicates: true, // avoid duplicates on rerun
+  })
+
+  // console.log(`✅ Assigned ${userPermissionsData.length} permissions to user ${userId}`);
+  // console.log(`✅ Assigned ${superUserPermissionsData.length} permissions to Super user ${userId}`);
+
   // i also want to add role permission for the admin user the role permission is a role like Administrator and assigned to a existing submodulepermission
 
   // 15. Seed Password Reset Tokens
