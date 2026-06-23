@@ -7,6 +7,8 @@ import {
   IsInt,
   IsDefined,
   IsOptional,
+  IsUUID,
+  IsBoolean,
 } from 'class-validator';
 
 export class CreateRoleDto {
@@ -21,6 +23,15 @@ export class CreateRoleDto {
     description: 'Description of the role',
   })
   description: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'PK UUID',
+    description: 'Department the role belongs to',
+  })
+  department_id: string;
+
 }
 
 export class UpdateRoleDto {
@@ -39,22 +50,18 @@ export class UpdateRoleDto {
   description?: string;
 
   @IsOptional()
-  @IsInt()
-  @IsDefined()
-  @Expose({ name: 'status' }) // maps " status" input field to this property
+  @IsUUID()
   @ApiProperty({
-    name: 'status',
-    example: 'active or inactive',
-    description: 'active, inactive',
+    example: 'PK UUID',
+    description: 'Department the role belongs to'
   })
-  @Transform(({ value }) => {
-    console.log('Transforming status:', value);
-    if (value === undefined || value === null) return undefined;
-    if (value === 'active') return 1;
-    if (value === 'inactive') return 0;
-    throw new BadRequestException(
-      `Invalid status value ${value}. Allowed values are "active" or "inactive"`,
-    );
+  department_id: string;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({
+    example: 'true or false',
+    description: 'If you want to update the status of the role',
   })
-  stat?: number;
+  is_active?: boolean;
 }

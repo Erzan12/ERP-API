@@ -157,9 +157,13 @@ export class PermissionTemplateService {
       const rolePermissions = await tx.rolePermission.findMany({
         where: {
           id: { in: role_permission_ids },
-          department_id,
+          ...(department_id && {
+            role: {
+              department_id,
+            },
+          }),
           ...(position_id && { position_id }),
-        },
+        }
       });
 
       for (const rp of rolePermissions) {
@@ -256,7 +260,11 @@ export class PermissionTemplateService {
       const rolePermissions = await tx.rolePermission.findMany({
         where: {
           id: { in: role_permission_ids },
-          department_id,
+          ...(department_id && {
+            role: {
+              department_id,
+            },
+          }),
           ...(position_id && { position_id }),
         },
       });
@@ -316,6 +324,7 @@ export class PermissionTemplateService {
             include: { 
               role_permissions: {
                 include: {
+                  role: true,
                   sub_module_permission: {
                     include: {
                       sub_module: true,
@@ -337,8 +346,9 @@ export class PermissionTemplateService {
       const userRolesMap = new Map<string, UserRole>();
 
       for (const ptrp of templateDept.permission_template_role_permissions) {
-        const rp = ptrp.role_permissions;
-        const key = `${rp.role_id}-${rp.sub_module_permission.sub_module_id}`;
+        const rp = ptrp.role_permissions.role;
+        const sp = ptrp.role_permissions.sub_module_permission;
+        const key = `${rp.id}-${sp.sub_module_id}`;
 
         let userRole = userRolesMap.get(key);
 
@@ -346,7 +356,7 @@ export class PermissionTemplateService {
           const existing = await tx.userRole.findFirst({
             where: {
               user_id: user.id,
-              role_id: rp.role_id,
+              role_id: rp.name,
             },
             include: { role: true },
           });
@@ -357,8 +367,8 @@ export class PermissionTemplateService {
             userRole = await tx.userRole.create({
               data: {
                 user_id: user.id,
-                role_id: rp.role_id,
-                role_name: rp.role_name,
+                role_id: rp.id,
+                role_name: rp.name,
                 created_at: new Date(),
               },
               include: {
@@ -384,7 +394,7 @@ export class PermissionTemplateService {
               user_id: user.id,
               user_role_id: userRole.id,
               role_permission_id: rp.id,
-              action: rp.action,
+              action: sp.action,
             },
           });
         }
