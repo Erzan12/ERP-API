@@ -629,7 +629,10 @@ model Department {
   division                        Division                       @relation(fields: [division_id], references: [id])
   employees                       Employee[]
   positions                       Position[]
-  role_permissions                RolePermission[]
+
+  // One department -> consist of many roles
+  roles Role[]
+
   permission_templates            PermissionTemplate[]
   careerPosting                   CareerPosting[]
   permission_template_departments PermissionTemplateDepartment[]
@@ -658,7 +661,6 @@ model Position {
   employee                     Employee[]
   careerPosting                CareerPosting[]
   department                   Department                     @relation(fields: [department_id], references: [id], onDelete: Cascade)
-  RolePermission               RolePermission[]
   PermissionTemplateDepartment PermissionTemplateDepartment[]
 
   @@index([department_id])
@@ -919,6 +921,10 @@ model Role {
   description String
   is_active   Boolean @default(true)
 
+  department_id String? @db.Uuid
+
+  department  Department? @relation(fields: [department_id], references: [id])
+
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
 
@@ -931,6 +937,8 @@ model Role {
   role_permissions    RolePermission[]
   user_roles          UserRole[]
   permission_template PermissionTemplate[]
+
+  @@index([department_id])
 }
 
 model UserRole {
@@ -959,12 +967,9 @@ model UserRole {
 
 model RolePermission {
   id                       String  @id @default(uuid()) @db.Uuid
-  role_id                  String  @db.Uuid
-  role_name                String
   action                   String
+  role_id                  String  @db.Uuid
   sub_module_permission_id String  @db.Uuid
-  department_id            String  @db.Uuid
-  position_id              String? @db.Uuid
   is_active                Boolean @default(true)
 
   created_by String? @db.Uuid
@@ -976,17 +981,14 @@ model RolePermission {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  department            Department          @relation(fields: [department_id], references: [id])
-  position              Position?           @relation(fields: [position_id], references: [id])
   role                  Role                @relation(fields: [role_id], references: [id], onDelete: Cascade)
   sub_module_permission SubModulePermission @relation(fields: [sub_module_permission_id], references: [id], onDelete: Cascade)
 
   permission_template_links PermissionTemplateRolePermission[]
   user_permission           UserPermission[]
 
-  @@unique([role_id, sub_module_permission_id, action], map: "unique_role_permission")
+  @@unique([role_id, sub_module_permission_id])
   @@index([role_id])
-  @@index([department_id])
 }
 
 model UserPermission {

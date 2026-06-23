@@ -6,7 +6,7 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 import { CreateSalaryGradeDto, UpdateSalaryGradeDto } from './dto/salary-grade.dto';
 import { Can } from 'src/utils/decorators/can.decorator';
-import { ACTION_UPDATE, SALARY_GRADE } from 'src/utils/constants/ability.constant';
+import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, SALARY_GRADE } from 'src/utils/constants/ability.constant';
 
 @ApiTags('Human Resources - Salary Grade')
 @Controller({path:'hris', version: '2'})
@@ -17,10 +17,22 @@ export class SalaryGradeController {
     @Get('salary-grades')
     @ApiOperation({ summary: 'List of all Salary Grades' })
     @ApiGetResponse('List of Salary Grades')
+    @Can({ action: ACTION_READ, subject: SALARY_GRADE })
     getSalaryGrades(
         @SessionUser() user: RequestUser
     ) {
         return this.salaryGradeService.getSalaryGrades(user);
+    }
+
+    @Get('salary-grades/:salaryGradeId')
+    @ApiOperation({ summary: 'Get a Salary Grade' })
+    @ApiGetResponse('Get a Salary Grade')
+    @Can({ action: ACTION_READ, subject: SALARY_GRADE })
+    getSalaryGrade(
+        @SessionUser() user: RequestUser,
+        @Param('salaryGradeId' , new ParseUUIDPipe()) salaryGradeId: string,
+    ) {
+        return this.salaryGradeService.getSalaryGrade(salaryGradeId, user);
     }
 
     @Post('salary-grades')
@@ -30,6 +42,7 @@ export class SalaryGradeController {
     })
     @ApiOperation({ summary: 'Create a Salary Grade' })
     @ApiPostResponse('Salary Grade successfully created')
+    @Can({ action: ACTION_CREATE, subject: SALARY_GRADE })
     createSalaryGrade(
         @Body() dto: CreateSalaryGradeDto,
         @SessionUser() user: RequestUser

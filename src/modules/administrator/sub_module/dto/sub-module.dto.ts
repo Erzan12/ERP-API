@@ -14,15 +14,15 @@ export class CreateSubModuleDto {
   @IsNotEmpty()
   @ApiProperty({
     example: 'PK UUID',
-    description: 'Module ID of the submodule ',
+    description: 'Primary Key ID of the module ',
   })
   module_id: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ each: true }) // Make sure each string is not an empty string
   @IsArray()
   @IsString({ each: true })
   @ApiProperty({
-    example: ['read, create, update, delete'],
+    example: '["read", "update", "create", "delete"]',
     description: 'If you want to update the current actions',
   })
   actions: string[];
