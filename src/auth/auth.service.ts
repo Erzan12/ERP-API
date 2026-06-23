@@ -637,6 +637,8 @@ export class AuthService {
         //     // status: true, // if you have a field for it, use it
         //     })),
         // })),
+
+        //no roles permission
         roles: user.user_roles.map((ur) => {
           const uniqueSubmodules = [
             ...new Map(
@@ -645,6 +647,7 @@ export class AuthService {
                 {
                   id: rp.sub_module_permission.sub_module.id,
                   name: rp.sub_module_permission.sub_module.name,
+                  // action: rp.sub_module_permission.action
                 },
               ]),
             ).values(),
@@ -656,6 +659,33 @@ export class AuthService {
             sub_modules: uniqueSubmodules,
           };
         }),
+
+        // with array of roles permission
+        // roles: user.user_roles.map((ur) => {
+        //   const subModulesMap = new Map();
+
+        //   ur.role.role_permissions.forEach((rp) => {
+        //     const subModule = rp.sub_module_permission.sub_module;
+        //     const action = rp.sub_module_permission.action;
+
+        //     if (!subModulesMap.has(subModule.id)) {
+        //       subModulesMap.set(subModule.id, {
+        //         id: subModule.id,
+        //         name: subModule.name,
+        //         actions: [],
+        //       });
+        //     }
+
+        //     subModulesMap.get(subModule.id).actions.push(action);
+        //   });
+
+        //   return {
+        //     id: ur.role?.id ?? 0,
+        //     role_name: ur.role?.name ?? 'Unknown Role',
+        //     isActive: ur.is_active ?? false,
+        //     sub_modules: Array.from(subModulesMap.values()),
+        //   };
+        // }),
       },
     };
   }
