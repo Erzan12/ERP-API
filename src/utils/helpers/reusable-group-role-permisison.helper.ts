@@ -7,7 +7,7 @@ export function mapRolesToRequestUser(
       id: string;
       name: string;
       role_permissions: Array<{
-        action: string;
+        action: string,
         sub_module_permission: {
           sub_module: { id: string; name: string };
         }
