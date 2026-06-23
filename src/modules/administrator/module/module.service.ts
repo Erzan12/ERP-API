@@ -290,7 +290,7 @@ export class ModuleService {
 
     return {
       status: 'success',
-      message: 'Here are the list of Sub Modules',
+      message: 'Here are the list of Modules',
       count: total,
       page,
       perPage,
