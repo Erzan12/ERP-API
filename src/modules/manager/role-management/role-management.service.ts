@@ -536,7 +536,7 @@ export class RoleManagementService {
                   connect: { id: rp.role_id },
                 },
                 role_name: rp.role.name ?? null,
-                created_at: new Date(),
+                created_at: new Date()
               },
               include: {
                 role: true,
