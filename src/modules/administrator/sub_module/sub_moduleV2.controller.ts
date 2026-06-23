@@ -46,7 +46,7 @@ export class SubModuleControllerV2 {
 
   @Get('sub-modules/:subModuleId')
   @ApiOperation({ summary: 'Get a Submodule' })
-  @ApiGetResponse('status: Success!')
+  @ApiGetResponse('Get a Submodule')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getSubmodule(
     @Param('subModuleId', new ParseUUIDPipe()) subModuleId: string,
