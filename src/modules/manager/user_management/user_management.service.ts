@@ -444,6 +444,10 @@ export class UserManagementService {
               role_id: role.id,
               is_active: true,
             },
+            include: {
+              role: true,
+              sub_module_permission: true,
+            }
           });
 
           if (!rolePermissions.length) {
