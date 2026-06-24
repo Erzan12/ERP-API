@@ -365,20 +365,33 @@ export class AuthService {
         user_roles: {
           where: { is_active: true },
           include: {
-            role: {
+            // role: {
+            //   include: {
+            //     role_permissions: {
+            //       where: { is_active: true },
+            //       include: {
+            //         sub_module_permission: {
+            //           include: {
+            //             sub_module: true,
+            //           }
+            //         }
+            //       },
+            //     },
+            //   },
+            // },
+            user_permissions: {
               include: {
-                role_permissions: {
-                  where: { is_active: true },
+                role_permission: {
                   include: {
                     sub_module_permission: {
                       include: {
-                        sub_module: true,
+                        sub_module: true
                       }
                     }
-                  },
-                },
-              },
-            },
+                  }
+                }
+              }
+            }
           },
         },
       },
@@ -576,20 +589,33 @@ export class AuthService {
         user_roles: {
           where: { is_active: true },
           include: {
-            role: {
+            // role: {
+            //   include: {
+            //     role_permissions: {
+            //       where: { is_active: true },
+            //       include: {
+            //         sub_module_permission: {
+            //           include: {
+            //             sub_module: true
+            //           }
+            //         }
+            //       },
+            //     },
+            //   },
+            // },
+            user_permissions: {
               include: {
-                role_permissions: {
-                  where: { is_active: true },
+                role_permission: {
                   include: {
                     sub_module_permission: {
                       include: {
                         sub_module: true
                       }
                     }
-                  },
-                },
-              },
-            },
+                  }
+                }
+              }
+            }
           },
         },
       },
@@ -642,19 +668,19 @@ export class AuthService {
         roles: user.user_roles.map((ur) => {
           const uniqueSubmodules = [
             ...new Map(
-              ur.role.role_permissions.map((rp) => [
-                rp.sub_module_permission.sub_module.id,
+              ur.user_permissions.map((rp) => [
+                rp.role_permission?.sub_module_permission.sub_module.id,
                 {
-                  id: rp.sub_module_permission.sub_module.id,
-                  name: rp.sub_module_permission.sub_module.name,
+                  id: rp.role_permission?.sub_module_permission.sub_module.id,
+                  name: rp.role_permission?.sub_module_permission.sub_module.name,
                   // action: rp.sub_module_permission.action
                 },
               ]),
             ).values(),
           ];
           return {
-            id: ur.role?.id ?? 0,
-            role_name: ur.role?.name ?? 'Unknown Role',
+            id: ur.role_id ?? 0,
+            role_name: ur.role_name ?? 'Unknown Role',
             isActive: ur.is_active ?? 'false',
             sub_modules: uniqueSubmodules,
           };
