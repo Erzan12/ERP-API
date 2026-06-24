@@ -205,9 +205,9 @@ export class RoleService {
     };
   }
 
-  async getRole(id: string, user: RequestUser) {
+  async getRole(roleId: string, user: RequestUser) {
     const role = await this.prisma.role.findUnique({
-      where: { id },
+      where: { id: roleId, is_active: true },
       include: {
         role_permissions: {
           select: {
@@ -251,8 +251,8 @@ export class RoleService {
       },
     });
 
-    if (!role) {
-      throw new NotFoundException('Role does not exist');
+    if (!role || role.is_active === false) {
+      throw new NotFoundException('Role does not exist or is inactive');
     }
 
     // const groupPermissions = role.role_permissions.reduce(
@@ -378,7 +378,7 @@ export class RoleService {
   }
 
   async updateRole(dto: UpdateRoleDto, user: RequestUser, roleId: string) {
-    const { name, description, department_id } = dto;
+    const { name, description, department_id, is_active } = dto;
 
     const existingRole = await this.prisma.role.findUnique({
       where: { id: roleId },
@@ -413,13 +413,14 @@ export class RoleService {
         name: name ?? undefined,
         description: description ?? undefined,
         department_id: department_id ?? undefined,
+        is_active: is_active ?? undefined,
         updated_by: user.id,
       },
     });
 
     return {
       status: 'success',
-      message: `Role have been successfully created!`,
+      message: `Role have been successfully updated!`,
       // created_by: {
       //   id: requestUser.id,
       //   name: userName,
