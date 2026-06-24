@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { CreateRolePermissionDto } from './dto/role-permission.dto';
-import { UpdateRolePermissionsDto } from './dto/role-permission.dto';
+import { RoleWithPermissions } from 'src/utils/types/role-with-permission.type';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
@@ -15,6 +15,41 @@ import { Prisma } from '@prisma/client';
 @Injectable()
 export class RoleService {
   constructor(private prisma: PrismaService) {}
+
+  //formatted role helper
+  private formatRolePermissions(role: RoleWithPermissions) {
+    const groupedPermissions = role.role_permissions.reduce(
+      (acc, permission) => {
+        const subModule =
+          permission.sub_module_permission.sub_module;
+
+        const subModuleId = subModule.id;
+
+        if (!acc[subModuleId]) {
+          acc[subModuleId] = {
+            id: permission.sub_module_permission.id,
+            actions: [],
+            sub_module: {
+              id: subModule.id,
+              name: subModule.name,
+            },
+          };
+        }
+
+        acc[subModuleId].actions.push(
+          permission.sub_module_permission.action,
+        );
+
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
+
+    return {
+      ...role,
+      role_permissions: Object.values(groupedPermissions),
+    };
+  }
 
   //Add Get Role -> to query the roles available
   async getRoles(user: RequestUser, dto: PaginationDto) {
@@ -122,39 +157,9 @@ export class RoleService {
       }),
     ]);
 
-    const formattedRoles = roles.map(role => {
-      const groupedPermissions = role.role_permissions.reduce(
-        (acc, permission) => {
-          const subModule =
-            permission.sub_module_permission.sub_module;
-
-          const subModuleId = subModule.id;
-
-          if (!acc[subModuleId]) {
-            acc[subModuleId] = {
-              id: permission.sub_module_permission.id, // or subModuleId
-              actions: [],
-              sub_module: {
-                id: subModule.id,
-                name: subModule.name,
-              },
-            };
-          }
-
-          acc[subModuleId].actions.push(
-            permission.sub_module_permission.action,
-          );
-
-          return acc;
-        },
-        {} as Record<string, any>,
-      );
-
-      return {
-        ...role,
-        role_permissions: Object.values(groupedPermissions),
-      };
-    });
+    const formattedRoles = roles.map(role => 
+      this.formatRolePermissions(role),
+    );
 
     // if (roles.length === 0) {
     //   throw new BadRequestException('No available or active roles exist!');
@@ -250,37 +255,39 @@ export class RoleService {
       throw new NotFoundException('Role does not exist');
     }
 
-    const groupPermissions = role.role_permissions.reduce(
-      (acc, permission) => {
-        const subModule =
-          permission.sub_module_permission.sub_module;
+    // const groupPermissions = role.role_permissions.reduce(
+    //   (acc, permission) => {
+    //     const subModule =
+    //       permission.sub_module_permission.sub_module;
 
-        const subModuleId = subModule.id;
+    //     const subModuleId = subModule.id;
 
-        if (!acc[subModuleId]) {
-          acc[subModuleId] = {
-            id: permission.sub_module_permission.id,
-            actions: [],
-            subModule: {
-              id: subModule.id,
-              name: subModule.name,
-            },
-          };
-        }
+    //     if (!acc[subModuleId]) {
+    //       acc[subModuleId] = {
+    //         id: permission.sub_module_permission.id,
+    //         actions: [],
+    //         subModule: {
+    //           id: subModule.id,
+    //           name: subModule.name,
+    //         },
+    //       };
+    //     }
 
-        acc[subModuleId].actions.push(
-          permission.sub_module_permission.action,
-        );
+    //     acc[subModuleId].actions.push(
+    //       permission.sub_module_permission.action,
+    //     );
 
-        return acc;
-      },
-      {} as Record<string, any>,
-    );
+    //     return acc;
+    //   },
+    //   {} as Record<string, any>,
+    // );
 
-    const formattedRole = {
-      ...role,
-      role_permissions: Object.values(groupPermissions),
-    };
+    // const formattedRole = {
+    //   ...role,
+    //   role_permissions: Object.values(groupPermissions),
+    // };
+
+    const formattedRole = this.formatRolePermissions(role);
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
