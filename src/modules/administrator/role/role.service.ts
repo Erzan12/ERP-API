@@ -204,7 +204,23 @@ export class RoleService {
     const role = await this.prisma.role.findUnique({
       where: { id },
       include: {
-        role_permissions: true,
+        role_permissions: {
+          select: {
+            sub_module_permission: {
+              select: {
+                id: true,
+                sub_module_action_id: true,
+                action: true,
+                sub_module: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          }
+        },
         createdBy: {
           select: {
             person: {
@@ -233,6 +249,38 @@ export class RoleService {
     if (!role) {
       throw new NotFoundException('Role does not exist');
     }
+
+    const groupPermissions = role.role_permissions.reduce(
+      (acc, permission) => {
+        const subModule =
+          permission.sub_module_permission.sub_module;
+
+        const subModuleId = subModule.id;
+
+        if (!acc[subModuleId]) {
+          acc[subModuleId] = {
+            id: permission.sub_module_permission.id,
+            actions: [],
+            subModule: {
+              id: subModule.id,
+              name: subModule.name,
+            },
+          };
+        }
+
+        acc[subModuleId].actions.push(
+          permission.sub_module_permission.action,
+        );
+
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
+
+    const formattedRole = {
+      ...role,
+      role_permissions: Object.values(groupPermissions),
+    };
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -266,7 +314,7 @@ export class RoleService {
     return {
       status: 'success',
       message: 'Here is the Role',
-      role,
+      role: formattedRole,
     };
   }
 
