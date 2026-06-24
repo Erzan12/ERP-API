@@ -86,7 +86,7 @@ export class RoleControllerV2 {
 
   @Put('roles/role_permission')
   @ApiOperation({ summary: 'Adding/Updating permission(s) to role' })
-  @ApiPostResponse('Permissions added to role')
+  @ApiPatchResponse('Permissions added to role')
   @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   createRolePermission(
     @Body() createRolePermissionDto: CreateRolePermissionDto,
@@ -101,7 +101,7 @@ export class RoleControllerV2 {
   //update role
   @Put('roles/:roleId')
   @ApiOperation({ summary: 'Update current role' })
-  @ApiPostResponse('Role updated successfully')
+  @ApiPatchResponse('Role updated successfully')
   @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   updateRole(
     @Body() dto: UpdateRoleDto,
