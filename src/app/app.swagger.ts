@@ -51,7 +51,7 @@ function setupAppSwagger(app: INestApplication): void {
   });
 
   // SwaggerModule.setup('docs/v1', app, documentV1);
-  // SwaggerModule.setup('docs/v2', app, documentV2);
+  SwaggerModule.setup('docs/v2', app, documentV2);
 
   SwaggerModule.setup('docs', app, documentV2, {
     explorer: true, // enables the top bar
