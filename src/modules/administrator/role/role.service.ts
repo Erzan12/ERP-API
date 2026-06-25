@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { CreateRolePermissionDto } from './dto/role-permission.dto';
-import { UpdateRolePermissionsDto } from './dto/role-permission.dto';
+import { RoleWithPermissions } from 'src/utils/types/role-with-permission.type';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
@@ -15,6 +15,41 @@ import { Prisma } from '@prisma/client';
 @Injectable()
 export class RoleService {
   constructor(private prisma: PrismaService) {}
+
+  //formatted role helper
+  private formatRolePermissions(role: RoleWithPermissions) {
+    const groupedPermissions = role.role_permissions.reduce(
+      (acc, permission) => {
+        const subModule =
+          permission.sub_module_permission.sub_module;
+
+        const subModuleId = subModule.id;
+
+        if (!acc[subModuleId]) {
+          acc[subModuleId] = {
+            id: permission.sub_module_permission.id,
+            actions: [],
+            sub_module: {
+              id: subModule.id,
+              name: subModule.name,
+            },
+          };
+        }
+
+        acc[subModuleId].actions.push(
+          permission.sub_module_permission.action,
+        );
+
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
+
+    return {
+      ...role,
+      role_permissions: Object.values(groupedPermissions),
+    };
+  }
 
   //Add Get Role -> to query the roles available
   async getRoles(user: RequestUser, dto: PaginationDto) {
@@ -122,39 +157,9 @@ export class RoleService {
       }),
     ]);
 
-    const formattedRoles = roles.map(role => {
-      const groupedPermissions = role.role_permissions.reduce(
-        (acc, permission) => {
-          const subModule =
-            permission.sub_module_permission.sub_module;
-
-          const subModuleId = subModule.id;
-
-          if (!acc[subModuleId]) {
-            acc[subModuleId] = {
-              id: permission.sub_module_permission.id, // or subModuleId
-              actions: [],
-              sub_module: {
-                id: subModule.id,
-                name: subModule.name,
-              },
-            };
-          }
-
-          acc[subModuleId].actions.push(
-            permission.sub_module_permission.action,
-          );
-
-          return acc;
-        },
-        {} as Record<string, any>,
-      );
-
-      return {
-        ...role,
-        role_permissions: Object.values(groupedPermissions),
-      };
-    });
+    const formattedRoles = roles.map(role => 
+      this.formatRolePermissions(role),
+    );
 
     // if (roles.length === 0) {
     //   throw new BadRequestException('No available or active roles exist!');
@@ -200,11 +205,27 @@ export class RoleService {
     };
   }
 
-  async getRole(id: string, user: RequestUser) {
+  async getRole(roleId: string, user: RequestUser) {
     const role = await this.prisma.role.findUnique({
-      where: { id },
+      where: { id: roleId, is_active: true },
       include: {
-        role_permissions: true,
+        role_permissions: {
+          select: {
+            sub_module_permission: {
+              select: {
+                id: true,
+                sub_module_action_id: true,
+                action: true,
+                sub_module: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          }
+        },
         createdBy: {
           select: {
             person: {
@@ -230,9 +251,43 @@ export class RoleService {
       },
     });
 
-    if (!role) {
-      throw new NotFoundException('Role does not exist');
+    if (!role || role.is_active === false) {
+      throw new NotFoundException('Role does not exist or is inactive');
     }
+
+    // const groupPermissions = role.role_permissions.reduce(
+    //   (acc, permission) => {
+    //     const subModule =
+    //       permission.sub_module_permission.sub_module;
+
+    //     const subModuleId = subModule.id;
+
+    //     if (!acc[subModuleId]) {
+    //       acc[subModuleId] = {
+    //         id: permission.sub_module_permission.id,
+    //         actions: [],
+    //         subModule: {
+    //           id: subModule.id,
+    //           name: subModule.name,
+    //         },
+    //       };
+    //     }
+
+    //     acc[subModuleId].actions.push(
+    //       permission.sub_module_permission.action,
+    //     );
+
+    //     return acc;
+    //   },
+    //   {} as Record<string, any>,
+    // );
+
+    // const formattedRole = {
+    //   ...role,
+    //   role_permissions: Object.values(groupPermissions),
+    // };
+
+    const formattedRole = this.formatRolePermissions(role);
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -266,7 +321,7 @@ export class RoleService {
     return {
       status: 'success',
       message: 'Here is the Role',
-      role,
+      role: formattedRole,
     };
   }
 
@@ -323,7 +378,7 @@ export class RoleService {
   }
 
   async updateRole(dto: UpdateRoleDto, user: RequestUser, roleId: string) {
-    const { name, description, department_id } = dto;
+    const { name, description, department_id, is_active } = dto;
 
     const existingRole = await this.prisma.role.findUnique({
       where: { id: roleId },
@@ -358,13 +413,14 @@ export class RoleService {
         name: name ?? undefined,
         description: description ?? undefined,
         department_id: department_id ?? undefined,
+        is_active: is_active ?? undefined,
         updated_by: user.id,
       },
     });
 
     return {
       status: 'success',
-      message: `Role have been successfully created!`,
+      message: `Role have been successfully updated!`,
       // created_by: {
       //   id: requestUser.id,
       //   name: userName,

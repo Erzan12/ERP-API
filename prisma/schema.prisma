@@ -1007,7 +1007,7 @@ model UserPermission {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  role_permission RolePermission? @relation(fields: [role_permission_id], references: [id], onDelete: Cascade)
+  role_permission RolePermission @relation(fields: [role_permission_id], references: [id], onDelete: Cascade)
   user            User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_role       UserRole        @relation(fields: [user_role_id], references: [id], onDelete: Cascade)
 

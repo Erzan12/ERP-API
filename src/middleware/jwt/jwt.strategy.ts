@@ -5,7 +5,7 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Request } from 'express';
 import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-permisison.helper';
-import { JwtPayload } from 'src/utils/types/interface';
+import { JwtPayload } from 'src/utils/types/authentication.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -40,20 +40,33 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         user_roles: {
           where: { is_active: true },
           include: {
-            role: {
+            // role: {
+            //   include: {
+            //     role_permissions: {
+            //       where: { is_active: true },
+            //       include: {
+            //         sub_module_permission: {
+            //           include: {
+            //             sub_module: true,
+            //           }
+            //         }
+            //       },
+            //     },
+            //   },
+            // },
+            user_permissions: {
               include: {
-                role_permissions: {
-                  where: { is_active: true },
+                role_permission: {
                   include: {
                     sub_module_permission: {
                       include: {
-                        sub_module: true,
+                        sub_module: true
                       }
                     }
-                  },
-                },
-              },
-            },
+                  }
+                }
+              }
+            }
           },
         },
       },

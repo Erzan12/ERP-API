@@ -966,7 +966,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Permissions added to role"
           },
           "400": {
@@ -978,8 +978,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -1015,7 +1015,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Role updated successfully"
           },
           "400": {
@@ -1027,8 +1027,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -6755,8 +6755,8 @@
         ]
       }
     },
-    "/v2/manager/add-role/{userId}/{roleName}": {
-      "put": {
+    "/v2/manager/roles/{userId}": {
+      "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "RoleManagementControllerV2_addUserRole_v2",
         "parameters": [
@@ -6767,16 +6767,18 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "roleName",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddRoleToUserDto"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "Role has been added to the user with permission"
@@ -7258,7 +7260,7 @@
           },
           "is_active": {
             "type": "boolean",
-            "example": "true or false",
+            "example": true,
             "description": "If you want to update the status of the role"
           }
         },
@@ -9690,6 +9692,19 @@
           "department_id",
           "position_id",
           "role_permission_ids"
+        ]
+      },
+      "AddRoleToUserDto": {
+        "type": "object",
+        "properties": {
+          "role_id": {
+            "type": "string",
+            "example": "PK UUID",
+            "description": "Primary Key ID of the Role"
+          }
+        },
+        "required": [
+          "role_id"
         ]
       },
       "EvaluationDetailDto": {
