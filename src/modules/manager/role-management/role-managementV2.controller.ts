@@ -5,6 +5,8 @@ import {
   Param,
   Put,
   Query,
+  Post,
+  Body,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -24,6 +26,8 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { RoleService } from 'src/modules/administrator/role/role.service';
+import { AddRoleToUserDto } from './dto/role.dto';
 
 @ApiTags('Manager - Role Management')
 @Controller({ path: 'manager', version: '2' })
@@ -59,7 +63,19 @@ export class RoleManagementControllerV2 {
     return this.roleManagementService.getUserPermissions(user.id);
   }
 
-  @Put('add-role/:userId/:roleName')
+  //create role
+  // @Post('roles')
+  // @ApiOperation({ summary: 'Create new role' })
+  // @ApiPostResponse('Role created successfully')
+  // @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  // createRole(
+  //   @Body() createRoleDto: CreateRoleDto,
+  //   @SessionUser() user: RequestUser,
+  // ) {
+  //   return this.roleService.createRole(createRoleDto, user);
+  // }
+
+  @Post('roles/:userId')
   @ApiOperation({ summary: 'Add Role to user' })
   @ApiPostResponse('Role has been added to the user with permission')
   @ApiSecurityClearance(SEC_LVL_5)
@@ -68,12 +84,12 @@ export class RoleManagementControllerV2 {
   addUserRole(
     @SessionUser() requestUser: RequestUser,
     @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Param('roleName') roleName: string,
+    @Body() dto: AddRoleToUserDto
   ) {
     return this.roleManagementService.addRoleUser(
       requestUser,
       userId,
-      roleName,
+      dto,
     );
   }
 
