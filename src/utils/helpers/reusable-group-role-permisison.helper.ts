@@ -3,20 +3,32 @@ import { RequestUser } from '../types/request-user.interface';
 
 export function mapRolesToRequestUser(
   userRoles: Array<{
-    role: {
-      id: string;
-      name: string;
-      role_permissions: Array<{
-        action: string,
+    // role: {
+    //   id: string;
+    //   name: string;
+    //   role_permissions: Array<{
+    //     action: string,
+    //     sub_module_permission: {
+    //       sub_module: { id: string; name: string };
+    //     }
+    //   }>;
+    // };
+    id: string;
+    role_name: string;
+    user_permissions: Array<{
+      action: string;
+      role_permission: {
         sub_module_permission: {
-          sub_module: { id: string; name: string };
+          sub_module: {
+            id: string;
+            name: string;
+          }
         }
-      }>;
-    };
+      }
+    }>
   }>,
 ): RequestUser['roles'] {
   return userRoles.map((ur) => {
-    const role = ur.role;
 
     //group actions by sub_module id
     const subModuleMap = new Map<
@@ -24,24 +36,24 @@ export function mapRolesToRequestUser(
       { id: string; name: string; actions: string[] }
     >();
 
-    for (const rp of role.role_permissions) {
-      const subModule = rp.sub_module_permission.sub_module;
+    for (const up of ur.user_permissions) {
+      const subModule = up.role_permission.sub_module_permission.sub_module;
 
       const key = subModule.id;
 
       if (!subModuleMap.has(key)) {
         subModuleMap.set(key, {
-          id: rp.sub_module_permission.sub_module.id,
-          name: rp.sub_module_permission.sub_module.name,
+          id: up.role_permission.sub_module_permission.sub_module.id,
+          name: up.role_permission.sub_module_permission.sub_module.name,
           actions: [],
         });
       }
-      subModuleMap.get(key)!.actions.push(rp.action.toLowerCase().trim());
+      subModuleMap.get(key)!.actions.push(up.action.toLowerCase().trim());
     }
 
     return {
-      id: role.id,
-      name: role.name,
+      id: ur.id,
+      name: ur.role_name,
       sub_modules: [...subModuleMap.values()],
     };
   });
