@@ -60,7 +60,7 @@ export class UpdateRoleDto {
   @IsBoolean()
   @IsOptional()
   @ApiProperty({
-    example: 'true or false',
+    example: true,
     description: 'If you want to update the status of the role',
   })
   is_active?: boolean;
