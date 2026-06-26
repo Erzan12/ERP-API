@@ -696,7 +696,7 @@ export class SubModuleService {
     let message = '';
 
     if (createdCount === 0) {
-      message = `All selected permissions already exist in Sub Module ${subModule.name}`;
+      message = `All selected permissions already exist in Sub Module ${subModule.name}.`;
     } else if (createdCount < requestedCount) {
       message = `${createdCount} permissions(s) added. ${
         requestedCount - createdCount
