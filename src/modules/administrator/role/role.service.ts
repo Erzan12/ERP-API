@@ -18,11 +18,11 @@ export class RoleService {
 
   //formatted role helper
   private formatRolePermissions(role: RoleWithPermissions) {
+    const { role_permissions, department_id, ...rest } = role;
+
     const groupedPermissions = role.role_permissions.reduce(
       (acc, permission) => {
-        const subModule =
-          permission.sub_module_permission.sub_module;
-
+        const subModule = permission.sub_module_permission.sub_module;
         const subModuleId = subModule.id;
 
         if (!acc[subModuleId]) {
@@ -45,8 +45,24 @@ export class RoleService {
       {} as Record<string, any>,
     );
 
+    // return {
+    //   role: role.role_permissions[0]?.role
+    //     ? {
+    //         // id: role.role_permissions[0].role.id,
+    //         // name: role.role_permissions[0].role.name,
+    //         department: {
+    //           id: role.role_permissions[0].role.department?.id,
+    //           name: role.role_permissions[0].role.department?.name,
+    //         },
+    //       }
+    //     : null,
+    //   ...role,
+    //   role_permissions: Object.values(groupedPermissions),
+    // };
+
     return {
-      ...role,
+      ...rest,
+      department: role.role_permissions[0]?.role.department ?? null,
       role_permissions: Object.values(groupedPermissions),
     };
   }
@@ -111,6 +127,18 @@ export class RoleService {
         include: {
           role_permissions: {
             select: {
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                  department: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
               sub_module_permission: {
                 select: {
                   id: true,
@@ -211,6 +239,18 @@ export class RoleService {
       include: {
         role_permissions: {
           select: {
+            role: {
+              select:{
+                id: true,
+                name: true,
+                department: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
             sub_module_permission: {
               select: {
                 id: true,
