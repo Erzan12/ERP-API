@@ -11,6 +11,7 @@ import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
 import { Prisma } from '@prisma/client';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { AddRoleToUserDto } from './dto/role.dto';
+import { AddUserPermissionDto } from './dto/add-user-role-permissions.dto';
 
 @Injectable()
 export class RoleManagementService {
@@ -488,25 +489,88 @@ export class RoleManagementService {
     };
   }
 
-  //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
-  async addUserRolePermissions(
-    userId: string,
-    rolePermissionIds: string[],
+  // Sync missing or new role permissions to a role, to user with existing role 
+  async syncRolePermissions(
     user: RequestUser,
+    userId: string,
+    roleId: string,
+  ) {
+    const userRole = await this.prisma.userRole.findUnique({
+      where: {
+        user_id_role_id: {
+          user_id: userId,
+          role_id: roleId,
+        },
+      },
+    });
+
+    if (!userRole) {
+      throw new NotFoundException(
+        'User does not have this role assigned.',
+      );
+    }
+
+    const rolePermissions = await this.prisma.rolePermission.findMany({
+      where: {
+        role_id: roleId,
+        is_active: true,
+      },
+    });
+
+    const permissionsToCreate = rolePermissions.map((rp) => ({
+      user_id: userId,
+      user_role_id: userRole.id,
+      role_permission_id: rp.id,
+      action: rp.action,
+      created_by: user.id,
+    }));
+
+    await this.prisma.userPermission.createMany({
+      data: permissionsToCreate,
+      skipDuplicates: true,
+    });
+
+    return {
+      message: 'Missing permissions synced successfully.',
+    };
+  }
+
+  //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
+  async addPermissionToUserRole(
+    userId: string,
+    roleId: string,
+    user: RequestUser,
+    dto: AddUserPermissionDto
   ) {
     return this.prisma.$transaction(async (tx) => {
-      const existingUser = await tx.user.findUnique({
-        where: { id: userId },
-        include: {
-          user_roles: {
-            include: { role: true }, // ⬅️ Optional: eager-load existing roles
+      // const existingUser = await tx.user.findUnique({
+      //   where: { id: userId },
+      //   include: {
+      //     user_roles: {
+      //       include: { role: true }, // ⬅️ Optional: eager-load existing roles
+      //     },
+      //   },
+      // });
+
+      // if (!existingUser) throw new BadRequestException('User not found');
+
+      const userRole = await this.prisma.userRole.findUnique({
+        where: {
+          user_id_role_id: {
+            user_id: userId,
+            role_id: roleId
           },
         },
       });
-      if (!existingUser) throw new BadRequestException('User not found');
+
+      if (!userRole) {
+        throw new NotFoundException('User does not have this role or user does not exist.');
+      }
+
+      
 
       const rolePermissions = await tx.rolePermission.findMany({
-        where: { id: { in: rolePermissionIds } },
+        where: { id: { in: dto.rolePermissionIds } },
         include: {
           role: true,
           sub_module_permission: true,
