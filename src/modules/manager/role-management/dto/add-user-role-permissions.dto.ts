@@ -1,19 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsInt, ArrayNotEmpty } from 'class-validator';
+import { IsArray, IsInt, IsNotEmpty } from 'class-validator';
 
-export class AddUserRolePermissionsDto {
-  @IsInt()
-  @ApiProperty({
-    example: 1,
-    description: 'The id of the user to add role permission',
-  })
-  userId: string;
+export class AddUserPermissionDto {
+  // @IsInt()
+  // @ApiProperty({
+  //   example: "PK UUID",
+  //   description: 'The id of the user to add role permission',
+  // })
+  // userId: string;
+
+  // @IsInt()
+  // @ApiProperty({
+  //   example: "PK UUID",
+  //   description: 'The id of role assigned to user',
+  // })
+  // roleId: string;
 
   @IsArray()
-  @ArrayNotEmpty()
+  @IsNotEmpty({ each: true })
   @IsInt({ each: true })
   @ApiProperty({
-    example: [101, 102, 103],
+    example: '["PK UUID", "PK UUID", "PK UUID"]',
     description:
       'The role permission id that will be assign or added to the user it is array because you can add multiple role permission',
   })
