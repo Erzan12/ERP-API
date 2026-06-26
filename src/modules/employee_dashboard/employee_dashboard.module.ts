@@ -5,13 +5,8 @@ import { PerformanceEvaluationService } from './performance_evaluations/performa
 import { PerformanceEvaluationController } from './performance_evaluations/performance_evaluations.controller';
 
 @Module({
-    imports: [AuthModule],
-    providers: [
-        PrismaService,
-        PerformanceEvaluationService
-    ],
-    controllers: [
-        PerformanceEvaluationController
-    ]
+  imports: [AuthModule],
+  providers: [PrismaService, PerformanceEvaluationService],
+  controllers: [PerformanceEvaluationController],
 })
 export class EmployeeDashboardModule {}

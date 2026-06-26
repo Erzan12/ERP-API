@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
-  IsArray,
   IsBoolean,
   IsDateString,
   IsEmail,
@@ -10,12 +9,8 @@ import {
   IsOptional,
   IsString,
   IsUUID,
-  ValidateNested,
 } from 'class-validator';
-import {
-  ApplicationSource,
-  ApplicationStatus,
-} from '@prisma/client';
+import { ApplicationSource, ApplicationStatus } from '@prisma/client';
 
 export class CreateApplicantDto {
   @IsUUID()
@@ -75,7 +70,8 @@ export class CreateApplicantDto {
   date_applied: string;
 
   @IsNotEmpty()
-  @IsEnum(ApplicationSource, { each: true,
+  @IsEnum(ApplicationSource, {
+    each: true,
     message:
       'Application Source must be company_website, walk_in, referral, linkedIn, jobstreet',
   })

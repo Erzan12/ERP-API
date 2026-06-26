@@ -32,9 +32,7 @@ import {
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Can } from 'src/utils/decorators/can.decorator';
-import {
-  RecruitmentPaginationDto,
-} from 'src/utils/dtos/recruitment-pagination.dto';
+import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -47,9 +45,7 @@ import { memoryStorage } from 'multer';
 @ApiTags('Human Resources - Recruitment and Onboarding (Applicants)')
 @Controller({ path: 'hris', version: '2' })
 export class ApplicantsController {
-  constructor(
-    private readonly hiringPipelineService: HiringPipelineService,
-  ) {}
+  constructor(private readonly hiringPipelineService: HiringPipelineService) {}
 
   @Get('applicants')
   @ApiOperation({ summary: 'List of all applicant posted' })
@@ -72,9 +68,7 @@ export class ApplicantsController {
   @ApiOperation({ summary: 'List of all Applicants status' })
   @ApiGetResponse('List of all Applicants status')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-  getStatusCountActive(
-    @SessionUser() user: RequestUser,
-  ) {
+  getStatusCountActive(@SessionUser() user: RequestUser) {
     return this.hiringPipelineService.statusCount(user);
   }
 
@@ -110,7 +104,7 @@ export class ApplicantsController {
     schema: {
       type: 'object',
       properties: {
-        career_id: { type: 'string'},
+        career_id: { type: 'string' },
 
         first_name: { type: 'string' },
         last_name: { type: 'string' },
@@ -118,22 +112,22 @@ export class ApplicantsController {
 
         mobile_number: { type: 'string' },
 
-        date_applied:{ type: 'string' },
+        date_applied: { type: 'string' },
 
         files: {
           type: 'array',
           items: { type: 'string', format: 'binary' },
         },
 
-        application_source: { 
+        application_source: {
           type: 'string',
           enum: [
             'company_website',
             'walk_in',
             'referral',
             'linkedIn',
-            'jobstreet'
-          ]
+            'jobstreet',
+          ],
         },
 
         // document_type: {
@@ -160,7 +154,7 @@ export class ApplicantsController {
     @Body() dto: CreateApplicantDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.createApplicant(dto, user, files );
+    return this.hiringPipelineService.createApplicant(dto, user, files);
   }
 
   @Put('applicants/:applicationId')
@@ -181,7 +175,7 @@ export class ApplicantsController {
       applicationId,
       dto,
       user,
-      files
+      files,
     );
   }
 
@@ -190,40 +184,40 @@ export class ApplicantsController {
   @ApiOperation({ summary: 'Set an Applicant for Interview' })
   @ApiPostResponse('Applicant has been set for interview')
   forInterview(
-      @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-      @SessionUser() user: RequestUser
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
   ) {
-      return this.hiringPipelineService.forInterview(applicantId,user)
+    return this.hiringPipelineService.forInterview(applicantId, user);
   }
 
   @Post('applicants/:applicantId/accept')
   @ApiOperation({ summary: 'Accept an Applicant' })
   @ApiPostResponse('Applicant has been accepted')
   accept(
-    @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-    @SessionUser() user: RequestUser
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.accepted(applicantId, user)
+    return this.hiringPipelineService.accepted(applicantId, user);
   }
 
   @Post('applicants/:applicantId/onboard')
   @ApiOperation({ summary: 'Onbaord an Applicant' })
   @ApiPostResponse('Applicant is now onboard')
   onBoard(
-    @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-    @SessionUser() user: RequestUser
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.onBoarding(applicantId, user)
+    return this.hiringPipelineService.onBoarding(applicantId, user);
   }
 
   @Post('applicants/:applicantId/reject')
   @ApiOperation({ summary: 'Reject an Applicant' })
   @ApiPostResponse('Applicant has been rejected')
   reject(
-    @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-    @SessionUser() user: RequestUser
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.reject(applicantId, user)
+    return this.hiringPipelineService.reject(applicantId, user);
   }
 }
 
@@ -234,7 +228,9 @@ export class ApplicantsController {
 @ApiTags('Human Resources - Recruitment and Onboarding (Screening Applicant)')
 @Controller({ path: 'hris', version: '2' })
 export class ScreeningApplicantController {
-  constructor(private readonly screeningApplicantService: ScreeningApplicantService) {}
+  constructor(
+    private readonly screeningApplicantService: ScreeningApplicantService,
+  ) {}
 
   @Get('applicants/:applicantId/documents')
   @ApiOperation({ summary: 'Get Applicant document' })
@@ -244,17 +240,20 @@ export class ScreeningApplicantController {
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.screeningApplicantService.getApplicantDocuments(applicantId, user);
+    return this.screeningApplicantService.getApplicantDocuments(
+      applicantId,
+      user,
+    );
   }
 
   @Post('applicants/:applicantId/submit')
   @ApiOperation({ summary: 'Shortlist an Applicant' })
   @ApiPostResponse('Applicant has been shortlisted')
   submitLeave(
-      @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-      @SessionUser() user: RequestUser
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
   ) {
-      return this.screeningApplicantService.screenApplicant(applicantId,user)
+    return this.screeningApplicantService.screenApplicant(applicantId, user);
   }
 }
 
@@ -268,7 +267,7 @@ export class InterviewApplicantController {
   constructor(
     private readonly interviewApplicantService: InterviewApplicantService,
   ) {}
- 
+
   /**
    * PHASE 1: ASSIGNMENT
    * Creates the 3 interview slots (Initial, Second, Final)

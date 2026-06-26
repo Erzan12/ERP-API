@@ -5654,7 +5654,7 @@
             "required": true,
             "in": "path",
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/CreateExtendedLeaveRequestWithDetailsDto"
             }
           }
         ],

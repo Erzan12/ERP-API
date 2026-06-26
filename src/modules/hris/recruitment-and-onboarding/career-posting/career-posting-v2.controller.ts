@@ -22,9 +22,7 @@ import {
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 
-import {
-  RecruitmentPaginationDto,
-} from 'src/utils/dtos/recruitment-pagination.dto';
+import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
 import {
   CreateCareerPostingDto,
   UpdateCareerPostingDto,
@@ -119,10 +117,10 @@ export class CareerPostingV2Controller {
   @ApiOperation({ summary: 'Submit Career/Job Posting' })
   @ApiPostResponse('Career/Job Posting submitted')
   submitCareerPosting(
-    @Param('recruitmentId', new ParseUUIDPipe) recruitmentId: string,
-    @SessionUser() user: RequestUser
+    @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
+    @SessionUser() user: RequestUser,
   ) {
-    return this.careerPostingService.submit(recruitmentId, user)
+    return this.careerPostingService.submit(recruitmentId, user);
   }
 
   @Post('recruitments/:recruitmentId/verify')
@@ -130,9 +128,9 @@ export class CareerPostingV2Controller {
   @ApiPostResponse('Career/Job Posting verified')
   verifyCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
-    @SessionUser() user: RequestUser
+    @SessionUser() user: RequestUser,
   ) {
-    return this.careerPostingService.verify(recruitmentId, user)
+    return this.careerPostingService.verify(recruitmentId, user);
   }
 
   @Post('recruitments/:recruitmentId/approve')
@@ -140,9 +138,9 @@ export class CareerPostingV2Controller {
   @ApiPostResponse('Career/Job Posting approved')
   approveCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
-    @SessionUser() user: RequestUser
+    @SessionUser() user: RequestUser,
   ) {
-    return this.careerPostingService.approve(recruitmentId, user)
+    return this.careerPostingService.approve(recruitmentId, user);
   }
 
   @Post('recruitments/:recruitmentId/reject')
@@ -150,8 +148,8 @@ export class CareerPostingV2Controller {
   @ApiPostResponse('Career/Job Posting rejected')
   rejectCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
-    @SessionUser() user: RequestUser
+    @SessionUser() user: RequestUser,
   ) {
-    return this.careerPostingService.reject(recruitmentId, user)
+    return this.careerPostingService.reject(recruitmentId, user);
   }
 }

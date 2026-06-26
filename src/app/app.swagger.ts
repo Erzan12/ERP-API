@@ -46,7 +46,7 @@ function setupAppSwagger(app: INestApplication): void {
       HrV2Module,
       ManagerV2Module,
       MasterV2Module,
-      EmployeeDashboardModule
+      EmployeeDashboardModule,
     ],
   });
 

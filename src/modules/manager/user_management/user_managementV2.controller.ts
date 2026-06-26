@@ -31,7 +31,6 @@ import {
   ACTION_CREATE,
   USER_ACCOUNT,
   SEC_LVL_5,
-  USER_TOKEN_KEY,
 } from 'src/utils/constants/ability.constant';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { Can } from 'src/utils/decorators/can.decorator';
@@ -66,13 +65,13 @@ export class UserManagementControllerV2 {
 
   @Get('get-managers')
   @ApiOperation({ summary: 'Get Managers with department and employees' })
-  @ApiGetResponse('Here are the list of Managers with departments and employees')
+  @ApiGetResponse(
+    'Here are the list of Managers with departments and employees',
+  )
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
-  getManagers(
-    @SessionUser() user: RequestUser,
-  ) {
+  getManagers(@SessionUser() user: RequestUser) {
     return this.userManagementService.getManagers(user);
   }
 
@@ -83,9 +82,12 @@ export class UserManagementControllerV2 {
   @SecurityClearance(SEC_LVL_5)
   viewNewEmployees(
     @SessionUser() user: RequestUser,
-    @Query() dto: UserManagementPaginationDto
+    // @Query() dto: UserManagementPaginationDto,
   ) {
-    return this.userManagementService.viewNewEmployeeWithoutUserAccount(user, dto);
+    return this.userManagementService.viewNewEmployeeWithoutUserAccount(
+      user,
+      // dto,
+    );
   }
 
   @Get(':userId')
@@ -97,7 +99,7 @@ export class UserManagementControllerV2 {
     @SessionUser() user: RequestUser,
     @Param('userId', new ParseUUIDPipe()) userId: string,
   ) {
-    return this.userManagementService.getUser(user, userId)
+    return this.userManagementService.getUser(user, userId);
   }
 
   //create user account

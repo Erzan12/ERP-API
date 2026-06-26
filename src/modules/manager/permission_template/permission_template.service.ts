@@ -163,7 +163,7 @@ export class PermissionTemplateService {
             },
           }),
           ...(position_id && { position_id }),
-        }
+        },
       });
 
       for (const rp of rolePermissions) {
@@ -321,17 +321,17 @@ export class PermissionTemplateService {
         },
         include: {
           permission_template_role_permissions: {
-            include: { 
+            include: {
               role_permissions: {
                 include: {
                   role: true,
                   sub_module_permission: {
                     include: {
                       sub_module: true,
-                    }
-                  }
-                }
-              }
+                    },
+                  },
+                },
+              },
             },
           },
         },

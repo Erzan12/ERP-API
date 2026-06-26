@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsArray, ArrayNotEmpty, IsOptional, IsBoolean, IsDefined } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsBoolean,
+  IsDefined,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSubModuleActionDto {
@@ -7,8 +13,7 @@ export class CreateSubModuleActionDto {
   @ApiProperty({
     name: 'action',
     example: 'read',
-    description:
-      'Create action/permission for for Submodule ',
+    description: 'Create action/permission for for Submodule ',
   })
   action: string;
 }
