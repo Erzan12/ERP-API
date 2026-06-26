@@ -22,14 +22,13 @@ export function mapRolesToRequestUser(
           sub_module: {
             id: string;
             name: string;
-          }
-        }
-      }
-    }>
+          };
+        };
+      };
+    }>;
   }>,
 ): RequestUser['roles'] {
   return userRoles.map((ur) => {
-
     //group actions by sub_module id
     const subModuleMap = new Map<
       string,

@@ -1,11 +1,7 @@
-import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsString,
-  IsInt,
-  IsDefined,
   IsOptional,
   IsUUID,
   IsBoolean,
@@ -31,7 +27,6 @@ export class CreateRoleDto {
     description: 'Department the role belongs to',
   })
   department_id: string;
-
 }
 
 export class UpdateRoleDto {
@@ -53,7 +48,7 @@ export class UpdateRoleDto {
   @IsUUID()
   @ApiProperty({
     example: 'PK UUID',
-    description: 'Department the role belongs to'
+    description: 'Department the role belongs to',
   })
   department_id: string;
 

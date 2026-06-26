@@ -51,10 +51,10 @@ export class SubModuleService {
           select: {
             id: true,
             name: true,
-          }
-        }
-      }
-    })
+          },
+        },
+      },
+    });
 
     if (module_id) {
       const existingModule = await this.prisma.module.findFirst({
@@ -86,20 +86,20 @@ export class SubModuleService {
         },
         include: {
           module: {
-           select: {
-            id: true,
-            name: true
-           }
+            select: {
+              id: true,
+              name: true,
+            },
           },
           sub_module_permissions: {
-            // where: { 
-            //   is_active: true 
-            // }, 
+            // where: {
+            //   is_active: true
+            // },
             select: {
               id: true,
               action: true,
-            }
-          }
+            },
+          },
         },
         // select: {
         //   id: true,
@@ -219,7 +219,7 @@ export class SubModuleService {
     const { name, module_id, actions } = dto;
 
     const findModule = await this.prisma.module.findUnique({
-      where: { id: dto.module_id },
+      where: { id: module_id },
     });
     if (!findModule) {
       throw new BadRequestException('Module not found!');
@@ -227,9 +227,9 @@ export class SubModuleService {
 
     const subModule = await this.prisma.subModule.create({
       data: {
-        name: dto.name,
-        module_id: dto.module_id,
-        created_by: user.id
+        name: name,
+        module_id: module_id,
+        created_by: user.id,
       },
       include: {
         module: true,
@@ -237,66 +237,59 @@ export class SubModuleService {
     });
 
     // Get all action definitions once
-    const actionRecords =
-      await this.prisma.subModuleAction.findMany({
-        where: {
-          action: {
-            in: actions,
-          },
-          is_active: true
+    const actionRecords = await this.prisma.subModuleAction.findMany({
+      where: {
+        action: {
+          in: actions,
         },
-      });
+        is_active: true,
+      },
+    });
 
     const actionMap = new Map(
-      actionRecords.map(action => [
-        action.action,
-        action,
-      ]),
+      actionRecords.map((action) => [action.action, action]),
     );
 
     let createdSubModuleWithPermissions;
 
     for (const action of actions) {
-      const actionRecord =
-        actionMap.get(action);
+      const actionRecord = actionMap.get(action);
 
       if (!actionRecord) {
-        throw new BadRequestException ("Submodule Action not found");
+        throw new BadRequestException('Submodule Action not found');
       }
 
       await this.prisma.subModulePermission.create({
         data: {
           action,
           sub_module_id: subModule.id,
-          sub_module_action_id:
-            actionRecord.id,
-            created_by: user.id
+          sub_module_action_id: actionRecord.id,
+          created_by: user.id,
         },
       });
-    };
+    }
 
     // Fetch permissions
-    createdSubModuleWithPermissions =
-      await this.prisma.subModule.findFirst({
-        where: {
-          id: subModule.id,
-          is_active: true,
-        },
-        select: {
-          id: true,
-          name: true,
-          module_id: true,
-          is_active: true,
-          created_by: true,
-          created_at: true,
-          sub_module_permissions: {
-            select: {
-              id: true,
-              action: true,
-            },
+    await this.prisma.subModule.findFirst({
+      where: {
+        id: subModule.id,
+        is_active: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        module_id: true,
+        is_active: true,
+        created_by: true,
+        created_at: true,
+        sub_module_permissions: {
+          select: {
+            id: true,
+            action: true,
           },
         },
-      });
+      },
+    });
 
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -325,11 +318,15 @@ export class SubModuleService {
         name: userName,
         position: userPos,
       },
-      subModule: createdSubModuleWithPermissions
+      subModule: createdSubModuleWithPermissions,
     };
   }
 
-  async updateSubmodule(subModuleId: string, dto: UpdateSubmoduleDto, user: RequestUser) {
+  async updateSubmodule(
+    subModuleId: string,
+    dto: UpdateSubmoduleDto,
+    user: RequestUser,
+  ) {
     const { name, module_id, is_active } = dto;
 
     const requestUser = await this.prisma.user.findUnique({
@@ -357,7 +354,7 @@ export class SubModuleService {
       'HR Staff',
     ];
 
-    const canUpdate = requestUser.user_roles.some(role =>
+    const canUpdate = requestUser.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
 
@@ -368,17 +365,14 @@ export class SubModuleService {
     }
 
     // Validate Submodule
-    const existingSubModule =
-      await this.prisma.subModule.findUnique({
-        where: {
-          id: subModuleId,
-        },
-      });
+    const existingSubModule = await this.prisma.subModule.findUnique({
+      where: {
+        id: subModuleId,
+      },
+    });
 
     if (!existingSubModule) {
-      throw new BadRequestException(
-        'Selected Sub Module does not exist',
-      );
+      throw new BadRequestException('Selected Sub Module does not exist');
     }
 
     const subModule = await this.prisma.subModule.update({
@@ -387,9 +381,9 @@ export class SubModuleService {
         name: name ?? undefined,
         module_id: module_id ?? undefined,
         is_active: is_active ?? undefined,
-        updated_by: user.id
-      }
-    })
+        updated_by: user.id,
+      },
+    });
 
     // Execute Transaction
     // const result = await this.prisma.$transaction(
@@ -529,7 +523,7 @@ export class SubModuleService {
       status: 'success',
       message: 'Submodule updated successfully.',
       updated_by: `${userName} - ${userPos}`,
-      subModule
+      subModule,
       // data: {
       //   subModuleId,
       //   actions: result.map(
@@ -548,14 +542,14 @@ export class SubModuleService {
       where: { id: subModuleId },
       include: {
         sub_module_permissions: true,
-      }
-    })
+      },
+    });
 
     return {
       status: 'success',
       message: 'Submodule with permissions deleted',
-      subModule
-    }
+      subModule,
+    };
   }
 
   async assignSubModulePermissions(
@@ -577,105 +571,50 @@ export class SubModuleService {
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-            employee: {
-            include: {
-                person: true,
-                position: true,
-            },
-            },
-            user_roles: true,
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
         },
+        user_roles: true,
+      },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-        throw new BadRequestException(`User does not exist.`);
+      throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
-    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
     if (!canView) {
-        throw new ForbiddenException('You are not authorized to perform this action');
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
 
-    // const existingPermissions =
-    //   await this.prisma.subModulePermission.findMany({
-    //     where: {
-    //       sub_module_id,
-    //     },
-    //     include: {
-    //       sub_module_action: true,
-    //     },
-    //   });
-
-    // const existingActions = existingPermissions.map(
-    //   (p) => p.sub_module_action.action,
-    // );
-
-    // const actionsToDelete = existingPermissions
-    //   .filter((p) => !action.includes(p.sub_module_action.action))
-    //   .map((p) => p.id);
-
-    // if (actionsToDelete.length > 0) {
-    //   await this.prisma.subModulePermission.deleteMany({
-    //     where: {
-    //       id: {
-    //         in: actionsToDelete,
-    //       },
-    //     },
-    //   });
-    // }
-
-    // // Fetch existing permission definitions from AddedSubModPermission
-    // const availablePermissions = await this.prisma.subModuleAction.findMany({
-    //   where: {
-    //     action: {
-    //       in: action,
-    //     },
-    //     is_active: true,
-    //   },
-    // });
-
-    // if (availablePermissions.length === 0) {
-    //   throw new BadRequestException('No matching active permissions found.');
-    // }
-    
-    // const actionsToCreate = availablePermissions.filter(
-    //   (perm) => !existingActions.includes(perm.action),
-    // );
-
-    
-
-    // // Create SubModulePermission entries using existing permission IDs
-    // const subModulePermissionsToCreate = availablePermissions.map((perm) => ({
-    //   sub_module_id,
-    //   sub_module_action_id: perm.id,
-    //   action: perm.action, // optional: only if you're storing this string too
-    //   is_active: perm.is_active
-    // }));
-
-    // const result = await this.prisma.subModulePermission.createMany({
-    //   data: subModulePermissionsToCreate,
-    //   skipDuplicates: true,
-    // });
-
-    // const requestedCount = subModulePermissionsToCreate.length;
-    // const createdCount = result.count;
-
-    const existingPermissions =
-      await this.prisma.subModulePermission.findMany({
-        where: {
-          sub_module_id,
-        },
-        include: {
-          sub_module_action: true,
-        },
-      });
+    const existingPermissions = await this.prisma.subModulePermission.findMany({
+      where: {
+        sub_module_id,
+      },
+      include: {
+        sub_module_action: true,
+      },
+    });
 
     const existingActions = existingPermissions.map(
       (p) => p.sub_module_action.action,
@@ -687,19 +626,16 @@ export class SubModuleService {
       .map((p) => p.id);
 
     // Valid actions from master table
-    const availablePermissions =
-      await this.prisma.subModuleAction.findMany({
-        where: {
-          action: {
-            in: action,
-          },
+    const availablePermissions = await this.prisma.subModuleAction.findMany({
+      where: {
+        action: {
+          in: action,
         },
-      });
+      },
+    });
 
     if (availablePermissions.length !== action.length) {
-      throw new BadRequestException(
-        'One or more permissions do not exist.',
-      );
+      throw new BadRequestException('One or more permissions do not exist.');
     }
 
     // Permissions to add
@@ -707,13 +643,12 @@ export class SubModuleService {
       (perm) => !existingActions.includes(perm.action),
     );
 
-    const subModulePermissionsToCreate =
-      actionsToCreate.map((perm) => ({
-        sub_module_id,
-        sub_module_action_id: perm.id,
-        action: perm.action,
-        created_by: user.id,
-      }));
+    const subModulePermissionsToCreate = actionsToCreate.map((perm) => ({
+      sub_module_id,
+      sub_module_action_id: perm.id,
+      action: perm.action,
+      created_by: user.id,
+    }));
 
     const result = await this.prisma.$transaction(async (tx) => {
       if (actionsToDelete.length > 0) {
@@ -761,7 +696,7 @@ export class SubModuleService {
     let message = '';
 
     if (createdCount === 0) {
-      message: `All selected permissions already exist in Sub Module ${subModule.name}`;
+      message = `All selected permissions already exist in Sub Module ${subModule.name}`;
     } else if (createdCount < requestedCount) {
       message = `${createdCount} permissions(s) added. ${
         requestedCount - createdCount

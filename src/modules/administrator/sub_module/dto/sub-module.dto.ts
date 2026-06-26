@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsUUID, IsOptional, IsArray, IsBoolean } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsUUID,
+  IsOptional,
+  IsArray,
+  IsBoolean,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSubModuleDto {
@@ -45,7 +52,7 @@ export class UpdateSubmoduleDto {
   //   description: 'If you want to update the current actions',
   // })
   // actions: string[];
-  
+
   @IsUUID()
   @IsOptional()
   @ApiProperty({
