@@ -6,8 +6,6 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
-import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
 import { Prisma } from '@prisma/client';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { AddRoleToUserDto } from './dto/role.dto';
@@ -311,8 +309,6 @@ export class RoleManagementService {
   //   };
   // }
 
-
-
   // async updateRolePermissions(
   //   roleId: string,
   //   updateRolePermissionsDto: UpdateRolePermissionsDto,
@@ -397,29 +393,39 @@ export class RoleManagementService {
   async addRoleUser(user: RequestUser, userId: string, dto: AddRoleToUserDto) {
     //Auth check first
     const requestUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-            employee: {
-            include: {
-                person: true,
-                position: true,
-            },
-            },
-            user_roles: true,
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
         },
+        user_roles: true,
+      },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-        throw new BadRequestException(`User does not exist.`);
+      throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
-    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
     if (!canView) {
-        throw new ForbiddenException('You are not authorized to perform this action');
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
-    
+
     //find role
     const role = await this.prisma.role.findUnique({
       where: { id: dto.role_id, is_active: true },
@@ -442,28 +448,28 @@ export class RoleManagementService {
         user_id: userId,
         role_id: dto.role_id,
         role_name: role.name,
-        created_by: requestUser.id
+        created_by: requestUser.id,
       },
     });
 
     const rolePermissions = await this.prisma.rolePermission.findMany({
       where: {
-        role_id: dto.role_id
-      }
+        role_id: dto.role_id,
+      },
     });
 
-    const userPermissions = rolePermissions.map(rp => ({
+    const userPermissions = rolePermissions.map((rp) => ({
       user_id: userId,
       user_role_id: userRole.id,
       role_permission_id: rp.id,
       action: rp.action,
-      created_by: requestUser.id
+      created_by: requestUser.id,
     }));
 
     await this.prisma.userPermission.createMany({
       data: userPermissions,
-      skipDuplicates: true
-    })
+      skipDuplicates: true,
+    });
 
     const userDetails = await this.prisma.user.findUnique({
       where: { id: userId, is_active: true },
@@ -471,11 +477,11 @@ export class RoleManagementService {
         person: {
           select: {
             first_name: true,
-            last_name: true
-          }
-        }
-      }
-    })
+            last_name: true,
+          },
+        },
+      },
+    });
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
@@ -485,16 +491,12 @@ export class RoleManagementService {
       message: `Role ${userRole.role_name} has been added to ${userDetails?.person.first_name}.`,
       created_by: `${userName} - ${userPosition}`,
       userRole,
-      userPermissions
+      userPermissions,
     };
   }
 
-  // Sync missing or new role permissions to a role, to user with existing role 
-  async syncRolePermissions(
-    user: RequestUser,
-    userId: string,
-    roleId: string,
-  ) {
+  // Sync missing or new role permissions to a role, to user with existing role
+  async syncRolePermissions(user: RequestUser, userId: string, roleId: string) {
     const userRole = await this.prisma.userRole.findUnique({
       where: {
         user_id_role_id: {
@@ -505,9 +507,7 @@ export class RoleManagementService {
     });
 
     if (!userRole) {
-      throw new NotFoundException(
-        'User does not have this role assigned.',
-      );
+      throw new NotFoundException('User does not have this role assigned.');
     }
 
     const rolePermissions = await this.prisma.rolePermission.findMany({
@@ -540,7 +540,7 @@ export class RoleManagementService {
     userId: string,
     roleId: string,
     user: RequestUser,
-    dto: AddUserPermissionDto
+    dto: AddUserPermissionDto,
   ) {
     return this.prisma.$transaction(async (tx) => {
       // const existingUser = await tx.user.findUnique({
@@ -558,23 +558,23 @@ export class RoleManagementService {
         where: {
           user_id_role_id: {
             user_id: userId,
-            role_id: roleId
+            role_id: roleId,
           },
         },
       });
 
       if (!userRole) {
-        throw new NotFoundException('User does not have this role or user does not exist.');
+        throw new NotFoundException(
+          'User does not have this role or user does not exist.',
+        );
       }
-
-      
 
       const rolePermissions = await tx.rolePermission.findMany({
         where: { id: { in: dto.rolePermissionIds } },
         include: {
           role: true,
           sub_module_permission: true,
-        }
+        },
       });
 
       type UserRoleWithRole = Prisma.UserRoleGetPayload<{
@@ -625,7 +625,7 @@ export class RoleManagementService {
                   connect: { id: rp.role_id },
                 },
                 role_name: rp.role.name ?? null,
-                created_at: new Date()
+                created_at: new Date(),
               },
               include: {
                 role: true,
@@ -729,9 +729,9 @@ export class RoleManagementService {
                   include: {
                     sub_module_permission: {
                       include: {
-                        sub_module: true
-                      }
-                    }
+                        sub_module: true,
+                      },
+                    },
                   },
                 },
               },
@@ -750,8 +750,10 @@ export class RoleManagementService {
         role_id: userRole.role?.id,
         role_name: userRole.role?.name,
         action: perm.action,
-        sub_module: perm.role_permission?.sub_module_permission.sub_module?.name ?? 'N/A',
-        sub_module_id: perm.role_permission?.sub_module_permission.sub_module?.id ?? null,
+        sub_module:
+          perm.role_permission?.sub_module_permission.sub_module?.name ?? 'N/A',
+        sub_module_id:
+          perm.role_permission?.sub_module_permission.sub_module?.id ?? null,
       })),
     );
 

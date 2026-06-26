@@ -14,7 +14,6 @@ import { SessionUser } from '../../../utils/decorators/session-user.decorator';
 import { RequestUser } from '../../../utils/types/request-user.interface';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { CreateRolePermissionDto } from './dto/role-permission.dto';
-import { UpdateRolePermissionsDto } from './dto/role-permission.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
@@ -55,9 +54,7 @@ export class RoleControllerV2 {
   @ApiOperation({ summary: 'Get all Role Permissions' })
   @ApiGetResponse('Here are the list of Role Permissions')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
-  getRolePermissions(
-    @SessionUser() user: RequestUser,
-  ) {
+  getRolePermissions(@SessionUser() user: RequestUser) {
     return this.roleService.getRolePermissions(user);
   }
 
@@ -112,7 +109,6 @@ export class RoleControllerV2 {
   }
 
   //add role permisison -> combining created role with submodule embedded permissions -> and this role permission can be assigned to a user
-
 
   //update role permission
   // @Put('roles/role_permission/:id')

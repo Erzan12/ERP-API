@@ -28,12 +28,11 @@ export class UserManagementService {
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
     private readonly auditService: AuditService,
-    private readonly uploadService: AttachmentUploadService
+    private readonly uploadService: AttachmentUploadService,
   ) {}
 
   async findByIdentifier(identifier: string) {
-    const isEmail =
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
 
     if (isEmail) {
       return this.prisma.user.findUnique({
@@ -47,8 +46,8 @@ export class UserManagementService {
           mobile_numbers: {
             some: {
               mobile_number: identifier,
-            }
-          }
+            },
+          },
         },
       },
     });
@@ -57,38 +56,48 @@ export class UserManagementService {
   async getUser(user: RequestUser, userId: string) {
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-            employee: {
-            include: {
-                person: true,
-                position: true,
-            },
-            },
-            user_roles: true,
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
         },
+        user_roles: true,
+      },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-        throw new BadRequestException(`User does not exist.`);
+      throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
-    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
     if (!canView) {
-        throw new ForbiddenException('You are not authorized to perform this action');
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     const getUser = await this.prisma.user.findUnique({
       where: { id: userId, is_active: true },
-    })
+    });
 
     return {
       status: 'success',
       message: 'Here is the User',
       getUser,
-    }
+    };
   }
 
   async getUsers(user: RequestUser, dto: UserManagementPaginationDto) {
@@ -96,27 +105,37 @@ export class UserManagementService {
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-            employee: {
-            include: {
-                person: true,
-                position: true,
-            },
-            },
-            user_roles: true,
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
         },
+        user_roles: true,
+      },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-        throw new BadRequestException(`User does not exist.`);
+      throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
-    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
     if (!canView) {
-        throw new ForbiddenException('You are not authorized to perform this action');
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     //pagination area
@@ -131,7 +150,7 @@ export class UserManagementService {
         employee: {
           department: {
             is: {
-              id: department
+              id: department,
             },
           },
         },
@@ -149,7 +168,7 @@ export class UserManagementService {
                 contains: search,
                 mode: 'insensitive',
               },
-            }
+            },
           },
           {
             person: {
@@ -157,7 +176,7 @@ export class UserManagementService {
                 contains: search,
                 mode: 'insensitive',
               },
-            }
+            },
           },
           {
             person: {
@@ -165,7 +184,7 @@ export class UserManagementService {
                 contains: search,
                 mode: 'insensitive',
               },
-            }
+            },
           },
           {
             email: {
@@ -183,10 +202,7 @@ export class UserManagementService {
       };
     }
 
-    const allowSortFields = [
-      "id",
-      "created_at",
-    ]
+    const allowSortFields = ['id', 'created_at'];
 
     const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
     const [total, users] = await this.prisma.$transaction([
@@ -197,7 +213,7 @@ export class UserManagementService {
         },
       }),
       this.prisma.user.findMany({
-        where: { 
+        where: {
           ...whereCondition,
           ...whereConditions,
         },
@@ -214,22 +230,22 @@ export class UserManagementService {
                 select: {
                   id: true,
                   name: true,
-                }
+                },
               },
               department: {
                 select: {
                   id: true,
                   name: true,
-                }
+                },
               },
               person: {
                 select: {
                   first_name: true,
                   middle_name: true,
                   last_name: true,
-                }
-              }
-            }
+                },
+              },
+            },
           },
           user_roles: {
             select: {
@@ -268,7 +284,6 @@ export class UserManagementService {
       }),
     ]);
 
-
     return {
       status: 'success',
       message: 'List of User Accounts',
@@ -276,7 +291,7 @@ export class UserManagementService {
       page,
       perPage,
       // totalPage: Math.ceil(total / perPage),
-      users
+      users,
     };
   }
 
@@ -286,7 +301,7 @@ export class UserManagementService {
     user: RequestUser,
     req: Request,
     // userId: string,
-    file: Express.Multer.File
+    file: Express.Multer.File,
   ) {
     return this.prisma.$transaction(async (tx) => {
       try {
@@ -295,10 +310,7 @@ export class UserManagementService {
 
         const existingUser = await tx.user.findFirst({
           where: {
-            OR: [
-              { username: dto.username },
-              { email: dto.email },
-            ],
+            OR: [{ username: dto.username }, { email: dto.email }],
           },
         });
 
@@ -401,15 +413,15 @@ export class UserManagementService {
         let attachment = null;
 
         if (file) {
-            attachment = await this.uploadService.avatarUpload(
-              {
-                file,
-                transaction_type: TRANSACTION_TYPE.USER_AVATAR,
-                transaction_id: newUser.id,
-                user_id: user.id,
-              },
-              tx,
-            );
+          attachment = await this.uploadService.avatarUpload(
+            {
+              file,
+              transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+              transaction_id: newUser.id,
+              user_id: user.id,
+            },
+            tx,
+          );
         }
 
         console.log('Avatar uploaded');
@@ -447,7 +459,7 @@ export class UserManagementService {
             include: {
               role: true,
               sub_module_permission: true,
-            }
+            },
           });
 
           if (!rolePermissions.length) {
@@ -535,7 +547,7 @@ export class UserManagementService {
           username: newUser.username,
           password: plainPassword,
           reset_token: createdToken.password_token,
-          attachment
+          attachment,
           // user_permission_template: templates
         };
       } catch (error) {
@@ -608,25 +620,28 @@ export class UserManagementService {
     };
   }
 
-  async viewNewEmployeeWithoutUserAccount(user: RequestUser, dto: UserManagementPaginationDto) {
-    const { search, status, sortBy, order, page, perPage } = dto;
+  async viewNewEmployeeWithoutUserAccount(
+    user: RequestUser,
+    // dto: UserManagementPaginationDto,
+  ) {
+    // const { page, perPage } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-            employee: {
-            include: {
-                person: true,
-                position: true,
-            },
-            },
-            user_roles: true,
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
         },
+        user_roles: true,
+      },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-        throw new BadRequestException(`User does not exist.`);
+      throw new BadRequestException(`User does not exist.`);
     }
 
     const ROLES = {
@@ -637,15 +652,21 @@ export class UserManagementService {
       HR_STAFF: 'HR Staff',
     } as const;
 
-    const allowedRoles = [ ROLES.ADMINISTRATOR, ROLES.SUPER_ADMINISTRATOR, ROLES.MANAGER, ROLES.HR_CLERK, ROLES.HR_STAFF];
-    const canView = requestUser?.user_roles.some(role => 
-      allowedRoles.includes(
-        role.role_name as typeof allowedRoles[number],
-      ),
+    const allowedRoles = [
+      ROLES.ADMINISTRATOR,
+      ROLES.SUPER_ADMINISTRATOR,
+      ROLES.MANAGER,
+      ROLES.HR_CLERK,
+      ROLES.HR_STAFF,
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name as (typeof allowedRoles)[number]),
     );
 
     if (!canView) {
-        throw new ForbiddenException('You are not authorized to perform this action');
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     // const userRole = requestUser.user_roles.some(role => allowedRoles.includes(role.role_name));
@@ -655,11 +676,12 @@ export class UserManagementService {
     // }
 
     // pagination area
-    const skip = (page - 1) * perPage;
+    // const skip = (page - 1) * perPage;
 
-    const whereCondition: Prisma.EmployeeWhereInput = {
-      user_id: null, user: null
-    }
+    // const whereCondition: Prisma.EmployeeWhereInput = {
+    //   user_id: null,
+    //   user: null,
+    // };
 
     const isAdmin = requestUser.user_roles.some(
       (role) => role.role_name === ROLES.ADMINISTRATOR,
@@ -741,43 +763,52 @@ export class UserManagementService {
   }
 
   async getManagers(user: RequestUser) {
-
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-            employee: {
-            include: {
-                person: true,
-                position: true,
-            },
-            },
-            user_roles: true,
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
         },
+        user_roles: true,
+      },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-        throw new BadRequestException(`User does not exist.`);
+      throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
-    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
     if (!canView) {
-        throw new ForbiddenException('You are not authorized to perform this action');
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     const managers = await this.prisma.user.findMany({
-      where: { 
+      where: {
         employee: {
           position: {
             // Get all managerial roles
             name: {
               in: ['hr manager', 'it manager'],
-              mode: 'insensitive'
+              mode: 'insensitive',
             },
-          }
-        } 
+          },
+        },
       },
       select: {
         id: true,
@@ -792,27 +823,27 @@ export class UserManagementService {
               select: {
                 id: true,
                 name: true,
-              }
+              },
             },
             person: {
               select: {
                 first_name: true,
                 middle_name: true,
                 last_name: true,
-              }
+              },
             },
             employee_id: true,
             position: {
               select: {
                 id: true,
                 name: true,
-              }
+              },
             },
             division: {
               select: {
                 id: true,
                 name: true,
-              }
+              },
             },
             hire_date: true,
             salary: true,
@@ -820,7 +851,7 @@ export class UserManagementService {
             employment_status: {
               select: {
                 label: true,
-              }
+              },
             },
             employment_type: true,
             employee_type: true,
@@ -851,37 +882,39 @@ export class UserManagementService {
                       select: {
                         first_name: true,
                         last_name: true,
-                      }
+                      },
                     },
                     department: {
                       select: {
                         name: true,
-                      }
+                      },
                     },
                     position: {
                       select: {
                         name: true,
-                      }
+                      },
                     },
-                    employee_id: true
-                  }
-                }
-              }
+                    employee_id: true,
+                  },
+                },
+              },
             },
-          }
-        }
-      }
-    })
+          },
+        },
+      },
+    });
 
     if (managers.length === 0) {
-      throw new NotFoundException("No employee's or user with position manager as of now")
+      throw new NotFoundException(
+        "No employee's or user with position manager as of now",
+      );
     }
 
     return {
       status: 'success',
       message: 'List of Managers with Department and Employees',
-      managers
-    }
+      managers,
+    };
   }
 
   // async getUsersWithRolesAndPermissions() {

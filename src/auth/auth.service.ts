@@ -12,13 +12,21 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
-import { ResetPasswordWithTokenDto, ResendInvitationTokenDto, VerifyForgotPasswordDto, ForgotPasswordDto } from './dto/reset-password-with-token.dto';
+import {
+  ResetPasswordWithTokenDto,
+  ResendInvitationTokenDto,
+  VerifyForgotPasswordDto,
+  ForgotPasswordDto,
+} from './dto/reset-password-with-token.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-permisison.helper';
 import { MailService } from 'src/jobs/mail/mail.service';
-import { generateOtp, OTP_VERIFICATION } from 'src/utils/constants/otp-verification.constants';
+import {
+  generateOtp,
+  OTP_VERIFICATION,
+} from 'src/utils/constants/otp-verification.constants';
 import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
 import { addMinutes } from 'date-fns/addMinutes';
 
@@ -29,9 +37,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly auditService: AuditService,
     private readonly mailService: MailService,
-    
+
     @Inject(forwardRef(() => UserManagementService))
-    private readonly userManagementService: UserManagementService
+    private readonly userManagementService: UserManagementService,
   ) {}
 
   //For first time log in password reset with token from user or person registration/creation
@@ -168,9 +176,7 @@ export class AuthService {
     }
 
     // Call Auth service to regenerate token
-    const resetToken = await this.generateResetToken(
-      invitedUser.id,
-    );
+    const resetToken = await this.generateResetToken(invitedUser.id);
     // const { password_token } = token;
 
     await this.mailService.sendResetTokenEmail(
@@ -195,10 +201,12 @@ export class AuthService {
 
   //forgot password
   async forgotPassword(dto: ForgotPasswordDto) {
-    const user = await this.userManagementService.findByIdentifier(dto.identifier);
+    const user = await this.userManagementService.findByIdentifier(
+      dto.identifier,
+    );
 
     if (!user) {
-      return { message: "If account exists, OTP sent" };
+      return { message: 'If account exists, OTP sent' };
     }
 
     const existingOtp = await this.prisma.otpVerification.findFirst({
@@ -214,7 +222,7 @@ export class AuthService {
 
     if (existingOtp) {
       throw new BadRequestException(
-        "An OTP has already been sent. Please wait until it expires."
+        'An OTP has already been sent. Please wait until it expires.',
       );
     }
 
@@ -231,40 +239,37 @@ export class AuthService {
 
     try {
       await this.mailService.sendOtp(user.email, otp);
-    } catch (error) {
-      throw new InternalServerErrorException(
-        'Failed to send OTP email.',
-      )
+    } catch {
+      throw new InternalServerErrorException('Failed to send OTP email.');
     }
 
     return {
       status: 'success',
       message: 'Generated OTP successfully',
-      generatedOtp
-    }
+      generatedOtp,
+    };
   }
 
   async verifyForgotPassword(dto: VerifyForgotPasswordDto) {
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dto.identifier);
 
     const user = isEmail
+      ? await this.prisma.user.findUnique({
+          where: { email: dto.identifier },
+        })
+      : await this.prisma.user.findFirst({
+          where: {
+            employee: {
+              mobile_numbers: {
+                some: {
+                  mobile_number: dto.identifier,
+                },
+              },
+            },
+          },
+        });
 
-    ? await this.prisma.user.findUnique({
-        where: { email: dto.identifier },
-      })
-    : await this.prisma.user.findFirst({
-        where: {
-          employee: {
-            mobile_numbers: {
-              some: {
-                mobile_number: dto.identifier,
-              }
-            }
-          }
-        },
-      });
-
-    if (!user) throw new BadRequestException("Invalid request");
+    if (!user) throw new BadRequestException('Invalid request');
 
     const otpRecord = await this.prisma.otpVerification.findFirst({
       where: {
@@ -277,25 +282,25 @@ export class AuthService {
     });
 
     if (!otpRecord) {
-      throw new BadRequestException("Invalid or expired OTP");
+      throw new BadRequestException('Invalid or expired OTP');
     }
 
     // password history check
     const history = await this.prisma.passwordHistory.findMany({
       where: { user_id: user.id },
       take: 5,
-      orderBy: { created_at: "desc" },
+      orderBy: { created_at: 'desc' },
     });
 
     for (const h of history) {
       const reused = await bcrypt.compare(dto.newPassword, h.password_hash);
       if (reused) {
-        throw new BadRequestException("Password already used before");
+        throw new BadRequestException('Password already used before');
       }
     }
 
     if (await bcrypt.compare(dto.newPassword, user.password)) {
-      throw new BadRequestException("Same as current password");
+      throw new BadRequestException('Same as current password');
     }
 
     const hashed = await bcrypt.hash(dto.newPassword, 10);
@@ -322,7 +327,7 @@ export class AuthService {
       });
     });
 
-    return { message: "Password reset successful" };
+    return { message: 'Password reset successful' };
   }
 
   //generate reset token
@@ -385,13 +390,13 @@ export class AuthService {
                   include: {
                     sub_module_permission: {
                       include: {
-                        sub_module: true
-                      }
-                    }
-                  }
-                }
-              }
-            }
+                        sub_module: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -426,8 +431,8 @@ export class AuthService {
                     sub_module_permission: {
                       include: {
                         sub_module: true,
-                      }
-                    }
+                      },
+                    },
                   },
                 },
               },
@@ -609,13 +614,13 @@ export class AuthService {
                   include: {
                     sub_module_permission: {
                       include: {
-                        sub_module: true
-                      }
-                    }
-                  }
-                }
-              }
-            }
+                        sub_module: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -672,7 +677,8 @@ export class AuthService {
                 rp.role_permission?.sub_module_permission.sub_module.id,
                 {
                   id: rp.role_permission?.sub_module_permission.sub_module.id,
-                  name: rp.role_permission?.sub_module_permission.sub_module.name,
+                  name: rp.role_permission?.sub_module_permission.sub_module
+                    .name,
                   // action: rp.sub_module_permission.action
                 },
               ]),
