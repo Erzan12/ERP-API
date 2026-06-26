@@ -47,6 +47,7 @@ jobs:
           git push origin staging || echo "Nothing to push."
 
   deploy-to-staging-server:
+    needs: merge-to-staging-branch
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
