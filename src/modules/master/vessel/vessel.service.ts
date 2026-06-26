@@ -48,7 +48,7 @@ export class VesselService {
 
     if (!canView) {
       throw new ForbiddenException(
-        'You are not authorized to perform this action',
+        'You are not authorized to perform this action.',
       );
     }
 
