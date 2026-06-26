@@ -11,6 +11,7 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { Prisma } from '@prisma/client';
+import { GroupedPermission } from './type/group-permission';
 
 @Injectable()
 export class RoleService {
@@ -18,32 +19,29 @@ export class RoleService {
 
   //formatted role helper
   private formatRolePermissions(role: RoleWithPermissions) {
-    const { role_permissions, department_id, ...rest } = role;
+    const { role_permissions, ...rest } = role;
 
-    const groupedPermissions = role.role_permissions.reduce(
-      (acc, permission) => {
-        const subModule = permission.sub_module_permission.sub_module;
-        const subModuleId = subModule.id;
+    const groupedPermissions = role_permissions.reduce<
+      Record<number, GroupedPermission>
+    >((acc, permission) => {
+      const subModule = permission.sub_module_permission.sub_module;
+      const subModuleId = Number(subModule.id);
 
-        if (!acc[subModuleId]) {
-          acc[subModuleId] = {
-            id: permission.sub_module_permission.id,
-            actions: [],
-            sub_module: {
-              id: subModule.id,
-              name: subModule.name,
-            },
-          };
-        }
+      if (!acc[subModuleId]) {
+        acc[subModuleId] = {
+          id: permission.sub_module_permission.id,
+          actions: [],
+          sub_module: {
+            id: subModule.id,
+            name: subModule.name,
+          },
+        };
+      }
 
-        acc[subModuleId].actions.push(
-          permission.sub_module_permission.action,
-        );
+      acc[subModuleId].actions.push(permission.sub_module_permission.action);
 
-        return acc;
-      },
-      {} as Record<string, any>,
-    );
+      return acc;
+    }, {});
 
     // return {
     //   role: role.role_permissions[0]?.role
@@ -62,7 +60,7 @@ export class RoleService {
 
     return {
       ...rest,
-      department: role.role_permissions[0]?.role.department ?? null,
+      department: role_permissions[0]?.role.department ?? null,
       role_permissions: Object.values(groupedPermissions),
     };
   }
@@ -147,12 +145,12 @@ export class RoleService {
                   sub_module: {
                     select: {
                       id: true,
-                      name: true
-                    }
-                  }
-                }
-              }
-            }
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
           },
           createdBy: {
             select: {
@@ -185,7 +183,7 @@ export class RoleService {
       }),
     ]);
 
-    const formattedRoles = roles.map(role => 
+    const formattedRoles = roles.map((role) =>
       this.formatRolePermissions(role),
     );
 
@@ -229,7 +227,7 @@ export class RoleService {
       page,
       perPage,
       // totalPage: Math.ceil(total / perPage),
-      roles: formattedRoles
+      roles: formattedRoles,
     };
   }
 
@@ -240,7 +238,7 @@ export class RoleService {
         role_permissions: {
           select: {
             role: {
-              select:{
+              select: {
                 id: true,
                 name: true,
                 department: {
@@ -264,7 +262,7 @@ export class RoleService {
                 },
               },
             },
-          }
+          },
         },
         createdBy: {
           select: {
@@ -472,48 +470,54 @@ export class RoleService {
   }
 
   //Add Get submodule permission -> to query the submodule permission table for available submolues with permission
-  async createRolePermissions(
-    dto: CreateRolePermissionDto,
-    user: RequestUser,
-  ) {
+  async createRolePermissions(dto: CreateRolePermissionDto, user: RequestUser) {
     const { sub_module_id, role_id, actions } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-            employee: {
-            include: {
-                department: true,
-                person: true,
-                position: true,
-            },
-            },
-            user_roles: true,
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            department: true,
+            person: true,
+            position: true,
+          },
         },
+        user_roles: true,
+      },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-        throw new BadRequestException(`User does not exist.`);
+      throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
-    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
     if (!canView) {
-        throw new ForbiddenException('You are not authorized to perform this action');
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     const existingRole = await this.prisma.role.findUnique({
       where: { id: role_id, is_active: true },
-      include: { 
-        user_roles: 
-        { 
-          select: { 
-            id: true 
-          }
-        } 
-      }
+      include: {
+        user_roles: {
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
     if (!existingRole) {
@@ -544,7 +548,7 @@ export class RoleService {
       action: act,
       role_id,
       sub_module_permission_id: subModulePermissionMap.get(act)!, // to assess sub_module_permission_id if it is always defined and cannot be null
-      created_by: user.id
+      created_by: user.id,
     }));
 
     const rolePermission = await this.prisma.rolePermission.createMany({
@@ -642,34 +646,44 @@ export class RoleService {
       status: 'success',
       message: `Added permissions to Role ${existingRole.name}`,
       created_by: `${userName} - ${userPosition}`,
-      rolePermission
+      rolePermission,
     };
   }
 
   async getRolePermissions(user: RequestUser) {
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-            employee: {
-            include: {
-                person: true,
-                position: true,
-            },
-            },
-            user_roles: true,
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
         },
+        user_roles: true,
+      },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-        throw new BadRequestException(`User does not exist.`);
+      throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator', 'HR Manager', 'HR Clerk', 'HR Staff'];
-    const canView = requestUser?.user_roles.some(role => allowedRoles.includes(role.role_name));
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
     if (!canView) {
-        throw new ForbiddenException('You are not authorized to perform this action');
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
     const rolePermissions = await this.prisma.rolePermission.findMany({
@@ -678,7 +692,7 @@ export class RoleService {
         role: {
           select: {
             id: true,
-            name: true
+            name: true,
           },
         },
         user_permission: {
@@ -687,21 +701,21 @@ export class RoleService {
             action: true,
             user_id: true,
             user_role_id: true,
-            role_permission_id: true
+            role_permission_id: true,
           },
         },
       },
     });
 
     if (rolePermissions.length === 0) {
-      throw new NotFoundException("There are no role permissions available");
+      throw new NotFoundException('There are no role permissions available');
     }
 
     return {
       status: 'success',
       message: 'List of Role Permissions available',
-      rolePermissions
-    }
+      rolePermissions,
+    };
   }
 
   // async updateRolePermissions(

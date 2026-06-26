@@ -89,7 +89,7 @@ import { memoryStorage } from 'multer';
     CompanyService,
     EmploymentStatusService,
     UserLocationService,
-    AttachmentUploadService
+    AttachmentUploadService,
     // HealthCheckService,
   ],
   exports: [AttachmentUploadService],

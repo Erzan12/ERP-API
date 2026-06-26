@@ -16,10 +16,7 @@ import { Gender, CivilStatus, Prisma } from '@prisma/client';
 export class EmployeeMasterlistService {
   constructor(private prisma: PrismaService) {}
 
-  async createEmployee(
-    dto: CreateEmployeeWithDetailsDto,
-    user: RequestUser,
-  ) {
+  async createEmployee(dto: CreateEmployeeWithDetailsDto, user: RequestUser) {
     return await this.prisma.$transaction(async (prisma) => {
       try {
         const { gender, civil_status } = dto.person;
@@ -76,9 +73,7 @@ export class EmployeeMasterlistService {
               first_name: dto.person.first_name,
               middle_name: dto.person.middle_name,
               last_name: dto.person.last_name,
-              date_of_birth: new Date(
-                dto.person.date_of_birth,
-              ),
+              date_of_birth: new Date(dto.person.date_of_birth),
               gender,
               civil_status,
               email: dto.person.email,
@@ -117,19 +112,13 @@ export class EmployeeMasterlistService {
             salary: dto.employee.salary,
             hire_date: hireDate,
             pay_frequency: dto.employee.pay_frequency,
-            employment_status_id:
-              dto.employee.employment_status_id,
-            employment_type:
-              dto.employee.employment_type,
-            employee_type: 
-              dto.employee.employee_type,
-            monthly_equivalent_salary:
-              dto.employee.monthly_equivalent_salary,
+            employment_status_id: dto.employee.employment_status_id,
+            employment_type: dto.employee.employment_type,
+            employee_type: dto.employee.employee_type,
+            monthly_equivalent_salary: dto.employee.monthly_equivalent_salary,
             archive_date: dto.employee.archive_date,
-            other_employee_data:
-              dto.employee.other_employee_data,
-            corporate_rank_id:
-              dto.employee.corporate_rank_id,
+            other_employee_data: dto.employee.other_employee_data,
+            corporate_rank_id: dto.employee.corporate_rank_id,
             created_by: user.id ?? null,
           },
         });
@@ -481,7 +470,7 @@ export class EmployeeMasterlistService {
     };
   }
 
-  async getEmployee( employeeId: string, user: RequestUser) {
+  async getEmployee(employeeId: string, user: RequestUser) {
     // 1. Find the employee
     const employee = await this.prisma.employee.findUnique({
       where: { id: employeeId },
@@ -491,7 +480,7 @@ export class EmployeeMasterlistService {
           select: {
             id: true,
             name: true,
-          }
+          },
         },
         person: true,
         employee_id: true,
@@ -499,25 +488,25 @@ export class EmployeeMasterlistService {
           select: {
             id: true,
             name: true,
-          }
+          },
         },
         position: {
           select: {
             id: true,
             name: true,
-          }
+          },
         },
         division: {
           select: {
             id: true,
             name: true,
-          }
+          },
         },
         employment_status: {
           select: {
             id: true,
             label: true,
-          }
+          },
         },
         hire_date: true,
         salary: true,

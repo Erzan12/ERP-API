@@ -3,7 +3,6 @@ import {
   Get,
   ParseUUIDPipe,
   Param,
-  Put,
   Query,
   Post,
   Body,
@@ -26,7 +25,6 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-import { RoleService } from 'src/modules/administrator/role/role.service';
 import { AddRoleToUserDto } from './dto/role.dto';
 
 @ApiTags('Manager - Role Management')
@@ -84,13 +82,9 @@ export class RoleManagementControllerV2 {
   addUserRole(
     @SessionUser() requestUser: RequestUser,
     @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Body() dto: AddRoleToUserDto
+    @Body() dto: AddRoleToUserDto,
   ) {
-    return this.roleManagementService.addRoleUser(
-      requestUser,
-      userId,
-      dto,
-    );
+    return this.roleManagementService.addRoleUser(requestUser, userId, dto);
   }
 
   //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION

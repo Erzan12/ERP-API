@@ -107,7 +107,7 @@ export class SubModuleControllerV2 {
   }
 
   @Delete('sub-modules/:subModuleId')
-  @ApiOperation({ summary: 'Delete a submodule '})
+  @ApiOperation({ summary: 'Delete a submodule ' })
   @Can({ action: 'update', subject: 'System Management' })
   deleteSubmodule(
     @Param('subModuleId', new ParseUUIDPipe()) subModuleId: string,

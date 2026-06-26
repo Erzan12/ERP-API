@@ -7,13 +7,22 @@ import {
   ApiSecurityClearance,
 } from 'src/utils/helpers/swagger-response.helper';
 import { LoginDto } from './dto/login.dto';
-import { ResetPasswordWithTokenDto, ResendInvitationTokenDto, ForgotPasswordDto, VerifyForgotPasswordDto } from './dto/reset-password-with-token.dto';
+import {
+  ResetPasswordWithTokenDto,
+  ResendInvitationTokenDto,
+  ForgotPasswordDto,
+  VerifyForgotPasswordDto,
+} from './dto/reset-password-with-token.dto';
 import { Public } from 'src/utils/decorators/public.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { Response } from 'express';
-import { ACTION_CREATE, SEC_LVL_5, USER_TOKEN_KEY } from 'src/utils/constants/ability.constant';
+import {
+  ACTION_CREATE,
+  SEC_LVL_5,
+  USER_TOKEN_KEY,
+} from 'src/utils/constants/ability.constant';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { Can } from 'src/utils/decorators/can.decorator';
 
@@ -101,7 +110,7 @@ export class AuthController {
     @Body() dto: ForgotPasswordDto,
     // @SessionUser() user: RequestUser,
   ) {
-    return this.authService.forgotPassword(dto)
+    return this.authService.forgotPassword(dto);
   }
 
   @Public()
@@ -117,7 +126,7 @@ export class AuthController {
     @Body() dto: VerifyForgotPasswordDto,
     // @SessionUser() user: RequestUser,
   ) {
-    return this.authService.verifyForgotPassword(dto)
+    return this.authService.verifyForgotPassword(dto);
   }
 
   //for expired first time login reset token key
@@ -126,7 +135,10 @@ export class AuthController {
     type: ResendInvitationTokenDto,
     description: 'Payload for new user reset token',
   })
-  @ApiOperation({ summary: 'Resend password reset email if reset password link is expired after 1 day' })
+  @ApiOperation({
+    summary:
+      'Resend password reset email if reset password link is expired after 1 day',
+  })
   @ApiPostResponse('Password reset done! you can now log in!')
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
