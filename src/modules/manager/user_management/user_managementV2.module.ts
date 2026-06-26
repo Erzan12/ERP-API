@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthModule } from 'src/auth/auth.module';
@@ -11,9 +11,7 @@ import { UserManagementControllerV2 } from './user_managementV2.controller';
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 
 @Module({
-  imports: [
-    AuthModule,
-  ],
+  imports: [AuthModule],
   controllers: [UserManagementControllerV2],
   providers: [
     UserManagementService,
@@ -23,7 +21,7 @@ import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-u
     JwtService,
     MailService,
     AuditService,
-    AttachmentUploadService
+    AttachmentUploadService,
   ],
   exports: [AuthService, UserManagementService],
 })

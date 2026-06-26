@@ -40,7 +40,9 @@ import { EmployeeMasterlistService } from './employee.service';
 @ApiTags('Human Resources - Employees (Employee Masterlist)')
 @Controller({ path: 'hris', version: '2' })
 export class EmployeeMasterlistController {
-  constructor(private readonly employeeMasterlistService: EmployeeMasterlistService) {}
+  constructor(
+    private readonly employeeMasterlistService: EmployeeMasterlistService,
+  ) {}
 
   @Get('employees')
   @ApiOperation({ summary: 'List of all employees' })
@@ -109,6 +111,4 @@ export class EmployeeMasterlistController {
 
 @ApiTags('Human Resources - Employees (Employment History)')
 @Controller({ path: 'hris', version: '2' })
-export class EmploymentHistoryController {
-
-} 
+export class EmploymentHistoryController {}

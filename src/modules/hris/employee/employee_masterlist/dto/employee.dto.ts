@@ -99,23 +99,23 @@ export class CreateEmployeeDto {
 
   @IsOptional()
   @IsEnum(EmploymentType, {
-      message: 'Valid employment type: full_time, part_time'
+    message: 'Valid employment type: full_time, part_time',
   })
   @Type(() => String)
   @ApiProperty({
-      enum: EmploymentType,
-      required: false
+    enum: EmploymentType,
+    required: false,
   })
   employment_type?: EmploymentType;
 
   @IsOptional()
   @IsEnum(EmployeeType, {
-      message: 'Valid employment type: land_based, sea_based'
+    message: 'Valid employment type: land_based, sea_based',
   })
   @Type(() => String)
   @ApiProperty({
-      enum: EmployeeType,
-      required: false
+    enum: EmployeeType,
+    required: false,
   })
   employee_type?: EmployeeType;
 

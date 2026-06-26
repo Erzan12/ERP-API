@@ -43,7 +43,7 @@ export const PERFORMANCE_MANAGEMENT = 'performance management';
 export const REGULARIZATION_REVIEW = 'regularization review';
 
 //SUBMODULE FOR EMPLOYEE/CORP SERV
-export const EMPLOYEE_DASHBOARD ='employee dashboard';
+export const EMPLOYEE_DASHBOARD = 'employee dashboard';
 
 //SUBMODULE FOR MANAGER - OR IN CONTROLLER SUBJECT
 export const USER_ACCOUNT = 'user account';

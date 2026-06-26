@@ -1,7 +1,6 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
-import { AuthModule } from 'src/auth/auth.module';
 import { MailService } from 'src/jobs/mail/mail.service';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PermissionTemplateControllerV2 } from './permission_template/permission_templateV2.controller';
@@ -15,7 +14,7 @@ import { UserManagementV2Module } from './user_management/user_managementV2.modu
 @Module({
   imports: [
     // AuthModule,
-    UserManagementV2Module
+    UserManagementV2Module,
   ],
   controllers: [PermissionTemplateControllerV2, RoleManagementControllerV2],
   providers: [
