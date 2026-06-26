@@ -14,7 +14,7 @@ export class MailService {
       secure: true,
       auth: {
         user: this.configService.get('SMTP_USER'),
-        pass: this.configService.get('SMTP_PASS'), 
+        pass: this.configService.get('SMTP_PASS'),
       },
     });
   }
@@ -157,8 +157,7 @@ export class MailService {
       throw new Error('SMTP credentials are missing');
     }
 
-    const resetUrl = 
-      `${process.env.FRONTEND_URL_RESEND_RESET_PASSWORD}/auth/reset-password?token=${token}`;
+    const resetUrl = `${process.env.FRONTEND_URL_RESEND_RESET_PASSWORD}/auth/reset-password?token=${token}`;
 
     const mailOption = {
       from: `"Avega Bros HRMS(to replace with avega logo)" <${this.configService.get('SMTP_USER')}>`,
@@ -299,7 +298,7 @@ export class MailService {
             </tr>
           </table>
         </div>
-      `
+      `,
     });
   }
 }

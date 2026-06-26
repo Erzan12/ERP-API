@@ -1,8 +1,12 @@
 import { addMonths } from 'date-fns';
 import { STAGE_RULES } from '../constants/evaluation.constants';
 import { EvaluationStageStatus, EvaluationStage } from '@prisma/client';
+import { Evaluation } from 'src/modules/hris/performance-management/regularization-reviews/type/evaluation-type';
 
-export function getExpectedDueDate(hireDate: Date, stage: keyof typeof STAGE_RULES) {
+export function getExpectedDueDate(
+  hireDate: Date,
+  stage: keyof typeof STAGE_RULES,
+) {
   const months = STAGE_RULES[stage];
   return addMonths(hireDate, months);
 }
@@ -19,7 +23,10 @@ export function getExpectedDueDate(hireDate: Date, stage: keyof typeof STAGE_RUL
 //   return "pending";
 // }
 
-export function computeEvaluationStatus(evaluation: any, now = new Date()) {
+export function computeEvaluationStatus(
+  evaluation: Evaluation,
+  now = new Date(),
+) {
   if (evaluation.completed_at) {
     return EvaluationStageStatus.complete;
   }
@@ -35,9 +42,9 @@ export function computeEvaluationStatus(evaluation: any, now = new Date()) {
 
   //probation date is adjustable and is not based on hire date of employee
   if (evaluation.stage === EvaluationStage.third_month_evaluation) {
-    deadline = new Date(evaluation.probation_date, 3);
+    deadline = addMonths(evaluation.probation_date, 3);
     // deadline = addMonths(hireDate, 3);
-  } else if ( evaluation.stage === EvaluationStage.fifth_month_evaluation) {
+  } else if (evaluation.stage === EvaluationStage.fifth_month_evaluation) {
     deadline = addMonths(hireDate, 5);
   } else {
     return EvaluationStageStatus.pending;

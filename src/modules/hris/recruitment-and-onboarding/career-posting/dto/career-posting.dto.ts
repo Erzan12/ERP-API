@@ -9,7 +9,11 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { CareerPostingStatus, EmployeeType, EmploymentType } from '@prisma/client';
+import {
+  CareerPostingStatus,
+  EmployeeType,
+  EmploymentType,
+} from '@prisma/client';
 
 export class CreateCareerPostingDto {
   @IsUUID()
@@ -161,13 +165,14 @@ export class UpdateCareerPostingDto {
   @IsOptional()
   @IsString()
   @IsEnum(CareerPostingStatus, {
-    message: 'Career Posting status must be draft, submitted, verified, approved, rejected',
+    message:
+      'Career Posting status must be draft, submitted, verified, approved, rejected',
   })
   @Type(() => String)
   @ApiProperty({
     enum: CareerPostingStatus,
     example: CareerPostingStatus.draft,
-    description: 'The status of this career posting'
+    description: 'The status of this career posting',
   })
   status?: CareerPostingStatus;
 

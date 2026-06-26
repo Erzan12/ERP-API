@@ -25,7 +25,7 @@ import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-u
     AuditService,
     CaslAbilityService,
     UserManagementService,
-    AttachmentUploadService
+    AttachmentUploadService,
   ],
   exports: [AuthModule, JwtStrategy],
 })

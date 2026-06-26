@@ -1,46 +1,48 @@
-import { Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
 @ApiTags('Administrator - File Uploads')
-@Controller({path: 'administrator', version: '2'})
+@Controller({ path: 'administrator', version: '2' })
 export class FileUploadController {
-
-    @Post('uploads')
-    @UseInterceptors(
+  @Post('uploads')
+  @UseInterceptors(
     FilesInterceptor('files', 10, {
-        storage: diskStorage({
+      storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
-            const timestamp = Date.now();
-            const ext = extname(file.originalname);
-            const name = file.originalname
-            .replace(ext, '')
-            .replace(/\s+/g, '-');
+          const timestamp = Date.now();
+          const ext = extname(file.originalname);
+          const name = file.originalname.replace(ext, '').replace(/\s+/g, '-');
 
-            cb(null, `${name}-${timestamp}${ext}`);
+          cb(null, `${name}-${timestamp}${ext}`);
         },
-        }),
+      }),
     }),
-    )
-    @ApiConsumes('multipart/form-data')
-    @ApiBody({
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
     schema: {
-        type: 'object',
-        properties: {
+      type: 'object',
+      properties: {
         files: {
-            type: 'array',
-            items: { type: 'string', format: 'binary' },
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
         },
-        },
+      },
     },
-    })
-    uploadFiles(@UploadedFiles() files: Express.Multer.File[]) {
-        return files.map((file) => ({
-            file_name: file.filename,
-            file_path: `uploads/${file.filename}`,
-        }));
-    }
+  })
+  uploadFiles(@UploadedFiles() files: Express.Multer.File[]) {
+    return files.map((file) => ({
+      file_name: file.filename,
+      file_path: `uploads/${file.filename}`,
+    }));
+  }
 }
