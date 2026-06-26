@@ -68,7 +68,7 @@ jobs:
         run: npm run lint
 
       - name: Run Unit Tests
-        run: npm test -- --ci --env=jsdom --reporters=default --reporters=jest-junit
+        run: npm test -- --ci --reporters=default --reporters=jest-junit
 
       - name: Run Security Audit
         run: |
