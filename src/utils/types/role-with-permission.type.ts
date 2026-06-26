@@ -4,6 +4,18 @@ export type RoleWithPermissions = Prisma.RoleGetPayload<{
   include: {
     role_permissions: {
       select: {
+        role: {
+          select: {
+            id: true,
+            name: true,
+            department: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
         sub_module_permission: {
           select: {
             id: true;
