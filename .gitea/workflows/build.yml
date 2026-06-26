@@ -26,43 +26,43 @@ jobs:
         run: |
           npx prisma generate
           
-      - name: Debug Environment
-        run: |
-          echo "===== System ====="
-          pwd
-          uname -a || true
+      # - name: Debug Environment
+      #   run: |
+      #     echo "===== System ====="
+      #     pwd
+      #     uname -a || true
 
-          echo ""
-          echo "===== Node ====="
-          node -v
-          npm -v
+      #     echo ""
+      #     echo "===== Node ====="
+      #     node -v
+      #     npm -v
 
-          echo ""
-          echo "===== TypeScript ====="
-          npx tsc -v
+      #     echo ""
+      #     echo "===== TypeScript ====="
+      #     npx tsc -v
 
-          echo ""
-          echo "===== Prisma ====="
-          npx prisma -v
+      #     echo ""
+      #     echo "===== Prisma ====="
+      #     npx prisma -v
 
-          echo ""
-          echo "===== Installed Packages ====="
-          npm ls typescript
-          npm ls eslint
-          npm ls @typescript-eslint/parser
-          npm ls @typescript-eslint/eslint-plugin
-          npm ls @prisma/client
-          npm ls prisma
+      #     echo ""
+      #     echo "===== Installed Packages ====="
+      #     npm ls typescript
+      #     npm ls eslint
+      #     npm ls @typescript-eslint/parser
+      #     npm ls @typescript-eslint/eslint-plugin
+      #     npm ls @prisma/client
+      #     npm ls prisma
 
-          echo ""
-          echo "===== Git ====="
-          git rev-parse HEAD
-          git status
+      #     echo ""
+      #     echo "===== Git ====="
+      #     git rev-parse HEAD
+      #     git status
 
-          echo ""
-          echo "===== Files ====="
-          ls
-          ls prisma || true
+      #     echo ""
+      #     echo "===== Files ====="
+      #     ls
+      #     ls prisma || true
 
       - name: Run ESLint
         run: npm run lint
