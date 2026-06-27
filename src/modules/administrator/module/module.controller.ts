@@ -35,7 +35,7 @@ import { ModulePaginationDto } from 'src/utils/dtos/module-pagination.dto';
 
 @ApiTags('Administrator - Module')
 @Controller({ path: 'administrator', version: '2' })
-export class ModuleControllerV2 {
+export class ModuleController {
   constructor(private moduleService: ModuleService) {}
 
   @Get('modules')

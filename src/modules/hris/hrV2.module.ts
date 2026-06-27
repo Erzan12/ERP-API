@@ -11,7 +11,7 @@ import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardControllerV2 } from './dashboard/dashboardV2.controller';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { AdministratorV2Module } from '../administrator/administratorV2.module';
+import { AdministratorModule } from '../administrator/administrator.module';
 
 import { CareerPostingService } from './recruitment-and-onboarding/career-posting/career-posting.service';
 import { CareerPostingV2Controller } from './recruitment-and-onboarding/career-posting/career-posting-v2.controller';
@@ -45,7 +45,7 @@ import { SalaryGradeService } from './salary-grade/salary-grade.service';
 import { SalaryGradeController } from './salary-grade/salary-grade.controller';
 
 @Module({
-  imports: [AuthModule, AdministratorV2Module],
+  imports: [AuthModule, AdministratorModule],
   providers: [
     EmployeeMasterlistService,
     PrismaService,
