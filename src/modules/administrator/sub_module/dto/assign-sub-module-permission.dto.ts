@@ -17,7 +17,7 @@ export class AssignSubModulePermissionDto {
     description:
       'Assign permissions to sub module, also can add multiple permissions at once',
   })
-  action: string[];
+  actions: string[];
 
   @IsUUID()
   @IsNotEmpty()

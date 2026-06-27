@@ -967,7 +967,7 @@ model UserRole {
 
 model RolePermission {
   id                       String  @id @default(uuid()) @db.Uuid
-  action                   String
+  //action                   String
   role_id                  String  @db.Uuid
   sub_module_permission_id String  @db.Uuid
   is_active                Boolean @default(true)

@@ -20,7 +20,7 @@ import {
 
 @ApiTags('Administrator - Audit')
 @Controller({ path: 'administrator', version: '2' })
-export class AuditControllerV2 {
+export class AuditController {
   constructor(private auditService: AuditService) {}
 
   @Get('audit')
