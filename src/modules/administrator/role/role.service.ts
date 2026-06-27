@@ -129,6 +129,7 @@ export class RoleService {
                 select: {
                   id: true,
                   name: true,
+                  department_id: true,
                   department: {
                     select: {
                       id: true,
@@ -241,6 +242,7 @@ export class RoleService {
               select: {
                 id: true,
                 name: true,
+                department_id: true,
                 department: {
                   select: {
                     id: true,
@@ -470,7 +472,7 @@ export class RoleService {
   }
 
   //Add Get submodule permission -> to query the submodule permission table for available submolues with permission
-  async createRolePermissions(dto: CreateRolePermissionDto, user: RequestUser) {
+  async assignRolePermissions(dto: CreateRolePermissionDto, user: RequestUser) {
     const { sub_module_id, role_id, actions } = dto;
 
     // Auth check first
@@ -524,14 +526,46 @@ export class RoleService {
       throw new BadRequestException('Role not found or does not exist!');
     }
 
-    const validSubModuleActions =
-      await this.prisma.subModulePermission.findMany({
-        where: { sub_module_id },
-      });
+    const existingRolePermission = await this.prisma.rolePermission.findMany({
+      where: {
+        role_id,
+      },
+      include: {
+        sub_module_permission: {
+          select: {
+            action: true,
+          },
+        },
+      },
+    });
 
-    const validActions = validSubModuleActions.map((perm) => perm.action);
+    const existingActions = existingRolePermission.map(
+      (rp) => rp.sub_module_permission.action,
+    );
 
-    const invalidActions = actions.filter((act) => !validActions.includes(act));
+    // permissions to remove in the role
+    const actionsToDelete = existingRolePermission
+      .filter((rp) => !actions.includes(rp.sub_module_permission.action))
+      .map((rp) => rp.id);
+
+    // check permissions added in submodule permission before it will be assigned to role permission
+    const availablePermissions = await this.prisma.subModulePermission.findMany({
+      where: { 
+        sub_module_id, 
+      },
+      select: {
+        id: true,
+        action: true,
+      }
+    });
+
+    // const validActions = availablePermissions.map((perm) => perm.action);
+
+    // const invalidActions = actions.filter((act) => !validActions.includes(act));
+
+    // using a Set
+    const validActions = new Set(availablePermissions.map(p => p.action));
+    const invalidActions = actions.filter(act => !validActions.has(act));
 
     if (invalidActions.length > 0) {
       throw new BadRequestException(
@@ -539,114 +573,103 @@ export class RoleService {
       );
     }
 
-    // to map the role_name and sub_module_permission so it wont return null in prisma studio
-    const subModulePermissionMap = new Map(
-      validSubModuleActions.map((perm) => [perm.action, perm.id]),
+    // Instead of filtering from every available permission:
+    // const actionsToCreate = availablePermissions.filter(
+    //   (perm) => !existingActions.includes(perm.action),
+    // );
+
+    // Filter from the requested actions:
+    // Now only the actions that were sent by the client are created.
+    const actionsToCreate = availablePermissions.filter(
+      (perm) => 
+        actions.includes(perm.action) &&
+        !existingActions.includes(perm.action),
     );
 
-    const createRolePermission = actions.map((act) => ({
-      action: act,
+    const createRolePermission = actionsToCreate.map((perm) => ({
+      // action: perm.action,
       role_id,
-      sub_module_permission_id: subModulePermissionMap.get(act)!, // to assess sub_module_permission_id if it is always defined and cannot be null
+      sub_module_permission_id: perm.id, // to assess sub_module_permission_id if it is always defined and cannot be null
       created_by: user.id,
     }));
 
-    const rolePermission = await this.prisma.rolePermission.createMany({
-      data: createRolePermission,
-      skipDuplicates: true,
+    const result = await this.prisma.$transaction(async (tx) => {
+      if (actionsToDelete.length > 0) {
+        await tx.rolePermission.deleteMany({
+          where: {
+            id: {
+              in: actionsToDelete
+            },
+          },
+        });
+      }
+
+      return tx.rolePermission.createMany({
+        data: createRolePermission,
+        skipDuplicates: true,
+      });
     });
 
-    // update also user data: UserRole and UserPermission
-    // const rolePermissions = await this.prisma.rolePermission.findMany({
-    //   where: { role_id },
-    //   include:{
-    //     role: true,
-    //     sub_module_permission: true,
-    //   }
-    // });
+    const updateRole = await this.prisma.role.findUnique({
+      where: {
+        id: role_id,
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        is_active: true,
+        department: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        role_permissions: {
+          select: {
+            id: true,
+            is_active: true,
+            sub_module_permission: {
+              select: {
+                action: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
-    // type UserRoleWithRole = Prisma.UserRoleGetPayload<{
-    //   include: { role: true };
-    // }>;
+    const requestedCount = actions.length;
+    const createdCount = result.count;
+    const deletedCount = actionsToDelete.length;
 
-    // const userRolesMap = new Map<string , UserRoleWithRole>();
+    let message = '';
 
-    // for (const rp of rolePermissions) {
-    //   const key = `${rp.role_id}-${rp.sub_module_permission.sub_module_id}`;
-
-    //   let userRole = userRolesMap.get(key);
-
-    //   // check db for existing UserRole(user_id + role_id)
-    //   if (!userRole) {
-    //     const existing = await this.prisma.userRole.findFirst({
-    //       where: {
-    //         user_id: user.id,
-    //         role_id: rp.role_id
-    //       },
-    //       include: { role: true }
-    //     });
-
-    //     if (existing) {
-    //       userRole = existing;
-    //     } else {
-    //       userRole = await this.prisma.userRole.create({
-    //         data: {
-    //           user: {
-    //             connect: { id: user.id },
-    //           },
-    //           role: {
-    //             connect: { id: rp.role_id },
-    //           },
-    //           role_name: rp.role.name ?? null,
-    //           created_at: new Date()
-    //         },
-    //         include: {
-    //           role: true,
-    //         },
-    //       });
-
-    //       await this.prisma.user.update({
-    //         where: { id: user.id },
-    //         data: {
-    //           user_roles: {
-    //             connect: { id: rp.role_id },
-    //           },
-    //         },
-    //       });
-    //     }
-
-    //     userRolesMap.set(key, userRole);
-    //   }
-
-    //   // ensure permission not already assign
-    //   const exists = await this.prisma.userPermission.findFirst({
-    //     where: {
-    //       user_id: user.id,
-    //       user_role_id: userRole.id,
-    //       role_permission_id: rp.id,
-    //     },
-    //   });
-
-    //   if(!exists) {
-    //     await this.prisma.userPermission.create({
-    //       data: {
-    //         user_id: user.id,
-    //         user_role_id: userRole.id,
-    //         role_permission_id: rp.id,
-    //         action: rp.action,
-    //       },
-    //     });
-    //   }
-    // }
+    if (createdCount === 0) {
+      message = `All selected permissions already exist in Role ${existingRole.name}.`;
+    } else if (createdCount < requestedCount) {
+      message = `${createdCount} permission(s) added. ${
+        requestedCount - createdCount  
+      } permission(s) already existed in Role ${existingRole.name}`;
+    } else {
+      message = `Added ${createdCount} permission(s) to Role ${existingRole.name}`;
+    }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
 
     return {
       status: 'success',
-      message: `Added permissions to Role ${existingRole.name}`,
+      message,
+      // : `Added permissions to Role ${existingRole.name}`,
       created_by: `${userName} - ${userPosition}`,
-      rolePermission,
+      role: updateRole,
+      data: {
+        requested: requestedCount,
+        created: createdCount,
+        deleted: deletedCount,
+        current_permissions: actions,
+      }
     };
   }
 

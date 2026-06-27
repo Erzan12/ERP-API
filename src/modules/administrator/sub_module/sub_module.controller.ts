@@ -29,7 +29,7 @@ import { SubModulePaginationDto } from 'src/utils/dtos/module-pagination.dto';
 
 @ApiTags('Administrator - Submodule')
 @Controller({ path: 'administrator', version: '2' })
-export class SubModuleControllerV2 {
+export class SubModuleController {
   constructor(private subModuleService: SubModuleService) {}
 
   //get list of submodules
