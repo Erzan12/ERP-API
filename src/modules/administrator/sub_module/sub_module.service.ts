@@ -556,16 +556,16 @@ export class SubModuleService {
     dto: AssignSubModulePermissionDto,
     user: RequestUser,
   ) {
-    const { action, sub_module_id } = dto;
+    const { actions, sub_module_id } = dto;
 
-    const subModule = await this.prisma.subModule.findFirst({
+    const existingSubModule = await this.prisma.subModule.findFirst({
       where: { id: sub_module_id },
       include: {
         module: true,
       },
     });
 
-    if (!subModule) {
+    if (!existingSubModule) {
       throw new NotFoundException('Sub Module does not exist!');
     }
 
@@ -622,20 +622,20 @@ export class SubModuleService {
 
     // Permissions to remove
     const actionsToDelete = existingPermissions
-      .filter((p) => !action.includes(p.sub_module_action.action))
+      .filter((p) => !actions.includes(p.sub_module_action.action))
       .map((p) => p.id);
 
     // Valid actions from master table
     const availablePermissions = await this.prisma.subModuleAction.findMany({
       where: {
         action: {
-          in: action,
+          in: actions,
         },
       },
     });
 
-    if (availablePermissions.length !== action.length) {
-      throw new BadRequestException('One or more permissions do not exist.');
+    if (availablePermissions.length !== actions.length) {
+      throw new BadRequestException('One or more permissions does not exist.');
     }
 
     // Permissions to add
@@ -689,20 +689,20 @@ export class SubModuleService {
       },
     });
 
-    const requestedCount = action.length;
+    const requestedCount = actions.length;
     const createdCount = result.count;
     const deletedCount = actionsToDelete.length;
 
     let message = '';
 
     if (createdCount === 0) {
-      message = `All selected permissions already exist in Sub Module ${subModule.name}.`;
+      message = `All selected permissions already exist in Sub Module ${existingSubModule.name}.`;
     } else if (createdCount < requestedCount) {
-      message = `${createdCount} permissions(s) added. ${
+      message = `${createdCount} permission(s) added. ${
         requestedCount - createdCount
-      } permissions(s) already existed in Sub Module ${subModule.name}`;
+      } permission(s) already existed in Sub Module ${existingSubModule.name}`;
     } else {
-      message = `Added ${createdCount} permission(s) to Sub Module ${subModule.name}`;
+      message = `Added ${createdCount} permission(s) to Sub Module ${existingSubModule.name}`;
     }
 
     return {
@@ -715,7 +715,7 @@ export class SubModuleService {
         requested: requestedCount,
         created: createdCount,
         deleted: deletedCount,
-        current_permissions: action,
+        current_permissions: actions,
       },
     };
   }

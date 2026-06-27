@@ -456,13 +456,20 @@ export class RoleManagementService {
       where: {
         role_id: dto.role_id,
       },
+      include: {
+        sub_module_permission: {
+          select: {
+            action: true,
+          },
+        },
+      },
     });
 
     const userPermissions = rolePermissions.map((rp) => ({
       user_id: userId,
       user_role_id: userRole.id,
       role_permission_id: rp.id,
-      action: rp.action,
+      action: rp.sub_module_permission.action,
       created_by: requestUser.id,
     }));
 
@@ -515,13 +522,20 @@ export class RoleManagementService {
         role_id: roleId,
         is_active: true,
       },
+      include: {
+        sub_module_permission: {
+          select:{ 
+            action: true,
+          }
+        }
+      }
     });
 
     const permissionsToCreate = rolePermissions.map((rp) => ({
       user_id: userId,
       user_role_id: userRole.id,
       role_permission_id: rp.id,
-      action: rp.action,
+      action: rp.sub_module_permission.action,
       created_by: user.id,
     }));
 
@@ -660,7 +674,7 @@ export class RoleManagementService {
               user_id: user.id,
               user_role_id: userRole.id,
               role_permission_id: rp.id,
-              action: rp.action,
+              action: rp.sub_module_permission.action,
             },
           });
         }

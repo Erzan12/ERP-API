@@ -270,7 +270,7 @@
     },
     "/v2/administrator/sub-modules": {
       "get": {
-        "operationId": "SubModuleControllerV2_getSubmodules_v2",
+        "operationId": "SubModuleController_getSubmodules_v2",
         "parameters": [
           {
             "name": "search",
@@ -357,7 +357,7 @@
         ]
       },
       "post": {
-        "operationId": "SubModuleControllerV2_createSubModule_v2",
+        "operationId": "SubModuleController_createSubModule_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -398,7 +398,7 @@
     },
     "/v2/administrator/sub-modules/{subModuleId}": {
       "get": {
-        "operationId": "SubModuleControllerV2_getSubmodule_v2",
+        "operationId": "SubModuleController_getSubmodule_v2",
         "parameters": [
           {
             "name": "subModuleId",
@@ -435,7 +435,7 @@
         ]
       },
       "delete": {
-        "operationId": "SubModuleControllerV2_deleteSubmodule_v2",
+        "operationId": "SubModuleController_deleteSubmodule_v2",
         "parameters": [
           {
             "name": "subModuleId",
@@ -459,7 +459,7 @@
     },
     "/v2/administrator/sub-module/{subModuleId}": {
       "put": {
-        "operationId": "SubModuleControllerV2_updateSubmodule_v2",
+        "operationId": "SubModuleController_updateSubmodule_v2",
         "parameters": [
           {
             "name": "subModuleId",
@@ -509,7 +509,7 @@
     },
     "/v2/administrator/sub-modules/permissions": {
       "put": {
-        "operationId": "SubModuleControllerV2_createSubModulePermission_v2",
+        "operationId": "SubModuleController_createSubModulePermission_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -550,7 +550,7 @@
     },
     "/v2/administrator/modules": {
       "get": {
-        "operationId": "ModuleControllerV2_getModules_v2",
+        "operationId": "ModuleController_getModules_v2",
         "parameters": [
           {
             "name": "search",
@@ -637,7 +637,7 @@
         ]
       },
       "post": {
-        "operationId": "ModuleControllerV2_createModule_v2",
+        "operationId": "ModuleController_createModule_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -677,7 +677,7 @@
     },
     "/v2/administrator/modules/{moduleId}": {
       "get": {
-        "operationId": "ModuleControllerV2_getModule_v2",
+        "operationId": "ModuleController_getModule_v2",
         "parameters": [
           {
             "name": "moduleId",
@@ -716,7 +716,7 @@
     },
     "/v2/administrator/modules/{id}": {
       "put": {
-        "operationId": "ModuleControllerV2_updateModule_v2",
+        "operationId": "ModuleController_updateModule_v2",
         "parameters": [
           {
             "name": "id",
@@ -766,7 +766,7 @@
     },
     "/v2/administrator/roles": {
       "get": {
-        "operationId": "RoleControllerV2_getRoles_v2",
+        "operationId": "RoleController_getRoles_v2",
         "parameters": [
           {
             "name": "search",
@@ -844,7 +844,7 @@
         ]
       },
       "post": {
-        "operationId": "RoleControllerV2_createRole_v2",
+        "operationId": "RoleController_createRole_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -884,7 +884,7 @@
     },
     "/v2/administrator/roles/role-permissions": {
       "get": {
-        "operationId": "RoleControllerV2_getRolePermissions_v2",
+        "operationId": "RoleController_getRolePermissions_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -914,7 +914,7 @@
     },
     "/v2/administrator/roles/{id}": {
       "get": {
-        "operationId": "RoleControllerV2_getRole_v2",
+        "operationId": "RoleController_getRole_v2",
         "parameters": [
           {
             "name": "id",
@@ -953,7 +953,7 @@
     },
     "/v2/administrator/roles/role_permission": {
       "put": {
-        "operationId": "RoleControllerV2_createRolePermission_v2",
+        "operationId": "RoleController_createRolePermission_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -993,7 +993,7 @@
     },
     "/v2/administrator/roles/{roleId}": {
       "put": {
-        "operationId": "RoleControllerV2_updateRole_v2",
+        "operationId": "RoleController_updateRole_v2",
         "parameters": [
           {
             "name": "roleId",
@@ -1043,7 +1043,7 @@
     "/v2/administrator/security_clearance/{id}": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 9.",
-        "operationId": "SecurityClearanceControllerV2_updateClearance_v2",
+        "operationId": "SecurityClearanceController_updateClearance_v2",
         "parameters": [
           {
             "name": "id",
@@ -1077,7 +1077,7 @@
     },
     "/v2/administrator": {
       "get": {
-        "operationId": "DashboardControllerv2_getAdminDashboard_v2",
+        "operationId": "DashboardController_getAdminDashboard_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -1107,7 +1107,7 @@
     },
     "/v2/administrator/audit": {
       "get": {
-        "operationId": "AuditControllerV2_getAuditLogs_v2",
+        "operationId": "AuditController_getAuditLogs_v2",
         "parameters": [
           {
             "name": "user_id",
@@ -1187,7 +1187,7 @@
     },
     "/v2/administrator/audit/resource/{resource}/{id}": {
       "get": {
-        "operationId": "AuditControllerV2_getResourceHistory_v2",
+        "operationId": "AuditController_getResourceHistory_v2",
         "parameters": [
           {
             "name": "resource",
@@ -1219,7 +1219,7 @@
     },
     "/v2/administrator/audit/user/{id}/activity": {
       "get": {
-        "operationId": "AuditControllerV2_getUserActivity_v2",
+        "operationId": "AuditController_getUserActivity_v2",
         "parameters": [
           {
             "name": "id",
@@ -1251,7 +1251,7 @@
     },
     "/v2/administrator/audit/my-activity": {
       "get": {
-        "operationId": "AuditControllerV2_getMyActivity_v2",
+        "operationId": "AuditController_getMyActivity_v2",
         "parameters": [
           {
             "name": "days",
@@ -1471,7 +1471,7 @@
     },
     "/v2/administrator/db-query/execute": {
       "post": {
-        "operationId": "DbQueryControllerV2_executeQuery_v2",
+        "operationId": "DbQueryController_executeQuery_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1512,7 +1512,7 @@
     },
     "/v2/administrator/db-query/logs": {
       "get": {
-        "operationId": "DbQueryControllerV2_getLogs_v2",
+        "operationId": "DbQueryController_getLogs_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -1542,7 +1542,7 @@
     },
     "/v2/administrator/db-query/logs/{id}": {
       "get": {
-        "operationId": "DbQueryControllerV2_getLog_v2",
+        "operationId": "DbQueryController_getLog_v2",
         "parameters": [
           {
             "name": "id",
@@ -7145,7 +7145,7 @@
       "AssignSubModulePermissionDto": {
         "type": "object",
         "properties": {
-          "action": {
+          "actions": {
             "example": "[\"read\", \"update\", \"create\", \"delete\"]",
             "description": "Assign permissions to sub module, also can add multiple permissions at once",
             "type": "array",
@@ -7160,7 +7160,7 @@
           }
         },
         "required": [
-          "action",
+          "actions",
           "sub_module_id"
         ]
       },

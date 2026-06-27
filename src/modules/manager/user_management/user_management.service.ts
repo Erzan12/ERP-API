@@ -483,7 +483,7 @@ export class UserManagementService {
                 user_id: newUser.id,
                 user_role_id: userRole.id,
                 role_permission_id: rp.id,
-                action: rp.action,
+                action: rp.sub_module_permission.action,
               },
             });
           }
