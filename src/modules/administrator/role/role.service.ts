@@ -22,14 +22,14 @@ export class RoleService {
     const { role_permissions, ...rest } = role;
 
     const groupedPermissions = role_permissions.reduce<
-      Record<number, GroupedPermission>
+      Record<string, GroupedPermission>
     >((acc, permission) => {
       const subModule = permission.sub_module_permission.sub_module;
-      const subModuleId = Number(subModule.id);
+      const subModuleId = subModule.id;
 
       if (!acc[subModuleId]) {
         acc[subModuleId] = {
-          id: permission.sub_module_permission.id,
+          id: subModule.id,
           actions: [],
           sub_module: {
             id: subModule.id,
@@ -585,11 +585,16 @@ export class RoleService {
     const existingRolePermission = await this.prisma.rolePermission.findMany({
       where: {
         role_id,
+        sub_module_permission: {
+          sub_module_id,
+        },
       },
       include: {
         sub_module_permission: {
           select: {
+            id: true,
             action: true,
+            sub_module_id: true,
           },
         },
       },
@@ -629,10 +634,6 @@ export class RoleService {
       );
     }
 
-    // Instead of filtering from every available permission:
-    // const actionsToCreate = availablePermissions.filter(
-    //   (perm) => !existingActions.includes(perm.action),
-    // );
 
     // Filter from the requested actions:
     // Now only the actions that were sent by the client are created.
@@ -701,14 +702,20 @@ export class RoleService {
 
     let message = '';
 
-    if (createdCount === 0) {
-      message = `All selected permissions already exist in Role ${existingRole.name}.`;
-    } else if (createdCount < requestedCount) {
-      message = `${createdCount} permission(s) added. ${
-        requestedCount - createdCount  
-      } permission(s) already existed in Role ${existingRole.name}`;
+    // if (createdCount === 0) {
+    //   message = `All selected permissions already exist in Role ${existingRole.name}.`;
+    // } else if (createdCount < requestedCount) {
+    //   message = `${createdCount} permission(s) added. ${
+    //     requestedCount - createdCount  
+    //   } permission(s) already existed in Role ${existingRole.name}`;
+    // } else {
+    //   message = `Added ${createdCount} permission(s) to Role ${existingRole.name}`;
+    // }
+
+    if (createdCount === 0 && deletedCount === 0) {
+      message = "No changes were made.";
     } else {
-      message = `Added ${createdCount} permission(s) to Role ${existingRole.name}`;
+      message = `Added ${createdCount} permission(s), removed ${deletedCount} permission(s).`;
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
