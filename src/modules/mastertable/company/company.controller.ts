@@ -34,7 +34,7 @@ import { CompanyService } from './company.service';
 
 @ApiTags('Mastertable - Company')
 @Controller({ path: 'mastertable', version: '2' })
-export class CompanyControllerV2 {
+export class CompanyController {
   constructor(private companyService: CompanyService) {}
 
   //get all available companies

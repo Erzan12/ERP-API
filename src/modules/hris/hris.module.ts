@@ -8,13 +8,13 @@ import {
 } from './employee/employee_masterlist/employee.controller';
 
 import { DashboardService } from './dashboard/dashboard.service';
-import { DashboardControllerV2 } from './dashboard/dashboardV2.controller';
+import { DashboardController } from './dashboard/dashboard.controller';
 
 import { AuthModule } from 'src/auth/auth.module';
 import { AdministratorModule } from '../administrator/administrator.module';
 
 import { CareerPostingService } from './recruitment-and-onboarding/career-posting/career-posting.service';
-import { CareerPostingV2Controller } from './recruitment-and-onboarding/career-posting/career-posting-v2.controller';
+import { CareerPostingController } from './recruitment-and-onboarding/career-posting/career-posting.controller';
 
 import {
   HiringPipelineService,
@@ -25,7 +25,7 @@ import {
   ApplicantsController,
   InterviewApplicantController,
   ScreeningApplicantController,
-} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipelineV2.controller';
+} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.controller';
 import { RegularizationReviewsService } from './performance-management/regularization-reviews/regularization-reviews.service';
 import { RegularizationReviewsController } from './performance-management/regularization-reviews/regularization-reviews.controller';
 import { PerformanceCompetencyController } from './performance-management/performance-competency/performance-competency.controller';
@@ -68,8 +68,8 @@ import { SalaryGradeController } from './salary-grade/salary-grade.controller';
   controllers: [
     EmployeeMasterlistController,
     EmploymentHistoryController,
-    DashboardControllerV2,
-    CareerPostingV2Controller,
+    DashboardController,
+    CareerPostingController,
     ApplicantsController,
     // ScreeningApplicantController,
     InterviewApplicantController,
@@ -83,6 +83,6 @@ import { SalaryGradeController } from './salary-grade/salary-grade.controller';
     OvertimeCasesController,
     SalaryGradeController,
   ],
-  exports: [HrV2Module],
+  exports: [HrisModule],
 })
-export class HrV2Module {}
+export class HrisModule {}

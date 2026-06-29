@@ -7,12 +7,12 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { UserManagementService } from './user_management.service';
-import { UserManagementControllerV2 } from './user_managementV2.controller';
+import { UserManagementController } from './user_management.controller';
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 
 @Module({
   imports: [AuthModule],
-  controllers: [UserManagementControllerV2],
+  controllers: [UserManagementController],
   providers: [
     UserManagementService,
     PrismaService,
@@ -25,4 +25,4 @@ import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-u
   ],
   exports: [AuthService, UserManagementService],
 })
-export class UserManagementV2Module {}
+export class UserManagementModule {}
