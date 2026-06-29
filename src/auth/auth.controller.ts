@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Query, Get, Req, Res } from '@nestjs/common';
+import { Body, Controller, Post, Query, Get, Req, Res, Header } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -33,6 +33,9 @@ export class AuthController {
 
   @Public()
   @Post('login')
+  @Header('Cache-Control', 'no-store')
+  @Header('Pragma', 'no-cache')
+  @Header('Expires', '0')
   @ApiOperation({ summary: 'User authorized login' })
   @ApiLoginResponse('User login successful')
   async login(
@@ -57,6 +60,9 @@ export class AuthController {
   }
 
   @Post('logout')
+  @Header('Cache-Control', 'no-store')
+  @Header('Pragma', 'no-cache')
+  @Header('Expires', '0')
   @ApiOperation({ summary: 'User will logout' })
   @ApiPostResponse('User logout successfully')
   logout(
@@ -70,7 +76,7 @@ export class AuthController {
     // Clear cookie here
     res.clearCookie('accessToken', {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
     });
@@ -80,6 +86,9 @@ export class AuthController {
 
   @Public()
   @Post('reset-password')
+  @Header('Cache-Control', 'no-store')
+  @Header('Pragma', 'no-cache')
+  @Header('Expires', '0')
   @ApiOperation({ summary: 'User reset password' })
   @ApiPostResponse('Password reset successfully')
   passwordResetWithToken(
@@ -99,6 +108,9 @@ export class AuthController {
 
   @Public()
   @Post('forgot-password/request-otp')
+  @Header('Cache-Control', 'no-store')
+  @Header('Pragma', 'no-cache')
+  @Header('Expires', '0')
   @ApiBody({
     type: ForgotPasswordDto,
     description: 'Payload for forgot password',
@@ -115,6 +127,9 @@ export class AuthController {
 
   @Public()
   @Post('forgot-password/verify-otp')
+  @Header('Cache-Control', 'no-store')
+  @Header('Pragma', 'no-cache')
+  @Header('Expires', '0')
   @ApiBody({
     type: VerifyForgotPasswordDto,
     description: 'Payload to verify otp',
@@ -131,6 +146,9 @@ export class AuthController {
 
   //for expired first time login reset token key
   @Post('resend-invitation')
+  @Header('Cache-Control', 'no-store')
+  @Header('Pragma', 'no-cache')
+  @Header('Expires', '0')
   @ApiBody({
     type: ResendInvitationTokenDto,
     description: 'Payload for new user reset token',
@@ -151,6 +169,10 @@ export class AuthController {
   }
 
   @Get('/verify')
+  @Header('Cache-Control', 'no-store')
+  @Header('Pragma', 'no-cache')
+  @Header('Expires', '0')
+  // @Header('Cache-Control', 'no-store' )
   @ApiOperation({ summary: 'Verify user' })
   @ApiLoginResponse('User has been verified')
   async verify(@SessionUser() requestUser: RequestUser) {
