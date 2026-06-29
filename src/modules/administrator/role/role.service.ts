@@ -69,6 +69,41 @@ export class RoleService {
   async getRoles(user: RequestUser, dto: PaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
 
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.RoleWhereInput = {
@@ -192,6 +227,19 @@ export class RoleService {
     //   throw new BadRequestException('No available or active roles exist!');
     // }
 
+    return {
+      status: 'success',
+      message: 'Here are the list of Roles',
+      count: total,
+      page,
+      perPage,
+      // totalPage: Math.ceil(total / perPage),
+      roles: formattedRoles,
+    };
+  }
+
+  async getRole(roleId: string, user: RequestUser) {
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -209,9 +257,14 @@ export class RoleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator'];
-
-    const canView = requestUser.user_roles.some((role) =>
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
 
@@ -221,18 +274,6 @@ export class RoleService {
       );
     }
 
-    return {
-      status: 'success',
-      message: 'Here are the list of Roles',
-      count: total,
-      page,
-      perPage,
-      // totalPage: Math.ceil(total / perPage),
-      roles: formattedRoles,
-    };
-  }
-
-  async getRole(roleId: string, user: RequestUser) {
     const role = await this.prisma.role.findUnique({
       where: { id: roleId, is_active: true },
       include: {
@@ -329,6 +370,23 @@ export class RoleService {
 
     const formattedRole = this.formatRolePermissions(role);
 
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    return {
+      status: 'success',
+      message: 'Here is the Role',
+      role: formattedRole,
+    };
+  }
+
+  async createRole(createRoleDto: CreateRoleDto, user: RequestUser) {
+    const { name, description, department_id } = createRoleDto;
+
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -346,9 +404,14 @@ export class RoleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator'];
-
-    const canView = requestUser.user_roles.some((role) =>
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
 
@@ -358,38 +421,12 @@ export class RoleService {
       );
     }
 
-    return {
-      status: 'success',
-      message: 'Here is the Role',
-      role: formattedRole,
-    };
-  }
-
-  async createRole(createRoleDto: CreateRoleDto, user: RequestUser) {
-    const { name, description, department_id } = createRoleDto;
-
     const existingRole = await this.prisma.role.findUnique({
       where: { name: createRoleDto.name },
     });
 
     if (existingRole) {
       throw new BadRequestException('Role already exist! Try again');
-    }
-
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
@@ -420,14 +457,7 @@ export class RoleService {
   async updateRole(dto: UpdateRoleDto, user: RequestUser, roleId: string) {
     const { name, description, department_id, is_active } = dto;
 
-    const existingRole = await this.prisma.role.findUnique({
-      where: { id: roleId },
-    });
-
-    if (!existingRole) {
-      throw new BadRequestException('Role does not exist!');
-    }
-
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -437,11 +467,37 @@ export class RoleService {
             position: true,
           },
         },
+        user_roles: true,
       },
     });
 
     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
       throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const existingRole = await this.prisma.role.findUnique({
+      where: { id: roleId },
+    });
+
+    if (!existingRole) {
+      throw new BadRequestException('Role does not exist!');
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
