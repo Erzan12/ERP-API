@@ -13,18 +13,9 @@ import { ModulePaginationDto } from 'src/utils/dtos/module-pagination.dto';
 @Injectable()
 export class ModuleService {
   constructor(private prisma: PrismaService) {}
-  // validate if module already exist
-  async createModule(createModuleDto: CreateModuleDto, user: RequestUser) {
-    const existingModule = await this.prisma.module.findFirst({
-      where: {
-        name: createModuleDto.name,
-      },
-    });
 
-    if (existingModule) {
-      throw new BadRequestException('Module already exists!');
-    }
-
+  async getModule(user: RequestUser, moduleId: string) {
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -42,45 +33,23 @@ export class ModuleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator'];
-
-    const canView = requestUser.user_roles.some((role) =>
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
 
     if (!canView) {
       throw new ForbiddenException(
-        'You are not allowed to perform this action',
+        'You are not authorized to perform this action',
       );
     }
 
-    const module = await this.prisma.module.create({
-      data: {
-        name: createModuleDto.name,
-        //to be added field of stat for status active or inactive
-        createdBy: {
-          connect: { id: user.id },
-        },
-      },
-    });
-
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
-
-    return {
-      status: 'success',
-      message: `New module has been added to the system!`,
-      // created_by: {
-      //   id: requestUser.id,
-      //   name: userName,
-      //   position: userPos,
-      // },
-      module,
-      created_by_user: `${userName} - ${userPosition}`,
-    };
-  }
-
-  async getModule(user: RequestUser, moduleId: string) {
     const subModules = await this.prisma.subModule.findMany();
 
     if (subModules.length === 0) {
@@ -298,11 +267,112 @@ export class ModuleService {
     };
   }
 
+  async createModule(createModuleDto: CreateModuleDto, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const existingModule = await this.prisma.module.findFirst({
+      where: {
+        name: createModuleDto.name,
+      },
+    });
+
+    if (existingModule) {
+      throw new BadRequestException('Module already exists!');
+    }
+
+    const module = await this.prisma.module.create({
+      data: {
+        name: createModuleDto.name,
+        //to be added field of stat for status active or inactive
+        createdBy: {
+          connect: { id: user.id },
+        },
+      },
+    });
+
+    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    const userPosition = requestUser.employee.position.name;
+
+    return {
+      status: 'success',
+      message: `New module has been added to the system!`,
+      // created_by: {
+      //   id: requestUser.id,
+      //   name: userName,
+      //   position: userPos,
+      // },
+      module,
+      created_by_user: `${userName} - ${userPosition}`,
+    };
+  }
+
   async updateModude(
     updateModuleDto: UpdateModuleDto,
     user: RequestUser,
     id: string,
   ) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
     const existingModule = await this.prisma.module.findUnique({
       where: { id },
       select: {
@@ -325,22 +395,6 @@ export class ModuleService {
         updated_by: user.id,
       },
     });
-
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
