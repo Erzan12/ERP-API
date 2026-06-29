@@ -6,7 +6,7 @@ import { LandingModule } from './landing/landing.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AdministratorModule } from './modules/administrator/administrator.module';
-import { HrV2Module } from './modules/hris/hrV2.module';
+import { HrisModule } from './modules/hris/hris.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { MastertableModule } from './modules/mastertable/mastertable.module';
 import { UserManagementModule } from './modules/manager/user_management/user_management.module';
@@ -53,7 +53,7 @@ import { memoryStorage } from 'multer';
     AdministratorModule,
     MastertableModule,
     CaslModule,
-    HrV2Module,
+    HrisModule,
     ManagerModule,
     UserManagementModule,
     EmployeeDashboardModule,
