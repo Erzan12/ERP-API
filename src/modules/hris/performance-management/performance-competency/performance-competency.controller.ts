@@ -18,7 +18,7 @@ import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
-  EMPLOYEE_MASTERLIST,
+  SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -38,7 +38,7 @@ export class PerformanceCompetencyController {
   @Get('performance-competency')
   @ApiOperation({ summary: 'List of all Performance Competencies' })
   @ApiGetResponse('List of Performance Comptencies')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getCompetencies(@SessionUser() user: RequestUser) {
     return this.performanceCompetencyService.getCompetencies(user);
   }
@@ -46,7 +46,7 @@ export class PerformanceCompetencyController {
   @Post('performance-competency')
   @ApiOperation({ summary: 'Create a Performance Competency' })
   @ApiPostResponse('Performance Competency created')
-  @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT })
   createCompetency(
     @SessionUser() user: RequestUser,
     @Body() dto: CreatePerformanceCompetencyDto,
@@ -63,7 +63,7 @@ export class PerformanceCompetencyController {
     summary: 'Update a current Performance Competency Information',
   })
   @ApiPatchResponse('Performance Competency updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT })
   updateCompetency(
     @Param('competencyId', new ParseUUIDPipe()) competencyId: string,
     @SessionUser() user: RequestUser,
@@ -79,7 +79,7 @@ export class PerformanceCompetencyController {
   @Get('performance-competency/:competencyId')
   @ApiOperation({ summary: 'Get a single Performance Competency' })
   @ApiPatchResponse('Here is the Performance Competency')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getCompetency(
     @SessionUser() user: RequestUser,
     @Param('competencyId', new ParseUUIDPipe()) competencyId: string,

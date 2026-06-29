@@ -5,7 +5,7 @@ import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 import { Can } from 'src/utils/decorators/can.decorator';
 import {
   ACTION_READ,
-  EMPLOYEE_MASTERLIST,
+  SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
 
 @ApiTags('Human Resources - Dashboard')
@@ -16,7 +16,7 @@ export class DashboardController {
   @Get()
   @ApiOperation({ summary: 'Summary of the employees' })
   @ApiGetResponse('Dashboard')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getHrDashboard() {
     return this.dashboardService.getHRDashboard();
   }
