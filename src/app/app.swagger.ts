@@ -7,7 +7,7 @@ import { setupHRISSwagger } from './hris/hris.swagger';
 import { setupManagerSwagger } from './manager/manager.swagger';
 import { setupMasterSwagger } from './mastertable/mastertable.swagger';
 import { AdministratorModule } from 'src/modules/administrator/administrator.module';
-import { HrV2Module } from 'src/modules/hris/hrV2.module';
+import { HrisModule } from 'src/modules/hris/hris.module';
 import { ManagerModule } from 'src/modules/manager/manager.module';
 import { MastertableModule } from 'src/modules/mastertable/mastertable.module';
 import { setupUserSwagger } from './user-management/user-management.swagger';
@@ -43,7 +43,7 @@ function setupAppSwagger(app: INestApplication): void {
     include: [
       AuthModule,
       AdministratorModule,
-      HrV2Module,
+      HrisModule,
       ManagerModule,
       MastertableModule,
       EmployeeDashboardModule,
