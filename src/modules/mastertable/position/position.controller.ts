@@ -36,7 +36,7 @@ import { PositionService } from './position.service';
 // @ApiCookieAuth('access-token')
 @ApiTags('Mastertable - Position')
 @Controller({ path: 'mastertable', version: '2' })
-export class PositionControllerV2 {
+export class PositionController {
   constructor(private positionService: PositionService) {}
 
   //get all available positions

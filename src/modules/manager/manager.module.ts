@@ -3,20 +3,20 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthService } from 'src/auth/auth.service';
 import { MailService } from 'src/jobs/mail/mail.service';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { PermissionTemplateControllerV2 } from './permission_template/permission_templateV2.controller';
+import { PermissionTemplateController } from './permission_template/permission_template.controller';
 import { PermissionTemplateService } from './permission_template/permission_template.service';
 import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
 import { AuditService } from '../administrator/audit/audit.service';
-import { RoleManagementControllerV2 } from './role-management/role-managementV2.controller';
+import { RoleManagementController } from './role-management/role-management.controller';
 import { RoleManagementService } from './role-management/role-management.service';
-import { UserManagementV2Module } from './user_management/user_managementV2.module';
+import { UserManagementModule } from './user_management/user_management.module';
 
 @Module({
   imports: [
     // AuthModule,
-    UserManagementV2Module,
+    UserManagementModule,
   ],
-  controllers: [PermissionTemplateControllerV2, RoleManagementControllerV2],
+  controllers: [PermissionTemplateController, RoleManagementController],
   providers: [
     PrismaService,
     AuthService,
@@ -29,4 +29,4 @@ import { UserManagementV2Module } from './user_management/user_managementV2.modu
   ],
   exports: [AuthService, RoleManagementService],
 })
-export class ManagerV2Module {}
+export class ManagerModule {}

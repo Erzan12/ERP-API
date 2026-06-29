@@ -33,7 +33,7 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Mastertable - Division')
 @Controller({ path: 'mastertable', version: '2' })
-export class DivisionControllerV2 {
+export class DivisionController {
   constructor(private divisionService: DivisionService) {}
 
   //get all available divisions

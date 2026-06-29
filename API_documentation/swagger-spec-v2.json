@@ -1792,7 +1792,7 @@
     },
     "/v2/mastertable/positions": {
       "get": {
-        "operationId": "PositionControllerV2_getPositions_v2",
+        "operationId": "PositionController_getPositions_v2",
         "parameters": [
           {
             "name": "search",
@@ -1870,7 +1870,7 @@
         ]
       },
       "post": {
-        "operationId": "PositionControllerV2_createPosition_v2",
+        "operationId": "PositionController_createPosition_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1911,7 +1911,7 @@
     },
     "/v2/mastertable/positions/{positionId}": {
       "get": {
-        "operationId": "PositionControllerV2_getPosition_v2",
+        "operationId": "PositionController_getPosition_v2",
         "parameters": [
           {
             "name": "positionId",
@@ -1948,7 +1948,7 @@
         ]
       },
       "put": {
-        "operationId": "PositionControllerV2_updatePosition_v2",
+        "operationId": "PositionController_updatePosition_v2",
         "parameters": [
           {
             "name": "positionId",
@@ -1998,7 +1998,7 @@
     },
     "/v2/mastertable/departments": {
       "get": {
-        "operationId": "DepartmentControllerV2_getDepartments_v2",
+        "operationId": "DepartmentController_getDepartments_v2",
         "parameters": [
           {
             "name": "search",
@@ -2076,7 +2076,7 @@
         ]
       },
       "post": {
-        "operationId": "DepartmentControllerV2_createDepartment_v2",
+        "operationId": "DepartmentController_createDepartment_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2117,7 +2117,7 @@
     },
     "/v2/mastertable/departments/{departmentId}": {
       "get": {
-        "operationId": "DepartmentControllerV2_getDepartment_v2",
+        "operationId": "DepartmentController_getDepartment_v2",
         "parameters": [
           {
             "name": "departmentId",
@@ -2154,7 +2154,7 @@
         ]
       },
       "put": {
-        "operationId": "DepartmentControllerV2_updateDepartment_v2",
+        "operationId": "DepartmentController_updateDepartment_v2",
         "parameters": [
           {
             "name": "departmentId",
@@ -2204,7 +2204,7 @@
     },
     "/v2/mastertable/companies": {
       "get": {
-        "operationId": "CompanyControllerV2_getCompanies_v2",
+        "operationId": "CompanyController_getCompanies_v2",
         "parameters": [
           {
             "name": "search",
@@ -2282,7 +2282,7 @@
         ]
       },
       "post": {
-        "operationId": "CompanyControllerV2_createCompany_v2",
+        "operationId": "CompanyController_createCompany_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2323,7 +2323,7 @@
     },
     "/v2/mastertable/companies/{companyId}": {
       "get": {
-        "operationId": "CompanyControllerV2_getCompany_v2",
+        "operationId": "CompanyController_getCompany_v2",
         "parameters": [
           {
             "name": "companyId",
@@ -2360,7 +2360,7 @@
         ]
       },
       "put": {
-        "operationId": "CompanyControllerV2_updateCompany_v2",
+        "operationId": "CompanyController_updateCompany_v2",
         "parameters": [
           {
             "name": "companyId",
@@ -2410,7 +2410,7 @@
     },
     "/v2/mastertable/divisions": {
       "get": {
-        "operationId": "DivisionControllerV2_getDivisions_v2",
+        "operationId": "DivisionController_getDivisions_v2",
         "parameters": [
           {
             "name": "search",
@@ -2488,7 +2488,7 @@
         ]
       },
       "post": {
-        "operationId": "DivisionControllerV2_createDivision_v2",
+        "operationId": "DivisionController_createDivision_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2529,7 +2529,7 @@
     },
     "/v2/mastertable/divisions/{divisionId}": {
       "get": {
-        "operationId": "DivisionControllerV2_getDivision_v2",
+        "operationId": "DivisionController_getDivision_v2",
         "parameters": [
           {
             "name": "divisionId",
@@ -2566,7 +2566,7 @@
         ]
       },
       "put": {
-        "operationId": "DivisionControllerV2_updateDivision_v2",
+        "operationId": "DivisionController_updateDivision_v2",
         "parameters": [
           {
             "name": "divisionId",
@@ -2616,7 +2616,7 @@
     },
     "/v2/mastertable/employment_status": {
       "get": {
-        "operationId": "EmploymentStatusControllerV2_getEmployeeStats_v2",
+        "operationId": "EmploymentStatusController_getEmployeeStats_v2",
         "parameters": [
           {
             "name": "search",
@@ -2694,7 +2694,7 @@
         ]
       },
       "post": {
-        "operationId": "EmploymentStatusControllerV2_createEmployeeStatus_v2",
+        "operationId": "EmploymentStatusController_createEmployeeStatus_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2735,7 +2735,7 @@
     },
     "/v2/mastertable/employment_status/{employeeStatusId}": {
       "get": {
-        "operationId": "EmploymentStatusControllerV2_getEmployeeStat_v2",
+        "operationId": "EmploymentStatusController_getEmployeeStat_v2",
         "parameters": [
           {
             "name": "employeeStatusId",
@@ -2772,7 +2772,7 @@
         ]
       },
       "put": {
-        "operationId": "EmploymentStatusControllerV2_updateEmployeeStatus_v2",
+        "operationId": "EmploymentStatusController_updateEmployeeStatus_v2",
         "parameters": [
           {
             "name": "employeeStatusId",
@@ -2821,7 +2821,7 @@
     },
     "/v2/mastertable/user-locations": {
       "get": {
-        "operationId": "UserLocationControllerV2_getUserLocations_v2",
+        "operationId": "UserLocationController_getUserLocations_v2",
         "parameters": [
           {
             "name": "search",
@@ -2899,7 +2899,7 @@
         ]
       },
       "post": {
-        "operationId": "UserLocationControllerV2_createUserLocation_v2",
+        "operationId": "UserLocationController_createUserLocation_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2940,7 +2940,7 @@
     },
     "/v2/mastertable/user-locations/{userLocationId}": {
       "get": {
-        "operationId": "UserLocationControllerV2_getUserLocation_v2",
+        "operationId": "UserLocationController_getUserLocation_v2",
         "parameters": [
           {
             "name": "userLocationId",
@@ -2977,7 +2977,7 @@
         ]
       },
       "put": {
-        "operationId": "UserLocationControllerV2_updateUserLocation_v2",
+        "operationId": "UserLocationController_updateUserLocation_v2",
         "parameters": [
           {
             "name": "userLocationId",
@@ -3403,7 +3403,7 @@
     },
     "/v2/hris": {
       "get": {
-        "operationId": "DashboardControllerV2_getHrDashboard_v2",
+        "operationId": "DashboardController_getHrDashboard_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -3433,7 +3433,7 @@
     },
     "/v2/hris/recruitments": {
       "get": {
-        "operationId": "CareerPostingV2Controller_getCareerPostings_v2",
+        "operationId": "CareerPostingController_getCareerPostings_v2",
         "parameters": [
           {
             "name": "search",
@@ -3520,7 +3520,7 @@
         ]
       },
       "post": {
-        "operationId": "CareerPostingV2Controller_createCareerPosting_v2",
+        "operationId": "CareerPostingController_createCareerPosting_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -3561,7 +3561,7 @@
     },
     "/v2/hris/recruitments/status-count": {
       "get": {
-        "operationId": "CareerPostingV2Controller_getStatusCountActive_v2",
+        "operationId": "CareerPostingController_getStatusCountActive_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -3591,7 +3591,7 @@
     },
     "/v2/hris/recruitments/{recruitmentId}": {
       "get": {
-        "operationId": "CareerPostingV2Controller_getCareerPosting_v2",
+        "operationId": "CareerPostingController_getCareerPosting_v2",
         "parameters": [
           {
             "name": "recruitmentId",
@@ -3628,7 +3628,7 @@
         ]
       },
       "put": {
-        "operationId": "CareerPostingV2Controller_updateCareerPosting_v2",
+        "operationId": "CareerPostingController_updateCareerPosting_v2",
         "parameters": [
           {
             "name": "recruitmentId",
@@ -3678,7 +3678,7 @@
     },
     "/v2/hris/recruitments/{recruitmentId}/submit": {
       "post": {
-        "operationId": "CareerPostingV2Controller_submitCareerPosting_v2",
+        "operationId": "CareerPostingController_submitCareerPosting_v2",
         "parameters": [
           {
             "name": "recruitmentId",
@@ -3717,7 +3717,7 @@
     },
     "/v2/hris/recruitments/{recruitmentId}/verify": {
       "post": {
-        "operationId": "CareerPostingV2Controller_verifyCareerPosting_v2",
+        "operationId": "CareerPostingController_verifyCareerPosting_v2",
         "parameters": [
           {
             "name": "recruitmentId",
@@ -3756,7 +3756,7 @@
     },
     "/v2/hris/recruitments/{recruitmentId}/approve": {
       "post": {
-        "operationId": "CareerPostingV2Controller_approveCareerPosting_v2",
+        "operationId": "CareerPostingController_approveCareerPosting_v2",
         "parameters": [
           {
             "name": "recruitmentId",
@@ -3795,7 +3795,7 @@
     },
     "/v2/hris/recruitments/{recruitmentId}/reject": {
       "post": {
-        "operationId": "CareerPostingV2Controller_rejectCareerPosting_v2",
+        "operationId": "CareerPostingController_rejectCareerPosting_v2",
         "parameters": [
           {
             "name": "recruitmentId",
@@ -6371,7 +6371,7 @@
     },
     "/v2/manager/permission-template": {
       "get": {
-        "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
+        "operationId": "PermissionTemplateController_getPermissionTemplates_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -6399,7 +6399,7 @@
         ]
       },
       "post": {
-        "operationId": "PermissionTemplateControllerV2_createPermissionTemplate_v2",
+        "operationId": "PermissionTemplateController_createPermissionTemplate_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -6440,7 +6440,7 @@
     },
     "/v2/manager/permission-template/{id}": {
       "get": {
-        "operationId": "PermissionTemplateControllerV2_getPermissionTemplate_v2",
+        "operationId": "PermissionTemplateController_getPermissionTemplate_v2",
         "parameters": [
           {
             "name": "id",
@@ -6477,7 +6477,7 @@
         ]
       },
       "put": {
-        "operationId": "PermissionTemplateControllerV2_updatePermissionTemplate_v2",
+        "operationId": "PermissionTemplateController_updatePermissionTemplate_v2",
         "parameters": [
           {
             "name": "id",
@@ -6527,7 +6527,7 @@
     },
     "/v2/manager/permission-template/user/{userPermissionTemplateId}": {
       "get": {
-        "operationId": "PermissionTemplateControllerV2_getUserPermissionTemplate_v2",
+        "operationId": "PermissionTemplateController_getUserPermissionTemplate_v2",
         "parameters": [
           {
             "name": "userPermissionTemplateId",
@@ -6566,7 +6566,7 @@
     },
     "/v2/manager/permission-template/user/{id}": {
       "post": {
-        "operationId": "PermissionTemplateControllerV2_assignPermTemplate_v2",
+        "operationId": "PermissionTemplateController_assignPermTemplate_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -6607,7 +6607,7 @@
     },
     "/v2/manager/roles": {
       "get": {
-        "operationId": "RoleManagementControllerV2_getRoles_v2",
+        "operationId": "RoleManagementController_getRoles_v2",
         "parameters": [
           {
             "name": "search",
@@ -6687,7 +6687,7 @@
     },
     "/v2/manager/roles/{roleId}": {
       "get": {
-        "operationId": "RoleManagementControllerV2_getRole_v2",
+        "operationId": "RoleManagementController_getRole_v2",
         "parameters": [
           {
             "name": "roleId",
@@ -6727,7 +6727,7 @@
     "/v2/manager/me/permissions": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "RoleManagementControllerV2_getMyPermissions_v2",
+        "operationId": "RoleManagementController_getMyPermissions_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -6758,7 +6758,7 @@
     "/v2/manager/roles/{userId}": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "RoleManagementControllerV2_addUserRole_v2",
+        "operationId": "RoleManagementController_addUserRole_v2",
         "parameters": [
           {
             "name": "userId",
