@@ -18,7 +18,7 @@ import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
-  EMPLOYEE_MASTERLIST,
+  SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
@@ -36,7 +36,7 @@ export class OvertimeRateController {
   @Get('/time-and-attendance/overtime-rates')
   @ApiOperation({ summary: 'List of Overtime Rates' })
   @ApiGetResponse('List of Overtime Rates')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getOvertimeRates(@SessionUser() user: RequestUser) {
     return this.overtimeService.getOvertimeRates(user);
   }
@@ -44,7 +44,7 @@ export class OvertimeRateController {
   @Get('/time-and-attendance/overtime-rates/:overtimeRateId')
   @ApiOperation({ summary: 'Get a single id Overtime Rate' })
   @ApiGetResponse('Get a single Overtime Rate')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getOvertimeRate(
     @SessionUser() user: RequestUser,
     @Param('overtimeRateId', new ParseUUIDPipe()) overtimeRateId: string,
@@ -59,7 +59,7 @@ export class OvertimeRateController {
   })
   @ApiOperation({ summary: 'Create a overtime rate' })
   @ApiPostResponse('Overtime rate created successfully')
-  @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT })
   createOvertimeRate(
     @SessionUser() user: RequestUser,
     @Body() dto: CreateOvertimeRateDto,
@@ -74,7 +74,7 @@ export class OvertimeRateController {
   })
   @ApiOperation({ summary: 'Update a overtime rate' })
   @ApiPatchResponse('Overtime rate updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT })
   updateOvertimeRate(
     @SessionUser() user: RequestUser,
     @Body() dto: UpdateOvertimeRateDto,

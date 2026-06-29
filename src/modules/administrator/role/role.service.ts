@@ -736,6 +736,8 @@ export class RoleService {
     };
   }
 
+  // async addRolePermissions()
+
   async getRolePermissions(user: RequestUser) {
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({

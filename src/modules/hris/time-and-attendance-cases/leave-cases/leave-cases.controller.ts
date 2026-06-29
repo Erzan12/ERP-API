@@ -20,7 +20,7 @@ import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
-  EMPLOYEE_MASTERLIST,
+  SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -38,7 +38,7 @@ export class LeaveCasesController {
   @Get('time-and-attendance-cases/leaves')
   @ApiOperation({ summary: 'List of all Leave Request' })
   @ApiGetResponse('List of Leave Request')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getLeaveRequest(
     @SessionUser() user: RequestUser,
     @Query() dto: LeaveRequestPaginationDto,
@@ -49,7 +49,7 @@ export class LeaveCasesController {
   @Get('time-and-attendance-cases/leaves/status-count')
   @ApiOperation({ summary: 'List of all Leave Request status' })
   @ApiGetResponse('List of all Leave Request stats')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getStatusCountActive(@SessionUser() user: RequestUser) {
     return this.leaveCasesService.statusCount(user);
   }
@@ -57,7 +57,7 @@ export class LeaveCasesController {
   @Get('time-and-attendance-cases/leaves/:leaveRequestId')
   @ApiOperation({ summary: 'Get a single Leave Request' })
   @ApiGetResponse('Here is the Leave Request')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getLeaveRequests(
     @SessionUser() user: RequestUser,
     @Param('leaveRequestId', new ParseUUIDPipe()) leaveRequestId: string,
@@ -72,7 +72,7 @@ export class LeaveCasesController {
   })
   @ApiOperation({ summary: 'Create Leave Request' })
   @ApiPostResponse('Leave Request successfully created')
-  @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT })
   createLeaveRequest(
     @Body() dto: CreateLeaveRequestWithDetailsDto,
     @SessionUser() user: RequestUser,
@@ -87,7 +87,7 @@ export class LeaveCasesController {
   })
   @ApiOperation({ summary: 'Update a current leave request/case' })
   @ApiPatchResponse('Leave Request updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT })
   updateLeaveRequest(
     @Param('leaveCaseId', new ParseUUIDPipe()) leaveCaseId: string,
     @Body() dto: UpdateLeaveRequestWithDetailsDto,

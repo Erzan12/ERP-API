@@ -18,7 +18,6 @@ import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
-  EMPLOYEE_MASTERLIST,
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
@@ -81,7 +80,7 @@ export class VesselController {
   })
   @ApiOperation({ summary: 'Update a current vessel' })
   @ApiPatchResponse('Vessel updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateVessel(
     @SessionUser() user: RequestUser,
     @Body() dto: UpdateVesselWithDetailsDto,
