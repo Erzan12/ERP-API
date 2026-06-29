@@ -6371,7 +6371,7 @@
     },
     "/v2/manager/permission-template": {
       "get": {
-        "operationId": "PermissionTemplateControllerV2_getPermissionTemplates_v2",
+        "operationId": "PermissionTemplateController_getPermissionTemplates_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -6399,7 +6399,7 @@
         ]
       },
       "post": {
-        "operationId": "PermissionTemplateControllerV2_createPermissionTemplate_v2",
+        "operationId": "PermissionTemplateController_createPermissionTemplate_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -6440,7 +6440,7 @@
     },
     "/v2/manager/permission-template/{id}": {
       "get": {
-        "operationId": "PermissionTemplateControllerV2_getPermissionTemplate_v2",
+        "operationId": "PermissionTemplateController_getPermissionTemplate_v2",
         "parameters": [
           {
             "name": "id",
@@ -6477,7 +6477,7 @@
         ]
       },
       "put": {
-        "operationId": "PermissionTemplateControllerV2_updatePermissionTemplate_v2",
+        "operationId": "PermissionTemplateController_updatePermissionTemplate_v2",
         "parameters": [
           {
             "name": "id",
@@ -6527,7 +6527,7 @@
     },
     "/v2/manager/permission-template/user/{userPermissionTemplateId}": {
       "get": {
-        "operationId": "PermissionTemplateControllerV2_getUserPermissionTemplate_v2",
+        "operationId": "PermissionTemplateController_getUserPermissionTemplate_v2",
         "parameters": [
           {
             "name": "userPermissionTemplateId",
@@ -6566,7 +6566,7 @@
     },
     "/v2/manager/permission-template/user/{id}": {
       "post": {
-        "operationId": "PermissionTemplateControllerV2_assignPermTemplate_v2",
+        "operationId": "PermissionTemplateController_assignPermTemplate_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -6607,7 +6607,7 @@
     },
     "/v2/manager/roles": {
       "get": {
-        "operationId": "RoleManagementControllerV2_getRoles_v2",
+        "operationId": "RoleManagementController_getRoles_v2",
         "parameters": [
           {
             "name": "search",
@@ -6687,7 +6687,7 @@
     },
     "/v2/manager/roles/{roleId}": {
       "get": {
-        "operationId": "RoleManagementControllerV2_getRole_v2",
+        "operationId": "RoleManagementController_getRole_v2",
         "parameters": [
           {
             "name": "roleId",
@@ -6727,7 +6727,7 @@
     "/v2/manager/me/permissions": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "RoleManagementControllerV2_getMyPermissions_v2",
+        "operationId": "RoleManagementController_getMyPermissions_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -6758,7 +6758,7 @@
     "/v2/manager/roles/{userId}": {
       "post": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
-        "operationId": "RoleManagementControllerV2_addUserRole_v2",
+        "operationId": "RoleManagementController_addUserRole_v2",
         "parameters": [
           {
             "name": "userId",

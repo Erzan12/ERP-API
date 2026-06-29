@@ -7,9 +7,9 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AdministratorModule } from './modules/administrator/administrator.module';
 import { HrV2Module } from './modules/hris/hrV2.module';
-import { ManagerV2Module } from './modules/manager/managerV2.module';
+import { ManagerModule } from './modules/manager/manager.module';
 import { MasterV2Module } from './modules/master/masterV2.module';
-import { UserManagementV2Module } from './modules/manager/user_management/user_managementV2.module';
+import { UserManagementModule } from './modules/manager/user_management/user_management.module';
 import { EmployeeDashboardModule } from './modules/employee_dashboard/employee_dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
@@ -54,8 +54,8 @@ import { memoryStorage } from 'multer';
     MasterV2Module,
     CaslModule,
     HrV2Module,
-    ManagerV2Module,
-    UserManagementV2Module,
+    ManagerModule,
+    UserManagementModule,
     EmployeeDashboardModule,
     PrismaModule,
     // HealthCheckModule,
