@@ -29,7 +29,7 @@ import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dt
 
 @ApiTags('Manager - Permission Template')
 @Controller({ path: 'manager', version: '2' })
-export class PermissionTemplateControllerV2 {
+export class PermissionTemplateController {
   constructor(private permissionTemplateService: PermissionTemplateService) {}
 
   //get permission templates
