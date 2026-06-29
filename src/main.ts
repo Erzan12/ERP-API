@@ -12,6 +12,7 @@ import { setupGlobalPrefix } from './utils/helpers/global-prefix.helper';
 import cookieParser from 'cookie-parser';
 
 import { PrismaExceptionFilter } from './utils/filters/prisma-exception.filter';
+import { NextFunction, Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -60,6 +61,17 @@ async function bootstrap() {
 
   // API documentation
   setupAppSwagger(app);
+
+  app.use((_req: Request, res: Response, next: NextFunction) => {
+    res.setHeader(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, private',
+    );
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
+    next();
+  });
 
   //serve static files
   app.useStaticAssets(join(process.cwd(), 'public'), {
