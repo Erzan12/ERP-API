@@ -38,7 +38,7 @@ export function setupHRISSwagger(app: INestApplication): void {
     .setDescription(
       'API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 2',
     )
-    .setVersion('2.3')
+    .setVersion('2.4')
     .addTag('Authentication')
     .addTag('Human Resources - Dashboard')
     .build();
