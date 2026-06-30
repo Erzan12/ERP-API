@@ -15,6 +15,11 @@ import { SubModulePaginationDto } from 'src/utils/dtos/module-pagination.dto';
 export class SubModuleService {
   constructor(private prisma: PrismaService) {}
 
+  //formatted submodule with permission query
+  // private formatSubmodulePermission(submodule: SubmoduleWithPermission) {
+  //   const { }
+  // }
+
   async getSubModules(user: RequestUser, dto: SubModulePaginationDto) {
     const { search, module_id, sortBy, order, page, perPage } = dto;
 
@@ -166,18 +171,7 @@ export class SubModuleService {
   }
 
   async getSubmodule(subModuleId: string, user: RequestUser) {
-    const subModule = await this.prisma.subModule.findUnique({
-      where: { id: subModuleId },
-      include: {
-        module: true,
-        sub_module_permissions: true,
-      },
-    });
-
-    if (!subModule) {
-      throw new NotFoundException('Submodule not found');
-    }
-
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -195,16 +189,41 @@ export class SubModuleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
     );
 
-    if (!isAdmin) {
+    if (!canView) {
       throw new ForbiddenException(
-        'You are not allowed to perform this action',
+        'You are not authorized to perform this action',
       );
+    }
+
+    const subModule = await this.prisma.subModule.findUnique({
+      where: { id: subModuleId },
+      include: {
+        module: {
+          select: {
+            id: true,
+            name: true,
+            is_active: true,
+          },
+        },
+        sub_module_permissions: {
+          select: {
+            id: true,
+            action: true,
+          }
+        },
+      },
+    });
+
+    if (!subModule) {
+      throw new NotFoundException('Submodule not found');
     }
 
     return {
