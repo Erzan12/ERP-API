@@ -18,7 +18,10 @@ import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
+  CAREER_POSTING,
   EMPLOYEE_MASTERLIST,
+  ROLE_MANAGEMENT,
+  SALARY_GRADE,
 } from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
@@ -36,7 +39,7 @@ export class OvertimeRateController {
   @Get('/time-and-attendance/overtime-rates')
   @ApiOperation({ summary: 'List of Overtime Rates' })
   @ApiGetResponse('List of Overtime Rates')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
   getOvertimeRates(@SessionUser() user: RequestUser) {
     return this.overtimeService.getOvertimeRates(user);
   }
@@ -59,7 +62,7 @@ export class OvertimeRateController {
   })
   @ApiOperation({ summary: 'Create a overtime rate' })
   @ApiPostResponse('Overtime rate created successfully')
-  @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_CREATE, subject: CAREER_POSTING })
   createOvertimeRate(
     @SessionUser() user: RequestUser,
     @Body() dto: CreateOvertimeRateDto,
@@ -74,7 +77,7 @@ export class OvertimeRateController {
   })
   @ApiOperation({ summary: 'Update a overtime rate' })
   @ApiPatchResponse('Overtime rate updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_UPDATE, subject: SALARY_GRADE })
   updateOvertimeRate(
     @SessionUser() user: RequestUser,
     @Body() dto: UpdateOvertimeRateDto,

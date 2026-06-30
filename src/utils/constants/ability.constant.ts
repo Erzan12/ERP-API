@@ -21,6 +21,8 @@ export const ACTION_APPROVE = 'approve';
 export const ACTION_PROCESS = 'process';
 export const ACTION_REJECT = 'reject';
 export const ACTION_CANCEL = 'cancel';
+export const ACTION_ACCEPT = 'accept';
+export const ACTION_ONBOARD = 'onboard';
 
 //SUBMODULES FOR ADMISTRATOR - OR IN CONTROLLER SUBJECT
 export const MASTERTABLES = 'mastertables';
@@ -32,15 +34,19 @@ export const SYSTEM_MANAGEMENT = 'system management';
 export const EMPLOYEE_MASTERLIST = 'employee masterlist';
 // export const ROLES_AND_STRUCTURE = 'roles and structure';
 export const ROLE_MANAGEMENT = 'role management';
-export const EXTENDED_LEAVE_REQUEST = 'extended leave request';
-export const LEAVE_REQUEST = 'leave request';
 export const SALARY_GRADE = 'salary grade';
 export const OVERTIME_CASE = 'overtime case';
 export const OVERTIME_RATE = 'overtime rate';
 export const HIRING_PIPELINE = 'hiring pipeline';
 export const CAREER_POSTING = 'career posting';
-export const PERFORMANCE_MANAGEMENT = 'performance management';
+export const APPLICANT = 'applicant';
+export const INTERVIEW_APPLICANT = 'interview applicant';
 export const REGULARIZATION_REVIEW = 'regularization review';
+export const PERFORMANCE_COMPETENCIES = 'performance competencies';
+export const SCREENING_APPLICANT = 'screening applicant';
+export const LEAVE_CATEGORY = 'leave category';
+export const EXTENDED_LEAVE_REQUEST = 'extended leave request';
+export const LEAVE_REQUEST = 'leave request';
 
 //SUBMODULE FOR EMPLOYEE/CORP SERV
 export const EMPLOYEE_DASHBOARD = 'employee dashboard';

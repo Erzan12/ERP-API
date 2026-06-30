@@ -46,9 +46,7 @@ export class DbQueryController {
   @ApiOperation({ summary: 'Get latest executed manual queries' })
   @ApiGetResponse('Logs for all manual db queries performed')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
-  getLogs(
-    @SessionUser() user: RequestUser,
-  ) {
+  getLogs(@SessionUser() user: RequestUser) {
     return this.dbQueryService.getLogs(user);
   }
 
