@@ -31,7 +31,7 @@ export class RegularizationReviewsController {
     private readonly regularizationService: RegularizationReviewsService,
   ) {}
 
-  @Get('for_regularization')
+  @Get('for-regularization')
   @ApiOperation({ summary: 'List of all employees for regularization' })
   @ApiGetResponse('List of for regularization employees')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
