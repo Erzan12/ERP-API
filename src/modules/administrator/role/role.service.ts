@@ -682,17 +682,17 @@ export class RoleService {
             name: true,
           },
         },
-        role_permissions: {
-          select: {
-            id: true,
-            is_active: true,
-            sub_module_permission: {
-              select: {
-                action: true,
-              },
-            },
-          },
-        },
+        // role_permissions: {
+        //   select: {
+        //     id: true,
+        //     is_active: true,
+        //     sub_module_permission: {
+        //       select: {
+        //         action: true,
+        //       },
+        //     },
+        //   },
+        // },
       },
     });
 
