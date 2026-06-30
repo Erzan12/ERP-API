@@ -524,11 +524,11 @@ export class RoleManagementService {
       },
       include: {
         sub_module_permission: {
-          select:{ 
+          select: {
             action: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     const permissionsToCreate = rolePermissions.map((rp) => ({

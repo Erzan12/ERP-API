@@ -4330,7 +4330,7 @@
         ]
       }
     },
-    "/v2/hris/regularization-reviews/for_regularization": {
+    "/v2/hris/regularization-reviews/for-regularization": {
       "get": {
         "operationId": "RegularizationReviewsController_getForRegularizaiton_v2",
         "parameters": [

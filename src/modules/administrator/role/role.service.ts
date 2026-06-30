@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { CreateRolePermissionDto } from './dto/role-permission.dto';
-import { RoleWithPermissions } from 'src/utils/types/role-with-permission.type';
+import { RoleWithPermissions } from 'src/utils/types/role-with-permission.interface';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
@@ -610,23 +610,25 @@ export class RoleService {
       .map((rp) => rp.id);
 
     // check permissions added in submodule permission before it will be assigned to role permission
-    const availablePermissions = await this.prisma.subModulePermission.findMany({
-      where: { 
-        sub_module_id, 
+    const availablePermissions = await this.prisma.subModulePermission.findMany(
+      {
+        where: {
+          sub_module_id,
+        },
+        select: {
+          id: true,
+          action: true,
+        },
       },
-      select: {
-        id: true,
-        action: true,
-      }
-    });
+    );
 
     // const validActions = availablePermissions.map((perm) => perm.action);
 
     // const invalidActions = actions.filter((act) => !validActions.includes(act));
 
     // using a Set
-    const validActions = new Set(availablePermissions.map(p => p.action));
-    const invalidActions = actions.filter(act => !validActions.has(act));
+    const validActions = new Set(availablePermissions.map((p) => p.action));
+    const invalidActions = actions.filter((act) => !validActions.has(act));
 
     if (invalidActions.length > 0) {
       throw new BadRequestException(
@@ -634,13 +636,11 @@ export class RoleService {
       );
     }
 
-
     // Filter from the requested actions:
     // Now only the actions that were sent by the client are created.
     const actionsToCreate = availablePermissions.filter(
-      (perm) => 
-        actions.includes(perm.action) &&
-        !existingActions.includes(perm.action),
+      (perm) =>
+        actions.includes(perm.action) && !existingActions.includes(perm.action),
     );
 
     const createRolePermission = actionsToCreate.map((perm) => ({
@@ -655,7 +655,7 @@ export class RoleService {
         await tx.rolePermission.deleteMany({
           where: {
             id: {
-              in: actionsToDelete
+              in: actionsToDelete,
             },
           },
         });
@@ -682,17 +682,17 @@ export class RoleService {
             name: true,
           },
         },
-        role_permissions: {
-          select: {
-            id: true,
-            is_active: true,
-            sub_module_permission: {
-              select: {
-                action: true,
-              },
-            },
-          },
-        },
+        // role_permissions: {
+        //   select: {
+        //     id: true,
+        //     is_active: true,
+        //     sub_module_permission: {
+        //       select: {
+        //         action: true,
+        //       },
+        //     },
+        //   },
+        // },
       },
     });
 
@@ -706,14 +706,14 @@ export class RoleService {
     //   message = `All selected permissions already exist in Role ${existingRole.name}.`;
     // } else if (createdCount < requestedCount) {
     //   message = `${createdCount} permission(s) added. ${
-    //     requestedCount - createdCount  
+    //     requestedCount - createdCount
     //   } permission(s) already existed in Role ${existingRole.name}`;
     // } else {
     //   message = `Added ${createdCount} permission(s) to Role ${existingRole.name}`;
     // }
 
     if (createdCount === 0 && deletedCount === 0) {
-      message = "No changes were made.";
+      message = 'No changes were made.';
     } else {
       message = `Added ${createdCount} permission(s), removed ${deletedCount} permission(s).`;
     }
@@ -732,7 +732,7 @@ export class RoleService {
         created: createdCount,
         deleted: deletedCount,
         current_permissions: actions,
-      }
+      },
     };
   }
 
