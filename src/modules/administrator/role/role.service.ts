@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { CreateRolePermissionDto } from './dto/role-permission.dto';
-import { RoleWithPermissions } from 'src/utils/types/role-with-permission.type';
+import { RoleWithPermissions } from 'src/utils/types/role-with-permission.interface';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
