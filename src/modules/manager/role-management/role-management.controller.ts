@@ -6,10 +6,12 @@ import {
   Query,
   Post,
   Body,
+  Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
+  ApiPatchResponse,
   ApiPostResponse,
   ApiSecurityClearance,
 } from 'src/utils/helpers/swagger-response.helper';
@@ -18,8 +20,9 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import {
   ACTION_CREATE,
   ACTION_READ,
-  ROLE_MANAGEMENT,
+  ACTION_UPDATE,
   SEC_LVL_5,
+  SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -35,7 +38,7 @@ export class RoleManagementController {
   @Get('roles')
   @ApiOperation({ summary: 'Get All Roles' })
   @ApiGetResponse('Here are the list of Roles')
-  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getRoles(@SessionUser() user: RequestUser, @Query() dto: PaginationDto) {
     return this.roleManagementService.getRoles(user, dto);
   }
@@ -43,7 +46,7 @@ export class RoleManagementController {
   @Get('roles/:roleId')
   @ApiOperation({ summary: 'Get All Roles' })
   @ApiGetResponse('Here are the list of Roles')
-  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getRole(
     @SessionUser() user: RequestUser,
     @Param('roleId', new ParseUUIDPipe()) roleId: string,
@@ -56,7 +59,7 @@ export class RoleManagementController {
   @ApiGetResponse('My user account')
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
-  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getMyPermissions(@SessionUser() user: RequestUser) {
     return this.roleManagementService.getUserPermissions(user.id);
   }
@@ -78,13 +81,29 @@ export class RoleManagementController {
   @ApiPostResponse('Role has been added to the user with permission')
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
-  @Can({ action: ACTION_CREATE, subject: ROLE_MANAGEMENT })
+  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT })
   addUserRole(
     @SessionUser() requestUser: RequestUser,
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Body() dto: AddRoleToUserDto,
   ) {
     return this.roleManagementService.addRoleUser(requestUser, userId, dto);
+  }
+
+  @Put('roles/:userId/:roleId')
+  @ApiOperation({ summary: 'Sync role permission to user' })
+  @ApiPatchResponse('Role permission has been updated')
+  @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT })
+  syncRolePermissions(
+    @SessionUser() requestUser: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+  ) {
+    return this.roleManagementService.syncRolePermissions(
+      requestUser,
+      userId,
+      roleId,
+    );
   }
 
   //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION

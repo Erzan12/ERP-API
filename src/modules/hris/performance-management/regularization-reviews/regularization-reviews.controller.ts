@@ -17,7 +17,7 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import {
   ACTION_CREATE,
   ACTION_READ,
-  EMPLOYEE_MASTERLIST,
+  SYSTEM_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -31,10 +31,10 @@ export class RegularizationReviewsController {
     private readonly regularizationService: RegularizationReviewsService,
   ) {}
 
-  @Get('for_regularization')
+  @Get('for-regularization')
   @ApiOperation({ summary: 'List of all employees for regularization' })
   @ApiGetResponse('List of for regularization employees')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getForRegularizaiton(
     @SessionUser() user: RequestUser,
     @Query() dto: RegularizationReviewDto,
@@ -45,7 +45,7 @@ export class RegularizationReviewsController {
   @Get('status-count')
   @ApiOperation({ summary: 'List of all Employee Evalaution Status' })
   @ApiGetResponse('List of all Employee Evaluation status count')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getStatusCountActive(@SessionUser() user: RequestUser) {
     return this.regularizationService.statusCount(user);
   }
@@ -55,7 +55,7 @@ export class RegularizationReviewsController {
     summary: 'Create an Employee Evaluation for the first 3rd and 5th month',
   })
   @ApiPostResponse('Evaluation successfully created')
-  @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT })
   createEvaluation(
     @SessionUser() user: RequestUser,
     @Body() dto: CreateEvaluationDto,
@@ -66,7 +66,7 @@ export class RegularizationReviewsController {
   @Get(':employeeId')
   @ApiOperation({ summary: 'Get employee with evaluation' })
   @ApiGetResponse('Employee with evaluation')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getEvaluations(
     @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
     @SessionUser() user: RequestUser,
@@ -77,7 +77,7 @@ export class RegularizationReviewsController {
   @Get('')
   @ApiOperation({ summary: 'List of evaluated employees' })
   @ApiGetResponse('List of evalauted employees')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getForEvaluation(
     @SessionUser() user: RequestUser,
     @Query() dto: RegularizationReviewDto,

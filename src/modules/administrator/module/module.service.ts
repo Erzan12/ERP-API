@@ -286,10 +286,7 @@ export class ModuleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-    ];
+    const allowedRoles = ['Administrator', 'Super Administrator'];
     const canView = requestUser?.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
@@ -359,10 +356,7 @@ export class ModuleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-    ];
+    const allowedRoles = ['Administrator', 'Super Administrator'];
     const canView = requestUser?.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );

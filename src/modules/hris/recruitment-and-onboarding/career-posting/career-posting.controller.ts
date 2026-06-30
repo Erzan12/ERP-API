@@ -18,7 +18,7 @@ import {
 import {
   ACTION_READ,
   ACTION_UPDATE,
-  EMPLOYEE_MASTERLIST,
+  SYSTEM_MANAGEMENT,
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 
@@ -41,7 +41,7 @@ export class CareerPostingController {
   @Get('recruitments')
   @ApiOperation({ summary: 'List of all job/career postings' })
   @ApiGetResponse('List of job/career postings')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getCareerPostings(
     @SessionUser() user: RequestUser,
     @Query() dto: RecruitmentPaginationDto,
@@ -58,7 +58,7 @@ export class CareerPostingController {
   @Get('recruitments/status-count')
   @ApiOperation({ summary: 'List of all job/career postings status' })
   @ApiGetResponse('List of job/career postings status')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getStatusCountActive(
     @SessionUser() user: RequestUser,
     // @Query() dto: StatusCountDto,
@@ -69,7 +69,7 @@ export class CareerPostingController {
   @Get('recruitments/:recruitmentId')
   @ApiOperation({ summary: 'Get a Job/Career posting' })
   @ApiGetResponse('Get a job/career posting')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
     @SessionUser() user: RequestUser,
@@ -84,7 +84,7 @@ export class CareerPostingController {
   })
   @ApiOperation({ summary: 'Job/Career posting' })
   @ApiPostResponse('Career posted successfully')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   createCareerPosting(
     @Body() dto: CreateCareerPostingDto,
     @SessionUser() user: RequestUser,
