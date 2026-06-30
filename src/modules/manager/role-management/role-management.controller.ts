@@ -99,7 +99,11 @@ export class RoleManagementController {
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Param('roleId', new ParseUUIDPipe()) roleId: string,
   ) {
-    return this.roleManagementService.syncRolePermissions(requestUser, userId, roleId)
+    return this.roleManagementService.syncRolePermissions(
+      requestUser,
+      userId,
+      roleId,
+    );
   }
 
   //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
