@@ -20,12 +20,12 @@ export const VALID_ACTIONS = [
 //FOR CASL CHECK
 export const ACTION_MAP: Record<string, string[]> = {
   manage: [
-    'create', 
-    'read', 
-    'update', 
-    'delete', 
-    'note', 
-    'verify', 
+    'create',
+    'read',
+    'update',
+    'delete',
+    'note',
+    'verify',
     'approve',
     'submit',
     'process',

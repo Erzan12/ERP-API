@@ -6,7 +6,10 @@ import {
   PrismaHealthIndicator,
 } from '@nestjs/terminus';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.constant';
+import {
+  ACTION_READ,
+  EMPLOYEE_MASTERLIST,
+} from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
 
 @ApiTags('Administrator - Health Check')
