@@ -31,7 +31,7 @@ export class MailService {
       throw new Error('SMTP credentials are missing');
     }
 
-    const setupUrl = `${process.env.FRONTEND_URL}/auth/reset-password?token=${token}`;
+    const setupUrl = `${process.env.FRONTEND_URL_WELCOME_MAIL}/auth/reset-password?token=${token}`;
 
     const mailOption = {
       from: `"Avega Bros Integrated Shipping Corp." <${this.configService.get('SMTP_USER')}>`,
