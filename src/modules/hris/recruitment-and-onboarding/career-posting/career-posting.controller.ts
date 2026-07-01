@@ -16,9 +16,14 @@ import {
 } from 'src/utils/helpers/swagger-response.helper';
 
 import {
+  ACTION_APPROVE,
+  ACTION_CREATE,
   ACTION_READ,
+  ACTION_REJECT,
+  ACTION_SUBMIT,
   ACTION_UPDATE,
-  SYSTEM_MANAGEMENT,
+  ACTION_VERIFY,
+  CAREER_POSTING,
   MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 
@@ -41,7 +46,7 @@ export class CareerPostingController {
   @Get('recruitments')
   @ApiOperation({ summary: 'List of all job/career postings' })
   @ApiGetResponse('List of job/career postings')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: CAREER_POSTING })
   getCareerPostings(
     @SessionUser() user: RequestUser,
     @Query() dto: RecruitmentPaginationDto,
@@ -58,7 +63,7 @@ export class CareerPostingController {
   @Get('recruitments/status-count')
   @ApiOperation({ summary: 'List of all job/career postings status' })
   @ApiGetResponse('List of job/career postings status')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: CAREER_POSTING })
   getStatusCountActive(
     @SessionUser() user: RequestUser,
     // @Query() dto: StatusCountDto,
@@ -69,7 +74,7 @@ export class CareerPostingController {
   @Get('recruitments/:recruitmentId')
   @ApiOperation({ summary: 'Get a Job/Career posting' })
   @ApiGetResponse('Get a job/career posting')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: CAREER_POSTING })
   getCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
     @SessionUser() user: RequestUser,
@@ -84,7 +89,7 @@ export class CareerPostingController {
   })
   @ApiOperation({ summary: 'Job/Career posting' })
   @ApiPostResponse('Career posted successfully')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_CREATE, subject: CAREER_POSTING })
   createCareerPosting(
     @Body() dto: CreateCareerPostingDto,
     @SessionUser() user: RequestUser,
@@ -99,7 +104,7 @@ export class CareerPostingController {
   })
   @ApiOperation({ summary: 'Update a current company information' })
   @ApiPatchResponse('Career Posting updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
+  @Can({ action: ACTION_UPDATE, subject: CAREER_POSTING })
   updateCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
     @Body() updateCareerPostingDto: UpdateCareerPostingDto,
@@ -116,6 +121,7 @@ export class CareerPostingController {
   @Post('recruitments/:recruitmentId/submit')
   @ApiOperation({ summary: 'Submit Career/Job Posting' })
   @ApiPostResponse('Career/Job Posting submitted')
+  @Can({ action: ACTION_SUBMIT, subject: CAREER_POSTING })
   submitCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
     @SessionUser() user: RequestUser,
@@ -126,6 +132,7 @@ export class CareerPostingController {
   @Post('recruitments/:recruitmentId/verify')
   @ApiOperation({ summary: 'Verify Career/Job Posting' })
   @ApiPostResponse('Career/Job Posting verified')
+  @Can({ action: ACTION_VERIFY, subject: CAREER_POSTING })
   verifyCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
     @SessionUser() user: RequestUser,
@@ -136,6 +143,7 @@ export class CareerPostingController {
   @Post('recruitments/:recruitmentId/approve')
   @ApiOperation({ summary: 'Approve Career/Job Posting' })
   @ApiPostResponse('Career/Job Posting approved')
+  @Can({ action: ACTION_APPROVE, subject: CAREER_POSTING })
   approveCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
     @SessionUser() user: RequestUser,
@@ -146,6 +154,7 @@ export class CareerPostingController {
   @Post('recruitments/:recruitmentId/reject')
   @ApiOperation({ summary: 'Reject Career/Job Posting' })
   @ApiPostResponse('Career/Job Posting rejected')
+  @Can({ action: ACTION_REJECT, subject: CAREER_POSTING })
   rejectCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
     @SessionUser() user: RequestUser,
