@@ -395,6 +395,11 @@ export class AuthService {
                     },
                   },
                 },
+                sub_module_permission: {
+                  include: {
+                    sub_module: true,
+                  },
+                },
               },
             },
           },
@@ -435,6 +440,11 @@ export class AuthService {
                     },
                   },
                 },
+                sub_module_permission: {
+                  include: {
+                    sub_module: true,
+                  }
+                }
               },
             },
           },
@@ -613,11 +623,20 @@ export class AuthService {
                 role_permission: {
                   include: {
                     sub_module_permission: {
-                      include: {
+                      select: {
+                        id: true,
+                        action: true,
                         sub_module: true,
                       },
                     },
                   },
+                },
+                sub_module_permission: {
+                    select: {
+                      id: true,
+                      action: true,
+                      sub_module: true,
+                    },
                 },
               },
             },
@@ -655,69 +674,50 @@ export class AuthService {
         division: employee.division.name,
         position: employee.position.name,
         security_clearance_level: user.security_clearance_level ?? 0,
-        // roles: user.user_roles.map((ur) => ({
-        //     id: ur.role?.id ?? 0,
-        //     role_name: ur.role?.name ?? 'Unknown Role',
-        //     // module: {
-        //     //   id: ur.role.module?.id,
-        //     //   name: ur.role.module?.name,
-        //     // },
-        //     sub_modules: ur.user_permissions.map((up) => ({
-        //     name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-        //     // action: up.role_permission?.action ?? 'unknown',
-        //     // status: true, // if you have a field for it, use it
-        //     })),
-        // })),
 
-        //no roles permission
+        // with array of roles permission and direct/override permission
         roles: user.user_roles.map((ur) => {
-          const uniqueSubmodules = [
-            ...new Map(
-              ur.user_permissions.map((rp) => [
-                rp.role_permission?.sub_module_permission.sub_module.id,
-                {
-                  id: rp.role_permission?.sub_module_permission.sub_module.id,
-                  name: rp.role_permission?.sub_module_permission.sub_module
-                    .name,
-                  // action: rp.sub_module_permission.action
-                },
-              ]),
-            ).values(),
-          ];
+          const subModuleMap = new Map();
+
+          ur.user_permissions.forEach((rp) => {
+            // Prefer the direct permission if it exists; otherwise use the role's permission.
+            const subModulePermission =
+              rp.sub_module_permission ??
+              rp.role_permission?.sub_module_permission;
+
+            const subModule = subModulePermission?.sub_module;
+
+            if (!subModule || !subModulePermission) return;
+
+            if (!subModuleMap.has(subModule.id)) {
+              subModuleMap.set(subModule.id, {
+                subModuleId: subModule.id,
+                name: subModule.name,
+                actions: [],
+              });
+            }
+
+            subModuleMap.get(subModule.id).actions.push({
+              // Only populated for custom/direct user permissions
+              subModulePermissionId: rp.sub_module_permission_id,
+
+              // Only populated for permissions inherited from a role
+              rolePermissionId: rp.role_permission_id,
+
+              action: subModulePermission.action,
+
+              // Optional but useful
+              source: rp.sub_module_permission_id ? "DIRECT" : "ROLE",
+            });
+          });
+
           return {
             id: ur.role_id ?? 0,
-            role_name: ur.role_name ?? 'Unknown Role',
-            isActive: ur.is_active ?? 'false',
-            sub_modules: uniqueSubmodules,
+            roleName: ur.role_name ?? "Unknown Role",
+            isActive: ur.is_active ?? false,
+            subModules: [...subModuleMap.values()],
           };
         }),
-
-        // with array of roles permission
-        // roles: user.user_roles.map((ur) => {
-        //   const subModulesMap = new Map();
-
-        //   ur.role.role_permissions.forEach((rp) => {
-        //     const subModule = rp.sub_module_permission.sub_module;
-        //     const action = rp.sub_module_permission.action;
-
-        //     if (!subModulesMap.has(subModule.id)) {
-        //       subModulesMap.set(subModule.id, {
-        //         id: subModule.id,
-        //         name: subModule.name,
-        //         actions: [],
-        //       });
-        //     }
-
-        //     subModulesMap.get(subModule.id).actions.push(action);
-        //   });
-
-        //   return {
-        //     id: ur.role?.id ?? 0,
-        //     role_name: ur.role?.name ?? 'Unknown Role',
-        //     isActive: ur.is_active ?? false,
-        //     sub_modules: Array.from(subModulesMap.values()),
-        //   };
-        // }),
       },
     };
   }
