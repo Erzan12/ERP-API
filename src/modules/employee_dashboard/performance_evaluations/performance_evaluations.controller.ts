@@ -17,7 +17,7 @@ import {
 import {
   ACTION_CREATE,
   ACTION_READ,
-  SYSTEM_MANAGEMENT,
+  EMPLOYEE_DASHBOARD,
 } from 'src/utils/constants/ability.constant';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
@@ -37,7 +37,7 @@ export class PerformanceEvaluationController {
   @Get('performance-evaluation/my-evaluations')
   @ApiOperation({ summary: 'List of current users personal evaluation' })
   @ApiGetResponse('List of my evaluations')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_DASHBOARD })
   getMyEvaluations(@SessionUser() user: RequestUser) {
     return this.performanceEvaluationService.getMyEvaluations(user);
   }
@@ -45,7 +45,7 @@ export class PerformanceEvaluationController {
   @Get('performance-evaluation/to-be-evaluated')
   @ApiOperation({ summary: 'List of evaluations added to this employee/user' })
   @ApiGetResponse('List of to be evaluated')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_DASHBOARD })
   getToBeEvaluated(@SessionUser() user: RequestUser) {
     return this.performanceEvaluationService.getToBeEvaluated(user);
   }
@@ -53,7 +53,7 @@ export class PerformanceEvaluationController {
   @Get('performance-evaluation/done-evaluated')
   @ApiOperation({ summary: 'List of evaluations completed by this evaluator' })
   @ApiGetResponse('List of done/finished evaluations')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_DASHBOARD })
   getDoneEvaluated(@SessionUser() user: RequestUser) {
     return this.performanceEvaluationService.getDoneEvaluated(user);
   }
@@ -61,7 +61,7 @@ export class PerformanceEvaluationController {
   @Post('performance-evaluation/to-be-evaluated/:evaluationId/submit')
   @ApiOperation({ summary: 'Submit Employee Performance Evaluation' })
   @ApiPostResponse('Employee Performance Evaluation submitted')
-  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_CREATE, subject: EMPLOYEE_DASHBOARD })
   submitEvaluation(
     @Param('evaluationId', new ParseUUIDPipe()) evaluationId: string,
     @SessionUser() user: RequestUser,
@@ -73,7 +73,7 @@ export class PerformanceEvaluationController {
   @Put('performance-evaluation/:evaluationId')
   @ApiOperation({ summary: 'Employee to acknowledge evaluation' })
   @ApiPatchResponse('Employee acknowledge evaluation successfully')
-  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_CREATE, subject: EMPLOYEE_DASHBOARD })
   acknowledgeEvaluation(
     @Param('evaluationId', new ParseUUIDPipe()) evaluationId: string,
     @SessionUser() user: RequestUser,
