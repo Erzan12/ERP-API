@@ -68,8 +68,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                 sub_module_permission: {
                   select: {
                     sub_module: true,
-                  }
-                }
+                  },
+                },
               },
             },
           },
