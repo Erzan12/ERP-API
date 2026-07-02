@@ -18,10 +18,7 @@ import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
-  CAREER_POSTING,
-  EMPLOYEE_MASTERLIST,
-  ROLE_MANAGEMENT,
-  SALARY_GRADE,
+  OVERTIME_RATE,
 } from 'src/utils/constants/ability.constant';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
@@ -39,7 +36,7 @@ export class OvertimeRateController {
   @Get('/time-and-attendance/overtime-rates')
   @ApiOperation({ summary: 'List of Overtime Rates' })
   @ApiGetResponse('List of Overtime Rates')
-  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
+  @Can({ action: ACTION_UPDATE, subject: OVERTIME_RATE })
   getOvertimeRates(@SessionUser() user: RequestUser) {
     return this.overtimeService.getOvertimeRates(user);
   }
@@ -47,7 +44,7 @@ export class OvertimeRateController {
   @Get('/time-and-attendance/overtime-rates/:overtimeRateId')
   @ApiOperation({ summary: 'Get a single id Overtime Rate' })
   @ApiGetResponse('Get a single Overtime Rate')
-  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
+  @Can({ action: ACTION_READ, subject: OVERTIME_RATE })
   getOvertimeRate(
     @SessionUser() user: RequestUser,
     @Param('overtimeRateId', new ParseUUIDPipe()) overtimeRateId: string,
@@ -62,7 +59,7 @@ export class OvertimeRateController {
   })
   @ApiOperation({ summary: 'Create a overtime rate' })
   @ApiPostResponse('Overtime rate created successfully')
-  @Can({ action: ACTION_CREATE, subject: CAREER_POSTING })
+  @Can({ action: ACTION_CREATE, subject: OVERTIME_RATE })
   createOvertimeRate(
     @SessionUser() user: RequestUser,
     @Body() dto: CreateOvertimeRateDto,
@@ -77,7 +74,7 @@ export class OvertimeRateController {
   })
   @ApiOperation({ summary: 'Update a overtime rate' })
   @ApiPatchResponse('Overtime rate updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: SALARY_GRADE })
+  @Can({ action: ACTION_UPDATE, subject: OVERTIME_RATE })
   updateOvertimeRate(
     @SessionUser() user: RequestUser,
     @Body() dto: UpdateOvertimeRateDto,

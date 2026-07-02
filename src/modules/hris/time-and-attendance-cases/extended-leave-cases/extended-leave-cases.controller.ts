@@ -23,7 +23,6 @@ import {
   ACTION_REJECT,
   ACTION_SUBMIT,
   ACTION_VERIFY,
-  SYSTEM_MANAGEMENT,
   EXTENDED_LEAVE_REQUEST,
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
@@ -41,7 +40,7 @@ export class ExtendedLeaveCasesController {
   @Get('time-and-attendance-cases/extended-leaves')
   @ApiOperation({ summary: 'List of all Extended Leave Request' })
   @ApiGetResponse('List of Extended Leave Cases')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: EXTENDED_LEAVE_REQUEST })
   getExtendedLeaves(
     @SessionUser() user: RequestUser,
     @Query() dto: LeaveRequestPaginationDto,
@@ -52,7 +51,7 @@ export class ExtendedLeaveCasesController {
   @Get('time-and-attendance-cases/extended-leave/status-count')
   @ApiOperation({ summary: 'List of all Extended Leave Request status' })
   @ApiGetResponse('List of all Extended Leave Request stats')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: EXTENDED_LEAVE_REQUEST })
   getStatusCountActive(@SessionUser() user: RequestUser) {
     return this.extendedLeaveCasesService.statusCount(user);
   }
@@ -60,7 +59,7 @@ export class ExtendedLeaveCasesController {
   @Get('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId')
   @ApiOperation({ summary: 'Get a single Extended Leave Request' })
   @ApiGetResponse('Here is the Extended Leave Request')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: EXTENDED_LEAVE_REQUEST })
   getExtendedLeave(
     @SessionUser() user: RequestUser,
     @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
@@ -79,7 +78,7 @@ export class ExtendedLeaveCasesController {
   })
   @ApiOperation({ summary: 'Create Extended Leave Request' })
   @ApiPostResponse('Extended Leave Request successfully created')
-  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_CREATE, subject: EXTENDED_LEAVE_REQUEST })
   createExtendedLeaveRequest(
     @SessionUser() user: RequestUser,
     @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())

@@ -17,7 +17,7 @@ import {
 import {
   ACTION_READ,
   ACTION_UPDATE,
-  SYSTEM_MANAGEMENT,
+  LEAVE_CATEGORY,
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -35,7 +35,7 @@ export class LeaveCategoryController {
   @Get('time-and-attendance-cases/leave-category')
   @ApiOperation({ summary: 'List of all Leave Categories' })
   @ApiGetResponse('List of Leave Categories')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: LEAVE_CATEGORY })
   getLeaveCategories(@SessionUser() user: RequestUser) {
     return this.leaveCategoryService.getLeaveCategories(user);
   }
@@ -43,7 +43,7 @@ export class LeaveCategoryController {
   @Get('time-and-attendance-cases/leave-category/:leaveCategoryId')
   @ApiOperation({ summary: 'Get a Leave Category' })
   @ApiGetResponse('Here is the Leave Category')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: LEAVE_CATEGORY })
   getLeaveCategory(
     @Param('leaveCategoryId', new ParseUUIDPipe()) leaveCategoryId: string,
     @SessionUser() user: RequestUser,
@@ -58,7 +58,7 @@ export class LeaveCategoryController {
   })
   @ApiOperation({ summary: 'Leave Category creation' })
   @ApiPostResponse('Leave Category successfully created')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: LEAVE_CATEGORY })
   createLeaveCategory(
     @Body() dto: CreateLeaveCategory,
     @SessionUser() user: RequestUser,
@@ -73,7 +73,7 @@ export class LeaveCategoryController {
   })
   @ApiOperation({ summary: 'Update a current leave category' })
   @ApiPatchResponse('Leave Category updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_UPDATE, subject: LEAVE_CATEGORY })
   updateLeaveCategory(
     @Param('leaveCategoryId', new ParseUUIDPipe()) leaveCategoryId: string,
     @Body() dto: UpdateLeaveCategory,

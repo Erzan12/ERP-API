@@ -34,6 +34,11 @@ enum StatusEnum {
   inactive
 }
 
+enum PermissionSource {
+  role      // came from RolePermission
+  direct    // manually granted
+}
+
 enum CareerPostingStatus {
   all
   draft
@@ -996,7 +1001,10 @@ model UserPermission {
   action             String
   user_id            String @db.Uuid
   user_role_id       String @db.Uuid
-  role_permission_id String @db.Uuid
+  role_permission_id String? @db.Uuid
+  sub_module_permission_id String? @db.Uuid
+
+  source     PermissionSource?
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -1007,11 +1015,12 @@ model UserPermission {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  role_permission RolePermission @relation(fields: [role_permission_id], references: [id], onDelete: Cascade)
-  user            User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_role       UserRole        @relation(fields: [user_role_id], references: [id], onDelete: Cascade)
+  role_permission       RolePermission?     @relation(fields: [role_permission_id], references: [id], onDelete: Cascade)
+  sub_module_permission SubModulePermission? @relation(fields: [sub_module_permission_id], references: [id], onDelete: Cascade)
+  user                  User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_role             UserRole            @relation(fields: [user_role_id], references: [id], onDelete: Cascade)
 
-  @@unique([user_role_id, role_permission_id])
+  @@unique([user_id, sub_module_permission_id])
   @@index([user_id])
 }
 
@@ -1580,6 +1589,7 @@ model SubModulePermission {
   updated_at DateTime @updatedAt
 
   role_permissions  RolePermission[]
+  user_permissions  UserPermission[]
   sub_module        SubModule        @relation(fields: [sub_module_id], references: [id], onDelete: Cascade)
   sub_module_action SubModuleAction  @relation(fields: [sub_module_action_id], references: [id], onDelete: Cascade)
 
