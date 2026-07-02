@@ -4,7 +4,11 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateRoleDto, UpdateRoleDto, CreateRolePermissionDto } from './dto/role.dto';
+import {
+  CreateRoleDto,
+  UpdateRoleDto,
+  CreateRolePermissionDto,
+} from './dto/role.dto';
 import { RoleWithPermissions } from 'src/utils/types/role-with-permission.interface';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
