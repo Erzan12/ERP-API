@@ -6895,7 +6895,56 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Direct assign permission to user from a submodule",
+        "summary": "Direct assign permission to user for a submodule",
+        "tags": [
+          "Manager - Role Management"
+        ]
+      }
+    },
+    "/v2/manager/roles/users/{userId}/new-role-permisisons": {
+      "put": {
+        "operationId": "RoleManagementController_roleUserPermissions_v2",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignCustomRolePermissiontDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User permission has been updated"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "To add new role permission to user for a submodule",
         "tags": [
           "Manager - Role Management"
         ]
@@ -9823,6 +9872,28 @@
         "required": [
           "role_id",
           "sub_module_permission_id"
+        ]
+      },
+      "AssignCustomRolePermissiontDto": {
+        "type": "object",
+        "properties": {
+          "role_id": {
+            "type": "string",
+            "example": "PK UUID",
+            "description": "PK UUID of user role"
+          },
+          "role_permission_id": {
+            "example": "[\"Array of PK UUID\"]",
+            "description": "Array PK UUID of the role permission to be added to this user",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "role_id",
+          "role_permission_id"
         ]
       },
       "EvaluationDetailDto": {
