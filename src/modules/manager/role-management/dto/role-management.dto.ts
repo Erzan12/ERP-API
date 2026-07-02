@@ -16,6 +16,7 @@ export class AssignDirectPermissionDto {
   @ApiProperty({ example: 'PK UUID', description: 'PK UUID of the user role' })
   role_id: string;
 
+  @IsUUID()
   @IsString({ each: true})
   @IsArray()
   @ArrayNotEmpty()
@@ -32,11 +33,14 @@ export class AssignCustomRolePermissiontDto {
   role_id: string;
 
   @IsUUID()
+  @IsString({ each: true})
+  @IsArray()
+  @ArrayNotEmpty()
   @ApiProperty({
-    example: 'PK UUID',
-    description: 'PK UUID of role permission',
+    example: '["Array of PK UUID"]',
+    description: 'Array PK UUID of the role permission to be added to this user',
   })
-  role_permission_id: string;
+  role_permission_id: string[];
 }
 
 export class AddUserPermissionDto {

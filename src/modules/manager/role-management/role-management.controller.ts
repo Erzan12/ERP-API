@@ -28,7 +28,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-import { AddRoleToUserDto, AssignDirectPermissionDto } from './dto/role-management.dto';
+import { AddRoleToUserDto, AssignCustomRolePermissiontDto, AssignDirectPermissionDto } from './dto/role-management.dto';
 
 @ApiTags('Manager - Role Management')
 @Controller({ path: 'manager', version: '2' })
@@ -104,7 +104,7 @@ export class RoleManagementController {
 
   @Put('roles/users/:userId/direct-permisisons')
   @ApiOperation({
-    summary: 'Direct assign permission to user from a submodule',
+    summary: 'Direct assign permission to user for a submodule',
   })
   @ApiPatchResponse('User permission has been updated')
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
@@ -114,5 +114,19 @@ export class RoleManagementController {
     @Body() dto: AssignDirectPermissionDto,
   ) {
     return this.roleManagementService.directUserPermissions(user, userId, dto);
+  }
+
+  @Put('roles/users/:userId/new-role-permisisons')
+  @ApiOperation({
+    summary: 'To add new role permission to user for a submodule',
+  })
+  @ApiPatchResponse('User permission has been updated')
+  @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
+  roleUserPermissions(
+    @SessionUser() user: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Body() dto: AssignCustomRolePermissiontDto,
+  ) {
+    return this.roleManagementService.roleUserPermisisons(user, userId, dto);
   }
 }
