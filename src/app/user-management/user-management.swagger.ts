@@ -34,7 +34,7 @@ export function setupUserSwagger(app: INestApplication): void {
     .setDescription(
       'API for Companies organization structure. CURRENTLY VIEWING API VERSION 2',
     )
-    .setVersion('2.0')
+    .setVersion('2.0.1')
     .addTag('Authentication')
     .addTag('User Management')
     .build();

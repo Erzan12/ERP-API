@@ -42,7 +42,7 @@ export function setupAdminSwagger(app: INestApplication): void {
     .setDescription(
       'API for System Management. CURRENTLY VIEWING API VERSION 2',
     )
-    .setVersion('2.7.3')
+    .setVersion('2.7.4')
     .addTag('Authentication')
     .addTag('Administrator - Dashboard')
     .addTag('Administrator - Database Manuel Query')
