@@ -1,15 +1,20 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { Prisma } from '@prisma/client';
+import { PermissionSource, Prisma } from '@prisma/client';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { AddRoleToUserDto } from './dto/role.dto';
 import { AddUserPermissionDto } from './dto/add-user-role-permissions.dto';
+import {
+  AssignCustomRolePermissiontDto,
+  AssignDirectPermissionDto,
+} from './dto/assign-role-permission.dto';
 
 @Injectable()
 export class RoleManagementService {
@@ -67,6 +72,32 @@ export class RoleManagementService {
           ...whereCondition,
         },
         include: {
+          user_roles: {
+            select: {
+              id: true,
+              user_id: true,
+              role_id: true,
+              role_name: true,
+              is_active: true,
+              user_permissions: {
+                select: {
+                  id: true,
+                  action: true,
+                  sub_module_permission: {
+                    select: {
+                      id: true,
+                      sub_module: {
+                        select: {
+                          id: true,
+                          name: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
           createdBy: {
             select: {
               person: {
@@ -469,6 +500,8 @@ export class RoleManagementService {
       user_id: userId,
       user_role_id: userRole.id,
       role_permission_id: rp.id,
+      source: PermissionSource.role,
+      sub_module_permission_id: rp.sub_module_permission_id,
       action: rp.sub_module_permission.action,
       created_by: requestUser.id,
     }));
@@ -528,6 +561,11 @@ export class RoleManagementService {
             action: true,
           },
         },
+        user_permission: {
+          select: {
+            source: true,
+          },
+        },
       },
     });
 
@@ -535,6 +573,8 @@ export class RoleManagementService {
       user_id: userId,
       user_role_id: userRole.id,
       role_permission_id: rp.id,
+      source: PermissionSource.role,
+      sub_module_permission_id: rp.sub_module_permission_id,
       action: rp.sub_module_permission.action,
       created_by: user.id,
     }));
@@ -546,6 +586,351 @@ export class RoleManagementService {
 
     return {
       message: 'Missing permissions synced successfully.',
+    };
+  }
+
+  async roleUserPermisisons(
+    user: RequestUser,
+    userId: string,
+    dto: AssignCustomRolePermissiontDto,
+  ) {
+    const { role_id, role_permission_id } = dto;
+
+    //Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const userRole = await this.prisma.userRole.findUnique({
+      where: {
+        user_id_role_id: {
+          user_id: userId,
+          role_id: role_id,
+        },
+      },
+    });
+
+    if (!userRole) {
+      throw new BadRequestException('User does not have this role.');
+    }
+
+    const permission = await this.prisma.rolePermission.findUnique({
+      where: {
+        id: role_permission_id,
+      },
+      include: {
+        sub_module_permission: {
+          select: {
+            id: true,
+            action: true,
+            sub_module: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!permission) {
+      throw new NotFoundException('Permission not found.');
+    }
+
+    const exist = await this.prisma.userPermission.findFirst({
+      where: {
+        user_id: userId,
+        role_permission_id: role_permission_id,
+      },
+    });
+
+    if (exist) {
+      throw new ConflictException('User already has this permission.');
+    }
+
+    const hasRole = !!dto.role_permission_id;
+
+    if (hasRole == null) {
+      throw new BadRequestException('Provide role_permission_id');
+    }
+
+    const customUserPermission = await this.prisma.userPermission.create({
+      data: {
+        user_id: userId,
+        user_role_id: userRole.id,
+        role_permission_id,
+        action: permission.sub_module_permission.action,
+        source: PermissionSource.role,
+        created_by: user.id,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: `Successfully assigned direct permisisons to user with role ${userRole.role_name}`,
+      customUserPermission,
+    };
+  }
+
+  async directUserPermissions(
+    user: RequestUser,
+    userId: string,
+    dto: AssignDirectPermissionDto,
+  ) {
+    const { role_id, sub_module_permission_id } = dto;
+
+    //Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const userRole = await this.prisma.userRole.findUnique({
+      where: {
+        user_id_role_id: {
+          user_id: userId,
+          role_id: role_id,
+        },
+      },
+    });
+
+    if (!userRole) {
+      throw new BadRequestException('User does not have this role.');
+    }
+
+    const permission = await this.prisma.subModulePermission.findUnique({
+      where: {
+        id: sub_module_permission_id,
+      },
+    });
+
+    if (!permission) {
+      throw new NotFoundException('Permission not found.');
+    }
+
+    const exists = await this.prisma.userPermission.findFirst({
+      where: {
+        user_id: userId,
+        sub_module_permission_id: sub_module_permission_id,
+      },
+    });
+
+    if (exists) {
+      throw new ConflictException('User already has this permission.');
+    }
+
+    // const hasRole = !!dto.role_permission_id;
+    const hasSubModule = !!dto.sub_module_permission_id;
+
+    if (hasSubModule == null) {
+      throw new BadRequestException('Provide sub_module_permission_id.');
+    }
+
+    const directUserPermissions = await this.prisma.userPermission.create({
+      data: {
+        user_id: userId,
+        user_role_id: userRole.id,
+        role_permission_id: null,
+        sub_module_permission_id,
+        action: permission.action,
+        source: PermissionSource.direct,
+        created_by: user.id,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: `Successfully assigned direct permisisons to user with role ${userRole.role_name}`,
+      directUserPermissions,
+    };
+  }
+
+  // remove or delete assigned user permissions
+  async removeDirectUserPermission(
+    user: RequestUser,
+    userId: string,
+    subModulePermissionId: string,
+  ) {
+    //Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const permission = await this.prisma.userPermission.findFirst({
+      where: {
+        user_id: userId,
+        sub_module_permission_id: subModulePermissionId,
+        // source: PermissionSource.direct,
+      },
+    });
+
+    if (!permission) {
+      throw new NotFoundException('Direct permission not found');
+    }
+
+    await this.prisma.userPermission.delete({
+      where: {
+        id: permission.id,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Direct permission removed successfully',
+    };
+  }
+
+  async removeRoleUserPermission(
+    user: RequestUser,
+    userId: string,
+    rolePermissionId: string,
+  ) {
+    //Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const permission = await this.prisma.userPermission.findFirst({
+      where: {
+        user_id: userId,
+        role_permission_id: rolePermissionId,
+        // source: PermissionSource.direct,
+      },
+    });
+
+    if (!permission) {
+      throw new NotFoundException('Role permission not found');
+    }
+
+    await this.prisma.userPermission.delete({
+      where: {
+        id: permission.id,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Role permission removed successfully',
     };
   }
 

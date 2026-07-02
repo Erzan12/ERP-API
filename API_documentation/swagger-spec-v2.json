@@ -6700,7 +6700,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Here are the list of Roles"
+            "description": "Here is the Role"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -6718,7 +6718,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Get All Roles",
+        "summary": "Get single id role",
         "tags": [
           "Manager - Role Management"
         ]
@@ -6847,6 +6847,119 @@
           }
         },
         "summary": "Sync role permission to user",
+        "tags": [
+          "Manager - Role Management"
+        ]
+      }
+    },
+    "/v2/manager/roles/users/{userId}/direct-permisisons": {
+      "put": {
+        "operationId": "RoleManagementController_directUserPermissions_v2",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignDirectPermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User permission has been updated"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Direct assign permission to user from a submodule",
+        "tags": [
+          "Manager - Role Management"
+        ]
+      }
+    },
+    "/v2/manager/roles/users/{userId}/direct-permissions/{subModulePermissionId}": {
+      "delete": {
+        "operationId": "RoleManagementController_deleteDirectUserPermissions_v2",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "subModulePermissionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete or remove direct assigned permission to user",
+        "tags": [
+          "Manager - Role Management"
+        ]
+      }
+    },
+    "/v2/manager/roles/users/{userId}/role-permissions/{rolePermissionId}": {
+      "delete": {
+        "operationId": "RoleManagementController_deleteRoleUserPermissions_v2",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rolePermissionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete or remove role assigned permission to user",
         "tags": [
           "Manager - Role Management"
         ]
@@ -9752,6 +9865,25 @@
         },
         "required": [
           "role_id"
+        ]
+      },
+      "AssignDirectPermissionDto": {
+        "type": "object",
+        "properties": {
+          "role_id": {
+            "type": "string",
+            "example": "PK UUID",
+            "description": "PK UUID of the user role"
+          },
+          "sub_module_permission_id": {
+            "type": "string",
+            "example": "PK UUID",
+            "description": "PK UUID of the sub module permission"
+          }
+        },
+        "required": [
+          "role_id",
+          "sub_module_permission_id"
         ]
       },
       "EvaluationDetailDto": {

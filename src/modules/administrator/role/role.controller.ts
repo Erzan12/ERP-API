@@ -24,7 +24,7 @@ import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
-  SYSTEM_MANAGEMENT,
+  ROLE_MANAGEMENT,
 } from 'src/utils/constants/ability.constant';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
@@ -37,7 +37,7 @@ export class RoleController {
   @Get('roles')
   @ApiOperation({ summary: 'Get all Roles' })
   @ApiGetResponse('Here are the list of Roles')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   getRoles(
     @SessionUser() user: RequestUser,
     @Query() dto: PaginationDto,
@@ -53,7 +53,7 @@ export class RoleController {
   @Get('roles/role-permissions')
   @ApiOperation({ summary: 'Get all Role Permissions' })
   @ApiGetResponse('Here are the list of Role Permissions')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
   getRolePermissions(@SessionUser() user: RequestUser) {
     return this.roleService.getRolePermissions(user);
   }
@@ -61,7 +61,7 @@ export class RoleController {
   @Get('roles/:id')
   @ApiOperation({ summary: 'Get a role' })
   @ApiGetResponse('Here is the Role')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
   getRole(
     @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
@@ -73,7 +73,7 @@ export class RoleController {
   @Post('roles')
   @ApiOperation({ summary: 'Create new role' })
   @ApiPostResponse('Role created successfully')
-  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  @Can({ action: ACTION_CREATE, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   createRole(
     @Body() createRoleDto: CreateRoleDto,
     @SessionUser() user: RequestUser,
@@ -84,7 +84,7 @@ export class RoleController {
   @Put('roles/role_permission')
   @ApiOperation({ summary: 'Adding/Updating permission(s) to role' })
   @ApiPatchResponse('Permissions added to role')
-  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  @Can({ action: ACTION_CREATE, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   createRolePermission(
     @Body() createRolePermissionDto: CreateRolePermissionDto,
     @SessionUser() user: RequestUser,
@@ -99,7 +99,7 @@ export class RoleController {
   @Put('roles/:roleId')
   @ApiOperation({ summary: 'Update current role' })
   @ApiPatchResponse('Role updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   updateRole(
     @Body() dto: UpdateRoleDto,
     @Param('roleId', new ParseUUIDPipe()) roleId: string,
@@ -114,7 +114,7 @@ export class RoleController {
   // @Put('roles/role_permission/:id')
   // @ApiOperation({ summary: 'Updating current permission to role' })
   // @ApiPatchResponse('Permissions updated to role')
-  // @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  // @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   // updateRolePermissions(
   //   @Param('id', new ParseUUIDPipe()) id: string,
   //   @Body() updateRolePermissionsDto: UpdateRolePermissionsDto,

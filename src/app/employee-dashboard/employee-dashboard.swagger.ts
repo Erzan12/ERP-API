@@ -8,7 +8,7 @@ export function setupEmployeeDashboardSwagger(app: INestApplication): void {
   const optionsV2 = new DocumentBuilder()
     .setTitle('Employee Dashboard API')
     .setDescription('API for Employee Dashboard')
-    .setVersion('2.0')
+    .setVersion('2.0.1')
     .addTag('Authentication')
     .build();
 

@@ -20,7 +20,7 @@ import {
   ACTION_CREATE,
   ACTION_READ,
   ACTION_UPDATE,
-  SYSTEM_MANAGEMENT,
+  EMPLOYEE_MASTERLIST,
 } from 'src/utils/constants/ability.constant';
 
 import {
@@ -47,7 +47,7 @@ export class EmployeeMasterlistController {
   @Get('employees')
   @ApiOperation({ summary: 'List of all employees' })
   @ApiGetResponse('List of employees')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   getEmployees(
     @SessionUser() user: RequestUser,
     @Query() dto: PaginationDto,
@@ -64,7 +64,7 @@ export class EmployeeMasterlistController {
   @Get('employees/:id')
   @ApiOperation({ summary: 'View employee profile' })
   @ApiGetResponse('Employees information')
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   getEmployee(
     @Param('id', new ParseUUIDPipe()) id: string,
     @SessionUser() user: RequestUser,
@@ -79,7 +79,7 @@ export class EmployeeMasterlistController {
   })
   @ApiOperation({ summary: 'Create a new Employee' })
   @ApiPostResponse('Employee created successfully')
-  @Can({ action: ACTION_CREATE, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
   createEmployee(
     @Body() createDto: CreateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
@@ -95,7 +95,7 @@ export class EmployeeMasterlistController {
   })
   @ApiOperation({ summary: 'Update a current Employee' })
   @ApiPatchResponse('Employee information updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: SYSTEM_MANAGEMENT })
+  @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
   updateEmployee(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
