@@ -28,7 +28,11 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-import { AddRoleToUserDto, AssignCustomRolePermissiontDto, AssignDirectPermissionDto } from './dto/role-management.dto';
+import {
+  AddRoleToUserDto,
+  AssignCustomRolePermissiontDto,
+  AssignDirectPermissionDto,
+} from './dto/role-management.dto';
 
 @ApiTags('Manager - Role Management')
 @Controller({ path: 'manager', version: '2' })

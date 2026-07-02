@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -9,7 +8,12 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PermissionSource, Prisma } from '@prisma/client';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-import { AddRoleToUserDto, AssignCustomRolePermissiontDto, AssignDirectPermissionDto, AddUserPermissionDto } from './dto/role-management.dto';
+import {
+  AddRoleToUserDto,
+  AssignCustomRolePermissiontDto,
+  AssignDirectPermissionDto,
+  AddUserPermissionDto,
+} from './dto/role-management.dto';
 
 @Injectable()
 export class RoleManagementService {
@@ -240,8 +244,6 @@ export class RoleManagementService {
     };
   }
 
-  
-
   async addRoleUser(user: RequestUser, userId: string, dto: AddRoleToUserDto) {
     //Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -468,7 +470,7 @@ export class RoleManagementService {
     const permissions = await this.prisma.rolePermission.findMany({
       where: {
         id: {
-          in: role_permission_id
+          in: role_permission_id,
         },
       },
       // to query for actions inside sub module permission table
@@ -496,7 +498,7 @@ export class RoleManagementService {
       where: {
         user_id: userId,
         user_role_id: userRole.id,
-        sub_module_permission_id: null // only role based permission
+        sub_module_permission_id: null, // only role based permission
       },
     });
 
@@ -505,26 +507,25 @@ export class RoleManagementService {
     }
 
     const permissionsToAdd = permissions.filter(
-      perm =>
+      (perm) =>
         !existingPermissions.some(
-          existing => existing.role_permission_id === perm.id,
+          (existing) => existing.role_permission_id === perm.id,
         ),
     );
 
     const permissionsToDelete = existingPermissions.filter(
-      existing => 
-        !role_permission_id.includes(existing.role_permission_id!),
+      (existing) => !role_permission_id.includes(existing.role_permission_id!),
     );
 
     const userPermissionsToCreate = permissionsToAdd.map((perm) => ({
       user_id: userId,
-        user_role_id: userRole.id,
-        role_permission_id: perm.id,
-        sub_module_permission_id: null,
-        action: perm.sub_module_permission.action,
-        source: PermissionSource.role,
-        created_by: user.id,
-    }))
+      user_role_id: userRole.id,
+      role_permission_id: perm.id,
+      sub_module_permission_id: null,
+      action: perm.sub_module_permission.action,
+      source: PermissionSource.role,
+      created_by: user.id,
+    }));
 
     const result = await this.prisma.$transaction(async (tx) => {
       if (permissionsToDelete.length) {
@@ -630,26 +631,26 @@ export class RoleManagementService {
 
     // check available permissions to add
     const permissionsToAdd = permissions.filter(
-      perm =>
+      (perm) =>
         !existingPermissions.some(
-          existing => existing.sub_module_permission_id === perm.id,
+          (existing) => existing.sub_module_permission_id === perm.id,
         ),
     );
 
     const permissionsToDelete = existingPermissions.filter(
-      existing =>
+      (existing) =>
         !sub_module_permission_id.includes(existing.sub_module_permission_id!),
     );
 
     const userPermissionsToCreate = permissionsToAdd.map((perm) => ({
-        user_id: userId,
-        user_role_id: userRole.id,
-        role_permission_id: null,
-        sub_module_permission_id: perm.id,
-        action: perm.action,
-        source: PermissionSource.direct,
-        created_by: user.id,
-    }))
+      user_id: userId,
+      user_role_id: userRole.id,
+      role_permission_id: null,
+      sub_module_permission_id: perm.id,
+      action: perm.action,
+      source: PermissionSource.direct,
+      created_by: user.id,
+    }));
 
     const result = await this.prisma.$transaction(async (tx) => {
       if (permissionsToDelete.length) {
