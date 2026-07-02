@@ -3,10 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DashboardService } from './dashboard.service';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 import { Can } from 'src/utils/decorators/can.decorator';
-import {
-  ACTION_READ,
-  DASHBOARD,
-} from 'src/utils/constants/ability.constant';
+import { ACTION_READ, DASHBOARD } from 'src/utils/constants/ability.constant';
 
 @ApiTags('Human Resources - Dashboard')
 @Controller({ path: 'hris', version: '2' })
