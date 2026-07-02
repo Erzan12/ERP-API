@@ -52,9 +52,7 @@ export function mapRolesToRequestUser(
         });
       }
 
-      subModuleMap.get(key)!.actions.push(
-        up.action.toLowerCase().trim(),
-      );
+      subModuleMap.get(key)!.actions.push(up.action.toLowerCase().trim());
     }
 
     return {
