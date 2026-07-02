@@ -11,7 +11,10 @@ import { PermissionSource, Prisma } from '@prisma/client';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { AddRoleToUserDto } from './dto/role.dto';
 import { AddUserPermissionDto } from './dto/add-user-role-permissions.dto';
-import { AssignCustomRolePermissiontDto, AssignDirectPermissionDto } from './dto/assign-role-permission.dto';
+import {
+  AssignCustomRolePermissiontDto,
+  AssignDirectPermissionDto,
+} from './dto/assign-role-permission.dto';
 
 @Injectable()
 export class RoleManagementService {
@@ -87,13 +90,13 @@ export class RoleManagementService {
                         select: {
                           id: true,
                           name: true,
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
           createdBy: {
             select: {
@@ -561,8 +564,8 @@ export class RoleManagementService {
         user_permission: {
           select: {
             source: true,
-          }
-        }
+          },
+        },
       },
     });
 
@@ -586,7 +589,11 @@ export class RoleManagementService {
     };
   }
 
-  async roleUserPermisisons(user: RequestUser, userId: string, dto: AssignCustomRolePermissiontDto) {
+  async roleUserPermisisons(
+    user: RequestUser,
+    userId: string,
+    dto: AssignCustomRolePermissiontDto,
+  ) {
     const { role_id, role_permission_id } = dto;
 
     //Auth check first
@@ -693,12 +700,16 @@ export class RoleManagementService {
       status: 'success',
       message: `Successfully assigned direct permisisons to user with role ${userRole.role_name}`,
       customUserPermission,
-    }
+    };
   }
 
-  async directUserPermissions(user: RequestUser, userId: string, dto: AssignDirectPermissionDto) {
-    const {  role_id, sub_module_permission_id} = dto;
-    
+  async directUserPermissions(
+    user: RequestUser,
+    userId: string,
+    dto: AssignDirectPermissionDto,
+  ) {
+    const { role_id, sub_module_permission_id } = dto;
+
     //Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -738,7 +749,7 @@ export class RoleManagementService {
       where: {
         user_id_role_id: {
           user_id: userId,
-          role_id: role_id, 
+          role_id: role_id,
         },
       },
     });
@@ -775,7 +786,7 @@ export class RoleManagementService {
       throw new BadRequestException('Provide sub_module_permission_id.');
     }
 
-    const directUserPermissions =  await this.prisma.userPermission.create({
+    const directUserPermissions = await this.prisma.userPermission.create({
       data: {
         user_id: userId,
         user_role_id: userRole.id,
@@ -790,12 +801,16 @@ export class RoleManagementService {
     return {
       status: 'success',
       message: `Successfully assigned direct permisisons to user with role ${userRole.role_name}`,
-      directUserPermissions, 
-    }
+      directUserPermissions,
+    };
   }
 
   // remove or delete assigned user permissions
-  async removeDirectUserPermission(user: RequestUser, userId: string, subModulePermissionId: string) {
+  async removeDirectUserPermission(
+    user: RequestUser,
+    userId: string,
+    subModulePermissionId: string,
+  ) {
     //Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -852,10 +867,14 @@ export class RoleManagementService {
     return {
       status: 'success',
       message: 'Direct permission removed successfully',
-    }
+    };
   }
 
-  async removeRoleUserPermission(user: RequestUser, userId: string, rolePermissionId: string) {
+  async removeRoleUserPermission(
+    user: RequestUser,
+    userId: string,
+    rolePermissionId: string,
+  ) {
     //Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -912,7 +931,7 @@ export class RoleManagementService {
     return {
       status: 'success',
       message: 'Role permission removed successfully',
-    }
+    };
   }
 
   //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION

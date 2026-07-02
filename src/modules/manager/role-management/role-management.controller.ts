@@ -101,15 +101,13 @@ export class RoleManagementController {
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Param('roleId', new ParseUUIDPipe()) roleId: string,
   ) {
-    return this.roleManagementService.syncRolePermissions(
-      user,
-      userId,
-      roleId,
-    );
+    return this.roleManagementService.syncRolePermissions(user, userId, roleId);
   }
 
   @Put('roles/users/:userId/direct-permisisons')
-  @ApiOperation({ summary: 'Direct assign permission to user from a submodule' })
+  @ApiOperation({
+    summary: 'Direct assign permission to user from a submodule',
+  })
   @ApiPatchResponse('User permission has been updated')
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
   directUserPermissions(
@@ -117,33 +115,42 @@ export class RoleManagementController {
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Body() dto: AssignDirectPermissionDto,
   ) {
-    return this.roleManagementService.directUserPermissions(
-      user,
-      userId,
-      dto,
-    );
+    return this.roleManagementService.directUserPermissions(user, userId, dto);
   }
 
   @Delete('roles/users/:userId/direct-permissions/:subModulePermissionId')
-  @ApiOperation({ summary: 'Delete or remove direct assigned permission to user'})
+  @ApiOperation({
+    summary: 'Delete or remove direct assigned permission to user',
+  })
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
   deleteDirectUserPermissions(
     @SessionUser() user: RequestUser,
     @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Param('subModulePermissionId', new ParseUUIDPipe()) subModulePermissionId: string,
+    @Param('subModulePermissionId', new ParseUUIDPipe())
+    subModulePermissionId: string,
   ) {
-    return this.roleManagementService.removeDirectUserPermission(user, userId,subModulePermissionId);
+    return this.roleManagementService.removeDirectUserPermission(
+      user,
+      userId,
+      subModulePermissionId,
+    );
   }
 
   @Delete('roles/users/:userId/role-permissions/:rolePermissionId')
-  @ApiOperation({ summary: 'Delete or remove role assigned permission to user'})
+  @ApiOperation({
+    summary: 'Delete or remove role assigned permission to user',
+  })
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
   deleteRoleUserPermissions(
     @SessionUser() user: RequestUser,
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Param('rolePermissionId', new ParseUUIDPipe()) rolePermissionId: string,
   ) {
-    return this.roleManagementService.removeRoleUserPermission(user, userId,rolePermissionId);
+    return this.roleManagementService.removeRoleUserPermission(
+      user,
+      userId,
+      rolePermissionId,
+    );
   }
 
   //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION

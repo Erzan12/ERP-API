@@ -29,6 +29,7 @@ import {
 } from 'src/utils/constants/otp-verification.constants';
 import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
 import { addMinutes } from 'date-fns/addMinutes';
+import { SubModule } from './type/sub-module-map.type';
 
 @Injectable()
 export class AuthService {
@@ -443,8 +444,8 @@ export class AuthService {
                 sub_module_permission: {
                   include: {
                     sub_module: true,
-                  }
-                }
+                  },
+                },
               },
             },
           },
@@ -632,11 +633,11 @@ export class AuthService {
                   },
                 },
                 sub_module_permission: {
-                    select: {
-                      id: true,
-                      action: true,
-                      sub_module: true,
-                    },
+                  select: {
+                    id: true,
+                    action: true,
+                    sub_module: true,
+                  },
                 },
               },
             },
@@ -677,7 +678,7 @@ export class AuthService {
 
         // with array of roles permission and direct/override permission
         roles: user.user_roles.map((ur) => {
-          const subModuleMap = new Map();
+          const subModuleMap = new Map<string, SubModule>();
 
           ur.user_permissions.forEach((rp) => {
             // Prefer the direct permission if it exists; otherwise use the role's permission.
@@ -697,7 +698,7 @@ export class AuthService {
               });
             }
 
-            subModuleMap.get(subModule.id).actions.push({
+            subModuleMap.get(subModule.id)?.actions.push({
               // Only populated for custom/direct user permissions
               subModulePermissionId: rp.sub_module_permission_id,
 
@@ -707,13 +708,13 @@ export class AuthService {
               action: subModulePermission.action,
 
               // Optional but useful
-              source: rp.sub_module_permission_id ? "DIRECT" : "ROLE",
+              source: rp.sub_module_permission_id ? 'DIRECT' : 'ROLE',
             });
           });
 
           return {
             id: ur.role_id ?? 0,
-            roleName: ur.role_name ?? "Unknown Role",
+            roleName: ur.role_name ?? 'Unknown Role',
             isActive: ur.is_active ?? false,
             subModules: [...subModuleMap.values()],
           };

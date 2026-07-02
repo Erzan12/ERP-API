@@ -24,7 +24,6 @@ import {
   ACTION_UPDATE,
   ACTION_VERIFY,
   CAREER_POSTING,
-  MASTERTABLES,
 } from 'src/utils/constants/ability.constant';
 
 import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
