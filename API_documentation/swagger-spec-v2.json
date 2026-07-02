@@ -6901,70 +6901,6 @@
         ]
       }
     },
-    "/v2/manager/roles/users/{userId}/direct-permissions/{subModulePermissionId}": {
-      "delete": {
-        "operationId": "RoleManagementController_deleteDirectUserPermissions_v2",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "subModulePermissionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Delete or remove direct assigned permission to user",
-        "tags": [
-          "Manager - Role Management"
-        ]
-      }
-    },
-    "/v2/manager/roles/users/{userId}/role-permissions/{rolePermissionId}": {
-      "delete": {
-        "operationId": "RoleManagementController_deleteRoleUserPermissions_v2",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "rolePermissionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Delete or remove role assigned permission to user",
-        "tags": [
-          "Manager - Role Management"
-        ]
-      }
-    },
     "/v2/employee-dashboard/performance-evaluation/my-evaluations": {
       "get": {
         "operationId": "PerformanceEvaluationController_getMyEvaluations_v2",
@@ -9876,9 +9812,12 @@
             "description": "PK UUID of the user role"
           },
           "sub_module_permission_id": {
-            "type": "string",
-            "example": "PK UUID",
-            "description": "PK UUID of the sub module permission"
+            "example": "[\"Array of PK UUID\"]",
+            "description": "Array PK UUID of the sub module permission to be assign directly to this user",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
