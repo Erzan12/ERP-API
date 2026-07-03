@@ -7,7 +7,7 @@ import {
   RoleController,
   RolePermissionController,
 } from './role/role.controller';
-import { RoleService } from './role/role.service';
+import { RolePermissionService, RoleService } from './role/role.service';
 import { ModuleService } from './module/module.service';
 import { ModuleController } from './module/module.controller';
 import { SubModuleController } from './sub_module/sub_module.controller';
@@ -45,6 +45,7 @@ import { SubModuleActionService } from './sub-module-action/sub-module-action.se
     DbQueryController,
     FileUploadController,
     SubModuleActionController,
+    RolePermissionController,
   ],
   providers: [
     JwtStrategy,
@@ -61,6 +62,7 @@ import { SubModuleActionService } from './sub-module-action/sub-module-action.se
     DbQueryService,
     SlackService,
     SubModuleActionService,
+    RolePermissionService,
   ],
   exports: [AdministratorModule],
 })

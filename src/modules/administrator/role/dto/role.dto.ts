@@ -5,7 +5,7 @@ import {
   IsOptional,
   IsUUID,
   IsBoolean,
-  ArrayNotEmpty,
+  IsArray,
 } from 'class-validator';
 
 export class CreateRoleDto {
@@ -62,8 +62,9 @@ export class UpdateRoleDto {
   is_active?: boolean;
 }
 
-export class CreateRolePermissionDto {
+export class UpdateRolePermissionDto {
   @IsNotEmpty()
+  @IsArray()
   @IsString({ each: true })
   @IsNotEmpty({ each: true }) // Make sure each string is not an empty string
   @ApiProperty({
@@ -71,7 +72,6 @@ export class CreateRolePermissionDto {
     description:
       'Assign/Update permissions to role, also can add multiple permissions at once',
   })
-  @ArrayNotEmpty()
   actions: string[];
 
   @IsUUID()
