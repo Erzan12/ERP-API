@@ -3,8 +3,11 @@ import { AuthModule } from 'src/auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from 'src/jobs/mail/mail.service';
 import { SubModuleService } from './sub_module/sub_module.service';
-import { RoleController } from './role/role.controller';
-import { RoleService } from './role/role.service';
+import {
+  RoleController,
+  RolePermissionController,
+} from './role/role.controller';
+import { RolePermissionService, RoleService } from './role/role.service';
 import { ModuleService } from './module/module.service';
 import { ModuleController } from './module/module.controller';
 import { SubModuleController } from './sub_module/sub_module.controller';
@@ -34,6 +37,7 @@ import { SubModuleActionService } from './sub-module-action/sub-module-action.se
     SubModuleController,
     ModuleController,
     RoleController,
+    RolePermissionController,
     SecurityClearanceController,
     DashboardController,
     AuditController,
@@ -41,6 +45,7 @@ import { SubModuleActionService } from './sub-module-action/sub-module-action.se
     DbQueryController,
     FileUploadController,
     SubModuleActionController,
+    RolePermissionController,
   ],
   providers: [
     JwtStrategy,
@@ -57,6 +62,7 @@ import { SubModuleActionService } from './sub-module-action/sub-module-action.se
     DbQueryService,
     SlackService,
     SubModuleActionService,
+    RolePermissionService,
   ],
   exports: [AdministratorModule],
 })
