@@ -882,36 +882,6 @@
         ]
       }
     },
-    "/v2/administrator/roles/role-permissions": {
-      "get": {
-        "operationId": "RoleController_getRolePermissions_v2",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Here are the list of Role Permissions"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get all Role Permissions",
-        "tags": [
-          "Administrator - Role"
-        ]
-      }
-    },
     "/v2/administrator/roles/{id}": {
       "get": {
         "operationId": "RoleController_getRole_v2",
@@ -946,46 +916,6 @@
           }
         },
         "summary": "Get a role",
-        "tags": [
-          "Administrator - Role"
-        ]
-      }
-    },
-    "/v2/administrator/roles/role_permission": {
-      "put": {
-        "operationId": "RoleController_createRolePermission_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRolePermissionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Permissions added to role"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Adding/Updating permission(s) to role",
         "tags": [
           "Administrator - Role"
         ]
@@ -1037,6 +967,76 @@
         "summary": "Update current role",
         "tags": [
           "Administrator - Role"
+        ]
+      }
+    },
+    "/v2/administrator/roles/role-permissions": {
+      "get": {
+        "operationId": "RolePermissionController_getRolePermissions_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of Role Permissions"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get all Role Permissions",
+        "tags": [
+          "Administrator - Role Permissions"
+        ]
+      }
+    },
+    "/v2/administrator/roles/role_permission": {
+      "put": {
+        "operationId": "RolePermissionController_createRolePermission_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRolePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permissions added to role"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Adding/Updating permission(s) to role",
+        "tags": [
+          "Administrator - Role Permissions"
         ]
       }
     },
@@ -6895,15 +6895,15 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Direct assign permission to user from a submodule",
+        "summary": "Direct assign permission to user for a submodule",
         "tags": [
           "Manager - Role Management"
         ]
       }
     },
-    "/v2/manager/roles/users/{userId}/direct-permissions/{subModulePermissionId}": {
-      "delete": {
-        "operationId": "RoleManagementController_deleteDirectUserPermissions_v2",
+    "/v2/manager/roles/users/{userId}/new-role-permisisons": {
+      "put": {
+        "operationId": "RoleManagementController_roleUserPermissions_v2",
         "parameters": [
           {
             "name": "userId",
@@ -6912,54 +6912,39 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "subModulePermissionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
-        "responses": {
-          "200": {
-            "description": ""
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignCustomRolePermissiontDto"
+              }
+            }
           }
         },
-        "summary": "Delete or remove direct assigned permission to user",
-        "tags": [
-          "Manager - Role Management"
-        ]
-      }
-    },
-    "/v2/manager/roles/users/{userId}/role-permissions/{rolePermissionId}": {
-      "delete": {
-        "operationId": "RoleManagementController_deleteRoleUserPermissions_v2",
-        "parameters": [
-          {
-            "name": "userId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
+        "responses": {
+          "200": {
+            "description": "User permission has been updated"
           },
-          {
-            "name": "rolePermissionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
-        "summary": "Delete or remove role assigned permission to user",
+        "summary": "To add new role permission to user for a submodule",
         "tags": [
           "Manager - Role Management"
         ]
@@ -7372,34 +7357,6 @@
           "department_id"
         ]
       },
-      "CreateRolePermissionDto": {
-        "type": "object",
-        "properties": {
-          "actions": {
-            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
-            "description": "Assign/Update permissions to role, also can add multiple permissions at once",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "sub_module_id": {
-            "type": "string",
-            "example": 1,
-            "description": "Primary Key ID of the Sub Module"
-          },
-          "role_id": {
-            "type": "string",
-            "example": 1,
-            "description": "Primary Key ID of the Role"
-          }
-        },
-        "required": [
-          "actions",
-          "sub_module_id",
-          "role_id"
-        ]
-      },
       "UpdateRoleDto": {
         "type": "object",
         "properties": {
@@ -7429,6 +7386,34 @@
           "description",
           "department_id",
           "is_active"
+        ]
+      },
+      "CreateRolePermissionDto": {
+        "type": "object",
+        "properties": {
+          "actions": {
+            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
+            "description": "Assign/Update permissions to role, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sub_module_id": {
+            "type": "string",
+            "example": 1,
+            "description": "Primary Key ID of the Sub Module"
+          },
+          "role_id": {
+            "type": "string",
+            "example": 1,
+            "description": "Primary Key ID of the Role"
+          }
+        },
+        "required": [
+          "actions",
+          "sub_module_id",
+          "role_id"
         ]
       },
       "UpdateSecurityClearanceDto": {
@@ -9876,14 +9861,39 @@
             "description": "PK UUID of the user role"
           },
           "sub_module_permission_id": {
-            "type": "string",
-            "example": "PK UUID",
-            "description": "PK UUID of the sub module permission"
+            "example": "[\"Array of PK UUID\"]",
+            "description": "Array PK UUID of the sub module permission to be assign directly to this user",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
           "role_id",
           "sub_module_permission_id"
+        ]
+      },
+      "AssignCustomRolePermissiontDto": {
+        "type": "object",
+        "properties": {
+          "role_id": {
+            "type": "string",
+            "example": "PK UUID",
+            "description": "PK UUID of user role"
+          },
+          "role_permission_id": {
+            "example": "[\"Array of PK UUID\"]",
+            "description": "Array PK UUID of the role permission to be added to this user",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "role_id",
+          "role_permission_id"
         ]
       },
       "EvaluationDetailDto": {

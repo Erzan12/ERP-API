@@ -39,9 +39,7 @@ export function setupAdminSwagger(app: INestApplication): void {
     //   'access-token',
     // )
     .setTitle('Administrators API (v2)')
-    .setDescription(
-      'API for System Management. currently viewing api v2',
-    )
+    .setDescription('API for System Management. currently viewing api v2')
     .setVersion('2.7.4')
     .addTag('Authentication')
     .addTag('Administrator - Dashboard')

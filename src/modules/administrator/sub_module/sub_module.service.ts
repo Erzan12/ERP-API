@@ -574,17 +574,6 @@ export class SubModuleService {
   ) {
     const { actions, sub_module_id } = dto;
 
-    const existingSubModule = await this.prisma.subModule.findFirst({
-      where: { id: sub_module_id },
-      include: {
-        module: true,
-      },
-    });
-
-    if (!existingSubModule) {
-      throw new NotFoundException('Sub Module does not exist!');
-    }
-
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -618,6 +607,17 @@ export class SubModuleService {
       throw new ForbiddenException(
         'You are not authorized to perform this action',
       );
+    }
+
+    const existingSubModule = await this.prisma.subModule.findFirst({
+      where: { id: sub_module_id },
+      include: {
+        module: true,
+      },
+    });
+
+    if (!existingSubModule) {
+      throw new NotFoundException('Sub Module does not exist!');
     }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
