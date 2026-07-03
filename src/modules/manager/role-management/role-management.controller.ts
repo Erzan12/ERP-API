@@ -7,7 +7,6 @@ import {
   Post,
   Body,
   Put,
-  Delete,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -29,8 +28,11 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-import { AddRoleToUserDto } from './dto/role.dto';
-import { AssignDirectPermissionDto } from './dto/assign-role-permission.dto';
+import {
+  AddRoleToUserDto,
+  AssignCustomRolePermissiontDto,
+  AssignDirectPermissionDto,
+} from './dto/role-management.dto';
 
 @ApiTags('Manager - Role Management')
 @Controller({ path: 'manager', version: '2' })
@@ -106,7 +108,7 @@ export class RoleManagementController {
 
   @Put('roles/users/:userId/direct-permisisons')
   @ApiOperation({
-    summary: 'Direct assign permission to user from a submodule',
+    summary: 'Direct assign permission to user for a submodule',
   })
   @ApiPatchResponse('User permission has been updated')
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
@@ -118,56 +120,17 @@ export class RoleManagementController {
     return this.roleManagementService.directUserPermissions(user, userId, dto);
   }
 
-  @Delete('roles/users/:userId/direct-permissions/:subModulePermissionId')
+  @Put('roles/users/:userId/new-role-permisisons')
   @ApiOperation({
-    summary: 'Delete or remove direct assigned permission to user',
+    summary: 'To add new role permission to user for a submodule',
   })
+  @ApiPatchResponse('User permission has been updated')
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
-  deleteDirectUserPermissions(
+  roleUserPermissions(
     @SessionUser() user: RequestUser,
     @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Param('subModulePermissionId', new ParseUUIDPipe())
-    subModulePermissionId: string,
+    @Body() dto: AssignCustomRolePermissiontDto,
   ) {
-    return this.roleManagementService.removeDirectUserPermission(
-      user,
-      userId,
-      subModulePermissionId,
-    );
+    return this.roleManagementService.roleUserPermisisons(user, userId, dto);
   }
-
-  @Delete('roles/users/:userId/role-permissions/:rolePermissionId')
-  @ApiOperation({
-    summary: 'Delete or remove role assigned permission to user',
-  })
-  @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
-  deleteRoleUserPermissions(
-    @SessionUser() user: RequestUser,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Param('rolePermissionId', new ParseUUIDPipe()) rolePermissionId: string,
-  ) {
-    return this.roleManagementService.removeRoleUserPermission(
-      user,
-      userId,
-      rolePermissionId,
-    );
-  }
-
-  //ADDING ROLE PERMISSION TO USER AFTER USER ACCOUNT CREATION
-  // @Post('role_permission')
-  // @ApiOperation({ summary: 'Add Role permissions to user' })
-  // @ApiPostResponse('Role permission added to user successfully')
-  // @ApiSecurityClearance(SEC_LVL_5)
-  // @SecurityClearance(SEC_LVL_5)
-  // @Can({ action: ACTION_CREATE, subject: ROLE_MANAGEMENT })
-  // addRolePermission(
-  //   @Body() addUserRolePermissionsDto: AddUserRolePermissionsDto,
-  //   @SessionUser() user: RequestUser,
-  // ) {
-  //   return this.roleManagementService.addUserRolePermissions(
-  //     addUserRolePermissionsDto.userId,
-  //     addUserRolePermissionsDto.rolePermissionIds,
-  //     user,
-  //   );
-  // }
 }
