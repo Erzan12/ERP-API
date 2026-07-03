@@ -641,6 +641,18 @@ export class AuthService {
                 },
               },
             },
+            role: {
+              select: {
+                id: true,
+                name: true,
+                department: {
+                  select: {
+                    id: true,
+                    name: true,
+                  }
+                }
+              }
+            }
           },
         },
       },
@@ -680,6 +692,7 @@ export class AuthService {
         roles: user.user_roles.map((ur) => {
           const subModuleMap = new Map<string, SubModule>();
 
+
           ur.user_permissions.forEach((rp) => {
             // Prefer the direct permission if it exists; otherwise use the role's permission.
             const subModulePermission =
@@ -715,6 +728,7 @@ export class AuthService {
           return {
             id: ur.role_id ?? 0,
             roleName: ur.role_name ?? 'Unknown Role',
+            department: ur.role.department,
             isActive: ur.is_active ?? false,
             subModules: [...subModuleMap.values()],
           };
