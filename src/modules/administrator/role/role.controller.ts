@@ -8,14 +8,14 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { RoleService } from './role.service';
+import { RolePermissionService, RoleService } from './role.service';
 import { Can } from '../../../utils/decorators/can.decorator';
 import { SessionUser } from '../../../utils/decorators/session-user.decorator';
 import { RequestUser } from '../../../utils/types/request-user.interface';
 import {
   CreateRoleDto,
   UpdateRoleDto,
-  CreateRolePermissionDto,
+  UpdateRolePermissionDto
 } from './dto/role.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -53,6 +53,14 @@ export class RoleController {
     return this.roleService.getRoles(user, dto);
   }
 
+  @Get('roles/role-permissions')
+  @ApiOperation({ summary: 'Get all Role Permissions' })
+  @ApiGetResponse('Here are the list of Role Permissions')
+  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
+  getRolePermissions(@SessionUser() user: RequestUser) {
+    return this.roleService.getRolePermissions(user);
+  }
+
   @Get('roles/:id')
   @ApiOperation({ summary: 'Get a role' })
   @ApiGetResponse('Here is the Role')
@@ -76,6 +84,22 @@ export class RoleController {
     return this.roleService.createRole(createRoleDto, user);
   }
 
+  @Put('roles/role_permission')
+  @ApiOperation({ summary: 'Adding/Updating permission(s) to role' })
+  @ApiPatchResponse('Permissions added to role')
+  @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  updateRolePermission(
+    @Body() dto: UpdateRolePermissionDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    console.log(dto);
+    console.log(UpdateRolePermissionDto);
+    return this.roleService.assignRolePermissions(
+      dto,
+      user,
+    );
+  }
+
   //update role
   @Put('roles/:roleId')
   @ApiOperation({ summary: 'Update current role' })
@@ -88,32 +112,33 @@ export class RoleController {
   ) {
     return this.roleService.updateRole(dto, user, roleId);
   }
+
 }
 
 @ApiTags('Administrator - Role Permissions')
 @Controller({ path: 'administrator', version: '2' })
 export class RolePermissionController {
-  constructor(private roleService: RoleService) {}
+  constructor(private rolePermissionService: RolePermissionService) {}
 
-  @Get('roles/role-permissions')
-  @ApiOperation({ summary: 'Get all Role Permissions' })
-  @ApiGetResponse('Here are the list of Role Permissions')
+  @Get('roles/:roleId/role-permissions')
+  @ApiOperation({ summary: 'Get a single Role with role permissions' })
+  @ApiGetResponse('Here is the Role with its role permission')
   @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
-  getRolePermissions(@SessionUser() user: RequestUser) {
-    return this.roleService.getRolePermissions(user);
+  getRoleWithPermissions(
+    @SessionUser() user: RequestUser,
+    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+  ) { 
+    return this.rolePermissionService.getSingleRoleWithPermissions(user, roleId);
   }
 
-  @Put('roles/role_permission')
-  @ApiOperation({ summary: 'Adding/Updating permission(s) to role' })
-  @ApiPatchResponse('Permissions added to role')
-  @Can({ action: ACTION_CREATE, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  createRolePermission(
-    @Body() createRolePermissionDto: CreateRolePermissionDto,
+  @Get('roles/:userId/role-permission')
+  @ApiOperation({ summary: 'Get a single User with role permissions' })
+  @ApiGetResponse('Here is the User with its role permission')
+  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
+  getUserWithPermissions(
     @SessionUser() user: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
   ) {
-    return this.roleService.assignRolePermissions(
-      createRolePermissionDto,
-      user,
-    );
+    return this.rolePermissionService.getUserWithRolePermission(user, userId);
   }
 }
