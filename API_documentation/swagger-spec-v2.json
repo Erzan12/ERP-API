@@ -953,14 +953,14 @@
     },
     "/v2/administrator/roles/role_permission": {
       "put": {
-        "operationId": "RoleController_createRolePermission_v2",
+        "operationId": "RoleController_updateRolePermission_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateRolePermissionDto"
+                "$ref": "#/components/schemas/UpdateRolePermissionDto"
               }
             }
           }
@@ -1037,6 +1037,84 @@
         "summary": "Update current role",
         "tags": [
           "Administrator - Role"
+        ]
+      }
+    },
+    "/v2/administrator/roles/{roleId}/role-permissions": {
+      "get": {
+        "operationId": "RolePermissionController_getRoleWithPermissions_v2",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Role with its role permission"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single Role with role permissions",
+        "tags": [
+          "Administrator - Role Permissions"
+        ]
+      }
+    },
+    "/v2/administrator/roles/{userId}/role-permission": {
+      "get": {
+        "operationId": "RolePermissionController_getUserWithPermissions_v2",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the User with its role permission"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a single User with role permissions",
+        "tags": [
+          "Administrator - Role Permissions"
         ]
       }
     },
@@ -7357,7 +7435,7 @@
           "department_id"
         ]
       },
-      "CreateRolePermissionDto": {
+      "UpdateRolePermissionDto": {
         "type": "object",
         "properties": {
           "actions": {

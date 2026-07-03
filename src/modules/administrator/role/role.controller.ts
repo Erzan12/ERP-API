@@ -8,11 +8,15 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { RoleService } from './role.service';
+import { RolePermissionService, RoleService } from './role.service';
 import { Can } from '../../../utils/decorators/can.decorator';
 import { SessionUser } from '../../../utils/decorators/session-user.decorator';
 import { RequestUser } from '../../../utils/types/request-user.interface';
-import { CreateRoleDto, UpdateRoleDto, CreateRolePermissionDto } from './dto/role.dto';
+import {
+  CreateRoleDto,
+  UpdateRoleDto,
+  UpdateRolePermissionDto
+} from './dto/role.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
@@ -83,13 +87,15 @@ export class RoleController {
   @Put('roles/role_permission')
   @ApiOperation({ summary: 'Adding/Updating permission(s) to role' })
   @ApiPatchResponse('Permissions added to role')
-  @Can({ action: ACTION_CREATE, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  createRolePermission(
-    @Body() createRolePermissionDto: CreateRolePermissionDto,
+  @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
+  updateRolePermission(
+    @Body() dto: UpdateRolePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
+    console.log(dto);
+    console.log(UpdateRolePermissionDto);
     return this.roleService.assignRolePermissions(
-      createRolePermissionDto,
+      dto,
       user,
     );
   }
@@ -107,22 +113,32 @@ export class RoleController {
     return this.roleService.updateRole(dto, user, roleId);
   }
 
-  //add role permisison -> combining created role with submodule embedded permissions -> and this role permission can be assigned to a user
+}
 
-  //update role permission
-  // @Put('roles/role_permission/:id')
-  // @ApiOperation({ summary: 'Updating current permission to role' })
-  // @ApiPatchResponse('Permissions updated to role')
-  // @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-  // updateRolePermissions(
-  //   @Param('id', new ParseUUIDPipe()) id: string,
-  //   @Body() updateRolePermissionsDto: UpdateRolePermissionsDto,
-  //   @SessionUser() user: RequestUser,
-  // ) {
-  //   return this.roleService.updateRolePermissions(
-  //     id,
-  //     updateRolePermissionsDto,
-  //     user,
-  //   );
-  // }
+@ApiTags('Administrator - Role Permissions')
+@Controller({ path: 'administrator', version: '2' })
+export class RolePermissionController {
+  constructor(private rolePermissionService: RolePermissionService) {}
+
+  @Get('roles/:roleId/role-permissions')
+  @ApiOperation({ summary: 'Get a single Role with role permissions' })
+  @ApiGetResponse('Here is the Role with its role permission')
+  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
+  getRoleWithPermissions(
+    @SessionUser() user: RequestUser,
+    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+  ) { 
+    return this.rolePermissionService.getSingleRoleWithPermissions(user, roleId);
+  }
+
+  @Get('roles/:userId/role-permission')
+  @ApiOperation({ summary: 'Get a single User with role permissions' })
+  @ApiGetResponse('Here is the User with its role permission')
+  @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
+  getUserWithPermissions(
+    @SessionUser() user: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+  ) {
+    return this.rolePermissionService.getUserWithRolePermission(user, userId);
+  }
 }
