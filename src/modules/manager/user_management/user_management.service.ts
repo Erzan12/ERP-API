@@ -437,11 +437,11 @@ export class UserManagementService {
 
         console.log('Creating role...');
         //use only role name instead of role permission ids when adding role to user
-        if (dto.role_name) {
+        if (dto.role_id) {
           // 1️⃣ Find the role
           const role = await tx.role.findFirst({
             where: {
-              name: dto.role_name,
+              id: dto.role_id,
               is_active: true,
             },
           });
