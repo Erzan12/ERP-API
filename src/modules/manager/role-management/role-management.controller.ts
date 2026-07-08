@@ -23,7 +23,6 @@ import {
   ACTION_UPDATE,
   ROLE_MANAGEMENT,
   SEC_LVL_5,
-  TEST_SUBMODULE_ROLE_BASE_PERMISSION,
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -105,7 +104,7 @@ export class RoleManagementController {
     @SessionUser() user: RequestUser,
     @Param('userId', new ParseUUIDPipe()) userId: string,
     @Param('roleId', new ParseUUIDPipe()) roleId: string,
-  ){
+  ) {
     return this.roleManagementService.unassignRoleUser(user, userId, roleId);
   }
 

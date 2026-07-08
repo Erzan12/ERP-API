@@ -20,7 +20,7 @@ export class SubModuleService {
   //   const { }
   // }
 
-  async getSubModules( user: RequestUser, dto: SubModulePaginationDto) {
+  async getSubModules(user: RequestUser, dto: SubModulePaginationDto) {
     const { search, module_id, sortBy, order, page, perPage } = dto;
 
     //Auth check first
@@ -141,8 +141,8 @@ export class SubModuleService {
               role_permissions: {
                 select: {
                   id: true,
-                }
-              }
+                },
+              },
             },
           },
         },

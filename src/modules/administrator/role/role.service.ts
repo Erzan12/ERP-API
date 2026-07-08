@@ -7,7 +7,7 @@ import {
 import {
   CreateRoleDto,
   UpdateRoleDto,
-  UpdateRolePermissionDto
+  UpdateRolePermissionDto,
 } from './dto/role.dto';
 import { RoleWithPermissions } from 'src/utils/types/role-with-permission.interface';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -232,7 +232,7 @@ export class RoleService {
     };
   }
 
-    async getRolePermissions(user: RequestUser) {
+  async getRolePermissions(user: RequestUser) {
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -591,7 +591,7 @@ export class RoleService {
     };
   }
 
-    //Add Get submodule permission -> to query the submodule permission table for available submolues with permission
+  //Add Get submodule permission -> to query the submodule permission table for available submolues with permission
   async assignRolePermissions(dto: UpdateRolePermissionDto, user: RequestUser) {
     const { sub_module_id, role_id, actions } = dto;
 
@@ -803,7 +803,7 @@ export class RoleService {
 
 @Injectable()
 export class RolePermissionService {
-  constructor (private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   //formatted role helper
   private formatRolePermissions(role: RoleWithPermissions) {
@@ -1146,10 +1146,10 @@ export class RolePermissionService {
                 },
               },
             },
-          }
+          },
         },
-      }
-    })
+      },
+    });
 
     if (!roleWithPermissions || roleWithPermissions.is_active === false) {
       throw new BadRequestException('Role does not exist or is inactive');
@@ -1161,7 +1161,7 @@ export class RolePermissionService {
       status: 'success',
       message: 'Here is the Role with its role permission',
       roleWithPermissions: formattedRole,
-    }
+    };
   }
 
   async getUserWithRolePermission(user: RequestUser, userId: string) {
@@ -1262,8 +1262,9 @@ export class RolePermissionService {
 
     return {
       status: 'success',
-      message: 'Here is the user with its role permission(s) and direct permission(s)',
+      message:
+        'Here is the user with its role permission(s) and direct permission(s)',
       userRolePermission,
-    }
+    };
   }
 }
