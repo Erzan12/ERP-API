@@ -71,7 +71,7 @@ export class SubModuleController {
     return this.subModuleService.createSubModule(createSubModuleDto, user);
   }
 
-  @Put('/sub-module/:subModuleId')
+  @Put('/sub-modules/:subModuleId')
   @ApiBody({
     type: UpdateSubmoduleDto,
     description: 'Payload to update the current sub module',

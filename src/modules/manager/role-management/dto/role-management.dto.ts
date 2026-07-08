@@ -23,7 +23,7 @@ export class AssignDirectPermissionDto {
   @ApiProperty({ example: 'PK UUID', description: 'PK UUID of the user role' })
   role_id: string;
 
-  @IsUUID()
+  @IsUUID('4', { each: true })
   @IsString({ each: true })
   @IsArray()
   @ArrayNotEmpty()
@@ -40,7 +40,7 @@ export class AssignCustomRolePermissiontDto {
   @ApiProperty({ example: 'PK UUID', description: 'PK UUID of user role' })
   role_id: string;
 
-  @IsUUID()
+  @IsUUID('4', { each: true })
   @IsString({ each: true })
   @IsArray()
   @ArrayNotEmpty()
@@ -53,13 +53,31 @@ export class AssignCustomRolePermissiontDto {
 }
 
 export class AddUserPermissionDto {
+  @IsUUID('4', { each: true })
+  @IsString({ each: true })
   @IsArray()
-  @IsNotEmpty({ each: true })
-  @IsInt({ each: true })
+  @ArrayNotEmpty()
   @ApiProperty({
-    example: '["PK UUID", "PK UUID", "PK UUID"]',
+    example: '["Array of PK UUID"]',
     description:
-      'The role permission id that will be assign or added to the user it is array because you can add multiple role permission',
+      'Array PK UUID of the role permission to be added to this user',
   })
   rolePermissionIds: string[];
+}
+
+export class UpdateUserSubmoudle {
+  @IsUUID()
+  @ApiProperty({ example: 'PK UUID', description: 'PK UUID of user role' })
+  role_id: string;
+  
+  @IsUUID('4', { each: true })
+  @IsString({ each: true })
+  @IsArray()
+  @ArrayNotEmpty()
+  @ApiProperty({
+    example: '["Array of PK UUID"]',
+    description:
+      'Array PK UUID of the role permission to be added to this user',
+  })
+  subModuleId: string[];
 }

@@ -23,6 +23,7 @@ import {
   ACTION_UPDATE,
   ROLE_MANAGEMENT,
   SEC_LVL_5,
+  TEST_SUBMODULE_ROLE_BASE_PERMISSION,
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -58,9 +59,9 @@ export class RoleManagementController {
     return this.roleManagementService.getRole(roleId, user);
   }
 
-  @Get('me/permissions')
-  @ApiOperation({ summary: 'My User Account' })
-  @ApiGetResponse('My user account')
+  @Get('roles/my-permissions')
+  @ApiOperation({ summary: 'My User Profile account' })
+  @ApiGetResponse('My user profile account')
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
@@ -94,7 +95,21 @@ export class RoleManagementController {
     return this.roleManagementService.addRoleUser(user, userId, dto);
   }
 
-  @Put('roles/:userId/:roleId')
+  @Put('roles/:userId/:roleId/role-permission')
+  @ApiOperation({ summary: 'Unassign a role to user' })
+  @ApiPatchResponse('Role and permissions has been unassigned to the user')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
+  unassignUserRole(
+    @SessionUser() user: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+  ){
+    return this.roleManagementService.unassignRoleUser(user, userId, roleId);
+  }
+
+  @Put('roles/:userId/:roleId/sync-permissions')
   @ApiOperation({ summary: 'Sync role permission to user' })
   @ApiPatchResponse('Role permission has been updated')
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
@@ -120,9 +135,9 @@ export class RoleManagementController {
     return this.roleManagementService.directUserPermissions(user, userId, dto);
   }
 
-  @Put('roles/users/:userId/new-role-permisisons')
+  @Put('roles/users/:userId/update-role-permisisons')
   @ApiOperation({
-    summary: 'To add new role permission to user for a submodule',
+    summary: 'To update current user role permission',
   })
   @ApiPatchResponse('User permission has been updated')
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })

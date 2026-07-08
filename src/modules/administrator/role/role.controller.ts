@@ -92,12 +92,7 @@ export class RoleController {
     @Body() dto: UpdateRolePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
-    console.log(dto);
-    console.log(UpdateRolePermissionDto);
-    return this.roleService.assignRolePermissions(
-      dto,
-      user,
-    );
+    return this.roleService.assignRolePermissions(dto,user);
   }
 
   //update role
