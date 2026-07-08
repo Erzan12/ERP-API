@@ -15,7 +15,7 @@ import { RequestUser } from '../../../utils/types/request-user.interface';
 import {
   CreateRoleDto,
   UpdateRoleDto,
-  UpdateRolePermissionDto
+  UpdateRolePermissionDto,
 } from './dto/role.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -92,7 +92,7 @@ export class RoleController {
     @Body() dto: UpdateRolePermissionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.roleService.assignRolePermissions(dto,user);
+    return this.roleService.assignRolePermissions(dto, user);
   }
 
   //update role
@@ -107,7 +107,6 @@ export class RoleController {
   ) {
     return this.roleService.updateRole(dto, user, roleId);
   }
-
 }
 
 @ApiTags('Administrator - Role Permissions')
@@ -122,8 +121,11 @@ export class RolePermissionController {
   getRoleWithPermissions(
     @SessionUser() user: RequestUser,
     @Param('roleId', new ParseUUIDPipe()) roleId: string,
-  ) { 
-    return this.rolePermissionService.getSingleRoleWithPermissions(user, roleId);
+  ) {
+    return this.rolePermissionService.getSingleRoleWithPermissions(
+      user,
+      roleId,
+    );
   }
 
   @Get('roles/:userId/role-permission')

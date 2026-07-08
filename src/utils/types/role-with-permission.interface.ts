@@ -4,7 +4,7 @@ export type RoleWithPermissions = Prisma.RoleGetPayload<{
   include: {
     role_permissions: {
       select: {
-        id: true,
+        id: true;
         role: {
           select: {
             id: true;
@@ -46,7 +46,7 @@ export type RoleWithPermissions = Prisma.RoleGetPayload<{
               };
             };
           };
-        }
+        };
       };
     };
   };
@@ -54,9 +54,9 @@ export type RoleWithPermissions = Prisma.RoleGetPayload<{
 
 export type UserRolePermissions = Prisma.RoleGetPayload<{
   select: {
-    id: true,
-    sub_module_permission_id: true,
-    is_active: true,
+    id: true;
+    sub_module_permission_id: true;
+    is_active: true;
     // sub_module_permission: {
     //   select: {
     //     id: true;
@@ -98,6 +98,6 @@ export type UserRolePermissions = Prisma.RoleGetPayload<{
           };
         };
       };
-    }
+    };
   };
 }>;
