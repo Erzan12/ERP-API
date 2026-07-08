@@ -6883,6 +6883,54 @@
         ]
       }
     },
+    "/v2/manager/roles/{userId}/{roleId}/role-permission": {
+      "put": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "RoleManagementController_unassignUserRole_v2",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role and permissions has been unassigned to the user"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Unassign a role to user",
+        "tags": [
+          "Manager - Role Management"
+        ]
+      }
+    },
     "/v2/manager/roles/{userId}/{roleId}": {
       "put": {
         "operationId": "RoleManagementController_syncRolePermissions_v2",
