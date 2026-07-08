@@ -628,7 +628,18 @@ export class AuthService {
                       select: {
                         id: true,
                         action: true,
-                        sub_module: true,
+                        sub_module: {
+                          select: {
+                            id: true,
+                            name: true,
+                            module: {
+                              select: {
+                                id: true,
+                                name: true,
+                              },
+                            },
+                          },
+                        },
                       },
                     },
                   },
@@ -637,7 +648,18 @@ export class AuthService {
                   select: {
                     id: true,
                     action: true,
-                    sub_module: true,
+                    sub_module: {
+                      select: {
+                        id: true,
+                        name: true,
+                        module: {
+                          select: {
+                            id: true,
+                            name: true,
+                          },
+                        },
+                      },
+                    },
                   },
                 },
               },
@@ -691,46 +713,94 @@ export class AuthService {
 
         // with array of roles permission and direct/override permission
         roles: user.user_roles.map((ur) => {
-          const subModuleMap = new Map<string, SubModule>();
-
+          // const subModuleMap = new Map<string, SubModule>();
+          const moduleMap = new Map<
+            string,
+            {
+              id: string;
+              name: string;
+              subModules: Map<
+                string,
+                {
+                  subModuleId: string;
+                  name: string;
+                  actions: any[];
+                }
+              >;
+            }
+          >();
 
           ur.user_permissions.forEach((rp) => {
             // Prefer the direct permission if it exists; otherwise use the role's permission.
-            const subModulePermission =
+            const permission =
               rp.sub_module_permission ??
               rp.role_permission?.sub_module_permission;
 
-            const subModule = subModulePermission?.sub_module;
+            if (!permission) return;
 
-            if (!subModule || !subModulePermission) return;
+            const subModule = permission?.sub_module;
+            const module = subModule.module;
 
-            if (!subModuleMap.has(subModule.id)) {
-              subModuleMap.set(subModule.id, {
+            if (!module) return;
+
+            // if (!subModule || !subModulePermission) return;
+
+            if (!moduleMap.has(module.id)) {
+              moduleMap.set(module.id, {
+                id: module.id,
+                name: module.name,
+                subModules: new Map(),
+              });
+            }
+
+            const moduleEntry = moduleMap.get(module.id)!;
+
+            // subModuleMap.get(subModule.id)?.actions.push({
+            //   // Only populated for custom/direct user permissions
+            //   subModulePermissionId: rp.sub_module_permission_id,
+
+            //   // Only populated for permissions inherited from a role
+            //   rolePermissionId: rp.role_permission_id,
+
+            //   action: subModulePermission.action,
+
+            //   source: rp.source ?? "role",
+            // });
+
+            // Create submodule if missing
+            if (!moduleEntry.subModules.has(subModule.id)) {
+              moduleEntry.subModules.set(subModule.id, {
                 subModuleId: subModule.id,
                 name: subModule.name,
                 actions: [],
               });
             }
 
-            subModuleMap.get(subModule.id)?.actions.push({
-              // Only populated for custom/direct user permissions
+            moduleEntry.subModules.get(subModule.id)!.actions.push({
               subModulePermissionId: rp.sub_module_permission_id,
-
-              // Only populated for permissions inherited from a role
               rolePermissionId: rp.role_permission_id,
-
-              action: subModulePermission.action,
-
-              source: rp.source ?? "role",
+              action: permission.action,
+              source: rp.source ?? "ROLE",
             });
+
+        
           });
+
+          const modules = [...moduleMap.values()].map((module) => ({
+            id: module.id,
+            name: module.name,
+            subModules: [...module.subModules.values()],
+          }));
 
           return {
             id: ur.role_id ?? 0,
-            roleName: ur.role_name ?? 'Unknown Role',
+            // roleName: ur.role_name ?? 'Unknown Role',
+            roleName: ur.role.name,
             department: ur.role.department,
-            isActive: ur.is_active ?? false,
-            subModules: [...subModuleMap.values()],
+            isActive: ur.is_active,
+            // isActive: ur.is_active ?? false,
+            // subModules: [...subModuleMap.values()],
+            modules
           };
         }),
       },
