@@ -29,8 +29,6 @@ import {
 } from 'src/utils/constants/otp-verification.constants';
 import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
 import { addMinutes } from 'date-fns/addMinutes';
-import { SubModule } from './type/sub-module-map.type';
-import { PermissionSource } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -672,10 +670,10 @@ export class AuthService {
                   select: {
                     id: true,
                     name: true,
-                  }
-                }
-              }
-            }
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -780,10 +778,8 @@ export class AuthService {
               subModulePermissionId: rp.sub_module_permission_id,
               rolePermissionId: rp.role_permission_id,
               action: permission.action,
-              source: rp.source ?? "ROLE",
+              source: rp.source ?? 'ROLE',
             });
-
-        
           });
 
           const modules = [...moduleMap.values()].map((module) => ({
@@ -800,7 +796,7 @@ export class AuthService {
             isActive: ur.is_active,
             // isActive: ur.is_active ?? false,
             // subModules: [...subModuleMap.values()],
-            modules
+            modules,
           };
         }),
       },

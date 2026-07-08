@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayNotEmpty,
   IsArray,
-  IsInt,
   IsNotEmpty,
   IsString,
   IsUUID,
@@ -65,11 +64,11 @@ export class AddUserPermissionDto {
   rolePermissionIds: string[];
 }
 
-export class UpdateUserSubmoudle {
+export class UpdateUserSubmodule {
   @IsUUID()
   @ApiProperty({ example: 'PK UUID', description: 'PK UUID of user role' })
   role_id: string;
-  
+
   @IsUUID('4', { each: true })
   @IsString({ each: true })
   @IsArray()

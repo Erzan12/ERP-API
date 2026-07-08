@@ -13,7 +13,6 @@ import {
   AssignCustomRolePermissiontDto,
   AssignDirectPermissionDto,
   AddUserPermissionDto,
-  UpdateUserSubmoudle,
 } from './dto/role-management.dto';
 
 @Injectable()
@@ -359,11 +358,7 @@ export class RoleManagementService {
     };
   }
 
-  async unassignRoleUser(
-    user: RequestUser,
-    userId: string,
-    roleId: string,
-  ) {
+  async unassignRoleUser(user: RequestUser, userId: string, roleId: string) {
     // Auth check
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -726,7 +721,7 @@ export class RoleManagementService {
         user_id: userId,
         user_role_id: userRole.id,
         // role_permission_id: null, // only direct permissions
-        source: PermissionSource.direct
+        source: PermissionSource.direct,
       },
     });
 
@@ -958,85 +953,87 @@ export class RoleManagementService {
     });
   }
 
-  async updateUserSubmodule(userId: string, user: RequestUser, dto: UpdateUserSubmoudle) {
-    const { role_id, subModuleId } = dto;
-    
-    //Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
+  // async updateUserSubmodule(
+  //   userId: string,
+  //   user: RequestUser,
+  //   dto: UpdateUserSubmoudle,
+  // ) {
+  //   const { role_id, subModuleId } = dto;
 
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
+  //   //Auth check first
+  //   const requestUser = await this.prisma.user.findUnique({
+  //     where: { id: user.id },
+  //     include: {
+  //       employee: {
+  //         include: {
+  //           person: true,
+  //           position: true,
+  //         },
+  //       },
+  //       user_roles: true,
+  //     },
+  //   });
 
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
+  //   if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+  //     throw new BadRequestException(`User does not exist.`);
+  //   }
 
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+  //   const allowedRoles = [
+  //     'Administrator',
+  //     'Super Administrator',
+  //     'HR Manager',
+  //     'HR Clerk',
+  //     'HR Staff',
+  //   ];
+  //   const canView = requestUser?.user_roles.some((role) =>
+  //     allowedRoles.includes(role.role_name),
+  //   );
 
-    const userRole = await this.prisma.userRole.findUnique({
-      where: {
-        user_id_role_id: {
-          user_id: userId,
-          role_id: role_id,
-        },
-      },
-    });
+  //   if (!canView) {
+  //     throw new ForbiddenException(
+  //       'You are not authorized to perform this action',
+  //     );
+  //   }
 
-    if (!userRole) {
-      throw new BadRequestException('User does not have this role.');
-    }
+  //   const userRole = await this.prisma.userRole.findUnique({
+  //     where: {
+  //       user_id_role_id: {
+  //         user_id: userId,
+  //         role_id: role_id,
+  //       },
+  //     },
+  //   });
 
-    const subModules = await this.prisma.subModule.findMany({
-      where: {
-        id: { in: subModuleId }
-      },
-      include: {
-        sub_module_permissions: {
-          select: {
-            id: true,
-            action: true,
-          }
-        }
-      }
-    });
+  //   if (!userRole) {
+  //     throw new BadRequestException('User does not have this role.');
+  //   }
 
-    const existingPermissions = await this.prisma.userPermission.findMany({
-      where: {
-        user_id: userId,
-        user_role_id: userRole.id,
-        // role_permission_id: null, // only direct permissions
-      },
-    });
+  //   const subModules = await this.prisma.subModule.findMany({
+  //     where: {
+  //       id: { in: subModuleId },
+  //     },
+  //     include: {
+  //       sub_module_permissions: {
+  //         select: {
+  //           id: true,
+  //           action: true,
+  //         },
+  //       },
+  //     },
+  //   });
 
-    if (!dto.subModuleId?.length) {
-      throw new BadRequestException('Provide submodule id.');
-    }
+  //   const existingPermissions = await this.prisma.userPermission.findMany({
+  //     where: {
+  //       user_id: userId,
+  //       user_role_id: userRole.id,
+  //       // role_permission_id: null, // only direct permissions
+  //     },
+  //   });
 
-    
-  }
+  //   if (!dto.subModuleId?.length) {
+  //     throw new BadRequestException('Provide submodule id.');
+  //   }
+  // }
 
   //for querying user info
   async getUserPermissions(userId: string) {
