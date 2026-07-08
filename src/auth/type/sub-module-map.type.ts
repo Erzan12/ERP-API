@@ -2,7 +2,7 @@ export interface SubModuleAction {
   subModulePermissionId: string | null;
   rolePermissionId: string | null;
   action: string;
-  source: 'DIRECT' | 'ROLE';
+  source: 'direct' | 'role';
 }
 
 export interface SubModule {

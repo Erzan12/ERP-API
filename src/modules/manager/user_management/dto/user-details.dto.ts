@@ -39,5 +39,5 @@ export class UserDetailsDto {
     example: 'Administrator',
     description: 'The role to be assign to a user',
   })
-  role_name?: string;
+  role_id?: string;
 }
