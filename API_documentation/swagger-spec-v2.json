@@ -434,30 +434,6 @@
           "Administrator - Submodule"
         ]
       },
-      "delete": {
-        "operationId": "SubModuleController_deleteSubmodule_v2",
-        "parameters": [
-          {
-            "name": "subModuleId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Delete a submodule ",
-        "tags": [
-          "Administrator - Submodule"
-        ]
-      }
-    },
-    "/v2/administrator/sub-module/{subModuleId}": {
       "put": {
         "operationId": "SubModuleController_updateSubmodule_v2",
         "parameters": [
@@ -502,6 +478,28 @@
           }
         },
         "summary": "Update a current Submodule details",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      },
+      "delete": {
+        "operationId": "SubModuleController_deleteSubmodule_v2",
+        "parameters": [
+          {
+            "name": "subModuleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a submodule ",
         "tags": [
           "Administrator - Submodule"
         ]
@@ -6802,14 +6800,14 @@
         ]
       }
     },
-    "/v2/manager/me/permissions": {
+    "/v2/manager/roles/my-permissions": {
       "get": {
         "description": "This endpoint requires a minimun security clearance of level 5.",
         "operationId": "RoleManagementController_getMyPermissions_v2",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "My user account"
+            "description": "My user profile account"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -6827,7 +6825,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "My User Account",
+        "summary": "My User Profile account",
         "tags": [
           "Manager - Role Management"
         ]
@@ -6883,7 +6881,55 @@
         ]
       }
     },
-    "/v2/manager/roles/{userId}/{roleId}": {
+    "/v2/manager/roles/{userId}/{roleId}/role-permission": {
+      "put": {
+        "description": "This endpoint requires a minimun security clearance of level 5.",
+        "operationId": "RoleManagementController_unassignUserRole_v2",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role and permissions has been unassigned to the user"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Unassign a role to user",
+        "tags": [
+          "Manager - Role Management"
+        ]
+      }
+    },
+    "/v2/manager/roles/{userId}/{roleId}/sync-permissions": {
       "put": {
         "operationId": "RoleManagementController_syncRolePermissions_v2",
         "parameters": [
@@ -6979,7 +7025,7 @@
         ]
       }
     },
-    "/v2/manager/roles/users/{userId}/new-role-permisisons": {
+    "/v2/manager/roles/users/{userId}/update-role-permisisons": {
       "put": {
         "operationId": "RoleManagementController_roleUserPermissions_v2",
         "parameters": [
@@ -7022,7 +7068,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "To add new role permission to user for a submodule",
+        "summary": "To update current user role permission",
         "tags": [
           "Manager - Role Management"
         ]
