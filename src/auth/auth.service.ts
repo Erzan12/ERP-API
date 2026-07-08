@@ -30,6 +30,7 @@ import {
 import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
 import { addMinutes } from 'date-fns/addMinutes';
 import { SubModule } from './type/sub-module-map.type';
+import { PermissionSource } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -720,8 +721,7 @@ export class AuthService {
 
               action: subModulePermission.action,
 
-              // Optional but useful
-              source: rp.sub_module_permission_id ? 'DIRECT' : 'ROLE',
+              source: rp.source ?? "role",
             });
           });
 
