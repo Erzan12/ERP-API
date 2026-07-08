@@ -94,6 +94,20 @@ export class RoleManagementController {
     return this.roleManagementService.addRoleUser(user, userId, dto);
   }
 
+  @Put('roles/:userId/:roleId/role-permission')
+  @ApiOperation({ summary: 'Unassign a role to user' })
+  @ApiPatchResponse('Role and permissions has been unassigned to the user')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
+  unassignUserRole(
+    @SessionUser() user: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+  ){
+    return this.roleManagementService.unassignRoleUser(user, userId, roleId);
+  }
+
   @Put('roles/:userId/:roleId')
   @ApiOperation({ summary: 'Sync role permission to user' })
   @ApiPatchResponse('Role permission has been updated')
