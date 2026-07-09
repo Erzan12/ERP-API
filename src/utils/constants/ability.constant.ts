@@ -51,6 +51,11 @@ export const LEAVE_REQUEST = 'leave request';
 //SUBMODULE FOR EMPLOYEE/CORP SERV
 export const EMPLOYEE_DASHBOARD = 'employee dashboard';
 
+export const TEST_EMPLOYEE_DASHBOARD = 'test employee dashboard';
+
+export const TEST_SUBMODULE_ROLE_BASE_PERMISSION =
+  'test submodule role base permission';
+
 //SUBMODULE FOR MANAGER - OR IN CONTROLLER SUBJECT
 export const USER_ACCOUNT = 'user account';
 export const USER_TOKEN_KEY = 'user token keys';

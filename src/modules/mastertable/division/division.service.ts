@@ -199,6 +199,7 @@ export class DivisionService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',

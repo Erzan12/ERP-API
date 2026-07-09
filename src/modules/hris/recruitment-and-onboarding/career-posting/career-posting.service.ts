@@ -45,6 +45,7 @@ export class CareerPostingService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -145,6 +146,7 @@ export class CareerPostingService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -403,6 +405,7 @@ export class CareerPostingService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -499,6 +502,7 @@ export class CareerPostingService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -605,6 +609,7 @@ export class CareerPostingService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -690,6 +695,7 @@ export class CareerPostingService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -756,6 +762,7 @@ export class CareerPostingService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -830,6 +837,7 @@ export class CareerPostingService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -903,6 +911,7 @@ export class CareerPostingService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
