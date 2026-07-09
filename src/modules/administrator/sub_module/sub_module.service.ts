@@ -530,7 +530,7 @@ export class SubModuleService {
           select: {
             id: true,
             action: true,
-          }
+          },
         },
       },
     });

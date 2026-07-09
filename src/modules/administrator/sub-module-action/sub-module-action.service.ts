@@ -69,7 +69,7 @@ export class SubModuleActionService {
   }
 
   async getSubModuleActions(user: RequestUser) {
-     // Auth check first
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -104,7 +104,7 @@ export class SubModuleActionService {
         'You are not authorized to perform this action',
       );
     }
-    
+
     const subModuleAction = await this.prisma.subModuleAction.findMany();
 
     if (subModuleAction.length === 0) {

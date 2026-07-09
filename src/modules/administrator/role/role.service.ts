@@ -676,7 +676,9 @@ export class RoleService {
 
     // permissions to remove in the role
     const actionsToDelete = existingRolePermission
-      .filter((rp) => !sub_module_permission_id.includes(rp.sub_module_permission.id))
+      .filter(
+        (rp) => !sub_module_permission_id.includes(rp.sub_module_permission.id),
+      )
       .map((rp) => rp.id);
 
     // check permissions added in submodule permission before it will be assigned to role permission
@@ -698,7 +700,9 @@ export class RoleService {
 
     // using a Set
     const validActions = new Set(availablePermissions.map((p) => p.action));
-    const invalidActions = sub_module_permission_id.filter((act) => !validActions.has(act));
+    const invalidActions = sub_module_permission_id.filter(
+      (act) => !validActions.has(act),
+    );
 
     if (invalidActions.length > 0) {
       throw new BadRequestException(
@@ -710,7 +714,8 @@ export class RoleService {
     // Now only the actions that were sent by the client are created.
     const actionsToCreate = availablePermissions.filter(
       (perm) =>
-        sub_module_permission_id.includes(perm.id) && !existingActions.includes(perm.id),
+        sub_module_permission_id.includes(perm.id) &&
+        !existingActions.includes(perm.id),
     );
 
     const createRolePermission = actionsToCreate.map((perm) => ({
