@@ -7372,7 +7372,7 @@
             "description": "Primary Key ID of the module "
           },
           "actions": {
-            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
+            "example": "[\"Array of PK UUID\"]",
             "description": "If you want to update the current actions",
             "type": "array",
             "items": {
@@ -7384,6 +7384,28 @@
           "name",
           "module_id",
           "actions"
+        ]
+      },
+      "AssignSubModulePermissionDto": {
+        "type": "object",
+        "properties": {
+          "sub_module_id": {
+            "type": "string",
+            "example": "UUID",
+            "description": "ID of the Sub Module"
+          },
+          "sub_module_actions_id": {
+            "example": "[\"Array of PK UUID of submodule actions\"]",
+            "description": "Assign permissions to sub module, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "sub_module_id",
+          "sub_module_actions_id"
         ]
       },
       "UpdateSubmoduleDto": {
@@ -7409,28 +7431,6 @@
           "name",
           "module_id",
           "is_active"
-        ]
-      },
-      "AssignSubModulePermissionDto": {
-        "type": "object",
-        "properties": {
-          "actions": {
-            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
-            "description": "Assign permissions to sub module, also can add multiple permissions at once",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "sub_module_id": {
-            "type": "string",
-            "example": "UUID",
-            "description": "ID of the Sub Module"
-          }
-        },
-        "required": [
-          "actions",
-          "sub_module_id"
         ]
       },
       "CreateModuleDto": {
@@ -7484,8 +7484,8 @@
       "UpdateRolePermissionDto": {
         "type": "object",
         "properties": {
-          "actions": {
-            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
+          "sub_module_permission_id": {
+            "example": "[\"Array of PK UUID of sub module permission id\"]",
             "description": "Assign/Update permissions to role, also can add multiple permissions at once",
             "type": "array",
             "items": {
@@ -7504,7 +7504,7 @@
           }
         },
         "required": [
-          "actions",
+          "sub_module_permission_id",
           "sub_module_id",
           "role_id"
         ]
