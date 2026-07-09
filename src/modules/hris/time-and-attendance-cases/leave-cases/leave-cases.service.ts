@@ -40,6 +40,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -176,6 +177,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -365,6 +367,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -659,6 +662,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -941,6 +945,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -1029,6 +1034,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -1095,6 +1101,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -1179,6 +1186,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -1249,6 +1257,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -1318,6 +1327,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -1433,6 +1443,7 @@ export class LeaveCasesService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',

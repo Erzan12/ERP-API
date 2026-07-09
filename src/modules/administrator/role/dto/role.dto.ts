@@ -6,6 +6,7 @@ import {
   IsUUID,
   IsBoolean,
   IsArray,
+  ArrayNotEmpty,
 } from 'class-validator';
 
 export class CreateRoleDto {
@@ -63,24 +64,24 @@ export class UpdateRoleDto {
 }
 
 export class UpdateRolePermissionDto {
+  @IsUUID()
   @IsNotEmpty()
-  @IsArray()
-  @IsString({ each: true })
-  @IsNotEmpty({ each: true }) // Make sure each string is not an empty string
-  @ApiProperty({
-    example: '["read", "update", "create", "delete"]',
-    description:
-      'Assign/Update permissions to role, also can add multiple permissions at once',
-  })
-  actions: string[];
+  @ApiProperty({ example: 1, description: 'Primary Key ID of the Role' })
+  role_id: string;
 
   @IsUUID()
   @IsNotEmpty()
   @ApiProperty({ example: 1, description: 'Primary Key ID of the Sub Module' })
   sub_module_id: string;
 
-  @IsUUID()
-  @IsNotEmpty()
-  @ApiProperty({ example: 1, description: 'Primary Key ID of the Role' })
-  role_id: string;
+  @ArrayNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  @IsUUID('4', { each: true })
+  @ApiProperty({
+    example: '["Array of PK UUID of sub module permission id"]',
+    description:
+      'Assign/Update permissions to role, also can add multiple permissions at once',
+  })
+  sub_module_permission_id: string[];
 }

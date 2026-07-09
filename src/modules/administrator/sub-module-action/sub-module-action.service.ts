@@ -38,6 +38,7 @@ export class SubModuleActionService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -68,14 +69,7 @@ export class SubModuleActionService {
   }
 
   async getSubModuleActions(user: RequestUser) {
-    const modules = await this.prisma.subModuleAction.findMany();
-
-    if (modules.length === 0) {
-      throw new NotFoundException(
-        'No Submodule actions yet available or added',
-      );
-    }
-
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -93,22 +87,36 @@ export class SubModuleActionService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
     );
 
-    if (!isAdmin) {
+    if (!canView) {
       throw new ForbiddenException(
-        'You are not allowed to perform this action',
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const subModuleAction = await this.prisma.subModuleAction.findMany();
+
+    if (subModuleAction.length === 0) {
+      throw new NotFoundException(
+        'No Submodule actions yet available or added',
       );
     }
 
     return {
       status: 'success',
       message: 'Here is the list of Submodule Actions available',
-      modules,
+      subModuleAction,
     };
   }
 
@@ -140,6 +148,7 @@ export class SubModuleActionService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
