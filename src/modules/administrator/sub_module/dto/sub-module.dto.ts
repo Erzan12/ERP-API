@@ -25,14 +25,16 @@ export class CreateSubModuleDto {
   })
   module_id: string;
 
-  @IsNotEmpty({ each: true }) // Make sure each string is not an empty string
+  // @IsNotEmpty({ each: true }) // Make sure each string is not an empty string
   @IsArray()
   @IsString({ each: true })
+  @IsUUID('4', { each: true })
+  @IsOptional()
   @ApiProperty({
-    example: '["read", "update", "create", "delete"]',
+    example: '["Array of PK UUID"]',
     description: 'If you want to update the current actions',
   })
-  actions: string[];
+  actions?: string[];
 }
 
 export class UpdateSubmoduleDto {

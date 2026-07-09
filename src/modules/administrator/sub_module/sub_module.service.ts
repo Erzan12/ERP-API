@@ -44,6 +44,7 @@ export class SubModuleService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -296,7 +297,7 @@ export class SubModuleService {
       // Get all action definitions once
       const actionRecords = await this.prisma.subModuleAction.findMany({
         where: {
-          action: {
+          id: {
             in: actions,
           },
           is_active: true,
@@ -304,11 +305,11 @@ export class SubModuleService {
       });
 
       const actionMap = new Map(
-        actionRecords.map((action) => [action.action, action]),
+        actionRecords.map((action) => [action.id, action]),
       );
 
-      for (const action of actions) {
-        const actionRecord = actionMap.get(action);
+      for (const actionId of actions) {
+        const actionRecord = actionMap.get(actionId);
 
         if (!actionRecord) {
           throw new BadRequestException('Submodule Action not found');
@@ -316,7 +317,7 @@ export class SubModuleService {
 
         await this.prisma.subModulePermission.create({
           data: {
-            action,
+            action: actionRecord.action,
             sub_module_id: subModule.id,
             sub_module_action_id: actionRecord.id,
             created_by: user.id,
@@ -392,6 +393,7 @@ export class SubModuleService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -490,6 +492,7 @@ export class SubModuleService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -538,7 +541,7 @@ export class SubModuleService {
 
     // Permissions to remove
     const actionsToDelete = existingPermissions
-      .filter((p) => !sub_module_actions_id.includes(p.sub_module_action.action))
+      .filter((p) => !sub_module_actions_id.includes(p.sub_module_action_id))
       .map((p) => p.id);
 
     // Valid actions from master table
