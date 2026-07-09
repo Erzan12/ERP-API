@@ -68,11 +68,11 @@ export class UpdateRolePermissionDto {
   @IsString({ each: true })
   @IsNotEmpty({ each: true }) // Make sure each string is not an empty string
   @ApiProperty({
-    example: '["read", "update", "create", "delete"]',
+    example: '["Array of PK UUID of sub module permission id"]',
     description:
       'Assign/Update permissions to role, also can add multiple permissions at once',
   })
-  actions: string[];
+  sub_module_permission_id: string[];
 
   @IsUUID()
   @IsNotEmpty()
