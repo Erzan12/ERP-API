@@ -83,6 +83,7 @@ export class RoleService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -254,6 +255,7 @@ export class RoleService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -329,6 +331,7 @@ export class RoleService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -471,6 +474,7 @@ export class RoleService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -542,6 +546,7 @@ export class RoleService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -593,7 +598,7 @@ export class RoleService {
 
   //Add Get submodule permission -> to query the submodule permission table for available submolues with permission
   async assignRolePermissions(dto: UpdateRolePermissionDto, user: RequestUser) {
-    const { sub_module_id, role_id, actions } = dto;
+    const { sub_module_id, role_id, sub_module_permission_id } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -617,6 +622,7 @@ export class RoleService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -665,12 +671,12 @@ export class RoleService {
     });
 
     const existingActions = existingRolePermission.map(
-      (rp) => rp.sub_module_permission.action,
+      (rp) => rp.sub_module_permission.id,
     );
 
     // permissions to remove in the role
     const actionsToDelete = existingRolePermission
-      .filter((rp) => !actions.includes(rp.sub_module_permission.action))
+      .filter((rp) => !sub_module_permission_id.includes(rp.sub_module_permission.id))
       .map((rp) => rp.id);
 
     // check permissions added in submodule permission before it will be assigned to role permission
@@ -692,7 +698,7 @@ export class RoleService {
 
     // using a Set
     const validActions = new Set(availablePermissions.map((p) => p.action));
-    const invalidActions = actions.filter((act) => !validActions.has(act));
+    const invalidActions = sub_module_permission_id.filter((act) => !validActions.has(act));
 
     if (invalidActions.length > 0) {
       throw new BadRequestException(
@@ -704,7 +710,7 @@ export class RoleService {
     // Now only the actions that were sent by the client are created.
     const actionsToCreate = availablePermissions.filter(
       (perm) =>
-        actions.includes(perm.action) && !existingActions.includes(perm.action),
+        sub_module_permission_id.includes(perm.id) && !existingActions.includes(perm.id),
     );
 
     const createRolePermission = actionsToCreate.map((perm) => ({
@@ -760,7 +766,7 @@ export class RoleService {
       },
     });
 
-    const requestedCount = actions.length;
+    const requestedCount = sub_module_permission_id.length;
     const createdCount = result.count;
     const deletedCount = actionsToDelete.length;
 
@@ -795,7 +801,7 @@ export class RoleService {
         requested: requestedCount,
         created: createdCount,
         deleted: deletedCount,
-        current_permissions: actions,
+        current_permissions: sub_module_permission_id,
       },
     };
   }
@@ -1074,6 +1080,7 @@ export class RolePermissionService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -1186,6 +1193,7 @@ export class RolePermissionService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
