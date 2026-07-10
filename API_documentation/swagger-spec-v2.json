@@ -1688,115 +1688,6 @@
         ]
       }
     },
-    "/v2/administrator/sub-module/permissions/{subModulePermissionId}": {
-      "get": {
-        "operationId": "SubModuleActionController_getSubModulepermission_v2",
-        "parameters": [
-          {
-            "name": "subModulePermissionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Here is the Submodule action/permission"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get a Submodule action/permission",
-        "tags": [
-          "Administrator - Submodule Action/Permission"
-        ]
-      },
-      "put": {
-        "operationId": "SubModuleActionController_updateSubmoduleAction_v2",
-        "parameters": [
-          {
-            "name": "subModuleActionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to update the current sub module action details",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSubmoduleActionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Sub module action/permission updated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Update a current sub module action/permission details",
-        "tags": [
-          "Administrator - Submodule Action/Permission"
-        ]
-      },
-      "delete": {
-        "operationId": "SubModuleActionController_deleteSubmoduleAction_v2",
-        "parameters": [
-          {
-            "name": "submoduleActionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Delete a submodule action/permission",
-        "tags": [
-          "Administrator - Submodule Action/Permission"
-        ]
-      }
-    },
     "/v2/administrator/sub-module/permissions": {
       "get": {
         "operationId": "SubModuleActionController_getSubModulePermission_v2",
@@ -1861,6 +1752,119 @@
           }
         },
         "summary": "Create a new permissions/actions for submodule(acts as inventory of actions for submodules)",
+        "tags": [
+          "Administrator - Submodule Action/Permission"
+        ]
+      }
+    },
+    "/v2/administrator/sub-module/permissions/{subModulePermissionId}": {
+      "get": {
+        "operationId": "SubModuleActionController_getSubModulepermission_v2",
+        "parameters": [
+          {
+            "name": "subModulePermissionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Submodule action/permission"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a Submodule action/permission",
+        "tags": [
+          "Administrator - Submodule Action/Permission"
+        ]
+      }
+    },
+    "/v2/administrator/sub-module/permissions/{subModuleActionId}": {
+      "put": {
+        "operationId": "SubModuleActionController_updateSubmoduleAction_v2",
+        "parameters": [
+          {
+            "name": "subModuleActionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update the current sub module action details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubmoduleActionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sub module action/permission updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current sub module action/permission details",
+        "tags": [
+          "Administrator - Submodule Action/Permission"
+        ]
+      }
+    },
+    "/v2/administrator/sub-module/permissions/{submoduleActionId}": {
+      "delete": {
+        "operationId": "SubModuleActionController_deleteSubmoduleAction_v2",
+        "parameters": [
+          {
+            "name": "submoduleActionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a submodule action/permission",
         "tags": [
           "Administrator - Submodule Action/Permission"
         ]
