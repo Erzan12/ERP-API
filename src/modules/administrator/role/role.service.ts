@@ -699,14 +699,14 @@ export class RoleService {
     // const invalidActions = actions.filter((act) => !validActions.includes(act));
 
     // using a Set
-    const validActions = new Set(availablePermissions.map((p) => p.action));
+    const validActions = new Set(availablePermissions.map((p) => p.id));
     const invalidActions = sub_module_permission_id.filter(
       (act) => !validActions.has(act),
     );
 
     if (invalidActions.length > 0) {
       throw new BadRequestException(
-        `Invalid aciton(s) for this sub module: ${invalidActions.join(', ')}`,
+        `Invalid action(s) for this sub module: ${invalidActions.join(', ')}`,
       );
     }
 

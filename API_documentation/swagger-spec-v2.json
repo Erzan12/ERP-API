@@ -7484,6 +7484,16 @@
       "UpdateRolePermissionDto": {
         "type": "object",
         "properties": {
+          "role_id": {
+            "type": "string",
+            "example": 1,
+            "description": "Primary Key ID of the Role"
+          },
+          "sub_module_id": {
+            "type": "string",
+            "example": 1,
+            "description": "Primary Key ID of the Sub Module"
+          },
           "sub_module_permission_id": {
             "example": "[\"Array of PK UUID of sub module permission id\"]",
             "description": "Assign/Update permissions to role, also can add multiple permissions at once",
@@ -7491,22 +7501,12 @@
             "items": {
               "type": "string"
             }
-          },
-          "sub_module_id": {
-            "type": "string",
-            "example": 1,
-            "description": "Primary Key ID of the Sub Module"
-          },
-          "role_id": {
-            "type": "string",
-            "example": 1,
-            "description": "Primary Key ID of the Role"
           }
         },
         "required": [
-          "sub_module_permission_id",
+          "role_id",
           "sub_module_id",
-          "role_id"
+          "sub_module_permission_id"
         ]
       },
       "UpdateRoleDto": {
