@@ -613,9 +613,9 @@ export class RoleManagementService {
         ),
     );
 
-    const permissionsToDelete = existingPermissions.filter(
-      (existing) => !role_permission_id.includes(existing.role_permission_id!),
-    );
+    // const permissionsToDelete = existingPermissions.filter(
+    //   (existing) => !role_permission_id.includes(existing.role_permission_id!),
+    // );
 
     const userPermissionsToCreate = permissionsToAdd.map((perm) => ({
       user_id: userId,
