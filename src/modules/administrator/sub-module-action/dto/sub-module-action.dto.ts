@@ -27,6 +27,7 @@ export class UpdateSubmoduleActionDto {
   })
   action?: string;
 
+  @IsOptional()
   @IsBoolean()
   @IsDefined()
   @ApiProperty({
