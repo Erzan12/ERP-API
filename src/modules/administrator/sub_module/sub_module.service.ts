@@ -282,9 +282,16 @@ export class SubModuleService {
       throw new BadRequestException('Module not found!');
     }
 
+    const slug = name
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+
     const subModule = await this.prisma.subModule.create({
       data: {
         name: name,
+        slug,
         module_id: module_id,
         created_by: user.id,
       },
@@ -566,6 +573,7 @@ export class SubModuleService {
       sub_module_id,
       sub_module_action_id: perm.id,
       action: perm.action,
+      code: `${existingSubModule.slug}:${perm.slug}`,
       created_by: user.id,
     }));
 
