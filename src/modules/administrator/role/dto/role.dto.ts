@@ -6,7 +6,6 @@ import {
   IsUUID,
   IsBoolean,
   IsArray,
-  ArrayNotEmpty,
 } from 'class-validator';
 
 export class CreateRoleDto {
