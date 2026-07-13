@@ -7375,7 +7375,7 @@
             "example": "PK UUID",
             "description": "Primary Key ID of the module "
           },
-          "actions": {
+          "subModuleActionId": {
             "example": "[\"Array of PK UUID\"]",
             "description": "If you want to update the current actions",
             "type": "array",
@@ -7387,7 +7387,7 @@
         "required": [
           "name",
           "module_id",
-          "actions"
+          "subModuleActionId"
         ]
       },
       "AssignSubModulePermissionDto": {
