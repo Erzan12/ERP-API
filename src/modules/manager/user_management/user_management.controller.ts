@@ -114,10 +114,6 @@ export class UserManagementController {
     }),
   )
   @ApiConsumes('multipart/form-data')
-  // @ApiBody({
-  //   type: CreateUserWithRoleDto,
-  //   description: 'Payload to create User Account',
-  // })
   @ApiBody({
     schema: {
       type: 'object',
@@ -126,7 +122,7 @@ export class UserManagementController {
         username: { type: 'string' },
         email: { type: 'string' },
         password: { type: 'string' },
-        role_name: { type: 'string' },
+        role_id: { type: 'string' },
         avatar: {
           type: 'string',
           format: 'binary',

@@ -1538,6 +1538,7 @@ model Module {
 model SubModule {
   id        String  @id @default(uuid()) @db.Uuid
   name      String
+  slug      String? @unique
   module_id String  @db.Uuid
   is_active Boolean @default(true)
 
@@ -1558,7 +1559,8 @@ model SubModule {
 
 model SubModuleAction {
   id     String @id @default(uuid()) @db.Uuid
-  action String @unique
+  action String 
+  slug   String?  @unique
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -1578,6 +1580,8 @@ model SubModulePermission {
   action               String
   sub_module_action_id String @db.Uuid
   sub_module_id        String @db.Uuid
+
+  code                 String? @unique
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
