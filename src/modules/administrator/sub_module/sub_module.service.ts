@@ -244,7 +244,7 @@ export class SubModuleService {
 
   //can be upgraded to when creating a submodule it can also set available permissions; right now it can just create submodules cant set permissions
   async createSubModule(dto: CreateSubModuleDto, user: RequestUser) {
-    const { name, module_id, actions } = dto;
+    const { name, module_id, subModuleActionId = [] } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -300,12 +300,12 @@ export class SubModuleService {
       },
     });
 
-    if (actions?.length) {
+    if (subModuleActionId?.length) {
       // Get all action definitions once
       const actionRecords = await this.prisma.subModuleAction.findMany({
         where: {
           id: {
-            in: actions,
+            in: subModuleActionId,
           },
           is_active: true,
         },
@@ -315,7 +315,7 @@ export class SubModuleService {
         actionRecords.map((action) => [action.id, action]),
       );
 
-      for (const actionId of actions) {
+      for (const actionId of subModuleActionId) {
         const actionRecord = actionMap.get(actionId);
 
         if (!actionRecord) {
