@@ -171,9 +171,16 @@ export class SubModuleActionService {
       throw new ConflictException('Sub Module Action already exist!');
     }
 
+    const slug = action
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+
     const subModuleAction = await this.prisma.subModuleAction.create({
       data: {
         action,
+        slug,
         created_by: user.id,
       },
     });
@@ -212,7 +219,6 @@ export class SubModuleActionService {
     const updateSubModulePermission = await this.prisma.subModuleAction.update({
       where: { id: subModuleActionId },
       data: {
-        id: existingSubModulePermission.id,
         action,
         is_active,
       },

@@ -706,7 +706,7 @@ export class RoleService {
 
     if (invalidActions.length > 0) {
       throw new BadRequestException(
-        `Invalid aciton(s) for this sub module: ${invalidActions.join(', ')}`,
+        `Invalid action(s) for this sub module: ${invalidActions.join(', ')}`,
       );
     }
 
