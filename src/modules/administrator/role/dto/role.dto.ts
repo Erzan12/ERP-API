@@ -6,7 +6,6 @@ import {
   IsUUID,
   IsBoolean,
   IsArray,
-  ArrayNotEmpty,
 } from 'class-validator';
 
 export class CreateRoleDto {
@@ -74,7 +73,7 @@ export class UpdateRolePermissionDto {
   @ApiProperty({ example: 1, description: 'Primary Key ID of the Sub Module' })
   sub_module_id: string;
 
-  @ArrayNotEmpty()
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   @IsUUID('4', { each: true })
@@ -83,5 +82,5 @@ export class UpdateRolePermissionDto {
     description:
       'Assign/Update permissions to role, also can add multiple permissions at once',
   })
-  sub_module_permission_id: string[];
+  sub_module_permission_id?: string[];
 }

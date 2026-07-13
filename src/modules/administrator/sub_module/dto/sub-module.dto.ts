@@ -34,7 +34,7 @@ export class CreateSubModuleDto {
     example: '["Array of PK UUID"]',
     description: 'If you want to update the current actions',
   })
-  actions?: string[];
+  subModuleActionId?: string[];
 }
 
 export class UpdateSubmoduleDto {
