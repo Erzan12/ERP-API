@@ -289,30 +289,38 @@ async function main() {
     hrStaff,
   ] = positions;
 
-  // 6. Create SubModules
+  const subModulesData = [
+    { name: 'Dashboard', module_id: hrModule.id },
+    { name: 'Employee Masterlist', module_id: hrModule.id },
+    { name: 'Career Posting', module_id: hrModule.id },
+    { name: 'Hiring Pipeline', module_id: hrModule.id },
+    { name: 'Regularization Review', module_id: hrModule.id },
+    { name: 'Performance Competency', module_id: hrModule.id },
+    { name: 'Leave Category', module_id: hrModule.id },
+    { name: 'Leave Cases', module_id: hrModule.id },
+    { name: 'Extended Leave Cases', module_id: hrModule.id },
+    { name: 'Performance Evaluation', module_id: employeeModule.id },
+    { name: 'User Account', module_id: managerModule.id },
+    { name: 'Permission Template', module_id: managerModule.id },
+    { name: 'Dashboard', module_id: managerModule.id },
+    { name: 'Inbox', module_id: managerModule.id },
+    { name: 'Dashboard', module_id: adminModule.id },
+    { name: 'Audit Trail', module_id: adminModule.id },
+    { name: 'Mastertables', module_id: adminModule.id },
+    { name: 'User Token Keys', module_id: adminModule.id },
+    { name: 'System Management', module_id: adminModule.id },
+    { name: 'DB Query', module_id: adminModule.id },
+  ];
+
   await prisma.subModule.createMany({
-    data: [
-      { name: 'Dashboard', module_id: hrModule.id },
-      { name: 'Employee Masterlist', module_id: hrModule.id },
-      { name: 'Career Posting', module_id: hrModule.id },
-      { name: 'Hiring Pipeline', module_id: hrModule.id },
-      { name: 'Regularization Review', module_id: hrModule.id },
-      { name: 'Performance Competency', module_id: hrModule.id },
-      { name: 'Leave Category', module_id: hrModule.id},
-      { name: 'Leave Cases', module_id: hrModule.id },
-      { name: 'Extended Leave Cases', module_id: hrModule.id },
-      { name: 'Performance Evaluation', module_id: employeeModule.id },
-      { name: 'User Account', module_id: managerModule.id },
-      { name: 'Permission Template', module_id: managerModule.id},
-      { name: 'Dashboard', module_id: managerModule.id },
-      { name: 'Inbox', module_id: managerModule.id },
-      { name: 'Dashboard', module_id: adminModule.id },
-      { name: 'Audit Trail', module_id: adminModule.id },
-      { name: 'Mastertables', module_id: adminModule.id },
-      { name: 'User Token Keys', module_id: adminModule.id },
-      { name: 'System Management', module_id: adminModule.id },
-      { name: 'DB Query', module_id: adminModule.id}
-    ],
+    data: subModulesData.map(subModule => ({
+      ...subModule,
+      slug: subModule.name
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
+    })),
     skipDuplicates: true,
   });
 
@@ -321,10 +329,20 @@ async function main() {
   // 6.5 Create Permissions for submodules
   const defaultActions = ['create', 'read', 'update', 'delete', 'note', 'verify', 'approve', 'evaluate', 'submit', 'acknowledge', 'reject', 'cancel', 'process', 'return', 'escalate', 'reopen', 'hold', 'screen', 'shortlist', 'set_interview', 'accept', 'onboard'];
 
-  await prisma.subModuleAction.createMany({
-    data: defaultActions.map(action => ({ action, is_active: true })),
+  const resultAction = await prisma.subModuleAction.createMany({
+    data: defaultActions.map(action => ({
+      action,
+      slug: action
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
+      is_active: true,
+    })),
     skipDuplicates: true,
   });
+
+  console.log(resultAction);
 
   const subModuleActions = await prisma.subModuleAction.findMany();
 
@@ -336,6 +354,7 @@ async function main() {
       subModulePermissionsData.push({
         sub_module_id: subModule.id,
         sub_module_action_id: action.id, // ✅ this is what Prisma needs
+        code: `${subModule.slug}.${action.slug}`,
         action: action.action, // optional, but useful for filtering
       });
     }
@@ -345,6 +364,7 @@ async function main() {
     data: subModulePermissionsData,
     skipDuplicates: true,
   });
+
 
   console.log(`✅ Seeded ${subModulePermissionsData.length} SubModulePermissions`);
   
@@ -730,7 +750,7 @@ async function main() {
       // const department_id_uuid = uuidv4();
 
       rolePermissionPayload.push({
-        action,
+        // action,
         role_id: superAdminRole.id,
         // role_name: superAdminRole.name,
         sub_module_permission_id: subModulePermissionId,
@@ -738,7 +758,7 @@ async function main() {
       });
 
       rolePermissionPayload.push({
-        action,
+        // action,
         role_id: adminRole.id,
         // role_name: adminRole.name,
         sub_module_permission_id: subModulePermissionId,
@@ -746,7 +766,7 @@ async function main() {
       });
 
       rolePermissionPayload.push({
-        action,
+        // action,
         role_id: hrManagerRole.id,
         // role_name: hrManagerRole.name,
         sub_module_permission_id: subModulePermissionId,
@@ -754,7 +774,7 @@ async function main() {
       });
 
       rolePermissionPayload.push({
-        action,
+        // action,
         role_id: hrClerkRole.id,
         // role_name: hrClerkRole.name,
         sub_module_permission_id: subModulePermissionId,
@@ -762,7 +782,7 @@ async function main() {
       });
 
       rolePermissionPayload.push({
-        action,
+        // action,
         role_id: hrStaffRole.id,
         // role_name: hrStaffRole.name,
         sub_module_permission_id: subModulePermissionId,
@@ -777,17 +797,25 @@ async function main() {
       skipDuplicates: true,
     });
   }
-  console.log(`✅ Super Administrator and Administrator role permissions created for ${rolePermissionPayload.length} actions.`);
+  // console.log(`✅ Super Administrator and Administrator role permissions created for ${rolePermissionPayload.length} actions.`);
 
   // Fetch all RolePermissions for the role
   const rolePermissions = await prisma.rolePermission.findMany({
     where: {
       role_id: roleId,
     },
+    include: {
+      sub_module_permission: {
+        select: {
+          id: true,
+          action: true,
+        }
+      }
+    }
   });
 
   const superUserPermissionsData = rolePermissions.map((rp) => ({
-    action: rp.action,
+    action: rp.sub_module_permission.action,
     user_id: superUserId,
     user_role_id: superUserRole.id,
     role_permission_id: rp.id,
@@ -795,35 +823,35 @@ async function main() {
 
   // Create UserPermissions for this userRole
   const userPermissionsData = rolePermissions.map((rp) => ({
-    action: rp.action,
+    action: rp.sub_module_permission.action,
     user_id: userId,
     user_role_id: userRole.id,
     role_permission_id: rp.id,
   }));
 
   const hrManagerPermissionsData = rolePermissions.map((rp) => ({
-    action: rp.action,
+    action: rp.sub_module_permission.action,
     user_id: hrManagerUserId,
     user_role_id: hrManRole.id,
     role_permission_id: rp.id,
   }));
 
   const hrClerkPermissionsData = rolePermissions.map((rp) => ({
-    action: rp.action,
+    action: rp.sub_module_permission.action,
     user_id: hrClerkUserId,
     user_role_id: hrClrkRole.id,
     role_permission_id: rp.id,
   }));
 
   const hrStaffPermissionsData = rolePermissions.map((rp) => ({
-    action: rp.action,
+    action: rp.sub_module_permission.action,
     user_id: hrStaffUserId,
     user_role_id: hrStffRole.id,
     role_permission_id: rp.id,
   }));
 
-  console.log('Role Permissions Count:', rolePermissions.length);
-  console.log(rolePermissions);
+  // console.log('Role Permissions Count:', rolePermissions.length);
+  // console.log(rolePermissions);
 
   const result = await prisma.userPermission.createMany({
     data: userPermissionsData,
