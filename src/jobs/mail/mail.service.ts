@@ -31,7 +31,7 @@ export class MailService {
       throw new Error('SMTP credentials are missing');
     }
 
-    const setupUrl = `${process.env.FRONTEND_URL_WELCOME_MAIL}/auth/reset-password?token=${token}`;
+    const setupUrl = `${process.env.FRONTEND_URL_WELCOME_MAIL}auth/reset-password?token=${token}`;
 
     const mailOption = {
       from: `"Avega Bros Integrated Shipping Corp." <${this.configService.get('SMTP_USER')}>`,
@@ -157,7 +157,7 @@ export class MailService {
       throw new Error('SMTP credentials are missing');
     }
 
-    const resetUrl = `${process.env.FRONTEND_URL_RESEND_RESET_PASSWORD}/auth/reset-password?token=${token}`;
+    const resetUrl = `${process.env.FRONTEND_URL_RESEND_RESET_PASSWORD}auth/reset-password?token=${token}`;
 
     const mailOption = {
       from: `"Avega Bros HRMS(to replace with avega logo)" <${this.configService.get('SMTP_USER')}>`,

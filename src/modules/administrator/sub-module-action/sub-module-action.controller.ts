@@ -32,6 +32,16 @@ import {
 export class SubModuleActionController {
   constructor(private submoduleActionService: SubModuleActionService) {}
 
+  @Get('sub-module/permissions')
+  @ApiOperation({ summary: 'Get Submodule actions/permissions' })
+  @ApiGetResponse(
+    'Here are the list of Submodule actions/permissions available',
+  )
+  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
+  getSubModulePermission(@SessionUser() user: RequestUser) {
+    return this.submoduleActionService.getSubModuleActions(user);
+  }
+
   @Get('sub-module/permissions/:subModulePermissionId')
   @ApiOperation({ summary: 'Get a Submodule action/permission' })
   @ApiGetResponse('Here is the Submodule action/permission')
@@ -45,16 +55,6 @@ export class SubModuleActionController {
       subModulePermissionId,
       user,
     );
-  }
-
-  @Get('sub-module/permissions')
-  @ApiOperation({ summary: 'Get Submodule actions/permissions' })
-  @ApiGetResponse(
-    'Here are the list of Submodule actions/permissions available',
-  )
-  @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
-  getSubModulePermission(@SessionUser() user: RequestUser) {
-    return this.submoduleActionService.getSubModuleActions(user);
   }
 
   @Post('sub-module/permissions')
@@ -79,7 +79,7 @@ export class SubModuleActionController {
   }
 
   //update the submodule actions - inventory of permissions added on a submodule
-  @Put('sub-module/permissions/:subModulePermissionId')
+  @Put('sub-module/permissions/:subModuleActionId')
   @ApiBody({
     type: UpdateSubmoduleActionDto,
     description: 'Payload to update the current sub module action details',
@@ -101,7 +101,7 @@ export class SubModuleActionController {
     );
   }
 
-  @Delete('sub-module/permissions/:subModulePermissionId')
+  @Delete('sub-module/permissions/:submoduleActionId')
   @ApiOperation({ summary: 'Delete a submodule action/permission' })
   @Can({ action: 'update', subject: 'System Management' })
   deleteSubmoduleAction(

@@ -613,9 +613,9 @@ export class RoleManagementService {
         ),
     );
 
-    const permissionsToDelete = existingPermissions.filter(
-      (existing) => !role_permission_id.includes(existing.role_permission_id!),
-    );
+    // const permissionsToDelete = existingPermissions.filter(
+    //   (existing) => !role_permission_id.includes(existing.role_permission_id!),
+    // );
 
     const userPermissionsToCreate = permissionsToAdd.map((perm) => ({
       user_id: userId,
@@ -629,19 +629,19 @@ export class RoleManagementService {
     }));
 
     const result = await this.prisma.$transaction(async (tx) => {
-      if (permissionsToDelete.length) {
-        await tx.userPermission.deleteMany({
-          where: {
-            user_id: userId,
-            user_role_id: userRole.id,
-            source: PermissionSource.role,
-            role_permission_id: {
-              notIn: role_permission_id,
-            },
-            // sub_module_permission_id: null,
-          },
-        });
-      }
+      // if (permissionsToDelete.length) {
+      //   await tx.userPermission.deleteMany({
+      //     where: {
+      //       user_id: userId,
+      //       user_role_id: userRole.id,
+      //       source: PermissionSource.role,
+      //       role_permission_id: {
+      //         notIn: role_permission_id,
+      //       },
+      //       // sub_module_permission_id: null,
+      //     },
+      //   });
+      // }
 
       return tx.userPermission.createMany({
         data: userPermissionsToCreate,
