@@ -342,11 +342,7 @@ export class ModuleService {
     };
   }
 
-  async updateModude(
-    dto: UpdateModuleDto,
-    user: RequestUser,
-    id: string,
-  ) {
+  async updateModude(dto: UpdateModuleDto, user: RequestUser, id: string) {
     const { name, is_active } = dto;
 
     // Auth check first
@@ -403,6 +399,7 @@ export class ModuleService {
       data: {
         name: name,
         slug,
+        is_active,
         //stat: to add stat field in the future,
         updated_by: user.id,
       },
