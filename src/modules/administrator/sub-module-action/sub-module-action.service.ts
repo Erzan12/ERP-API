@@ -216,10 +216,17 @@ export class SubModuleActionService {
     //     throw new ForbiddenException(`${existingSubModulePermission.action} action status is inactive`);
     // }
 
+    const slug = action 
+      ?.toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-0-]/g, '');
+
     const updateSubModulePermission = await this.prisma.subModuleAction.update({
       where: { id: subModuleActionId },
       data: {
         action,
+        slug,
         is_active,
       },
     });
