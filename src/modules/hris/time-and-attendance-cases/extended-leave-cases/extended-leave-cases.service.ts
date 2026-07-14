@@ -267,6 +267,7 @@ export class ExtendedLeaveCasesService {
   async createExtendedLeaveRequest(
     user: RequestUser,
     dto: CreateExtendedLeaveRequestWithDetailsDto,
+    hrLeaveRequestId: string,
   ) {
     const { extended_leave_request, extended_leave_dates } = dto;
 
@@ -323,7 +324,7 @@ export class ExtendedLeaveCasesService {
       // query first the leave request to connect
       const leaveRequest = await this.prisma.hrLeaveRequest.findFirst({
         where: {
-          id: extended_leave_request.leave_request_id,
+          id: hrLeaveRequestId,
           status: LeaveRequestStatus.processed, // or LeaveRequestStatus.processed
           is_active: true,
         },
@@ -342,7 +343,7 @@ export class ExtendedLeaveCasesService {
       const extendedLeaveRequest =
         await this.prisma.hrExtendedLeaveRequest.create({
           data: {
-            leave_request_id: extended_leave_request.leave_request_id,
+            leave_request_id: hrLeaveRequestId,
             reliever_id: extended_leave_request.reliever_id,
             extension_date_from: new Date(
               extended_leave_request.extension_date_from,
@@ -350,9 +351,11 @@ export class ExtendedLeaveCasesService {
             extension_date_to: new Date(
               extended_leave_request.extension_date_to,
             ),
-            return_date: extended_leave_request.return_date || null,
-            extended_leave_request_status:
-              extended_leave_request.extended_leave_request_status,
+            return_date: extended_leave_request.return_date
+              ? new Date(extended_leave_request.return_date)
+              : undefined,
+            // extended_leave_request_status:
+            //   extended_leave_request.extended_leave_request_status,
             reason_for_extension: extended_leave_request.reason_for_extension,
             contact_no_while_on_leave: extended_leave_request.contact_number,
             address_while_on_leave: extended_leave_request.address_on_leave,
