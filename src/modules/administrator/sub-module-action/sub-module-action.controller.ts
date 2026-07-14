@@ -108,6 +108,9 @@ export class SubModuleActionController {
     @SessionUser() user: RequestUser,
     @Param('submoduleActionId', new ParseUUIDPipe()) submoduleActionId: string,
   ) {
-    return this.submoduleActionService.deleteSubmoduleAction(submoduleActionId, user);
+    return this.submoduleActionService.deleteSubmoduleAction(
+      submoduleActionId,
+      user,
+    );
   }
 }

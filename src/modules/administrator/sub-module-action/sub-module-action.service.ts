@@ -321,7 +321,7 @@ export class SubModuleActionService {
         'You are not authorized to perform this action',
       );
     }
-    
+
     const submoduleAction = await this.prisma.subModuleAction.delete({
       where: { id: submoduleActionId },
     });

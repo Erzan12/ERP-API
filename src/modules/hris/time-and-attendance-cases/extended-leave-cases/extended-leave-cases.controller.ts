@@ -85,7 +85,11 @@ export class ExtendedLeaveCasesController {
     @Body()
     dto: CreateExtendedLeaveRequestWithDetailsDto,
   ) {
-    return this.extendedLeaveCasesService.createExtendedLeaveRequest(user, dto, hrLeaveRequestId);
+    return this.extendedLeaveCasesService.createExtendedLeaveRequest(
+      user,
+      dto,
+      hrLeaveRequestId,
+    );
   }
 
   // EXTENDED LEAVE REQUEST WORKFLOW STATUS

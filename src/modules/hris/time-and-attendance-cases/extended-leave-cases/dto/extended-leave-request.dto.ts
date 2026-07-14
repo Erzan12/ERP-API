@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LeaveCompensation, LeaveRequestStatus } from '@prisma/client';
+import { LeaveCompensation } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsDateString,
@@ -129,7 +129,7 @@ export class RecordExtendedLeaveDatesDto {
     message: 'Leave Compensation must be with_pay or without_pay',
   })
   @ApiProperty({
-    example: "with_pay or without_pay",
+    example: 'with_pay or without_pay',
     description: 'The Leave Compensation for this leave date',
   })
   leave_compensation: LeaveCompensation;

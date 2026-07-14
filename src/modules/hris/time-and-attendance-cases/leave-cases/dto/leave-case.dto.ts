@@ -123,7 +123,7 @@ export class RecordLeaveDatesDto {
     message: 'Leave Compensation must be with_pay or without_pay',
   })
   @ApiProperty({
-    example: "with_pay or without_pay",
+    example: 'with_pay or without_pay',
     description: 'The Leave Compensation for this leave date',
   })
   leave_compensation: LeaveCompensation;
