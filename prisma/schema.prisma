@@ -1519,6 +1519,7 @@ model AdminDBQueryLog {
 model Module {
   id        String  @id @default(uuid()) @db.Uuid
   name      String
+  slug      String? @unique
   is_active Boolean @default(true)
 
   created_by String? @db.Uuid
