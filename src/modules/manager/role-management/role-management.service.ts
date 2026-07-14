@@ -490,19 +490,72 @@ export class RoleManagementService {
       },
     });
 
-    const permissionsToCreate = rolePermissions.map((rp) => ({
-      user_id: userId,
-      user_role_id: userRole.id,
-      role_permission_id: rp.id,
-      source: PermissionSource.role,
-      sub_module_permission_id: rp.sub_module_permission_id,
-      action: rp.sub_module_permission.action,
-      created_by: user.id,
-    }));
+    // const permissionsToCreate = rolePermissions.map((rp) => ({
+    //   user_id: userId,
+    //   user_role_id: userRole.id,
+    //   role_permission_id: rp.id,
+    //   source: PermissionSource.role,
+    //   sub_module_permission_id: rp.sub_module_permission_id,
+    //   action: rp.sub_module_permission.action,
+    //   created_by: user.id,
+    // }));
 
-    await this.prisma.userPermission.createMany({
-      data: permissionsToCreate,
-      skipDuplicates: true,
+    const userPermissions = await this.prisma.userPermission.findMany({
+      where: {
+        user_id: userId,
+        user_role_id: userRole.id,
+        source: PermissionSource.role,
+      },
+    });
+
+    const rolePermissionIds = new Set(rolePermissions.map((rp) => rp.id));
+
+    const existingUserPermissionIds = new Set(
+      rolePermissions.map((rp) => rp.sub_module_permission_id).filter(Boolean),
+    );
+
+    const permissionsToCreate = rolePermissions
+      .filter((rp) => !existingUserPermissionIds.has(rp.id))
+      .map((rp) => ({
+        user_id: userId,
+        user_role_id: userRole.id,
+        role_permission_id: rp.id,
+        source: PermissionSource.role,
+        sub_module_permission_id: rp.sub_module_permission_id,
+        action: rp.sub_module_permission.action,
+        created_by: user.id,
+      }));
+
+    const permissionsToDelete = userPermissions
+      .filter(
+        (up) =>
+          up.role_permission_id &&
+          !rolePermissionIds.has(up.role_permission_id),
+      )
+      .map((up) => up.id);
+
+    // await this.prisma.userPermission.createMany({
+    //   data: permissionsToCreate,
+    //   skipDuplicates: true,
+    // });
+
+    await this.prisma.$transaction(async (tx) => {
+      if (permissionsToDelete.length > 0) {
+        await tx.userPermission.deleteMany({
+          where: {
+            id: {
+              in: permissionsToDelete,
+            },
+          },
+        });
+      }
+
+      if (permissionsToCreate.length > 0) {
+        await tx.userPermission.createMany({
+          data: permissionsToCreate,
+          skipDuplicates: true,
+        });
+      }
     });
 
     return {
