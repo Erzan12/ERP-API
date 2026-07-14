@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateModuleDto {
   @IsString()
@@ -11,4 +11,20 @@ export class CreateModuleDto {
   name: string;
 }
 
-export class UpdateModuleDto extends PartialType(CreateModuleDto) {}
+// export class UpdateModuleDto extends PartialType(CreateModuleDto) {}
+
+export class UpdateModuleDto {
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    example: 'Update the module name',
+  })
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    example: 'Update module status',
+  })
+  is_active?: boolean;
+}
