@@ -436,12 +436,19 @@ export class SubModuleService {
       throw new BadRequestException('Selected Sub Module does not exist');
     }
 
+    const slug = name
+      ?.toLowerCase()
+      .trim()
+      .replace(/\s+/, '-')
+      .replace(/[^a-z0-9-]/g, '');
+
     const subModule = await this.prisma.subModule.update({
       where: { id: subModuleId, is_active: true },
       data: {
-        name: name ?? undefined,
-        module_id: module_id ?? undefined,
-        is_active: is_active ?? undefined,
+        name: name,
+        module_id: module_id,
+        slug,
+        is_active: is_active,
         updated_by: user.id,
       },
     });
