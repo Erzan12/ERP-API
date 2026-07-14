@@ -5725,16 +5725,18 @@
         "tags": [
           "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
         ]
-      },
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/extended-leave/{hrLeaveRequestId}": {
       "post": {
         "operationId": "ExtendedLeaveCasesController_createExtendedLeaveRequest_v2",
         "parameters": [
           {
-            "name": "extendedHrLeaveRequestId",
+            "name": "hrLeaveRequestId",
             "required": true,
             "in": "path",
             "schema": {
-              "$ref": "#/components/schemas/CreateExtendedLeaveRequestWithDetailsDto"
+              "type": "string"
             }
           }
         ],
@@ -7455,10 +7457,17 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "Operations",
-            "description": "The name of the module"
+            "example": "Update the module name"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": "Update module status"
           }
-        }
+        },
+        "required": [
+          "name",
+          "is_active"
+        ]
       },
       "CreateRoleDto": {
         "type": "object",
@@ -7470,7 +7479,7 @@
           },
           "description": {
             "type": "string",
-            "example": "Office staff for IT department",
+            "example": "Office staff for IT dept.",
             "description": "Description of the role"
           },
           "department_id": {
@@ -9426,6 +9435,11 @@
             "example": "2026-04-10",
             "description": "Date end of the employee leave request"
           },
+          "return_date": {
+            "type": "string",
+            "example": "2026-04-11",
+            "description": "Date return of the employee after extended leave request"
+          },
           "reason": {
             "type": "string",
             "example": "I will go for vacation",
@@ -9462,6 +9476,7 @@
           "leave_category_id",
           "date_from",
           "date_to",
+          "return_date",
           "reason",
           "contact_number",
           "address_on_leave",
@@ -9479,14 +9494,7 @@
           },
           "leave_compensation": {
             "type": "string",
-            "enum": [
-              "with_pay",
-              "without_pay"
-            ],
-            "example": {
-              "with_pay": "with_pay",
-              "without_pay": "without_pay"
-            },
+            "example": "with_pay or without_pay",
             "description": "The Leave Compensation for this leave date"
           },
           "fraction": {
@@ -9636,11 +9644,6 @@
       "CreateExtendedLeaveRequestDto": {
         "type": "object",
         "properties": {
-          "leave_request_id": {
-            "type": "string",
-            "example": "Leave Request UUID",
-            "description": "The leave request uuid PK"
-          },
           "extension_date_from": {
             "type": "string",
             "example": "2026-04-10",
@@ -9655,30 +9658,6 @@
             "type": "string",
             "example": "2026-04-11",
             "description": "Date return of the employee after extended leave request"
-          },
-          "extended_leave_request_status": {
-            "type": "string",
-            "enum": [
-              "draft",
-              "for_verification",
-              "for_approval",
-              "approved",
-              "for_processing",
-              "processed",
-              "cancelled",
-              "rejected"
-            ],
-            "example": {
-              "draft": "draft",
-              "for_verification": "for_verification",
-              "for_approval": "for_approval",
-              "approved": "approved",
-              "for_processing": "for_processing",
-              "processed": "processed",
-              "cancelled": "cancelled",
-              "rejected": "rejected"
-            },
-            "description": "The status of Extended Leave Request"
           },
           "reason_for_extension": {
             "type": "string",
@@ -9712,11 +9691,9 @@
           }
         },
         "required": [
-          "leave_request_id",
           "extension_date_from",
           "extension_date_to",
           "return_date",
-          "extended_leave_request_status",
           "reason_for_extension",
           "contact_number",
           "address_on_leave",
@@ -9734,14 +9711,7 @@
           },
           "leave_compensation": {
             "type": "string",
-            "enum": [
-              "with_pay",
-              "without_pay"
-            ],
-            "example": {
-              "with_pay": "with_pay",
-              "without_pay": "without_pay"
-            },
+            "example": "with_pay or without_pay",
             "description": "The Leave Compensation for this leave date"
           },
           "fraction": {

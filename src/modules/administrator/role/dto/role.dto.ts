@@ -16,7 +16,7 @@ export class CreateRoleDto {
 
   @IsString()
   @ApiProperty({
-    example: 'Office staff for IT department',
+    example: 'Office staff for IT dept.',
     description: 'Description of the role',
   })
   description: string;

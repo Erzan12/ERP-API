@@ -203,6 +203,42 @@ export class SubModuleActionService {
   ) {
     const { action, is_active } = dto;
 
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
     const existingSubModulePermission =
       await this.prisma.subModuleAction.findFirst({
         where: { id: subModuleActionId },
@@ -216,29 +252,21 @@ export class SubModuleActionService {
     //     throw new ForbiddenException(`${existingSubModulePermission.action} action status is inactive`);
     // }
 
+    const slug = action
+      ?.toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-0-]/g, '');
+
     const updateSubModulePermission = await this.prisma.subModuleAction.update({
       where: { id: subModuleActionId },
       data: {
         action,
+        slug,
         is_active,
+        updated_by: user.id,
       },
     });
-
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPos = requestUser.employee.position.name;
@@ -257,7 +285,43 @@ export class SubModuleActionService {
     };
   }
 
-  async deleteSubmoduleAction(submoduleActionId: string) {
+  async deleteSubmoduleAction(submoduleActionId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
     const submoduleAction = await this.prisma.subModuleAction.delete({
       where: { id: submoduleActionId },
     });
