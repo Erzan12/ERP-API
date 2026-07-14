@@ -693,7 +693,8 @@ export class RoleService {
     //     : [];
 
     // check permissions added in submodule permission before it will be assigned to role permission
-    const availablePermissions = await this.prisma.subModulePermission.findMany({
+    const availablePermissions = await this.prisma.subModulePermission.findMany(
+      {
         where: {
           sub_module_id,
         },
@@ -701,7 +702,8 @@ export class RoleService {
           id: true,
           action: true,
         },
-      });
+      },
+    );
 
     // const validActions = availablePermissions.map((perm) => perm.action);
 
@@ -735,7 +737,7 @@ export class RoleService {
     }));
 
     const result = await this.prisma.$transaction(async (tx) => {
-      if ( 
+      if (
         // sub_module_permission_id.length > 0 &&
         actionsToDelete.length > 0
       ) {
