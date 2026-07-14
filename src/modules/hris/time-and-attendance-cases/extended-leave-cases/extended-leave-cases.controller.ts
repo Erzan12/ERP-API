@@ -71,7 +71,7 @@ export class ExtendedLeaveCasesController {
     );
   }
 
-  @Post('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId')
+  @Post('time-and-attendance-cases/extended-leave/:hrLeaveRequestId')
   @ApiBody({
     type: CreateExtendedLeaveRequestWithDetailsDto,
     description: 'Payload to create Extended Leave Request',
@@ -81,11 +81,15 @@ export class ExtendedLeaveCasesController {
   @Can({ action: ACTION_CREATE, subject: EXTENDED_LEAVE_REQUEST })
   createExtendedLeaveRequest(
     @SessionUser() user: RequestUser,
-    @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
+    @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
     @Body()
     dto: CreateExtendedLeaveRequestWithDetailsDto,
   ) {
-    return this.extendedLeaveCasesService.createExtendedLeaveRequest(user, dto);
+    return this.extendedLeaveCasesService.createExtendedLeaveRequest(
+      user,
+      dto,
+      hrLeaveRequestId,
+    );
   }
 
   // EXTENDED LEAVE REQUEST WORKFLOW STATUS
