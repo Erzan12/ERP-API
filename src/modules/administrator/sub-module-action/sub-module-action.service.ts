@@ -216,7 +216,7 @@ export class SubModuleActionService {
     //     throw new ForbiddenException(`${existingSubModulePermission.action} action status is inactive`);
     // }
 
-    const slug = action 
+    const slug = action
       ?.toLowerCase()
       .trim()
       .replace(/\s+/g, '-')
