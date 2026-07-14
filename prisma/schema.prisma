@@ -1224,6 +1224,7 @@ model HrLeaveRequest {
   leave_category_id String?             @db.Uuid
   date_from         DateTime
   date_to           DateTime
+  return_date       DateTime?
   reason            String
   contact_number    String
   address_on_leave  String?
@@ -1261,7 +1262,7 @@ model HrExtendedLeaveRequest {
   extension_date_from           DateTime
   extension_date_to             DateTime
   return_date                   DateTime?
-  extended_leave_request_status LeaveRequestStatus
+  extended_leave_request_status LeaveRequestStatus @default(draft)
   reason_for_extension          String
   address_while_on_leave        String
   contact_no_while_on_leave     String
