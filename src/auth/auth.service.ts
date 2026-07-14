@@ -626,14 +626,17 @@ export class AuthService {
                       select: {
                         id: true,
                         action: true,
+                        code: true,
                         sub_module: {
                           select: {
                             id: true,
                             name: true,
+                            slug: true,
                             module: {
                               select: {
                                 id: true,
                                 name: true,
+                                slug: true,
                               },
                             },
                           },
@@ -646,14 +649,17 @@ export class AuthService {
                   select: {
                     id: true,
                     action: true,
+                    code: true,
                     sub_module: {
                       select: {
                         id: true,
                         name: true,
+                        slug: true,
                         module: {
                           select: {
                             id: true,
                             name: true,
+                            slug: true,
                           },
                         },
                       },
@@ -717,11 +723,13 @@ export class AuthService {
             {
               id: string;
               name: string;
+              slug: string
               subModules: Map<
                 string,
                 {
                   subModuleId: string;
                   name: string;
+                  slug: string;
                   actions: any[];
                 }
               >;
@@ -737,9 +745,14 @@ export class AuthService {
             if (!permission) return;
 
             const subModule = permission?.sub_module;
+
+            if (!subModule?.slug) return;
+
             const module = subModule.module;
 
             if (!module) return;
+
+            if (!module?.slug) return;
 
             // if (!subModule || !subModulePermission) return;
 
@@ -747,6 +760,7 @@ export class AuthService {
               moduleMap.set(module.id, {
                 id: module.id,
                 name: module.name,
+                slug: module.slug,
                 subModules: new Map(),
               });
             }
@@ -770,14 +784,32 @@ export class AuthService {
               moduleEntry.subModules.set(subModule.id, {
                 subModuleId: subModule.id,
                 name: subModule.name,
+                slug: subModule.slug,
                 actions: [],
               });
             }
 
+          //   moduleEntry.subModules.get(subModule.id)!.actions.push({
+          //     subModulePermissionId: rp.sub_module_permission_id,
+          //     rolePermissionId: rp.role_permission_id,
+          //     action: permission.action,
+          //     code: permission.code,
+          //     source: rp.source ?? 'ROLE',
+          //   });
+          
+            // Conditionally add properties so that if subModulePermissionId or rolePermissionId is missing then it will not show
+            // or return anymore in the api response
             moduleEntry.subModules.get(subModule.id)!.actions.push({
-              subModulePermissionId: rp.sub_module_permission_id,
-              rolePermissionId: rp.role_permission_id,
+              ...(rp.sub_module_permission_id && {
+                subModulePermissionId: rp.sub_module_permission_id,
+              }),
+
+              ...(rp.role_permission_id && {
+                rolePermissionId: rp.role_permission_id,
+              }),
+
               action: permission.action,
+              code: permission.code,
               source: rp.source ?? 'ROLE',
             });
           });
@@ -785,6 +817,7 @@ export class AuthService {
           const modules = [...moduleMap.values()].map((module) => ({
             id: module.id,
             name: module.name,
+            slug: module.slug,
             subModules: [...module.subModules.values()],
           }));
 
