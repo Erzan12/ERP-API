@@ -723,7 +723,7 @@ export class AuthService {
             {
               id: string;
               name: string;
-              slug: string
+              slug: string;
               subModules: Map<
                 string,
                 {
@@ -789,13 +789,13 @@ export class AuthService {
               });
             }
 
-          //   moduleEntry.subModules.get(subModule.id)!.actions.push({
-          //     subModulePermissionId: rp.sub_module_permission_id,
-          //     rolePermissionId: rp.role_permission_id,
-          //     action: permission.action,
-          //     code: permission.code,
-          //     source: rp.source ?? 'ROLE',
-          //   });
+            //   moduleEntry.subModules.get(subModule.id)!.actions.push({
+            //     subModulePermissionId: rp.sub_module_permission_id,
+            //     rolePermissionId: rp.role_permission_id,
+            //     action: permission.action,
+            //     code: permission.code,
+            //     source: rp.source ?? 'ROLE',
+            //   });
 
             // Conditionally add properties so that if subModulePermissionId or rolePermissionId is missing then it will not show
             // or return anymore in the api response
