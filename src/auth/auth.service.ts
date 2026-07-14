@@ -796,7 +796,7 @@ export class AuthService {
           //     code: permission.code,
           //     source: rp.source ?? 'ROLE',
           //   });
-          
+
             // Conditionally add properties so that if subModulePermissionId or rolePermissionId is missing then it will not show
             // or return anymore in the api response
             moduleEntry.subModules.get(subModule.id)!.actions.push({
@@ -810,7 +810,7 @@ export class AuthService {
 
               action: permission.action,
               code: permission.code,
-              source: rp.source ?? 'ROLE',
+              source: rp.source ?? 'role',
             });
           });
 
