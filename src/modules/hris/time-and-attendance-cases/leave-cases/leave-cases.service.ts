@@ -456,6 +456,9 @@ export class LeaveCasesService {
           leave_category_id: leave_request.leave_category_id,
           date_from: new Date(leave_request.date_from),
           date_to: new Date(leave_request.date_to),
+          return_date: leave_request.return_date
+            ? new Date(leave_request.return_date)
+            : undefined,
           reason: leave_request.reason,
           contact_number: leave_request.contact_number,
           address_on_leave: leave_request.address_on_leave,
