@@ -6,19 +6,20 @@ import {
   IsEnum,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
   ValidateNested,
 } from 'class-validator';
 
 export class CreateExtendedLeaveRequestDto {
-  @IsUUID()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 'Leave Request UUID',
-    description: 'The leave request uuid PK',
-  })
-  leave_request_id: string;
+  // @IsUUID()
+  // @IsNotEmpty()
+  // @ApiProperty({
+  //   example: 'Leave Request UUID',
+  //   description: 'The leave request uuid PK',
+  // })
+  // leave_request_id: string;
 
   @IsDateString()
   @IsNotEmpty()
@@ -37,26 +38,26 @@ export class CreateExtendedLeaveRequestDto {
   extension_date_to: string;
 
   @IsDateString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     example: '2026-04-11',
     description: 'Date return of the employee after extended leave request',
   })
   return_date?: string;
 
-  @IsNotEmpty()
-  @IsNotEmpty()
-  @IsEnum(LeaveRequestStatus, {
-    each: true,
-    message:
-      'Extended Leave Request status must be draft, for_verification, for_approval, for_processing, processed, cancelled, rejected',
-  })
-  @ApiProperty({
-    enum: LeaveRequestStatus,
-    example: LeaveRequestStatus,
-    description: 'The status of Extended Leave Request',
-  })
-  extended_leave_request_status: LeaveRequestStatus;
+  // @IsNotEmpty()
+  // @IsNotEmpty()
+  // @IsEnum(LeaveRequestStatus, {
+  //   each: true,
+  //   message:
+  //     'Extended Leave Request status must be draft, for_verification, for_approval, for_processing, processed, cancelled, rejected',
+  // })
+  // @ApiProperty({
+  //   enum: LeaveRequestStatus,
+  //   example: LeaveRequestStatus,
+  //   description: 'The status of Extended Leave Request',
+  // })
+  // extended_leave_request_status: LeaveRequestStatus;
 
   @IsString()
   @IsNotEmpty()
@@ -123,14 +124,12 @@ export class RecordExtendedLeaveDatesDto {
   // leave_type: string;
 
   @IsNotEmpty()
-  @IsNotEmpty()
   @IsEnum(LeaveCompensation, {
     each: true,
     message: 'Leave Compensation must be with_pay or without_pay',
   })
   @ApiProperty({
-    enum: LeaveCompensation,
-    example: LeaveCompensation,
+    example: "with_pay or without_pay",
     description: 'The Leave Compensation for this leave date',
   })
   leave_compensation: LeaveCompensation;
