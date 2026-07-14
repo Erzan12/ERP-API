@@ -228,6 +228,7 @@ export class SubModuleActionService {
         action,
         slug,
         is_active,
+        updated_by: user.id,
       },
     });
 
