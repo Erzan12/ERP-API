@@ -7470,7 +7470,7 @@
           },
           "description": {
             "type": "string",
-            "example": "Office staff for IT department",
+            "example": "Office staff for IT dept.",
             "description": "Description of the role"
           },
           "department_id": {
