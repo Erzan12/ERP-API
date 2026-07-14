@@ -268,7 +268,8 @@ export class ModuleService {
     };
   }
 
-  async createModule(createModuleDto: CreateModuleDto, user: RequestUser) {
+  async createModule(dto: CreateModuleDto, user: RequestUser) {
+    const { name } = dto;
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -300,7 +301,7 @@ export class ModuleService {
 
     const existingModule = await this.prisma.module.findFirst({
       where: {
-        name: createModuleDto.name,
+        name: dto.name,
       },
     });
 
@@ -308,9 +309,16 @@ export class ModuleService {
       throw new BadRequestException('Module already exists!');
     }
 
+    const slug = name
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+
     const module = await this.prisma.module.create({
       data: {
-        name: createModuleDto.name,
+        name: name,
+        slug,
         //to be added field of stat for status active or inactive
         createdBy: {
           connect: { id: user.id },
@@ -335,10 +343,12 @@ export class ModuleService {
   }
 
   async updateModude(
-    updateModuleDto: UpdateModuleDto,
+    dto: UpdateModuleDto,
     user: RequestUser,
     id: string,
   ) {
+    const { name, is_active } = dto;
+
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -382,10 +392,17 @@ export class ModuleService {
       );
     }
 
+    const slug = name
+      ?.toLowerCase()
+      .trim()
+      .replace(/\s+/, '-')
+      .replace(/[^a-z0-9-]/g, '');
+
     const updatedModule = await this.prisma.module.update({
       where: { id },
       data: {
-        name: updateModuleDto.name,
+        name: name,
+        slug,
         //stat: to add stat field in the future,
         updated_by: user.id,
       },

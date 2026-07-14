@@ -7455,10 +7455,17 @@
         "properties": {
           "name": {
             "type": "string",
-            "example": "Operations",
-            "description": "The name of the module"
+            "example": "Update the module name"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": "Update module status"
           }
-        }
+        },
+        "required": [
+          "name",
+          "is_active"
+        ]
       },
       "CreateRoleDto": {
         "type": "object",
