@@ -256,7 +256,7 @@ export class SubModuleActionService {
       ?.toLowerCase()
       .trim()
       .replace(/\s+/g, '-')
-      .replace(/[^a-z0-0-]/g, '');
+      .replace(/[^a-z0-9-]/g, '');
 
     const updateSubModulePermission = await this.prisma.subModuleAction.update({
       where: { id: subModuleActionId },
