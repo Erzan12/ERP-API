@@ -24,7 +24,7 @@ import { AuthController } from './auth/auth.controller';
 import { UserManagementService } from './modules/manager/user_management/user_management.service';
 import { AuditService } from './modules/administrator/audit/audit.service';
 import { PositionService } from './modules/mastertable/position/position.service';
-import { EmployeeMasterlistService } from './modules/hris/employee/employee_masterlist/employee.service';
+import { EmployeeMasterlistService } from './modules/hris/employee-masterlist/employee-masterlist.service';
 import { CaslAbilityService } from './middleware/casl/casl.service';
 import { DepartmentService } from './modules/mastertable/department/department.service';
 import { EmploymentStatusService } from './modules/mastertable/employment_status/employment_status.service';
