@@ -3,7 +3,7 @@ import {
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
-import { RequestUser } from '../../../../utils/types/request-user.interface';
+import { RequestUser } from '../../../utils/types/request-user.interface';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import {
   CreateEmployeeWithDetailsDto,
