@@ -45,6 +45,14 @@ export class CreateLeaveRequestDto {
   })
   date_to: string;
 
+  @IsDateString()
+  @IsOptional()
+  @ApiProperty({
+    example: '2026-04-11',
+    description: 'Date return of the employee after extended leave request',
+  })
+  return_date?: string;
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -115,8 +123,7 @@ export class RecordLeaveDatesDto {
     message: 'Leave Compensation must be with_pay or without_pay',
   })
   @ApiProperty({
-    enum: LeaveCompensation,
-    example: LeaveCompensation,
+    example: 'with_pay or without_pay',
     description: 'The Leave Compensation for this leave date',
   })
   leave_compensation: LeaveCompensation;
