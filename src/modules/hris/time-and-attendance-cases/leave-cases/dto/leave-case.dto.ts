@@ -171,6 +171,14 @@ export class UpdateLeaveRequestDto {
     description: 'Date end of the employee leave request',
   })
   date_to?: string;
+  
+  @IsDateString()
+  @IsOptional()
+  @ApiProperty({
+    example: '2026-04-11',
+    description: 'Date return of the employee after extended leave request',
+  })
+  return_date?: string;
 
   @IsOptional()
   @IsString()
@@ -225,7 +233,7 @@ export class UpdateRecordLeaveDatesDto {
   @IsOptional()
   @IsUUID()
   @ApiProperty({
-    example: 'a6b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d',
+    example: 'PK UUID of existing Leave Request Date record',
     description:
       'The unique primary key ID of the specific leave date record (leave empty for new dates)',
   })
