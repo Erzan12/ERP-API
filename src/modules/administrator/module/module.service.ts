@@ -391,7 +391,7 @@ export class ModuleService {
     const slug = name
       ?.toLowerCase()
       .trim()
-      .replace(/\s+/, '-')
+      .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '');
 
     const updatedModule = await this.prisma.module.update({
