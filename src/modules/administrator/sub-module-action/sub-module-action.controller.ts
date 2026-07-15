@@ -105,8 +105,12 @@ export class SubModuleActionController {
   @ApiOperation({ summary: 'Delete a submodule action/permission' })
   @Can({ action: 'update', subject: 'System Management' })
   deleteSubmoduleAction(
+    @SessionUser() user: RequestUser,
     @Param('submoduleActionId', new ParseUUIDPipe()) submoduleActionId: string,
   ) {
-    return this.submoduleActionService.deleteSubmoduleAction(submoduleActionId);
+    return this.submoduleActionService.deleteSubmoduleAction(
+      submoduleActionId,
+      user,
+    );
   }
 }
