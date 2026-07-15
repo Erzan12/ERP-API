@@ -9544,6 +9544,11 @@
             "example": "2026-04-10",
             "description": "Date end of the employee leave request"
           },
+          "return_date": {
+            "type": "string",
+            "example": "2026-04-11",
+            "description": "Date return of the employee after extended leave request"
+          },
           "reason": {
             "type": "string",
             "example": "I will go for vacation",
@@ -9579,6 +9584,7 @@
           "leave_category_id",
           "date_from",
           "date_to",
+          "return_date",
           "reason",
           "contact_number",
           "address_on_leave",
@@ -9592,7 +9598,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "example": "a6b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+            "example": "PK UUID of existing Leave Request Date record",
             "description": "The unique primary key ID of the specific leave date record (leave empty for new dates)"
           },
           "leave_date": {

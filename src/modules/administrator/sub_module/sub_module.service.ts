@@ -226,6 +226,7 @@ export class SubModuleService {
           select: {
             id: true,
             action: true,
+            code: true,
           },
         },
       },
@@ -544,6 +545,7 @@ export class SubModuleService {
           select: {
             id: true,
             action: true,
+            slug: true, // needed to backfill code
           },
         },
       },
@@ -557,6 +559,13 @@ export class SubModuleService {
     const actionsToDelete = existingPermissions
       .filter((p) => !sub_module_actions_id.includes(p.sub_module_action_id))
       .map((p) => p.id);
+
+    // 🔧 Permissions that already exist, are still requested, but have no code yet
+    const actionsToUpdateCode = existingPermissions.filter(
+      (p) =>
+        sub_module_actions_id.includes(p.sub_module_action_id) &&
+        !p.code,
+    );
 
     // Valid actions from master table
     const availablePermissions = await this.prisma.subModuleAction.findMany({
@@ -593,6 +602,21 @@ export class SubModuleService {
             },
           },
         });
+      }
+
+      // Backfill code for existing rows that are missing it
+      if (actionsToUpdateCode.length > 0) {
+        await Promise.all(
+          actionsToUpdateCode.map((p) =>
+            tx.subModulePermission.update({
+              where: { id: p.id },
+              data: {
+                code: `${existingSubModule.slug}:${p.sub_module_action.slug}`,
+                updated_by: user.id,
+              },
+            }),
+          ),
+        );
       }
 
       return tx.subModulePermission.createMany({
