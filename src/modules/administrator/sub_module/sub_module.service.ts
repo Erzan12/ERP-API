@@ -439,7 +439,7 @@ export class SubModuleService {
     const slug = name
       ?.toLowerCase()
       .trim()
-      .replace(/\s+/, '-')
+      .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '');
 
     const subModule = await this.prisma.subModule.update({
