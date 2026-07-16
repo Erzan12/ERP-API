@@ -1265,6 +1265,7 @@ model HrExtendedLeaveRequest {
   extended_leave_request_status LeaveRequestStatus @default(draft)
   reason_for_extension          String
   address_while_on_leave        String
+  no_of_days                    Float?
   contact_no_while_on_leave     String
   is_active                     Boolean   @default(true)
   

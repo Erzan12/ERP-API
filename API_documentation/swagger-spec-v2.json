@@ -5725,6 +5725,54 @@
         "tags": [
           "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
         ]
+      },
+      "put": {
+        "operationId": "ExtendedLeaveCasesController_updateExtendedLeaveRequest_v2",
+        "parameters": [
+          {
+            "name": "extendedLeaveRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update extended leave request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateExtendedLeaveRequestWithDetailsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Extended Leave Request updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current extended leave request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Extended Leave Cases)"
+        ]
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{hrLeaveRequestId}": {
@@ -9544,6 +9592,11 @@
             "example": "2026-04-10",
             "description": "Date end of the employee leave request"
           },
+          "return_date": {
+            "type": "string",
+            "example": "2026-04-11",
+            "description": "Date return of the employee after extended leave request"
+          },
           "reason": {
             "type": "string",
             "example": "I will go for vacation",
@@ -9579,6 +9632,7 @@
           "leave_category_id",
           "date_from",
           "date_to",
+          "return_date",
           "reason",
           "contact_number",
           "address_on_leave",
@@ -9592,7 +9646,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "example": "a6b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+            "example": "PK UUID of existing Leave Request Date record",
             "description": "The unique primary key ID of the specific leave date record (leave empty for new dates)"
           },
           "leave_date": {
@@ -9741,6 +9795,114 @@
         "required": [
           "extended_leave_request",
           "extended_leave_dates"
+        ]
+      },
+      "UpdateExtendedLeaveRequestDto": {
+        "type": "object",
+        "properties": {
+          "extension_date_from": {
+            "type": "string",
+            "example": "2026-04-10",
+            "description": "Date start of employee extended leave request"
+          },
+          "extension_date_to": {
+            "type": "string",
+            "example": "2026-04-10",
+            "description": "Date end of the employee extended leave request"
+          },
+          "return_date": {
+            "type": "string",
+            "example": "2026-04-11",
+            "description": "Date return of the employee after extended leave request"
+          },
+          "reason_for_extension": {
+            "type": "string",
+            "example": "I will go for vacation",
+            "description": "The reason of employee leave request"
+          },
+          "contact_number": {
+            "type": "string",
+            "example": "09633263341",
+            "description": "Telephone or cellphone number of employee"
+          },
+          "address_on_leave": {
+            "type": "string",
+            "example": "Hotel California",
+            "description": "The employee address while on leave"
+          },
+          "reliever_id": {
+            "type": "string",
+            "example": "User UUID for reliver while on leave",
+            "description": "The uuid of reliever user while employee is on leave"
+          },
+          "verifier_id": {
+            "type": "string",
+            "example": "User UUID for verifier of this extended leave request",
+            "description": "The uuid of verifier user for this extended leave request"
+          },
+          "approver_id": {
+            "type": "string",
+            "example": "User UUID for extended leave request approver",
+            "description": "The uuid of approver user for this extended leave request"
+          }
+        },
+        "required": [
+          "extension_date_from",
+          "extension_date_to",
+          "return_date",
+          "reason_for_extension",
+          "contact_number",
+          "address_on_leave",
+          "reliever_id",
+          "verifier_id",
+          "approver_id"
+        ]
+      },
+      "UpdateRecordExtendedLeaveDatesDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "PK UUID of existing Extended Leave Request Date Record",
+            "description": "The unique primary key ID of the specific leave date record (leave empty for new dates)"
+          },
+          "extended_leave_date": {
+            "type": "string",
+            "example": "2026-04-10"
+          },
+          "extended_leave_compensation": {
+            "type": "string",
+            "example": "with_pay or without_pay",
+            "description": "The Leave Compensation for this leave date"
+          },
+          "fraction": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "id",
+          "extended_leave_date",
+          "extended_leave_compensation",
+          "fraction"
+        ]
+      },
+      "UpdateExtendedLeaveRequestWithDetailsDto": {
+        "type": "object",
+        "properties": {
+          "update_extended_leave_request": {
+            "$ref": "#/components/schemas/UpdateExtendedLeaveRequestDto"
+          },
+          "update_extended_leave_dates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UpdateRecordExtendedLeaveDatesDto"
+            }
+          }
+        },
+        "required": [
+          "update_extended_leave_request",
+          "update_extended_leave_dates"
         ]
       },
       "CreateOvertimeRateDto": {
