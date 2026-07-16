@@ -9655,14 +9655,7 @@
           },
           "leave_compensation": {
             "type": "string",
-            "enum": [
-              "with_pay",
-              "without_pay"
-            ],
-            "example": {
-              "with_pay": "with_pay",
-              "without_pay": "without_pay"
-            },
+            "example": "with_pay or without_pay",
             "description": "The Leave Compensation for this leave date"
           },
           "fraction": {
