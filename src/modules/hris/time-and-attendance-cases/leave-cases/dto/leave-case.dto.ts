@@ -171,7 +171,7 @@ export class UpdateLeaveRequestDto {
     description: 'Date end of the employee leave request',
   })
   date_to?: string;
-  
+
   @IsDateString()
   @IsOptional()
   @ApiProperty({

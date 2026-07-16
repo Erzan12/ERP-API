@@ -30,7 +30,10 @@ import {
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateExtendedLeaveRequestWithDetailsDto, UpdateExtendedLeaveRequestWithDetailsDto } from './dto/extended-leave-request.dto';
+import {
+  CreateExtendedLeaveRequestWithDetailsDto,
+  UpdateExtendedLeaveRequestWithDetailsDto,
+} from './dto/extended-leave-request.dto';
 import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-pagination.dto';
 
 @ApiTags('Human Resources - Time and Attendance Cases (Extended Leave Cases)')
@@ -104,13 +107,17 @@ export class ExtendedLeaveCasesController {
   @ApiPatchResponse('Extended Leave Request updated successfully')
   @Can({ action: ACTION_UPDATE, subject: EXTENDED_LEAVE_REQUEST })
   updateExtendedLeaveRequest(
-    @Param('extendedLeaveRequestId', new ParseUUIDPipe()) extendedLeaveRequestId: string,
+    @Param('extendedLeaveRequestId', new ParseUUIDPipe())
+    extendedLeaveRequestId: string,
     @Body() dto: UpdateExtendedLeaveRequestWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.extendedLeaveCasesService.updateExtendedLeaveRequest(user, dto, extendedLeaveRequestId);
+    return this.extendedLeaveCasesService.updateExtendedLeaveRequest(
+      user,
+      dto,
+      extendedLeaveRequestId,
+    );
   }
-  
 
   // EXTENDED LEAVE REQUEST WORKFLOW STATUS
   @Post(

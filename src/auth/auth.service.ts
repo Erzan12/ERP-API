@@ -29,6 +29,7 @@ import {
 } from 'src/utils/constants/otp-verification.constants';
 import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
 import { addMinutes } from 'date-fns/addMinutes';
+import { ActionEntry } from './type/action-entry.type';
 
 @Injectable()
 export class AuthService {
@@ -718,7 +719,7 @@ export class AuthService {
                   name: string;
                   slug?: string | null;
                   // keyed by permission.id to prevent duplicate action entries
-                  actionsMap: Map<string, any>;
+                  actionsMap: Map<string, ActionEntry>;
                 }
               >;
             }
