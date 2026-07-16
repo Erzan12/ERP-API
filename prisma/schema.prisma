@@ -761,7 +761,7 @@ model EmploymentHistory {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  employee Employee @relation(fields: [employee_id], references: [id])
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
 }
 
 model Vessel {
@@ -878,8 +878,8 @@ model HrEmployeeEvaluation {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  employee  Employee @relation("HrEmployeeEvaluations", fields: [employee_id], references: [id])
-  evaluator Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id])
+  employee  Employee @relation("HrEmployeeEvaluations", fields: [employee_id], references: [id], onDelete: Cascade)
+  evaluator Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id], onDelete: Cascade)
   //verifier  User? @relation("EmployeeEvaluationVerifier", fields: [verifier_id], references: [id])
   //approver  User? @relation("EmployeeEvaluationApprover", fields: [approver_id], references: [id])
   
@@ -1245,7 +1245,7 @@ model HrLeaveRequest {
 
   category  HrLeaveCategory? @relation(fields: [leave_category_id], references: [id])
 
-  employee Employee @relation(fields: [employee_id], references: [id])
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
   reliever User  @relation("LeaveRequestReliever", fields: [reliever_id], references: [id])
   
   //hr_leave_transactions HrLeaveTransaction[]
@@ -1311,7 +1311,7 @@ model HrOvertimeRequest {
   createdBy    User? @relation("HrOvertimeRequestCreatedBy", fields: [created_by], references: [id])
   updatedBy    User? @relation("HrOvertimeRequestUpdatedBy", fields: [updated_by], references: [id])
 
-  employee           Employee  @relation(fields: [employee_id], references: [id])
+  employee           Employee  @relation(fields: [employee_id], references: [id], onDelete: Cascade)
   vessel             Vessel?   @relation(fields: [vessel_id], references: [id])
   overtimeRate       HrOvertimeRate? @relation(fields: [overtime_rate_id], references: [id])
 
@@ -1346,7 +1346,7 @@ model HrLeaveBalance {
   used              Int    @default(0)
   transaction_type  LeaveTransactionType
 
-  employee Employee        @relation(fields: [employee_id], references: [id])
+  employee Employee        @relation(fields: [employee_id], references: [id], onDelete: Cascade)
   category HrLeaveCategory @relation(fields: [leave_category_id], references: [id])
 
   @@unique([employee_id, leave_category_id, year])
@@ -1367,7 +1367,7 @@ model HrLeaveDates {
 
   hr_extended_leave_request HrExtendedLeaveRequest? @relation(fields: [hr_extended_leave_request_id], references: [id])
   hr_leave_request HrLeaveRequest  @relation(fields: [hr_leave_request_id], references: [id])
-  employee         Employee        @relation(fields: [employee_id], references: [id])
+  employee         Employee        @relation(fields: [employee_id], references: [id], onDelete: Cascade)
 }
 
 //Hr Leave Transaction (audit trail for employee leave)
@@ -1442,8 +1442,7 @@ model WorkflowAction {
   acted_at         DateTime?           @default(now())           
   metadata         Json?
 
-  //acted_by_employee Employee       @relation(fields: [acted_by], references: [id])
-  acted_by_user    User        @relation(fields: [acted_by], references: [id])
+  acted_by_user    User        @relation(fields: [acted_by], references: [id], onDelete: Cascade)
 }
 
 model AuditTrail {

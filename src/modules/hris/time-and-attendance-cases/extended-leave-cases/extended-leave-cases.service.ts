@@ -364,8 +364,8 @@ export class ExtendedLeaveCasesService {
 
       if (expectedDates.length !== inputDates.length) {
         throw new BadRequestException(
-          'Extended leave dates do not match the selected date range'
-        )
+          'Extended leave dates do not match the selected date range',
+        );
       }
 
       const missingDates = expectedDates.filter((d) => !inputDates.includes(d));
@@ -376,10 +376,14 @@ export class ExtendedLeaveCasesService {
         );
       }
 
-      const uniqueDates = new Set(extended_leave_dates.map((d) => d.leave_date));
+      const uniqueDates = new Set(
+        extended_leave_dates.map((d) => d.leave_date),
+      );
 
       if (uniqueDates.size !== extended_leave_dates.length) {
-        throw new BadRequestException('Duplicate extended leaave dates detected');
+        throw new BadRequestException(
+          'Duplicate extended leaave dates detected',
+        );
       }
 
       const no_of_days = extended_leave_dates.reduce(

@@ -260,8 +260,7 @@ export class UpdateRecordLeaveDatesDto {
     message: 'Leave Compensation must be with_pay or without_pay',
   })
   @ApiProperty({
-    enum: LeaveCompensation,
-    example: LeaveCompensation,
+    example: "with_pay or without_pay",
     description: 'The Leave Compensation for this leave date',
   })
   leave_compensation?: LeaveCompensation;
