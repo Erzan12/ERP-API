@@ -29,6 +29,7 @@ import {
 } from 'src/utils/constants/otp-verification.constants';
 import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
 import { addMinutes } from 'date-fns/addMinutes';
+import { ActionEntry } from './type/action-entry.type';
 
 @Injectable()
 export class AuthService {
@@ -583,6 +584,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or missing token');
     }
 
+    // Toggle set to false if you don't want slug/code fields in the response
+    const SHOW_SLUG_AND_CODE = true;
+
     const user = await this.prisma.user.findUnique({
       where: { id: requestUser.id }, // ownership enforced here
       include: {
@@ -604,20 +608,6 @@ export class AuthService {
         user_roles: {
           where: { is_active: true },
           include: {
-            // role: {
-            //   include: {
-            //     role_permissions: {
-            //       where: { is_active: true },
-            //       include: {
-            //         sub_module_permission: {
-            //           include: {
-            //             sub_module: true
-            //           }
-            //         }
-            //       },
-            //     },
-            //   },
-            // },
             user_permissions: {
               include: {
                 role_permission: {
@@ -626,17 +616,17 @@ export class AuthService {
                       select: {
                         id: true,
                         action: true,
-                        code: true,
+                        code: true, // uncommented — used below
                         sub_module: {
                           select: {
                             id: true,
                             name: true,
-                            slug: true,
+                            slug: true, // uncommented — used below
                             module: {
                               select: {
                                 id: true,
                                 name: true,
-                                slug: true,
+                                slug: true, // uncommented — used below
                               },
                             },
                           },
@@ -649,17 +639,17 @@ export class AuthService {
                   select: {
                     id: true,
                     action: true,
-                    code: true,
+                    code: true, // uncommented — used below
                     sub_module: {
                       select: {
                         id: true,
                         name: true,
-                        slug: true,
+                        slug: true, // uncommented — used below
                         module: {
                           select: {
                             id: true,
                             name: true,
-                            slug: true,
+                            slug: true, // uncommented — used below
                           },
                         },
                       },
@@ -715,22 +705,21 @@ export class AuthService {
         position: employee.position.name,
         security_clearance_level: user.security_clearance_level ?? 0,
 
-        // with array of roles permission and direct/override permission
         roles: user.user_roles.map((ur) => {
-          // const subModuleMap = new Map<string, SubModule>();
           const moduleMap = new Map<
             string,
             {
               id: string;
               name: string;
-              slug: string;
+              slug?: string | null;
               subModules: Map<
                 string,
                 {
                   subModuleId: string;
                   name: string;
-                  slug: string;
-                  actions: any[];
+                  slug?: string | null;
+                  // keyed by permission.id to prevent duplicate action entries
+                  actionsMap: Map<string, ActionEntry>;
                 }
               >;
             }
@@ -745,90 +734,73 @@ export class AuthService {
             if (!permission) return;
 
             const subModule = permission?.sub_module;
-
-            if (!subModule?.slug) return;
+            if (!subModule) return;
 
             const module = subModule.module;
-
             if (!module) return;
-
-            if (!module?.slug) return;
-
-            // if (!subModule || !subModulePermission) return;
 
             if (!moduleMap.has(module.id)) {
               moduleMap.set(module.id, {
                 id: module.id,
                 name: module.name,
-                slug: module.slug,
+                ...(SHOW_SLUG_AND_CODE && { slug: module.slug ?? null }),
                 subModules: new Map(),
               });
             }
 
             const moduleEntry = moduleMap.get(module.id)!;
 
-            // subModuleMap.get(subModule.id)?.actions.push({
-            //   // Only populated for custom/direct user permissions
-            //   subModulePermissionId: rp.sub_module_permission_id,
-
-            //   // Only populated for permissions inherited from a role
-            //   rolePermissionId: rp.role_permission_id,
-
-            //   action: subModulePermission.action,
-
-            //   source: rp.source ?? "role",
-            // });
-
-            // Create submodule if missing
             if (!moduleEntry.subModules.has(subModule.id)) {
               moduleEntry.subModules.set(subModule.id, {
                 subModuleId: subModule.id,
                 name: subModule.name,
-                slug: subModule.slug,
-                actions: [],
+                ...(SHOW_SLUG_AND_CODE && { slug: subModule.slug ?? null }),
+                actionsMap: new Map(),
               });
             }
 
-            //   moduleEntry.subModules.get(subModule.id)!.actions.push({
-            //     subModulePermissionId: rp.sub_module_permission_id,
-            //     rolePermissionId: rp.role_permission_id,
-            //     action: permission.action,
-            //     code: permission.code,
-            //     source: rp.source ?? 'ROLE',
-            //   });
+            const subModuleEntry = moduleEntry.subModules.get(subModule.id)!;
 
-            // Conditionally add properties so that if subModulePermissionId or rolePermissionId is missing then it will not show
-            // or return anymore in the api response
-            moduleEntry.subModules.get(subModule.id)!.actions.push({
+            // Build this action's entry
+            const entry = {
               ...(rp.sub_module_permission_id && {
                 subModulePermissionId: rp.sub_module_permission_id,
               }),
-
               ...(rp.role_permission_id && {
                 rolePermissionId: rp.role_permission_id,
               }),
-
               action: permission.action,
-              code: permission.code,
+              ...(SHOW_SLUG_AND_CODE && { code: permission.code ?? null }),
               source: rp.source ?? 'role',
-            });
+            };
+
+            // Merge with existing entry if this permission was already seen
+            // (dedupes the case where both a role-based and direct/override
+            // user_permission row point at the same sub_module_permission)
+            const existing = subModuleEntry.actionsMap.get(permission.id);
+            subModuleEntry.actionsMap.set(
+              permission.id,
+              existing ? { ...existing, ...entry } : entry,
+            );
           });
 
           const modules = [...moduleMap.values()].map((module) => ({
             id: module.id,
             name: module.name,
-            slug: module.slug,
-            subModules: [...module.subModules.values()],
+            ...(SHOW_SLUG_AND_CODE && { slug: module.slug }),
+            subModules: [...module.subModules.values()].map((sm) => ({
+              subModuleId: sm.subModuleId,
+              name: sm.name,
+              ...(SHOW_SLUG_AND_CODE && { slug: sm.slug }),
+              actions: [...sm.actionsMap.values()],
+            })),
           }));
 
           return {
             id: ur.role_id ?? 0,
-            // roleName: ur.role_name ?? 'Unknown Role',
             roleName: ur.role.name,
             department: ur.role.department,
             isActive: ur.is_active,
-            // isActive: ur.is_active ?? false,
-            // subModules: [...subModuleMap.values()],
             modules,
           };
         }),

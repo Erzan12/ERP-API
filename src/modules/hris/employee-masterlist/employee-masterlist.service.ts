@@ -2,8 +2,9 @@ import {
   Injectable,
   BadRequestException,
   ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
-import { RequestUser } from '../../../../utils/types/request-user.interface';
+import { RequestUser } from '../../../utils/types/request-user.interface';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import {
   CreateEmployeeWithDetailsDto,
@@ -663,6 +664,57 @@ export class EmployeeMasterlistService {
         person: updatedPerson,
       };
     });
+  }
+
+  async deleteEmployee(user: RequestUser, employeeId: string) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const employee = await this.prisma.employee.delete({
+      where: { id: employeeId },
+    });
+
+    if (!employee) {
+      throw new NotFoundException('Employee does not exist')
+    }
+
+    return {
+      status: 'success',
+      message: 'Employee has been deleted',
+    }
   }
 }
 

@@ -7,6 +7,7 @@ import {
   Param,
   ParseUUIDPipe,
   Query,
+  Delete,
 } from '@nestjs/common';
 
 import { ApiTags, ApiBody, ApiOperation } from '@nestjs/swagger';
@@ -34,7 +35,7 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
-import { EmployeeMasterlistService } from './employee.service';
+import { EmployeeMasterlistService } from './employee-masterlist.service';
 
 // @ApiCookieAuth('access-token')
 @ApiTags('Human Resources - Employees (Employee Masterlist)')
@@ -106,6 +107,19 @@ export class EmployeeMasterlistController {
       updateEmployeeWithDetailsDto,
       user,
     );
+  }
+
+  @Delete('employees/:employeeId')
+  @ApiOperation({ summary: 'Delete a employee' })
+  @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+  deleteEmployee(
+    @SessionUser() user: RequestUser,
+    @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
+  ) {
+    return this.employeeMasterlistService.deleteEmployee(
+      user,
+      employeeId
+    )
   }
 }
 
