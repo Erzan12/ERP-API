@@ -34,7 +34,7 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
-import { EmployeeMasterlistService } from './employee.service';
+import { EmployeeMasterlistService } from './employee-masterlist.service';
 
 // @ApiCookieAuth('access-token')
 @ApiTags('Human Resources - Employees (Employee Masterlist)')

@@ -5,6 +5,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -12,6 +13,7 @@ import { ExtendedLeaveCasesService } from './extended-leave-cases.service';
 import { Can } from 'src/utils/decorators/can.decorator';
 import {
   ApiGetResponse,
+  ApiPatchResponse,
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
 import {
@@ -22,12 +24,16 @@ import {
   ACTION_READ,
   ACTION_REJECT,
   ACTION_SUBMIT,
+  ACTION_UPDATE,
   ACTION_VERIFY,
   EXTENDED_LEAVE_REQUEST,
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateExtendedLeaveRequestWithDetailsDto } from './dto/extended-leave-request.dto';
+import {
+  CreateExtendedLeaveRequestWithDetailsDto,
+  UpdateExtendedLeaveRequestWithDetailsDto,
+} from './dto/extended-leave-request.dto';
 import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-pagination.dto';
 
 @ApiTags('Human Resources - Time and Attendance Cases (Extended Leave Cases)')
@@ -89,6 +95,27 @@ export class ExtendedLeaveCasesController {
       user,
       dto,
       hrLeaveRequestId,
+    );
+  }
+
+  @Put('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId')
+  @ApiBody({
+    type: UpdateExtendedLeaveRequestWithDetailsDto,
+    description: 'Payload to update extended leave request',
+  })
+  @ApiOperation({ summary: 'Update a current extended leave request' })
+  @ApiPatchResponse('Extended Leave Request updated successfully')
+  @Can({ action: ACTION_UPDATE, subject: EXTENDED_LEAVE_REQUEST })
+  updateExtendedLeaveRequest(
+    @Param('extendedLeaveRequestId', new ParseUUIDPipe())
+    extendedLeaveRequestId: string,
+    @Body() dto: UpdateExtendedLeaveRequestWithDetailsDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.extendedLeaveCasesService.updateExtendedLeaveRequest(
+      user,
+      dto,
+      extendedLeaveRequestId,
     );
   }
 
