@@ -7,6 +7,7 @@ import {
   Param,
   ParseUUIDPipe,
   Query,
+  Delete,
 } from '@nestjs/common';
 
 import { ApiTags, ApiBody, ApiOperation } from '@nestjs/swagger';
@@ -106,6 +107,19 @@ export class EmployeeMasterlistController {
       updateEmployeeWithDetailsDto,
       user,
     );
+  }
+
+  @Delete('employees/:employeeId')
+  @ApiOperation({ summary: 'Delete a employee' })
+  @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
+  deleteEmployee(
+    @SessionUser() user: RequestUser,
+    @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
+  ) {
+    return this.employeeMasterlistService.deleteEmployee(
+      user,
+      employeeId
+    )
   }
 }
 
