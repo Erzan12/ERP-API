@@ -129,6 +129,7 @@ export class RecordLeaveDatesDto {
   leave_compensation: LeaveCompensation;
 
   @IsNumber()
+  @IsNotEmpty()
   @ApiProperty({
     example: 1.0,
   })
