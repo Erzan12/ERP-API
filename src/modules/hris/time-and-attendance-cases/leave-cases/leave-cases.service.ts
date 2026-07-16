@@ -897,6 +897,7 @@ export class LeaveCasesService {
           date_to: update_leave_request.date_to
             ? new Date(update_leave_request.date_to)
             : undefined,
+          return_date: update_leave_request.return_date ?? undefined,
           reason: update_leave_request.reason ?? undefined,
           contact_number: update_leave_request.contact_number ?? undefined,
           address_on_leave: update_leave_request.address_on_leave ?? undefined,

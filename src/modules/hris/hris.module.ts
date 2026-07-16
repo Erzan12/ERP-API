@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
-import { EmployeeMasterlistService } from './employee/employee_masterlist/employee.service';
+import { EmployeeMasterlistService } from './employee-masterlist/employee-masterlist.service';
 import {
   EmployeeMasterlistController,
   EmploymentHistoryController,
-} from './employee/employee_masterlist/employee.controller';
+} from './employee-masterlist/employee-masterlist.controller';
 
 import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardController } from './dashboard/dashboard.controller';
