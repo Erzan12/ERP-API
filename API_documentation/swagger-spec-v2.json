@@ -3481,6 +3481,30 @@
         ]
       }
     },
+    "/v2/hris/employees/{employeeId}": {
+      "delete": {
+        "operationId": "EmployeeMasterlistController_deleteEmployee_v2",
+        "parameters": [
+          {
+            "name": "employeeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a employee",
+        "tags": [
+          "Human Resources - Employees (Employee Masterlist)"
+        ]
+      }
+    },
     "/v2/hris": {
       "get": {
         "operationId": "DashboardController_getHrDashboard_v2",
@@ -9655,14 +9679,7 @@
           },
           "leave_compensation": {
             "type": "string",
-            "enum": [
-              "with_pay",
-              "without_pay"
-            ],
-            "example": {
-              "with_pay": "with_pay",
-              "without_pay": "without_pay"
-            },
+            "example": "with_pay or without_pay",
             "description": "The Leave Compensation for this leave date"
           },
           "fraction": {
