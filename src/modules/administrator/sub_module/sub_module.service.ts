@@ -562,9 +562,7 @@ export class SubModuleService {
 
     // 🔧 Permissions that already exist, are still requested, but have no code yet
     const actionsToUpdateCode = existingPermissions.filter(
-      (p) =>
-        sub_module_actions_id.includes(p.sub_module_action_id) &&
-        !p.code,
+      (p) => sub_module_actions_id.includes(p.sub_module_action_id) && !p.code,
     );
 
     // Valid actions from master table
