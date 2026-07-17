@@ -18,6 +18,43 @@ export class EmployeeMasterlistService {
   constructor(private prisma: PrismaService) {}
 
   async createEmployee(dto: CreateEmployeeWithDetailsDto, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Recruiter',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
     return await this.prisma.$transaction(async (prisma) => {
       try {
         const { gender, civil_status } = dto.person;
@@ -215,34 +252,44 @@ export class EmployeeMasterlistService {
     // sortBy: string = 'id',
     // order: 'asc' | 'desc' = 'asc',
   ) {
-    // const hrViewEmployee = [ 'Human Resources' ].includes(user.role.name);
-
-    // const hrViewEmployee = user.roles.some(
-    //   (role) => role.name === 'Human Resources',
-    // );
-
     const { search, sortBy, order, page, perPage } = dto;
 
-    // const canView = await this.prisma.userRole.findFirst({
-    //   where: {
-    //     user_id: user.id,
-    //     role_name: {
-    //       in: [
-    //         'Administrator',
-    //         'Super Administrator',
-    //         'HR Manager',
-    //         'HR Clerk',
-    //         'HR Staff',
-    //       ],
-    //     },
-    //   },
-    // });
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
 
-    // if (!canView) {
-    //   throw new BadRequestException(
-    //     'You are not allowed to view this sub module',
-    //   );
-    // }
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Recruiter',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
 
     //PAGINATION AREA
     const skip = (page - 1) * perPage;
@@ -425,6 +472,19 @@ export class EmployeeMasterlistService {
       }),
     ]);
 
+    return {
+      status: 'success',
+      message: 'Employees Masterlist',
+      count: total,
+      page,
+      perPage,
+      // totalPage: Math.ceil(total / perPage),
+      employees,
+    };
+  }
+
+  async getEmployee(employeeId: string, user: RequestUser) {
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -446,12 +506,12 @@ export class EmployeeMasterlistService {
       'Administrator',
       'Super Administrator',
       'HR Administrator',
+      'HR Recruiter',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
     ];
-
-    const canView = requestUser.user_roles.some((role) =>
+    const canView = requestUser?.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
 
@@ -460,19 +520,6 @@ export class EmployeeMasterlistService {
         'You are not authorized to perform this action',
       );
     }
-
-    return {
-      status: 'success',
-      message: 'Employees Masterlist',
-      count: total,
-      page,
-      perPage,
-      // totalPage: Math.ceil(total / perPage),
-      employees,
-    };
-  }
-
-  async getEmployee(employeeId: string, user: RequestUser) {
     // 1. Find the employee
     const employee = await this.prisma.employee.findUnique({
       where: { id: employeeId },
@@ -565,35 +612,6 @@ export class EmployeeMasterlistService {
     //   },
     // });
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
-    );
-
-    if (!isAdmin) {
-      throw new ForbiddenException(
-        'You are not allowed to perform this action',
-      );
-    }
-
     return {
       status: 'success',
       message: 'Here is the Employee.',
@@ -603,23 +621,58 @@ export class EmployeeMasterlistService {
   }
 
   async updateEmployee(
-    id: string,
-    updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
+    employeeId: string,
+    dto: UpdateEmployeeWithDetailsDto,
     user: RequestUser,
   ) {
     return await this.prisma.$transaction(async (prisma) => {
+      const { person: UpdatePersonDto, employee: UpdateEmployeeDto } = dto;
+      
+      // Auth check first
+      const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+          employee: {
+            include: {
+              person: true,
+              position: true,
+            },
+          },
+          user_roles: true,
+        },
+      });
+
+      if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+        throw new BadRequestException(`User does not exist.`);
+      }
+
+      const allowedRoles = [
+        'Administrator',
+        'Super Administrator',
+        'HR Administrator',
+        'HR Recruiter',
+        'HR Manager',
+        'HR Clerk',
+        'HR Staff',
+      ];
+      const canView = requestUser?.user_roles.some((role) =>
+        allowedRoles.includes(role.role_name),
+      );
+
+      if (!canView) {
+        throw new ForbiddenException(
+          'You are not authorized to perform this action',
+        );
+      }
       //1. check employee existence
       const employee = await prisma.employee.findUnique({
-        where: { id },
+        where: { id: employeeId },
         include: { person: true },
       });
 
       if (!employee) {
         throw new BadRequestException('Employee not found.');
       }
-
-      const { person: UpdatePersonDto, employee: UpdateEmployeeDto } =
-        updateEmployeeWithDetailsDto;
 
       //2. validate enums only if provided
       if (UpdatePersonDto?.gender) {
@@ -650,7 +703,7 @@ export class EmployeeMasterlistService {
       //4. update employee table
       const updatedEmployee = UpdateEmployeeDto
         ? await prisma.employee.update({
-            where: { id },
+            where: { id: employeeId },
             data: {
               ...UpdateEmployeeDto,
               updated_at: user.id ?? undefined,
@@ -689,6 +742,7 @@ export class EmployeeMasterlistService {
       'Administrator',
       'Super Administrator',
       'HR Administrator',
+      'HR Recruiter',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
