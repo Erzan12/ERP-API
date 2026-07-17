@@ -3394,12 +3394,12 @@
         ]
       }
     },
-    "/v2/hris/employees/{id}": {
+    "/v2/hris/employees/{employeeId}": {
       "get": {
         "operationId": "EmployeeMasterlistController_getEmployee_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "employeeId",
             "required": true,
             "in": "path",
             "schema": {
@@ -3436,7 +3436,7 @@
         "operationId": "EmployeeMasterlistController_updateEmployee_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "employeeId",
             "required": true,
             "in": "path",
             "schema": {
@@ -3479,9 +3479,7 @@
         "tags": [
           "Human Resources - Employees (Employee Masterlist)"
         ]
-      }
-    },
-    "/v2/hris/employees/{employeeId}": {
+      },
       "delete": {
         "operationId": "EmployeeMasterlistController_deleteEmployee_v2",
         "parameters": [
