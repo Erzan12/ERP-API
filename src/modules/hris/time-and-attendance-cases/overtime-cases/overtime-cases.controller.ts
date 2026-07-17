@@ -4,7 +4,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 import {
   ACTION_READ,
-  OVERTIME_CASE,
+  OVERTIME_REQUEST
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -19,7 +19,7 @@ export class OvertimeCasesController {
   @Get('time-and-attendance-cases/overtimes')
   @ApiOperation({ summary: 'List of Overtime Requests' })
   @ApiGetResponse('List of Overtime Requests')
-  @Can({ action: ACTION_READ, subject: OVERTIME_CASE })
+  @Can({ action: ACTION_READ, subject: OVERTIME_REQUEST })
   getOvertimeRequest(
     @SessionUser() user: RequestUser,
     @Query() dto: OvertimeCasesPaginationDto,
@@ -30,7 +30,7 @@ export class OvertimeCasesController {
   @Get('time-and-attendance-cases/overtimes/:overtimeRequestId')
   @ApiOperation({ summary: 'Get a single Overtime Request' })
   @ApiGetResponse('Here is the Overtime Request')
-  @Can({ action: ACTION_READ, subject: OVERTIME_CASE })
+  @Can({ action: ACTION_READ, subject: OVERTIME_REQUEST })
   getOvertimeRequests(
     @SessionUser() user: RequestUser,
     @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
