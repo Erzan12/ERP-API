@@ -35,8 +35,6 @@ export const EMPLOYEE_MASTERLIST = 'employee masterlist';
 // export const ROLES_AND_STRUCTURE = 'roles and structure';
 export const ROLE_MANAGEMENT = 'role management';
 export const SALARY_GRADE = 'salary grade';
-export const OVERTIME_CASE = 'overtime case';
-export const OVERTIME_RATE = 'overtime rate';
 export const HIRING_PIPELINE = 'hiring pipeline';
 export const CAREER_POSTING = 'career posting';
 export const APPLICANT = 'applicant';
@@ -47,6 +45,8 @@ export const SCREENING_APPLICANT = 'screening applicant';
 export const LEAVE_CATEGORY = 'leave category';
 export const EXTENDED_LEAVE_REQUEST = 'extended leave request';
 export const LEAVE_REQUEST = 'leave request';
+export const OVERTIME_REQUEST = 'overtime request';
+export const OVERTIME_RATE = 'overtime rate';
 
 //SUBMODULE FOR EMPLOYEE/CORP SERV
 export const EMPLOYEE_DASHBOARD = 'employee dashboard';
