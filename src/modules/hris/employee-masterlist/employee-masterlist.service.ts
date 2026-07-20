@@ -699,7 +699,7 @@ export class EmployeeMasterlistService {
             where: { id: employee.person_id },
             data: {
               ...UpdatePersonDto,
-              updated_at: user.id ?? undefined,
+              updated_by: user.id,
             },
           })
         : null;
@@ -710,7 +710,7 @@ export class EmployeeMasterlistService {
             where: { id: employeeId },
             data: {
               ...UpdateEmployeeDto,
-              updated_at: user.id ?? undefined,
+              updated_by: user.id,
             },
           })
         : null;
