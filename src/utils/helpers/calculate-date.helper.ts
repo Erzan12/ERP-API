@@ -42,7 +42,7 @@ export function computeEvaluationStatus(
 
   //probation date is adjustable and is not based on hire date of employee
   if (evaluation.stage === EvaluationStage.third_month_evaluation) {
-    deadline = addMonths(evaluation.probation_date, 3);
+    deadline = addMonths(evaluation.evaluation_period_start, 3);
     // deadline = addMonths(hireDate, 3);
   } else if (evaluation.stage === EvaluationStage.fifth_month_evaluation) {
     deadline = addMonths(hireDate, 5);

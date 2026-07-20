@@ -3503,6 +3503,62 @@
         ]
       }
     },
+    "/employment-history/employees/employment-history/{employeeId}": {
+      "get": {
+        "operationId": "EmploymentHistoryController_getEmploymentHistories",
+        "parameters": [
+          {
+            "name": "employeeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Human Resource - Employees (Employment History)"
+        ]
+      }
+    },
+    "/employment-history/employees/employment-history/{employeeId}/add-employment-history": {
+      "post": {
+        "operationId": "EmploymentHistoryController_createEmploymentHistory",
+        "parameters": [
+          {
+            "name": "employeeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmploymentHistoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Human Resource - Employees (Employment History)"
+        ]
+      }
+    },
     "/v2/hris": {
       "get": {
         "operationId": "DashboardController_getHrDashboard_v2",
@@ -6677,45 +6733,6 @@
         ]
       }
     },
-    "/v2/manager/permission-template/user/{userPermissionTemplateId}": {
-      "get": {
-        "operationId": "PermissionTemplateController_getUserPermissionTemplate_v2",
-        "parameters": [
-          {
-            "name": "userPermissionTemplateId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Here are the list of permission templates available"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get available permission templates to user",
-        "tags": [
-          "Manager - Permission Template"
-        ]
-      }
-    },
     "/v2/manager/permission-template/user/{id}": {
       "post": {
         "operationId": "PermissionTemplateController_assignPermTemplate_v2",
@@ -8972,6 +8989,47 @@
         "required": [
           "person",
           "employee"
+        ]
+      },
+      "CreateEmploymentHistoryDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "company",
+              "division",
+              "department",
+              "section",
+              "sub_section",
+              "position",
+              "salary_grade",
+              "employment_status",
+              "vessel",
+              "employee_location",
+              "developmental_assignment"
+            ]
+          },
+          "current_id": {
+            "type": "string",
+            "example": "PK uuid of employee",
+            "description": "Employee PK ID"
+          },
+          "effectivity_date": {
+            "type": "string",
+            "example": "2025-07-10",
+            "description": "Effectivity date of this employee movement"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Your remarks to this employee movement"
+          }
+        },
+        "required": [
+          "type",
+          "current_id",
+          "effectivity_date",
+          "remarks"
         ]
       },
       "CreateCareerPostingDto": {
