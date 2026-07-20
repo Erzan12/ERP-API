@@ -346,7 +346,7 @@ export class UserManagementService {
         }
 
         const admin = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const adminPos = requestUser.employee.position.name;
+        const adminPos = requestUser.employee.position?.name;
 
         // scalable approach
         const allowedRoles = [
@@ -393,7 +393,7 @@ export class UserManagementService {
         const newUser = await tx.user.create({
           data: {
             employee_id: employee.id,
-            person_id: employee.person.id,
+            person_id: employee.person?.id ?? '',
             username: dto.username,
             email: dto.email,
             password: hashedPassword,

@@ -625,8 +625,8 @@ export class LeaveCasesService {
         ],
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -784,7 +784,7 @@ export class LeaveCasesService {
           },
         });
         const verifierName = targetUser
-          ? `${targetUser.employee.person.first_name ?? ''} ${targetUser.employee.person.last_name ?? ''}`.trim()
+          ? `${targetUser.employee.person?.first_name ?? ''} ${targetUser.employee.person?.last_name ?? ''}`.trim()
           : 'Unknown User';
 
         if (currentVerificationStep) {
@@ -844,7 +844,7 @@ export class LeaveCasesService {
           },
         });
         const approverName = targetUser
-          ? `${targetUser.employee.person.first_name ?? ''} ${targetUser.employee.person.last_name ?? ''}`.trim()
+          ? `${targetUser.employee.person?.first_name ?? ''} ${targetUser.employee.person?.last_name ?? ''}`.trim()
           : 'Unknown User';
 
         if (currentApprovalStep) {
@@ -918,7 +918,7 @@ export class LeaveCasesService {
           metadata: {
             title: 'Leave Request updated',
             message: 'Leave Request draft details were modified',
-            user: `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`, // Adjust based on your RequestUser object
+            user: `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`, // Adjust based on your RequestUser object
             role: 'creator',
           },
         },
@@ -1071,8 +1071,8 @@ export class LeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -1156,8 +1156,8 @@ export class LeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -1227,8 +1227,8 @@ export class LeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -1297,8 +1297,8 @@ export class LeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -1413,8 +1413,8 @@ export class LeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -1488,8 +1488,8 @@ export class LeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',

@@ -116,10 +116,7 @@ export class EmployeeMasterlistController {
     @SessionUser() user: RequestUser,
     @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
   ) {
-    return this.employeeMasterlistService.deleteEmployee(
-      user,
-      employeeId
-    )
+    return this.employeeMasterlistService.deleteEmployee(user, employeeId);
   }
 }
 

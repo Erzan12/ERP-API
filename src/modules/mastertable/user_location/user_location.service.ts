@@ -302,8 +302,8 @@ export class UserLocationService {
       },
     });
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     return {
       status: 'success',
@@ -356,8 +356,8 @@ export class UserLocationService {
       throw new NotFoundException('User does not exist');
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     const isAdmin = requestUser.user_roles.some(
       (role) =>

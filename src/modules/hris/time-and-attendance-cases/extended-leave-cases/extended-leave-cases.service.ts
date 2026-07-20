@@ -594,8 +594,8 @@ export class ExtendedLeaveCasesService {
         ],
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -756,7 +756,7 @@ export class ExtendedLeaveCasesService {
         });
 
         const verifierName = targetUser
-          ? `${targetUser.employee.person.first_name ?? ''} ${targetUser.employee.person.last_name ?? ''}`.trim()
+          ? `${targetUser.employee.person?.first_name ?? ''} ${targetUser.employee.person?.last_name ?? ''}`.trim()
           : 'Unknown User';
 
         if (currentVerificationStep) {
@@ -817,7 +817,7 @@ export class ExtendedLeaveCasesService {
         });
 
         const approverName = targetUser
-          ? `${targetUser.employee.person.first_name} ${targetUser.employee.person.last_name}`.trim()
+          ? `${targetUser.employee.person?.first_name} ${targetUser.employee.person?.last_name}`.trim()
           : 'Unknown User';
 
         if (currentApprovalStep) {
@@ -897,7 +897,7 @@ export class ExtendedLeaveCasesService {
           metadata: {
             title: 'Extended Leave Request updated',
             message: 'Extended Leave Request draft details were modified',
-            user: `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`,
+            user: `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`,
             role: 'creator',
           },
         },
@@ -1048,8 +1048,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPostion = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPostion = requestUser.employee.position?.name;
 
       return {
         status: 'status',
@@ -1132,8 +1132,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -1205,8 +1205,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -1278,8 +1278,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -1381,8 +1381,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -1470,8 +1470,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
