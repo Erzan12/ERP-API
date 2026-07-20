@@ -177,8 +177,8 @@ export class EmployeeMasterlistService {
           throw new BadRequestException(`User does not exist.`);
         }
 
-        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const userPosition = requestUser.employee.position.name;
+        const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+        const userPosition = requestUser.employee.position?.name;
 
         return {
           status: 'success',
@@ -627,7 +627,7 @@ export class EmployeeMasterlistService {
   ) {
     return await this.prisma.$transaction(async (prisma) => {
       const { person: UpdatePersonDto, employee: UpdateEmployeeDto } = dto;
-      
+
       // Auth check first
       const requestUser = await this.prisma.user.findUnique({
         where: { id: user.id },
@@ -642,7 +642,11 @@ export class EmployeeMasterlistService {
         },
       });
 
-      if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      if (
+        !requestUser ||
+        !requestUser.employee ||
+        !requestUser.employee.person
+      ) {
         throw new BadRequestException(`User does not exist.`);
       }
 
@@ -762,13 +766,13 @@ export class EmployeeMasterlistService {
     });
 
     if (!employee) {
-      throw new NotFoundException('Employee does not exist')
+      throw new NotFoundException('Employee does not exist');
     }
 
     return {
       status: 'success',
       message: 'Employee has been deleted',
-    }
+    };
   }
 }
 
