@@ -2,10 +2,7 @@ import { Module } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 
 import { EmployeeMasterlistService } from './employee-masterlist/employee-masterlist.service';
-import {
-  EmployeeMasterlistController,
-  EmploymentHistoryController,
-} from './employee-masterlist/employee-masterlist.controller';
+import { EmployeeMasterlistController } from './employee-masterlist/employee-masterlist.controller';
 
 import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardController } from './dashboard/dashboard.controller';
@@ -43,6 +40,8 @@ import { OvertimeCasesService } from './time-and-attendance-cases/overtime-cases
 import { OvertimeCasesController } from './time-and-attendance-cases/overtime-cases/overtime-cases.controller';
 import { SalaryGradeService } from './salary-grade/salary-grade.service';
 import { SalaryGradeController } from './salary-grade/salary-grade.controller';
+import { EmploymentHistoryController } from './employment-history/employment-history.controller';
+import { EmploymentHistoryService } from './employment-history/employment-history.service';
 
 @Module({
   imports: [AuthModule, AdministratorModule],
@@ -63,6 +62,7 @@ import { SalaryGradeController } from './salary-grade/salary-grade.controller';
     OvertimeRateService,
     OvertimeCasesService,
     SalaryGradeService,
+    EmploymentHistoryService,
     // ScreeningApplicantService,
   ],
   controllers: [

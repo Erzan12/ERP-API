@@ -8,7 +8,7 @@ import {
   Matches,
 } from 'class-validator';
 
-export class OvertimeCaseDto {
+export class CreateOvertimeCaseDto {
   @IsUUID()
   @IsNotEmpty()
   @ApiProperty({
@@ -18,7 +18,7 @@ export class OvertimeCaseDto {
   employee_id: string;
 
   @IsUUID()
-  @IsOptional()
+  @IsNotEmpty()
   @ApiProperty({
     example: 'Vessel UUID',
     description: 'The vessel uuid PK',
@@ -47,7 +47,7 @@ export class OvertimeCaseDto {
     example: '2026-05-08',
     description: 'Date of the overtime happen',
   })
-  ot_date: string;
+  overtime_date: string;
 
   @IsOptional()
   @Matches(/^([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/)

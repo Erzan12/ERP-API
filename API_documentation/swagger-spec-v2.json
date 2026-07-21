@@ -6380,6 +6380,45 @@
         "tags": [
           "Human Resources - Time and Attendance Cases (Overtime Request)"
         ]
+      },
+      "post": {
+        "operationId": "OvertimeCasesController_createOvertimeRequest_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Overtime Request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOvertimeCaseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Overtime request successfully created"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a overtime request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
       }
     },
     "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}": {
@@ -10015,6 +10054,61 @@
           "type",
           "rate",
           "is_active"
+        ]
+      },
+      "CreateOvertimeCaseDto": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "Employee UUID",
+            "description": "The employee uuid PK"
+          },
+          "vessel_id": {
+            "type": "string",
+            "example": "Vessel UUID",
+            "description": "The vessel uuid PK"
+          },
+          "overtime_rate_id": {
+            "type": "string",
+            "example": "Overtime Rate UUID",
+            "description": "The overtime rate uuid PK"
+          },
+          "date_filed": {
+            "type": "string",
+            "example": "2026-05-12",
+            "description": "Date Overtime is filed"
+          },
+          "overtime_date": {
+            "type": "string",
+            "example": "2026-05-08",
+            "description": "Date of the overtime happen"
+          },
+          "time_from": {
+            "type": "string",
+            "example": "18:00:00",
+            "description": "Overtime start time"
+          },
+          "time_to": {
+            "type": "string",
+            "example": "22:00:00",
+            "description": "Overtime end time"
+          },
+          "reason": {
+            "type": "string",
+            "example": "Reason of overtime",
+            "default": "Reason of your overtime"
+          }
+        },
+        "required": [
+          "employee_id",
+          "vessel_id",
+          "overtime_rate_id",
+          "date_filed",
+          "overtime_date",
+          "time_from",
+          "time_to",
+          "reason"
         ]
       },
       "CreateSalaryGradeDto": {
