@@ -187,8 +187,10 @@ export class RegularizationReviewsService {
                     },
                   },
                   stage: true,
-                  probation_date: true,
-                  regularization_date: true,
+                  // probation_date: true,
+                  // regularization_date: true,
+                  evaluation_period_start: true,
+                  evaluation_period_end: true,
                   completed_at: true,
                 },
               },
@@ -196,7 +198,7 @@ export class RegularizationReviewsService {
               employment_history: {
                 where: { is_active: true },
                 take: 1,
-                orderBy: { effective_date: 'desc' },
+                orderBy: { effectivity_date: 'desc' },
               },
               created_at: true,
             },
@@ -303,8 +305,8 @@ export class RegularizationReviewsService {
         evaluator_id: dto.evaluator_id,
         stage: dto.stage,
         type_of_evaluation: dto.type_of_evaluation,
-        probation_date: new Date(dto.probation_date),
-        regularization_date: new Date(dto.regularization_date),
+        evaluation_period_start: new Date(dto.probation_date),
+        evaluation_period_end: new Date(dto.regularization_date),
         created_by: user.id,
       },
     });
@@ -701,8 +703,8 @@ export class RegularizationReviewsService {
           },
         });
 
-        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const userPosition = requestUser.employee.position.name;
+        const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+        const userPosition = requestUser.employee.position?.name;
 
         return {
           status: 'success',
@@ -776,8 +778,8 @@ export class RegularizationReviewsService {
           },
         });
 
-        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const userPosition = requestUser.employee.position.name;
+        const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+        const userPosition = requestUser.employee.position?.name;
 
         return {
           status: 'success',
@@ -850,8 +852,8 @@ export class RegularizationReviewsService {
           },
         });
 
-        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const userPosition = requestUser.employee.position.name;
+        const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+        const userPosition = requestUser.employee.position?.name;
 
         return {
           status: 'success',

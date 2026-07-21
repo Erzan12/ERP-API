@@ -358,8 +358,8 @@ export class SubModuleService {
       },
     });
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     return {
       status: 'success',
@@ -367,7 +367,7 @@ export class SubModuleService {
       created_by: {
         id: requestUser.id,
         name: userName,
-        position: userPos,
+        position: userPosition,
       },
       subModule: createdSubModuleWithPermissions,
     };
@@ -454,7 +454,7 @@ export class SubModuleService {
       },
     });
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
     const userPos = requestUser.employee.position?.name ?? '';
 
     return {
@@ -533,8 +533,8 @@ export class SubModuleService {
       throw new NotFoundException('Sub Module does not exist!');
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     const existingPermissions = await this.prisma.subModulePermission.findMany({
       where: {

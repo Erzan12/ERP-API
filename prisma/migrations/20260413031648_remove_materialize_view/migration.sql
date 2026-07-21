@@ -1,4 +1,7 @@
-DROP MATERIALIZED VIEW IF EXISTS "RegularizationEligibility";
+DROP VIEW IF EXISTS "RegularizationEligibility";
+
+ALTER TABLE "EmploymentHistory"
+RENAME COLUMN "effective_date" TO "effectivity_date";
 
 CREATE VIEW "RegularizationEligibility" AS
 SELECT 
@@ -11,7 +14,7 @@ SELECT
     (SELECT eh.id 
      FROM "EmploymentHistory" eh 
      WHERE eh.employee_id = e.id AND eh.is_active = true 
-     ORDER BY eh.effective_date DESC 
+     ORDER BY eh.effectivity_date DESC 
      LIMIT 1) AS "latestHistoryId"
 FROM "Employee" e
 JOIN "EmploymentStatus" es ON e.employment_status_id = es.id

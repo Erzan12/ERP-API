@@ -11,14 +11,51 @@ import {
   UpdateEmployeeWithDetailsDto,
 } from './dto/employee-person.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Gender, CivilStatus, Prisma } from '@prisma/client';
+import { Gender, CivilStatus, Prisma, EmploymentHistoryType } from '@prisma/client';
 
 @Injectable()
 export class EmployeeMasterlistService {
   constructor(private prisma: PrismaService) {}
 
   async createEmployee(dto: CreateEmployeeWithDetailsDto, user: RequestUser) {
-    return await this.prisma.$transaction(async (prisma) => {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Recruiter',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    return await this.prisma.$transaction(async (tx) => {
       try {
         const { gender, civil_status } = dto.person;
 
@@ -32,19 +69,19 @@ export class EmployeeMasterlistService {
           );
         }
 
-        const company = await prisma.company.findUnique({
+        const company = await tx.company.findUnique({
           where: { id: dto.employee.company_id },
         });
         if (!company) throw new BadRequestException('Invalid company_id');
 
-        const department = await prisma.department.findUnique({
+        const department = await tx.department.findUnique({
           where: { id: dto.employee.department_id },
         });
         if (!department) throw new BadRequestException('Invalid department_id');
 
         const companyId = dto.employee.company_id;
 
-        const existingPerson = await prisma.person.findFirst({
+        const existingPerson = await tx.person.findFirst({
           where: {
             email: dto.person.email,
           },
@@ -52,7 +89,7 @@ export class EmployeeMasterlistService {
 
         if (existingPerson) {
           //optionally, check if they're already employed
-          const existingEmployee = await prisma.employee.findFirst({
+          const existingEmployee = await tx.employee.findFirst({
             where: {
               person_id: existingPerson.id,
               company_id: dto.employee.company_id,
@@ -69,7 +106,7 @@ export class EmployeeMasterlistService {
         }
         const person =
           existingPerson ??
-          (await prisma.person.create({
+          (await tx.person.create({
             data: {
               first_name: dto.person.first_name,
               middle_name: dto.person.middle_name,
@@ -83,13 +120,13 @@ export class EmployeeMasterlistService {
 
         const hireDate = new Date(dto.employee.hire_date);
         const generatedEmpID = await this.createUniqueEmpID(
-          prisma,
+          tx,
           companyId,
           hireDate,
         );
 
         // double check this person isn't already employed
-        const employeeCheck = await prisma.employee.findFirst({
+        const employeeCheck = await tx.employee.findFirst({
           where: {
             person_id: person.id,
             company_id: companyId,
@@ -102,7 +139,7 @@ export class EmployeeMasterlistService {
           );
         }
 
-        const employee = await prisma.employee.create({
+        const employee = await tx.employee.create({
           data: {
             person_id: person.id,
             employee_id: generatedEmpID,
@@ -124,7 +161,86 @@ export class EmployeeMasterlistService {
           },
         });
 
-        const requestUser = await prisma.user.findUnique({
+        const histories = [
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.company,
+            current_id: employee.company_id,
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.department,
+            current_id: employee.department_id,
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.position,
+            current_id: employee.position_id ?? '',
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.division,
+            current_id: employee.division_id,
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.vessel,
+            current_id: employee.vessel_id ?? '',
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.employee_location,
+            current_id: employee.user_location_id ?? '',
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.salary_grade,
+            current_id: employee.salary_grade_id,
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.employment_status,
+            current_id: employee.employment_status_id,
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment', 
+          },
+        ].filter(h => h.current_id);
+
+        await tx.employmentHistory.createMany({
+          data: histories,
+        })
+
+        const requestUser = await tx.user.findUnique({
           where: { id: user.id },
           include: {
             employee: {
@@ -140,8 +256,8 @@ export class EmployeeMasterlistService {
           throw new BadRequestException(`User does not exist.`);
         }
 
-        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const userPosition = requestUser.employee.position.name;
+        const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+        const userPosition = requestUser.employee.position?.name;
 
         return {
           status: 'success',
@@ -215,34 +331,44 @@ export class EmployeeMasterlistService {
     // sortBy: string = 'id',
     // order: 'asc' | 'desc' = 'asc',
   ) {
-    // const hrViewEmployee = [ 'Human Resources' ].includes(user.role.name);
-
-    // const hrViewEmployee = user.roles.some(
-    //   (role) => role.name === 'Human Resources',
-    // );
-
     const { search, sortBy, order, page, perPage } = dto;
 
-    // const canView = await this.prisma.userRole.findFirst({
-    //   where: {
-    //     user_id: user.id,
-    //     role_name: {
-    //       in: [
-    //         'Administrator',
-    //         'Super Administrator',
-    //         'HR Manager',
-    //         'HR Clerk',
-    //         'HR Staff',
-    //       ],
-    //     },
-    //   },
-    // });
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
 
-    // if (!canView) {
-    //   throw new BadRequestException(
-    //     'You are not allowed to view this sub module',
-    //   );
-    // }
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Recruiter',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
 
     //PAGINATION AREA
     const skip = (page - 1) * perPage;
@@ -380,7 +506,7 @@ export class EmployeeMasterlistService {
               name: true,
             },
           },
-          //to include division in employee schema
+          // to include division in employee schema
           position: {
             select: {
               name: true,
@@ -391,6 +517,21 @@ export class EmployeeMasterlistService {
               label: true,
             },
           },
+          vessel: {
+            select: {
+              name: true,
+            }
+          },
+          user_location: {
+            select: {
+              location_name: true,
+            }
+          },
+          // employment_history: {
+          //   select: {
+          //     current_id: true,
+          //   }
+          // },
           employment_type: true,
           employee_type: true,
           hire_date: true,
@@ -425,6 +566,19 @@ export class EmployeeMasterlistService {
       }),
     ]);
 
+    return {
+      status: 'success',
+      message: 'Employees Masterlist',
+      count: total,
+      page,
+      perPage,
+      // totalPage: Math.ceil(total / perPage),
+      employees,
+    };
+  }
+
+  async getEmployee(employeeId: string, user: RequestUser) {
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -446,12 +600,12 @@ export class EmployeeMasterlistService {
       'Administrator',
       'Super Administrator',
       'HR Administrator',
+      'HR Recruiter',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
     ];
-
-    const canView = requestUser.user_roles.some((role) =>
+    const canView = requestUser?.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
 
@@ -460,19 +614,6 @@ export class EmployeeMasterlistService {
         'You are not authorized to perform this action',
       );
     }
-
-    return {
-      status: 'success',
-      message: 'Employees Masterlist',
-      count: total,
-      page,
-      perPage,
-      // totalPage: Math.ceil(total / perPage),
-      employees,
-    };
-  }
-
-  async getEmployee(employeeId: string, user: RequestUser) {
     // 1. Find the employee
     const employee = await this.prisma.employee.findUnique({
       where: { id: employeeId },
@@ -565,35 +706,6 @@ export class EmployeeMasterlistService {
     //   },
     // });
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
-    );
-
-    if (!isAdmin) {
-      throw new ForbiddenException(
-        'You are not allowed to perform this action',
-      );
-    }
-
     return {
       status: 'success',
       message: 'Here is the Employee.',
@@ -603,23 +715,62 @@ export class EmployeeMasterlistService {
   }
 
   async updateEmployee(
-    id: string,
-    updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
+    employeeId: string,
+    dto: UpdateEmployeeWithDetailsDto,
     user: RequestUser,
   ) {
     return await this.prisma.$transaction(async (prisma) => {
+      const { person: UpdatePersonDto, employee: UpdateEmployeeDto } = dto;
+
+      // Auth check first
+      const requestUser = await this.prisma.user.findUnique({
+        where: { id: user.id },
+        include: {
+          employee: {
+            include: {
+              person: true,
+              position: true,
+            },
+          },
+          user_roles: true,
+        },
+      });
+
+      if (
+        !requestUser ||
+        !requestUser.employee ||
+        !requestUser.employee.person
+      ) {
+        throw new BadRequestException(`User does not exist.`);
+      }
+
+      const allowedRoles = [
+        'Administrator',
+        'Super Administrator',
+        'HR Administrator',
+        'HR Recruiter',
+        'HR Manager',
+        'HR Clerk',
+        'HR Staff',
+      ];
+      const canView = requestUser?.user_roles.some((role) =>
+        allowedRoles.includes(role.role_name),
+      );
+
+      if (!canView) {
+        throw new ForbiddenException(
+          'You are not authorized to perform this action',
+        );
+      }
       //1. check employee existence
       const employee = await prisma.employee.findUnique({
-        where: { id },
+        where: { id: employeeId },
         include: { person: true },
       });
 
       if (!employee) {
         throw new BadRequestException('Employee not found.');
       }
-
-      const { person: UpdatePersonDto, employee: UpdateEmployeeDto } =
-        updateEmployeeWithDetailsDto;
 
       //2. validate enums only if provided
       if (UpdatePersonDto?.gender) {
@@ -642,7 +793,7 @@ export class EmployeeMasterlistService {
             where: { id: employee.person_id },
             data: {
               ...UpdatePersonDto,
-              updated_at: user.id ?? undefined,
+              updated_by: user.id,
             },
           })
         : null;
@@ -650,10 +801,10 @@ export class EmployeeMasterlistService {
       //4. update employee table
       const updatedEmployee = UpdateEmployeeDto
         ? await prisma.employee.update({
-            where: { id },
+            where: { id: employeeId },
             data: {
               ...UpdateEmployeeDto,
-              updated_at: user.id ?? undefined,
+              updated_by: user.id,
             },
           })
         : null;
@@ -689,6 +840,7 @@ export class EmployeeMasterlistService {
       'Administrator',
       'Super Administrator',
       'HR Administrator',
+      'HR Recruiter',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -708,13 +860,13 @@ export class EmployeeMasterlistService {
     });
 
     if (!employee) {
-      throw new NotFoundException('Employee does not exist')
+      throw new NotFoundException('Employee does not exist');
     }
 
     return {
       status: 'success',
       message: 'Employee has been deleted',
-    }
+    };
   }
 }
 

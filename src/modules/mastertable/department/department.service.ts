@@ -305,8 +305,8 @@ export class DepartmentService {
       },
     });
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     return {
       status: 'success',
@@ -381,8 +381,8 @@ export class DepartmentService {
       throw new ForbiddenException('User is not allowed to update Department');
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     return {
       status: 'success',

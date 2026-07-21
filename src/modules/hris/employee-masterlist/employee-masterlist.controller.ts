@@ -62,15 +62,15 @@ export class EmployeeMasterlistController {
   }
 
   //get a single employee profile or view
-  @Get('employees/:id')
+  @Get('employees/:employeeId')
   @ApiOperation({ summary: 'View employee profile' })
   @ApiGetResponse('Employees information')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   getEmployee(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.employeeMasterlistService.getEmployee(id, user);
+    return this.employeeMasterlistService.getEmployee(employeeId, user);
   }
 
   @Post('employees')
@@ -89,7 +89,7 @@ export class EmployeeMasterlistController {
   }
 
   //can edit employee profile
-  @Put('employees/:id')
+  @Put('employees/:employeeId')
   @ApiBody({
     type: UpdateEmployeeWithDetailsDto,
     description: 'Payload to update a current employee',
@@ -98,12 +98,12 @@ export class EmployeeMasterlistController {
   @ApiPatchResponse('Employee information updated successfully')
   @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
   updateEmployee(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
     @Body() updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.employeeMasterlistService.updateEmployee(
-      id,
+      employeeId,
       updateEmployeeWithDetailsDto,
       user,
     );
@@ -116,10 +116,7 @@ export class EmployeeMasterlistController {
     @SessionUser() user: RequestUser,
     @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
   ) {
-    return this.employeeMasterlistService.deleteEmployee(
-      user,
-      employeeId
-    )
+    return this.employeeMasterlistService.deleteEmployee(user, employeeId);
   }
 }
 

@@ -315,7 +315,7 @@ export class PermissionTemplateService {
       const templateDept = await tx.permissionTemplateDepartment.findFirst({
         where: {
           permission_template_id: template_id,
-          department_id: existingUser.employee.department_id,
+          department_id: existingUser.employee.department_id ?? '',
           OR: [
             { position_id: existingUser.employee.position_id },
             { position_id: null }, // fallback to template for all positions in dept
@@ -441,83 +441,83 @@ export class PermissionTemplateService {
     });
   }
 
-  async getUserPermissionTemplate(
-    userPermissionTemplateId: string,
-    user: RequestUser,
-  ) {
-    const userWithEmployee = await this.prisma.user.findUnique({
-      where: { id: userPermissionTemplateId },
-      include: {
-        employee: true,
-      },
-    });
+  // async getUserPermissionTemplate(
+  //   userPermissionTemplateId: string,
+  //   user: RequestUser,
+  // ) {
+  //   const userWithEmployee = await this.prisma.user.findUnique({
+  //     where: { id: userPermissionTemplateId },
+  //     include: {
+  //       employee: true,
+  //     },
+  //   });
 
-    if (!userWithEmployee || !userWithEmployee.employee) {
-      throw new BadRequestException('User or employee not found');
-    }
+  //   if (!userWithEmployee || !userWithEmployee.employee) {
+  //     throw new BadRequestException('User or employee not found');
+  //   }
 
-    const { department_id, position_id } = userWithEmployee.employee;
+  //   const { department_id, position_id } = userWithEmployee.employee;
 
-    if (!department_id && !position_id) {
-      throw new BadRequestException(
-        'User has no department or position assigned',
-      );
-    }
+  //   if (!department_id && !position_id) {
+  //     throw new BadRequestException(
+  //       'User has no department or position assigned',
+  //     );
+  //   }
 
-    const userPermissionTemplate =
-      await this.prisma.permissionTemplate.findMany({
-        where: {
-          department_id,
-          departments: {
-            some: {
-              department_id,
-              OR: [{ position_id }, { position_id: null }],
-            },
-          },
-        },
-        include: {
-          departments: true,
-          role_permissions: {
-            include: {
-              role_permissions: true,
-            },
-          },
-        },
-      });
+  //   // const userPermissionTemplate =
+  //   //   await this.prisma.permissionTemplate.findMany({
+  //   //     where: {
+  //   //       department_id,
+  //   //       departments: {
+  //   //         some: {
+  //   //           department_id,
+  //   //           OR: [{ position_id }, { position_id: null }],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     include: {
+  //   //       departments: true,
+  //   //       role_permissions: {
+  //   //         include: {
+  //   //           role_permissions: true,
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   });
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
+  //   const requestUser = await this.prisma.user.findUnique({
+  //     where: { id: user.id },
+  //     include: {
+  //       employee: {
+  //         include: {
+  //           person: true,
+  //           position: true,
+  //         },
+  //       },
+  //       user_roles: true,
+  //     },
+  //   });
 
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
+  //   if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+  //     throw new BadRequestException(`User does not exist.`);
+  //   }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
-    );
+  //   const isAdmin = requestUser.user_roles.some(
+  //     (role) =>
+  //       // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+  //       role.role_name === 'Administrator' || 'Super Administrator',
+  //   );
 
-    if (!isAdmin) {
-      throw new ForbiddenException(
-        'You are not allowed to perform this action',
-      );
-    }
+  //   if (!isAdmin) {
+  //     throw new ForbiddenException(
+  //       'You are not allowed to perform this action',
+  //     );
+  //   }
 
-    return {
-      status: 'success',
-      message: 'Here is the Users Permission Template.',
-      userPermissionTemplate,
-    };
-  }
+  //   return {
+  //     status: 'success',
+  //     message: 'Here is the Users Permission Template.',
+  //     userPermissionTemplate,
+  //   };
+  // }
 }

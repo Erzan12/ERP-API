@@ -303,11 +303,11 @@ export class UserManagementService {
     user: RequestUser,
     req: Request,
     // userId: string,
-    file: Express.Multer.File,
+    file?: Express.Multer.File,
   ) {
     return this.prisma.$transaction(async (tx) => {
       try {
-        const plainPassword = dto.password;
+        const plainPassword = 'avegabros';
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
         const existingUser = await tx.user.findFirst({
@@ -346,7 +346,7 @@ export class UserManagementService {
         }
 
         const admin = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-        const adminPos = requestUser.employee.position.name;
+        const adminPos = requestUser.employee.position?.name;
 
         // scalable approach
         const allowedRoles = [
@@ -393,7 +393,7 @@ export class UserManagementService {
         const newUser = await tx.user.create({
           data: {
             employee_id: employee.id,
-            person_id: employee.person.id,
+            person_id: employee.person?.id ?? '',
             username: dto.username,
             email: dto.email,
             password: hashedPassword,
@@ -547,7 +547,6 @@ export class UserManagementService {
           },
           user_id: newUser.id,
           username: newUser.username,
-          password: plainPassword,
           reset_token: createdToken.password_token,
           attachment,
           // user_permission_template: templates
