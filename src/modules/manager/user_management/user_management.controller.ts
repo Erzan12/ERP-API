@@ -121,13 +121,19 @@ export class UserManagementController {
         employee_id: { type: 'string' },
         username: { type: 'string' },
         email: { type: 'string' },
-        password: { type: 'string' },
-        role_id: { type: 'string' },
+        // password: { type: 'string' },
+        role_id: { type: 'string', nullable: true },
         avatar: {
           type: 'string',
           format: 'binary',
+          nullable: true,
         },
       },
+      required: [
+        'employee_id',
+        'username',
+        'email',
+      ]
     },
   })
   @ApiOperation({ summary: 'Create a new user account' })
@@ -140,7 +146,7 @@ export class UserManagementController {
     @SessionUser() user: RequestUser,
     @Req() req: Request,
     // @Param('userId', new ParseUUIDPipe()) userId: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File | undefined,
   ) {
     return this.userManagementService.createUserAccount(
       dto,
