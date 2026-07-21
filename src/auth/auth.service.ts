@@ -120,8 +120,8 @@ export class AuthService {
         user_id: updatedUser.id,
         created_by: user.id,
         password_hash: updatedUser.password,
-      }
-    })
+      },
+    });
 
     //delete the token or mark it used
 

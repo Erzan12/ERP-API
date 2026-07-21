@@ -129,11 +129,7 @@ export class UserManagementController {
           nullable: true,
         },
       },
-      required: [
-        'employee_id',
-        'username',
-        'email',
-      ]
+      required: ['employee_id', 'username', 'email'],
     },
   })
   @ApiOperation({ summary: 'Create a new user account' })

@@ -4,7 +4,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Employee, EmploymentHistory, EmploymentHistoryType } from '@prisma/client';
+import {
+  Employee,
+  EmploymentHistory,
+  EmploymentHistoryType,
+} from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Repository } from './type/employment-history.type';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -30,7 +34,7 @@ export class EmploymentHistoryService {
     };
   }
 
-  private async resolve(type: EmploymentHistoryType, id?: string |null) {
+  private async resolve(type: EmploymentHistoryType, id?: string | null) {
     if (!id) return null;
 
     const repo = this.repositories[type];
@@ -38,7 +42,7 @@ export class EmploymentHistoryService {
     if (!repo) return null;
 
     return repo.findUnique({
-        where: { id },
+      where: { id },
     });
   }
 
@@ -161,7 +165,9 @@ export class EmploymentHistoryService {
         },
       });
 
-      const employeeFieldMap: Partial<Record<EmploymentHistoryType, keyof Employee>> = {
+      const employeeFieldMap: Partial<
+        Record<EmploymentHistoryType, keyof Employee>
+      > = {
         company: 'company_id',
         division: 'division_id',
         department: 'department_id',
@@ -169,7 +175,7 @@ export class EmploymentHistoryService {
         vessel: 'vessel_id',
         employment_status: 'employment_status_id',
         employee_location: 'user_location_id',
-        // salary_grade: 
+        // salary_grade:
       };
 
       const employeeField = employeeFieldMap[dto.type];
@@ -190,6 +196,6 @@ export class EmploymentHistoryService {
         message: 'Employment history successfully created',
         employmentHistory,
       };
-    })
+    });
   }
 }

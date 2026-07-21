@@ -11,7 +11,12 @@ import {
   UpdateEmployeeWithDetailsDto,
 } from './dto/employee-person.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Gender, CivilStatus, Prisma, EmploymentHistoryType } from '@prisma/client';
+import {
+  Gender,
+  CivilStatus,
+  Prisma,
+  EmploymentHistoryType,
+} from '@prisma/client';
 
 @Injectable()
 export class EmployeeMasterlistService {
@@ -232,13 +237,13 @@ export class EmployeeMasterlistService {
             previous_id: null,
             effectivity_date: hireDate,
             created_by: user.id,
-            remarks: 'Initial employment assignment', 
+            remarks: 'Initial employment assignment',
           },
-        ].filter(h => h.current_id);
+        ].filter((h) => h.current_id);
 
         await tx.employmentHistory.createMany({
           data: histories,
-        })
+        });
 
         const requestUser = await tx.user.findUnique({
           where: { id: user.id },
@@ -520,12 +525,12 @@ export class EmployeeMasterlistService {
           vessel: {
             select: {
               name: true,
-            }
+            },
           },
           user_location: {
             select: {
               location_name: true,
-            }
+            },
           },
           // employment_history: {
           //   select: {

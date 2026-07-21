@@ -3,5 +3,5 @@ export type Repository = {
     where: {
       id: string;
     };
-  }): Promise<any>;
+  }): Promise<Record<string, unknown> | null>;
 };
