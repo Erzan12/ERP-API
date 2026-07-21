@@ -115,6 +115,14 @@ export class AuthService {
       },
     });
 
+    await this.prisma.passwordHistory.create({
+      data: {
+        user_id: updatedUser.id,
+        created_by: user.id,
+        password_hash: updatedUser.password,
+      }
+    })
+
     //delete the token or mark it used
 
     //<---- this section will delete the generated reset token in db upon changing for your new password -->
@@ -150,7 +158,7 @@ export class AuthService {
     }
 
     const admin = `${actingUser.employee.person.first_name} ${actingUser.employee.person.last_name}`;
-    const adminPos = actingUser.employee.position.name;
+    const adminPos = actingUser.employee.position?.name;
 
     // scalable approach
     const allowedRoles = ['Administrator', 'Super Administrator', 'Manager'];
@@ -506,7 +514,7 @@ export class AuthService {
     const payload = {
       userUUID: userValidate.id,
       tokenVersion: userValidate.token_version,
-      department_id: userValidate.employee.department_id,
+      department_id: userValidate.employee.department_id ?? '',
       name: userValidate.username,
       issuedAt: issuedAt,
     };
@@ -528,7 +536,7 @@ export class AuthService {
     const requestUser: RequestUser = {
       id: userValidate.id,
       email: userValidate.email,
-      department_id: userValidate.employee.department_id,
+      department_id: userValidate.employee.department_id ?? '',
       security_clearance_level: userValidate.security_clearance_level ?? 0,
       roles: mapRolesToRequestUser(userValidate.user_roles),
     };
@@ -687,9 +695,9 @@ export class AuthService {
       data: {
         id: user.id,
         full_name: [
-          employee.person.first_name,
-          employee.person.middle_name,
-          employee.person.last_name,
+          employee.person?.first_name,
+          employee.person?.middle_name,
+          employee.person?.last_name,
         ]
           .filter(Boolean)
           .join(' '),
@@ -700,9 +708,9 @@ export class AuthService {
               name: employee.department.name,
             }
           : null,
-        company: employee.company.name,
-        division: employee.division.name,
-        position: employee.position.name,
+        company: employee.company?.name,
+        division: employee.division?.name,
+        position: employee.position?.name,
         security_clearance_level: user.security_clearance_level ?? 0,
 
         roles: user.user_roles.map((ur) => {

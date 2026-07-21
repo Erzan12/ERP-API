@@ -185,13 +185,13 @@ export class SubModuleActionService {
       },
     });
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     return {
       status: 'success',
       message: `Added new Sub Module action successfully`,
-      created_by: `${userName} - ${userPos}`,
+      created_by: `${userName} - ${userPosition}`,
       subModuleAction,
     };
   }
@@ -268,8 +268,8 @@ export class SubModuleActionService {
       },
     });
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     return {
       status: 'success',
@@ -277,7 +277,7 @@ export class SubModuleActionService {
       updated_by: {
         id: requestUser.id,
         name: userName,
-        position: userPos,
+        position: userPosition,
       },
       data: {
         updateSubModulePermission,

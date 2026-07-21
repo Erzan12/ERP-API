@@ -497,8 +497,8 @@ export class RoleService {
       throw new BadRequestException('Role already exist! Try again');
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     const role = await this.prisma.role.create({
       data: {
@@ -569,8 +569,8 @@ export class RoleService {
       throw new BadRequestException('Role does not exist!');
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     const role = await this.prisma.role.update({
       where: { id: roleId },
@@ -807,8 +807,8 @@ export class RoleService {
       message = `Added ${createdCount} permission(s), removed ${deletedCount} permission(s).`;
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     return {
       status: 'success',
@@ -1000,8 +1000,8 @@ export class RoleService {
   //     message = `Added ${createdCount} permission(s), removed ${deactivatedCount} permission(s), restored ${reactivatedCount} permission(s).`;
   //   }
 
-  //   const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-  //   const userPosition = requestUser.employee.position.name;
+  //   const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+  //   const userPosition = requestUser.employee.position?.name;
 
   //   return {
   //     status: 'success',
@@ -1252,8 +1252,8 @@ export class RolePermissionService {
   //     message = `Added ${createdCount} permission(s), removed ${deletedCount} permission(s).`;
   //   }
 
-  //   const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-  //   const userPosition = requestUser.employee.position.name;
+  //   const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+  //   const userPosition = requestUser.employee.position?.name;
 
   //   return {
   //     status: 'success',

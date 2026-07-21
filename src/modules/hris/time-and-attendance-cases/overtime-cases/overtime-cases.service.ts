@@ -4,16 +4,63 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { OvertimeStatus, Prisma } from '@prisma/client';
+import { EmployeeType, EmploymentHistoryType, OvertimeStatus, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 import { OvertimeCasesPaginationDto } from 'src/utils/dtos/overtime-cases-pagination.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { OvertimeCaseDto } from './dto/overtime-case.dto';
+import { CreateOvertimeCaseDto } from './dto/overtime-case.dto';
 
 @Injectable()
 export class OvertimeCasesService {
   constructor(private readonly prisma: PrismaService) {}
+
+  // Current Employment helper
+  private async getCurrentEmploymentValue(
+    employeeId: string,
+    type: EmploymentHistoryType,
+  ) {
+      const history = await this.prisma.employmentHistory.findFirst({
+          where: {
+              employee_id: employeeId,
+              type,
+          },
+          orderBy: {
+              effectivity_date: 'desc',
+          },
+      });
+
+      return history?.current_id ?? null;
+  }
+
+  // Calculate total hours based on time from and time to
+  private calculateTotalHours(
+    timeFrom: string,
+    timeTo: string,
+  ): number {
+    const [fromHour, fromMinute, fromSecond] = timeFrom.split(':').map(Number);
+    const [toHour, toMinute, toSecond] = timeTo.split(':').map(Number);
+
+    const from = new Date();
+    from.setHours(fromHour, fromMinute, fromSecond, 0);
+
+    const to = new Date();
+    to.setHours(toHour, toMinute, toSecond, 0);
+
+    // Handle overnight OT (e.g. 22:00 -> 02:00)
+    if (to < from) {
+      to.setDate(to.getDate() + 1);
+    }
+
+    const diffMs = to.getTime() - from.getTime();
+
+    return Number((diffMs / (1000 * 60 * 60)).toFixed(2));
+  }
+
+  // Combine ot_date with the time\
+  private combineDateAndTime(date: string, time: string): Date {
+    return new Date(`${date}T${time}`);
+  }
 
   async getOvertimeCase(user: RequestUser, overtimeRequestId: string) {
     // Auth check first
@@ -298,13 +345,13 @@ export class OvertimeCasesService {
     };
   }
 
-  async createOvertimeCase(user: RequestUser, dto: OvertimeCaseDto) {
+  async createOvertimeCase(user: RequestUser, dto: CreateOvertimeCaseDto) {
     const {
       employee_id,
       // vessel_id,
-      // overtime_rate_id,
+      overtime_rate_id,
       date_filed,
-      ot_date,
+      overtime_date,
       time_from,
       time_to,
       // reason,
@@ -346,12 +393,12 @@ export class OvertimeCasesService {
       );
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    // return await this.prisma.$transaction(async (tx) => {
       if (date_filed === null) {
         throw new BadRequestException('Date file cannot be empty!');
       }
 
-      if (ot_date === null) {
+      if (overtime_date === null) {
         throw new BadRequestException('OT Date cannot be empty!');
       }
 
@@ -363,10 +410,27 @@ export class OvertimeCasesService {
         throw new BadRequestException('Time to cannot be empty');
       }
 
-      const conflict = await tx.hrOvertimeRequest.findFirst({
+      const employee = await this.prisma.employee.findUnique({
+        where: {
+          id: employee_id,
+        },
+        select: {
+          id: true,
+          employee_type: true,
+          user_location_id: true,
+          vessel_id: true,
+          employment_history: true,
+        },
+      });
+
+      if (!employee) {
+        throw new NotFoundException('Employee not found');
+      }
+
+      const conflict = await this.prisma.hrOvertimeRequest.findFirst({
         where: {
           employee_id: employee_id,
-          ot_date: ot_date,
+          overtime_date: new Date(dto.overtime_date),
           status: {
             notIn: [OvertimeStatus.cancelled, OvertimeStatus.rejected],
           },
@@ -379,33 +443,146 @@ export class OvertimeCasesService {
         );
       }
 
-      // const employeeSalary = await tx.employee.findFirst({
-      //   where: { id: employee_id, salary: { not: 0 } },
-      //   select: {
-      //     id: true,
-      //     employee_id: true,
-      //     salary: true,
-      //   },
-      // });
+      let vesselId: string | null = null;
+      let userLocationId: string | null = null;
 
-      // const overtimeRate = await tx.hrOvertimeRate.findFirst({
-      //   where: { id: overtime_rate_id, is_active: true },
-      //   select: {
-      //     id: true,
-      //     type: true,
-      //   },
-      // });
+      // console.log(employee.employee_type);
+      // console.log(EmployeeType.land_based);
+      // console.log(await this.getCurrentEmploymentValue(
+      //     employee_id,
+      //     EmploymentHistoryType.employee_location,
+      // ));
 
-      // const overtimeRequest = await tx.hrOvertimeRequest.create({
-      //     data: {
-      //         employee_id,
-      //         vessel_id,
-      //         overtime_rate_id,
-      //         date_filed,
-      //         ot_date,
+      if (EmployeeType.land_based) {
+        userLocationId = await this.getCurrentEmploymentValue(
+            employee_id,
+            EmploymentHistoryType.employee_location,
+        );
 
-      //     }
-      // })
-    });
+        console.log('Assigned userLocationId:', userLocationId);
+
+        if (!userLocationId) {
+            throw new BadRequestException(
+                'Employee has no assigned work location.',
+            );
+        }
+      }
+
+      const salaryGradeId = await this.getCurrentEmploymentValue(
+        employee_id,
+        EmploymentHistoryType.salary_grade,
+      );
+
+      if (!salaryGradeId) {
+        throw new BadRequestException(
+          'Employee has no assigned salary grade.',
+        );
+      }
+
+      const salaryGrade = await this.prisma.salaryGrade.findUnique({
+        where: {
+            id: salaryGradeId,
+        },
+      });
+
+      const workingDays = EmployeeType.land_based
+        ? 26.08
+        : 30;
+
+      const monthlySalary = Number(salaryGrade?.rate);
+
+      const dailyRate = monthlySalary / workingDays;
+
+      const hourlyRate = dailyRate / 8;
+
+      const perMinuteRate = hourlyRate / 60;
+
+      // if (employee.employee_type === EmployeeType.sea_based) {
+      //   vesselId = await this.getCurrentEmploymentValue(
+      //       employee_id,
+      //       EmploymentHistoryType.vessel,
+      //   );
+
+      //   if (!vesselId) {
+      //       throw new BadRequestException(
+      //           'Employee has no assigned vessel.',
+      //       );
+      //   }
+      // }
+
+      if (vesselId) {
+        const vessel = await this.prisma.vessel.findUnique({
+          where: { id: vesselId },
+        });
+
+        if (!vessel) {
+          throw new BadRequestException('Invalid vessel.');
+        }
+      }
+
+      // if (userLocationId) {
+      //   const location = await this.prisma.userLocation.findUnique({
+      //     where: { id: userLocationId },
+      //   });
+
+      //   if (!location) {
+      //     throw new BadRequestException('Invalid work location.');
+      //   }
+      // }
+
+      const totalHours = this.calculateTotalHours(
+        time_from ?? '',
+        time_to ?? '',
+      );
+      
+      const totalMinutes = totalHours * 60;
+
+      const basicPay = totalMinutes * perMinuteRate;
+
+      const timeFrom = this.combineDateAndTime(dto.overtime_date, dto.time_from!);
+      let timeTo = this.combineDateAndTime(dto.overtime_date, dto.time_to!);
+
+      // Overnight OT (22:00 -> 02:00)
+      if (timeTo < timeFrom) {
+        timeTo.setDate(timeTo.getDate() + 1);
+      }
+
+      const overtimeRate = await this.prisma.hrOvertimeRate.findUnique({
+        where: {
+            id: overtime_rate_id,
+        },
+      });
+
+      const computedRate =
+        basicPay * Number(overtimeRate?.rate);
+
+      console.log({
+        vesselId,
+        userLocationId,
+      });
+
+      const overtimeRequest = await this.prisma.hrOvertimeRequest.create({
+        data: {
+          employee_id,
+          vessel_id: dto.vessel_id,
+          user_location_id: userLocationId,
+          overtime_rate_id: dto.overtime_rate_id,
+          date_filed: new Date(dto.date_filed),
+          overtime_date: new Date(dto.overtime_date),
+          time_from: timeFrom,
+          time_to: timeTo,
+          total_hours: totalHours,
+          rate: computedRate,
+          reason: dto.reason,
+          created_by: user.id,
+        }
+      })
+
+      return {
+        status: 'success',
+        message: 'Overtime Request created',
+        overtimeRequest,
+      }
+    // });
   }
 }
