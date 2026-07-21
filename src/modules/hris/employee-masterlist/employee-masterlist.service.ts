@@ -11,7 +11,7 @@ import {
   UpdateEmployeeWithDetailsDto,
 } from './dto/employee-person.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Gender, CivilStatus, Prisma } from '@prisma/client';
+import { Gender, CivilStatus, Prisma, EmploymentHistoryType } from '@prisma/client';
 
 @Injectable()
 export class EmployeeMasterlistService {
@@ -55,7 +55,7 @@ export class EmployeeMasterlistService {
       );
     }
 
-    return await this.prisma.$transaction(async (prisma) => {
+    return await this.prisma.$transaction(async (tx) => {
       try {
         const { gender, civil_status } = dto.person;
 
@@ -69,19 +69,19 @@ export class EmployeeMasterlistService {
           );
         }
 
-        const company = await prisma.company.findUnique({
+        const company = await tx.company.findUnique({
           where: { id: dto.employee.company_id },
         });
         if (!company) throw new BadRequestException('Invalid company_id');
 
-        const department = await prisma.department.findUnique({
+        const department = await tx.department.findUnique({
           where: { id: dto.employee.department_id },
         });
         if (!department) throw new BadRequestException('Invalid department_id');
 
         const companyId = dto.employee.company_id;
 
-        const existingPerson = await prisma.person.findFirst({
+        const existingPerson = await tx.person.findFirst({
           where: {
             email: dto.person.email,
           },
@@ -89,7 +89,7 @@ export class EmployeeMasterlistService {
 
         if (existingPerson) {
           //optionally, check if they're already employed
-          const existingEmployee = await prisma.employee.findFirst({
+          const existingEmployee = await tx.employee.findFirst({
             where: {
               person_id: existingPerson.id,
               company_id: dto.employee.company_id,
@@ -106,7 +106,7 @@ export class EmployeeMasterlistService {
         }
         const person =
           existingPerson ??
-          (await prisma.person.create({
+          (await tx.person.create({
             data: {
               first_name: dto.person.first_name,
               middle_name: dto.person.middle_name,
@@ -120,13 +120,13 @@ export class EmployeeMasterlistService {
 
         const hireDate = new Date(dto.employee.hire_date);
         const generatedEmpID = await this.createUniqueEmpID(
-          prisma,
+          tx,
           companyId,
           hireDate,
         );
 
         // double check this person isn't already employed
-        const employeeCheck = await prisma.employee.findFirst({
+        const employeeCheck = await tx.employee.findFirst({
           where: {
             person_id: person.id,
             company_id: companyId,
@@ -139,7 +139,7 @@ export class EmployeeMasterlistService {
           );
         }
 
-        const employee = await prisma.employee.create({
+        const employee = await tx.employee.create({
           data: {
             person_id: person.id,
             employee_id: generatedEmpID,
@@ -161,7 +161,86 @@ export class EmployeeMasterlistService {
           },
         });
 
-        const requestUser = await prisma.user.findUnique({
+        const histories = [
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.company,
+            current_id: employee.company_id,
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.department,
+            current_id: employee.department_id,
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.position,
+            current_id: employee.position_id ?? '',
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.division,
+            current_id: employee.division_id,
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.vessel,
+            current_id: employee.vessel_id ?? '',
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.employee_location,
+            current_id: employee.user_location_id ?? '',
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.salary_grade,
+            current_id: employee.salary_grade_id,
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.employment_status,
+            current_id: employee.employment_status_id,
+            previous_id: null,
+            effectivity_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment', 
+          },
+        ].filter(h => h.current_id);
+
+        await tx.employmentHistory.createMany({
+          data: histories,
+        })
+
+        const requestUser = await tx.user.findUnique({
           where: { id: user.id },
           include: {
             employee: {
@@ -427,7 +506,7 @@ export class EmployeeMasterlistService {
               name: true,
             },
           },
-          //to include division in employee schema
+          // to include division in employee schema
           position: {
             select: {
               name: true,
@@ -438,6 +517,21 @@ export class EmployeeMasterlistService {
               label: true,
             },
           },
+          vessel: {
+            select: {
+              name: true,
+            }
+          },
+          user_location: {
+            select: {
+              location_name: true,
+            }
+          },
+          // employment_history: {
+          //   select: {
+          //     current_id: true,
+          //   }
+          // },
           employment_type: true,
           employee_type: true,
           hire_date: true,
