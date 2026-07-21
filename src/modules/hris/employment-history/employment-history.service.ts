@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { EmploymentHistory, EmploymentHistoryType } from '@prisma/client';
+import { Employee, EmploymentHistory, EmploymentHistoryType } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Repository } from './type/employment-history.type';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -30,103 +30,29 @@ export class EmploymentHistoryService {
     };
   }
 
-  private async resolve(type: EmploymentHistoryType, id?: string | null) {
+  private async resolve(type: EmploymentHistoryType, id?: string |null) {
     if (!id) return null;
 
-    switch (type) {
-      case 'department':
-        return this.prisma.department.findUnique({
-          where: { id },
-        });
+    const repo = this.repositories[type];
 
-      case 'division':
-        return this.prisma.division.findUnique({
-          where: { id },
-        });
+    if (!repo) return null;
 
-      case 'position':
-        return this.prisma.position.findUnique({
-          where: { id },
-        });
-
-      case 'salary_grade':
-        return this.prisma.salaryGrade.findUnique({
-          where: { id },
-        });
-
-      case 'employment_status':
-        return this.prisma.employmentStatus.findUnique({
-          where: { id },
-        });
-
-      case 'vessel':
-        return this.prisma.vessel.findUnique({
-          where: { id },
-        });
-
-      case 'employee_location':
-        return this.prisma.userLocation.findUnique({
-          where: { id },
-        });
-
-      default:
-        return this.prisma.company.findUnique({
-          where: { id },
-          select: {
-            id: true,
-            name: true,
-          }
-        });
-    }
+    return repo.findUnique({
+        where: { id },
+    });
   }
 
   async resolveEmploymentHistory(history: EmploymentHistory) {
-    switch (history.type) {
-      case EmploymentHistoryType.department:
-        return {
-          previous: history.previous_id
-            ? await this.prisma.department.findUnique({
-                where: { id: history.previous_id },
-              })
-            : null,
+    const [previous, current] = await Promise.all([
+      this.resolve(history.type, history.previous_id),
+      this.resolve(history.type, history.current_id),
+    ]);
 
-          current: history.current_id
-            ? await this.prisma.department.findUnique({
-                where: { id: history.current_id },
-              })
-            : null,
-        };
-
-      case EmploymentHistoryType.position:
-        return {
-          previous: history.previous_id
-            ? await this.prisma.position.findUnique({
-                where: { id: history.previous_id },
-              })
-            : null,
-
-          current: history.current_id
-            ? await this.prisma.position.findUnique({
-                where: { id: history.current_id },
-              })
-            : null,
-        };
-
-      case EmploymentHistoryType.salary_grade:
-        return {
-          previous: history.previous_id
-            ? await this.prisma.salaryGrade.findUnique({
-                where: { id: history.previous_id },
-              })
-            : null,
-
-          current: history.current_id
-            ? await this.prisma.salaryGrade.findUnique({
-                where: { id: history.current_id },
-              })
-            : null,
-        };
-    }
+    return {
+      ...history,
+      previous,
+      current,
+    };
   }
 
   async getEmploymentHistories(user: RequestUser, employeeId: string) {
@@ -222,22 +148,48 @@ export class EmploymentHistoryService {
       throw new BadRequestException('Invalid current record.');
     }
 
-    const employmentHistory = await this.prisma.employmentHistory.create({
-      data: {
-        employee_id: employeeId,
-        type: dto.type,
-        previous_id: previousId,
-        current_id: dto.current_id,
-        effectivity_date: new Date(dto.effectivity_date),
-        remarks: dto.remarks,
-        created_by: user.id,
-      },
-    });
+    return this.prisma.$transaction(async (tx) => {
+      const employmentHistory = await tx.employmentHistory.create({
+        data: {
+          employee_id: employeeId,
+          type: dto.type,
+          previous_id: previousId,
+          current_id: dto.current_id,
+          effectivity_date: new Date(dto.effectivity_date),
+          remarks: dto.remarks,
+          created_by: user.id,
+        },
+      });
 
-    return {
-      status: 'success',
-      message: 'Employment history successfully created',
-      employmentHistory,
-    };
+      const employeeFieldMap: Partial<Record<EmploymentHistoryType, keyof Employee>> = {
+        company: 'company_id',
+        division: 'division_id',
+        department: 'department_id',
+        position: 'position_id',
+        vessel: 'vessel_id',
+        employment_status: 'employment_status_id',
+        employee_location: 'user_location_id',
+        // salary_grade: 
+      };
+
+      const employeeField = employeeFieldMap[dto.type];
+
+      if (employeeField) {
+        await tx.employee.update({
+          where: {
+            id: employeeId,
+          },
+          data: {
+            [employeeField]: dto.current_id,
+          },
+        });
+      }
+
+      return {
+        status: 'success',
+        message: 'Employment history successfully created',
+        employmentHistory,
+      };
+    })
   }
 }
