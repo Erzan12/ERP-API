@@ -142,88 +142,186 @@ async function main() {
     },
   });
 
+  const adminName = 'Administrator';
+
    // 5. Create Modules
   const adminModule = await prisma.module.create({
     data: {
       name: 'Administrator',
+      slug: adminName
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const managerName = 'Managers Access';
 
   const managerModule = await prisma.module.create({
     data: {
       name: 'Managers Access',
+      slug: managerName
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const corpoServ = 'Corporate Services';
   
   const corpServicesModule = await prisma.module.create({
     data: {
-      name: 'Corporate Services',
+      name: corpoServ,
+      slug: corpoServ
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const humanResource = 'Human Resources';
 
   const hrModule = await prisma.module.create({
     data: {
-      name: 'Human Resources',
+      name: humanResource,
+      slug: humanResource
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const payroll = 'Payroll';
 
   const payrollModule = await prisma.module.create({
     data: {
-      name: 'Payroll',
+      name: payroll,
+      slug: payroll
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const purchasing = 'Purchasing';
 
   const purchasingModule = await prisma.module.create({
     data: {
-      name: 'Purchasing',
+      name: purchasing,
+      slug: purchasing
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const inventory = 'Inventory';
 
   const inventoryModule = await prisma.module.create({
     data: {
-      name: 'Inventory',
+      name: inventory,
+      slug: inventory
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const accounting = 'Accounting';
 
   const accountingModule = await prisma.module.create({
     data: {
-      name: 'Accounting',
+      name: accounting,
+      slug: accounting
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const finance = 'Finance';
 
   const financeModule = await prisma.module.create({
     data: {
-      name: 'Finance',
+      name: finance,
+      slug: finance
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const marketing = 'Marketing And Operations';
 
   const markopsModule = await prisma.module.create({
     data: {
-      name: 'Marketing & Operations',
+      name: marketing,
+      slug: marketing
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const assetMan = 'Asset Management';
 
   const assetModule = await prisma.module.create({
     data: {
-      name: 'Asset Management',
+      name: assetMan,
+      slug: assetMan
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const compliance = 'Compliance';
 
   const complianceModule = await prisma.module.create({
     data: {
-      name: 'Compliance',
+      name: compliance,
+      slug: compliance
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
+
+  const itHelpdesk = 'IT Helpdesk';
 
   const itModule = await prisma.module.create({
     data: {
-      name: 'IT Helpdesk',
+      name: itHelpdesk,
+      slug: itHelpdesk
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
 
+  const employee = 'Employee Dashboard';
+
   const employeeModule = await prisma.module.create({
     data: {
-      name: 'Employee Dashboard',
+      name: employee,
+      slug: employee
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-_]/g, ''),
     },
   });
 
