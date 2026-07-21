@@ -115,6 +115,14 @@ export class AuthService {
       },
     });
 
+    await this.prisma.passwordHistory.create({
+      data: {
+        user_id: updatedUser.id,
+        created_by: user.id,
+        password_hash: updatedUser.password,
+      }
+    })
+
     //delete the token or mark it used
 
     //<---- this section will delete the generated reset token in db upon changing for your new password -->
