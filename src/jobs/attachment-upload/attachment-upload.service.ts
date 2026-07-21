@@ -93,7 +93,7 @@ export class AttachmentUploadService {
       return null;
     }
 
-    let avatarOptional: string | null = null;
+    const avatarOptional: string | null = null;
 
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
