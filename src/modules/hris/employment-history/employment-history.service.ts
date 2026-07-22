@@ -175,6 +175,7 @@ export class EmploymentHistoryService {
         vessel: 'vessel_id',
         employment_status: 'employment_status_id',
         employee_location: 'user_location_id',
+        salary_grade: 'salary_grade_id',
         // salary_grade:
       };
 
