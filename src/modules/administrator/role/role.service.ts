@@ -1037,7 +1037,6 @@ export class RolePermissionService {
       Record<string, GroupedPermission>
     >((acc, permission) => {
       const subModule = permission.sub_module_permission.sub_module;
-      const subModuleCode = permission.sub_module_permission ?? undefined;
       const subModuleId = subModule.id;
 
       if (!acc[subModuleId]) {
