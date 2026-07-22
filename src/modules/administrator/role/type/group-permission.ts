@@ -12,6 +12,7 @@ export type GroupedPermission = {
   actions: {
     role_permission_id: string;
     sub_module_permission_id: string;
+    code: string;
     action: string;
   }[];
   sub_module: {
