@@ -1,6 +1,6 @@
 DROP MATERIALIZED VIEW IF EXISTS "RegularizationEligibility";
 
-CREATE MATERIALIZED VIEW "RegularizationEligibility" AS
+CREATE VIEW "RegularizationEligibility" AS
 SELECT 
     e.id AS "employeeId",
     e.hire_date,
@@ -21,6 +21,3 @@ LEFT JOIN "Department" d ON e.department_id = d.id
 WHERE es.code = 'PROBATIONARY'
   AND e.hire_date <= CURRENT_DATE
   AND e.hire_date >= (CURRENT_DATE - INTERVAL '6 months');
-
--- Indexing the employeeId for fast lookups/joins
-CREATE UNIQUE INDEX "RegularizationEligibility_employeeId_idx" ON "RegularizationEligibility"("employeeId");

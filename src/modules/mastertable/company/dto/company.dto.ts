@@ -167,6 +167,7 @@ export class UpdateCompanyDto {
   abbreviation?: string;
 
   @IsBoolean()
+  @IsOptional()
   @IsDefined()
   @ApiProperty({
     example: 'true or false',

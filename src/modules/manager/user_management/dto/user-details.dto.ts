@@ -24,13 +24,13 @@ export class UserDetailsDto {
   })
   email: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 'avegabros',
-    description: 'Password for the new user',
-  })
-  password: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // @ApiProperty({
+  //   example: 'avegabros',
+  //   description: 'Password for the new user',
+  // })
+  // password: string;
 
   @IsOptional()
   @IsString()
@@ -40,4 +40,8 @@ export class UserDetailsDto {
     description: 'The role to be assign to a user',
   })
   role_id?: string;
+
+  @IsOptional()
+  @IsString()
+  avatar?: string;
 }

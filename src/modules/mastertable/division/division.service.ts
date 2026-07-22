@@ -267,8 +267,8 @@ export class DivisionService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     return {
       status: 'success',
@@ -276,7 +276,7 @@ export class DivisionService {
       created_by: {
         id: requestUser.id,
         name: userName,
-        position: userPos,
+        position: userPosition,
       },
       division: division,
     };
@@ -324,8 +324,8 @@ export class DivisionService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     return {
       status: 'success',
