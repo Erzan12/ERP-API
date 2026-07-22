@@ -24,6 +24,10 @@ export class RoleService {
   private formatRolePermissions(role: RoleWithPermissions) {
     const { role_permissions, ...rest } = role;
 
+    // console.dir(role.role_permissions[0].sub_module_permission, {
+    //   depth: null,
+    // });
+
     const groupedPermissions = role_permissions.reduce<
       Record<string, GroupedPermission>
     >((acc, permission) => {
@@ -45,6 +49,7 @@ export class RoleService {
       acc[subModuleId].actions.push({
         role_permission_id: permission.id,
         sub_module_permission_id: permission.sub_module_permission.id,
+        code: permission.sub_module_permission.code ?? '',
         action: permission.sub_module_permission.action,
       });
 
@@ -173,6 +178,7 @@ export class RoleService {
                   id: true,
                   sub_module_action_id: true,
                   action: true,
+                  code: true,
                   sub_module: {
                     select: {
                       id: true,
@@ -1048,6 +1054,7 @@ export class RolePermissionService {
       acc[subModuleId].actions.push({
         role_permission_id: permission.id,
         sub_module_permission_id: permission.sub_module_permission.id,
+        code: permission.sub_module_permission.code ?? '',
         action: permission.sub_module_permission.action,
       });
 
