@@ -77,7 +77,7 @@ export class AttachmentUploadService {
   // with minion cloud storage
   async avatarUpload(
     params: {
-      file: Express.Multer.File;
+      file?: Express.Multer.File;
       transaction_type: string;
       transaction_id: string;
       document_type?: string;
@@ -92,6 +92,8 @@ export class AttachmentUploadService {
     if (!file) {
       return null;
     }
+
+    const avatarOptional: string | null = null;
 
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -148,7 +150,7 @@ export class AttachmentUploadService {
 
     return {
       ...user,
-      avatar_url: avatarUrl,
+      avatar_url: avatarOptional,
     };
   }
 }

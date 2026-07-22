@@ -60,6 +60,35 @@ enum EmployeeType {
   sea_based
 }
 
+enum EmploymentHistoryType {
+  // Organization
+  company
+  division
+  department
+  section
+  sub_section
+
+  // Job
+  position
+  salary_grade
+  employment_status
+
+  // Assignment
+  vessel
+  employee_location
+  developmental_assignment
+}
+
+enum EmployeeStatusPeriodType {
+  active
+  leave
+  suspension
+  floating
+  training
+  maternity_leave
+  paternity_leave
+}
+
 enum SeaBasedCategory {
   all_ranks
   all_officers
@@ -445,6 +474,8 @@ model User {
   PasswordHistoryUpdatedBy                 PasswordHistory[]                  @relation("PasswordHistoryUpdatedBy")
   SalaryGradeCreatedBy                     SalaryGrade[]                      @relation("SalaryGradeCreatedBy")
   SalaryGradeUpdatedBy                     SalaryGrade[]                      @relation("SalaryGradeUpdatedBy")
+  HrEmployeeStatusPeriodCreatedBy          HrEmployeeStatusPeriod[]           @relation("HrEmployeeStatusPeriodCreatedBy")
+  HrEmployeeStatusPeriodUpdatedBy          HrEmployeeStatusPeriod[]           @relation("HrEmployeeStatusPeriodUpdatedBy")
 
   // Workflow action
   workflow_actions  WorkflowAction[]
@@ -493,6 +524,8 @@ model UserLocation {
   careerPosting CareerPosting[]
   employee      Employee[]
   companies     Company[]
+
+  overtimes     HrOvertimeRequest[]
 
   @@index([location_name])
   @@index([address_line_1])
@@ -677,12 +710,14 @@ model Employee {
   person_id                 String          @unique @db.Uuid
   employee_id               String          @unique
   department_id             String          @db.Uuid
-  position_id               String          @db.Uuid
+  position_id               String?         @db.Uuid
   division_id               String          @db.Uuid
   user_id                   String?         @db.Uuid
+  vessel_id                 String?         @db.Uuid
   user_location_id          String?         @db.Uuid
+  salary_grade_id           String?         @db.Uuid
   hire_date                 DateTime
-  salary                    Decimal
+  salary                    Decimal?
   pay_frequency             String
   employment_status_id      String          @db.Uuid
   employment_type           EmploymentType?
@@ -712,13 +747,16 @@ model Employee {
   company           Company          @relation(fields: [company_id], references: [id])
   department        Department       @relation(fields: [department_id], references: [id])
   person            Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
-  position          Position         @relation(fields: [position_id], references: [id])
+  position          Position?        @relation(fields: [position_id], references: [id])
   division          Division         @relation(fields: [division_id], references: [id])
   user_location     UserLocation?    @relation(fields: [user_location_id], references: [id])
+  vessel            Vessel?          @relation(fields: [vessel_id], references: [id])
+  salary_grade      SalaryGrade?     @relation(fields: [salary_grade_id], references: [id])
 
-  user                      User?
-  employment_history        EmploymentHistory[]
-  regularizationEligibility RegularizationEligibility?
+  user                        User?
+  employment_history          EmploymentHistory[]
+  hr_employee_status_period   HrEmployeeStatusPeriod[]
+  regularizationEligibility   RegularizationEligibility?
 
   // Leave system
   leave_balances     HrLeaveBalance[]
@@ -741,16 +779,14 @@ model Employee {
 model EmploymentHistory {
   id                String           @id @default(uuid()) @db.Uuid
   employee_id       String           @db.Uuid
-  effective_date    DateTime
-  value_changed     String
-  from_val          String
-  to_val            String
-  from_date         DateTime
-  to_date           DateTime
-  remarks           String
+  effectivity_date  DateTime
+  type              EmploymentHistoryType
+
+  previous_id       String? @db.Uuid
+  current_id        String? @db.Uuid
+
+  remarks           String?
   is_active         Boolean          @default(true)
-  evaluation_stage  EvaluationStage  @default(third_month_evaluation)
-  evaluation_status EvaluationStatus @default(for_evaluation)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -761,7 +797,43 @@ model EmploymentHistory {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  hr_employee_status_period  HrEmployeeStatusPeriod[]
+
   employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  @@index([employee_id])
+  @@index([effectivity_date])
+  @@index([employee_id, effectivity_date])
+}
+
+model HrEmployeeStatusPeriod {
+  id   String @id @default(uuid()) @db.Uuid
+
+  employee_id           String  @db.Uuid
+  employment_history_id String? @db.Uuid
+
+  status      EmployeeStatusPeriodType
+
+  from_date   DateTime
+  to_date     DateTime?
+
+  remarks     String?
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("HrEmployeeStatusPeriodCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrEmployeeStatusPeriodUpdatedBy", fields: [updated_by], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  employment_history EmploymentHistory? @relation(fields: [employment_history_id], references: [id], onDelete: Cascade)
+  employee           Employee           @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  @@index([employee_id])
+  @@index([from_date])
+  @@index([to_date])
 }
 
 model Vessel {
@@ -785,6 +857,7 @@ model Vessel {
   
   vesselDetails VesselDetails?
   overtimes     HrOvertimeRequest[] 
+  employee      Employee[]
 
   @@index([company_id])
 }
@@ -857,8 +930,8 @@ model HrEmployeeEvaluation {
   stage  EvaluationStage
   status EvaluationStatus @default(for_evaluation)
 
-  probation_date      DateTime
-  regularization_date DateTime
+  evaluation_period_start  DateTime
+  evaluation_period_end    DateTime
 
   is_active Boolean @default(true)
 
@@ -1290,9 +1363,10 @@ model HrOvertimeRequest {
   id                 String    @id @default(uuid()) @db.Uuid
   employee_id        String    @db.Uuid
   vessel_id          String?   @db.Uuid
+  user_location_id   String?   @db.Uuid
   overtime_rate_id   String?   @db.Uuid
   date_filed         DateTime  @default(now()) 
-  ot_date            DateTime
+  overtime_date      DateTime
   time_from          DateTime?   @db.Time
   time_to            DateTime?   @db.Time
   total_hours        Float
@@ -1300,7 +1374,7 @@ model HrOvertimeRequest {
   reason             String?   @db.Text
   is_active          Boolean   @default(true)
   status             OvertimeStatus @default(draft)
-  computed           Boolean?  @default(false)
+  is_computed        Boolean?  @default(false)
   
   created_by   String? @db.Uuid
   updated_by   String? @db.Uuid
@@ -1313,6 +1387,7 @@ model HrOvertimeRequest {
 
   employee           Employee  @relation(fields: [employee_id], references: [id], onDelete: Cascade)
   vessel             Vessel?   @relation(fields: [vessel_id], references: [id])
+  userLocation       UserLocation?   @relation(fields: [user_location_id], references: [id])  
   overtimeRate       HrOvertimeRate? @relation(fields: [overtime_rate_id], references: [id])
 
   @@index([employee_id, vessel_id, overtime_rate_id])
@@ -1407,6 +1482,8 @@ model SalaryGrade {
 
   createdBy User? @relation("SalaryGradeCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("SalaryGradeUpdatedBy", fields: [updated_by], references: [id])
+
+  employee Employee[]
 }
 
 ////////////////////////////////////////
