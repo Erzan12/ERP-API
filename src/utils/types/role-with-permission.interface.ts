@@ -39,6 +39,7 @@ export type RoleWithPermissions = Prisma.RoleGetPayload<{
             id: true;
             action: true;
             sub_module_action_id: true;
+            code: true;
             sub_module: {
               select: {
                 id: true;
@@ -91,6 +92,7 @@ export type UserRolePermissions = Prisma.RoleGetPayload<{
         id: true;
         action: true;
         sub_module_action_id: true;
+        code: true;
         sub_module: {
           select: {
             id: true;
