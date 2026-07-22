@@ -327,6 +327,7 @@ export class SubModuleService {
           data: {
             action: actionRecord.action,
             sub_module_id: subModule.id,
+            code: `${subModule.slug}:${actionRecord.slug}`,
             sub_module_action_id: actionRecord.id,
             created_by: user.id,
           },
