@@ -532,6 +532,14 @@ export class EmployeeMasterlistService {
               location_name: true,
             },
           },
+          salary_grade: {
+            select: {
+              id: true,
+              grade: true,
+              rate: true,
+              level: true,
+            },
+          },
           // employment_history: {
           //   select: {
           //     current_id: true,
