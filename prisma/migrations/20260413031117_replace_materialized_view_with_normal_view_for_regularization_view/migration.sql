@@ -1,4 +1,4 @@
-DROP VIEW IF EXISTS "RegularizationEligibility";
+DROP MATERIALIZED VIEW IF EXISTS "RegularizationEligibility";
 
 CREATE VIEW "RegularizationEligibility" AS
 SELECT 
