@@ -15,7 +15,6 @@
   - Added the required column `evaluation_period_start` to the `HrEmployeeEvaluation` table without a default value. This is not possible if the table is not empty.
 
 */
-
 -- CreateEnum
 CREATE TYPE "EmployeeStatusPeriodType" AS ENUM ('active', 'leave', 'suspension', 'floating', 'training', 'maternity_leave', 'paternity_leave');
 
@@ -27,6 +26,7 @@ DROP COLUMN "from_val",
 DROP COLUMN "to_date",
 DROP COLUMN "to_val",
 DROP COLUMN "value_changed",
+DROP COLUMN    "type",
 ADD COLUMN     "current_id" UUID,
 ADD COLUMN     "previous_id" UUID,
 ALTER COLUMN "remarks" DROP NOT NULL;
