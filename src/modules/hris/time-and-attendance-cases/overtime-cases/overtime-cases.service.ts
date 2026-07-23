@@ -5,38 +5,39 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
-  EmployeeType,
-  EmploymentHistoryType,
-  OvertimeStatus,
+  // EmployeeType,
+  // EmploymentHistoryType,
+  // OvertimeStatus,
   Prisma,
+  // WorkflowActionType,
 } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constants';
 import { OvertimeCasesPaginationDto } from 'src/utils/dtos/overtime-cases-pagination.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateOvertimeCaseDto } from './dto/overtime-case.dto';
+// import { CreateOvertimeCaseDto } from './dto/overtime-case.dto';
 
 @Injectable()
 export class OvertimeCasesService {
   constructor(private readonly prisma: PrismaService) {}
 
   // Current Employment helper
-  private async getCurrentEmploymentValue(
-    employeeId: string,
-    type: EmploymentHistoryType,
-  ) {
-    const history = await this.prisma.employmentHistory.findFirst({
-      where: {
-        employee_id: employeeId,
-        type,
-      },
-      orderBy: {
-        effectivity_date: 'desc',
-      },
-    });
+  // private async getCurrentEmploymentValue(
+  //   employeeId: string,
+  //   type: EmploymentHistoryType,
+  // ) {
+  //   const history = await this.prisma.employmentHistory.findFirst({
+  //     where: {
+  //       employee_id: employeeId,
+  //       type,
+  //     },
+  //     orderBy: {
+  //       effectivity_date: 'desc',
+  //     },
+  //   });
 
-    return history?.current_id ?? null;
-  }
+  //   return history?.current_id ?? null;
+  // }
 
   // Calculate total hours based on time from and time to
   private calculateTotalHours(timeFrom: string, timeTo: string): number {
@@ -347,244 +348,385 @@ export class OvertimeCasesService {
     };
   }
 
-  async createOvertimeCase(user: RequestUser, dto: CreateOvertimeCaseDto) {
-    const {
-      employee_id,
-      // vessel_id,
-      overtime_rate_id,
-      date_filed,
-      overtime_date,
-      time_from,
-      time_to,
-      // reason,
-    } = dto;
+  // async createOvertimeCase(user: RequestUser, dto: CreateOvertimeCaseDto) {
+  //   const {
+  //     employee_id,
+  //     // vessel_id,
+  //     overtime_rate_id,
+  //     date_filed,
+  //     overtime_date,
+  //     time_from,
+  //     time_to,
+  //     // reason,
+  //   } = dto;
 
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
+  //   // Auth check first
+  //   const requestUser = await this.prisma.user.findUnique({
+  //     where: { id: user.id },
+  //     include: {
+  //       employee: {
+  //         include: {
+  //           person: true,
+  //           position: true,
+  //         },
+  //       },
+  //       user_roles: true,
+  //     },
+  //   });
 
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
+  //   if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+  //     throw new BadRequestException(`User does not exist.`);
+  //   }
 
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
+  //   const allowedRoles = [
+  //     'Administrator',
+  //     'Super Administrator',
+  //     'HR Administrator',
+  //     'HR Manager',
+  //     'HR Clerk',
+  //     'HR Staff',
+  //   ];
+  //   const canView = requestUser?.user_roles.some((role) =>
+  //     allowedRoles.includes(role.role_name),
+  //   );
 
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+  //   if (!canView) {
+  //     throw new ForbiddenException(
+  //       'You are not authorized to perform this action',
+  //     );
+  //   }
 
-    return await this.prisma.$transaction(async (tx) => {
-      if (date_filed === null) {
-        throw new BadRequestException('Date file cannot be empty!');
-      }
+  //   return await this.prisma.$transaction(async (tx) => {
+  //     if (date_filed === null) {
+  //       throw new BadRequestException('Date file cannot be empty!');
+  //     }
 
-      if (overtime_date === null) {
-        throw new BadRequestException('OT Date cannot be empty!');
-      }
+  //     if (overtime_date === null) {
+  //       throw new BadRequestException('OT Date cannot be empty!');
+  //     }
 
-      if (time_from === null) {
-        throw new BadRequestException('Time from cannot be empty');
-      }
+  //     if (time_from === null) {
+  //       throw new BadRequestException('Time from cannot be empty');
+  //     }
 
-      if (time_to === null) {
-        throw new BadRequestException('Time to cannot be empty');
-      }
+  //     if (time_to === null) {
+  //       throw new BadRequestException('Time to cannot be empty');
+  //     }
 
-      const employee = await tx.employee.findUnique({
-        where: {
-          id: employee_id,
-        },
-        select: {
-          id: true,
-          employee_type: true,
-          user_location_id: true,
-          vessel_id: true,
-          employment_history: true,
-          salary_grade: true,
-        },
-      });
+  //     const employee = await tx.employee.findUnique({
+  //       where: {
+  //         id: employee_id,
+  //       },
+  //       select: {
+  //         id: true,
+  //         employee_type: true,
+  //         user_location_id: true,
+  //         vessel_id: true,
+  //         employment_history: true,
+  //         salary_grade: true,
+  //       },
+  //     });
 
-      if (!employee) {
-        throw new NotFoundException('Employee not found');
-      }
+  //     if (!employee) {
+  //       throw new NotFoundException('Employee not found');
+  //     }
 
-      const conflict = await tx.hrOvertimeRequest.findFirst({
-        where: {
-          employee_id: employee_id,
-          overtime_date: new Date(dto.overtime_date),
-          status: {
-            notIn: [OvertimeStatus.cancelled, OvertimeStatus.rejected],
-          },
-        },
-      });
+  //     const conflict = await tx.hrOvertimeRequest.findFirst({
+  //       where: {
+  //         employee_id: employee_id,
+  //         overtime_date: new Date(dto.overtime_date),
+  //         status: {
+  //           notIn: [OvertimeStatus.cancelled, OvertimeStatus.rejected],
+  //         },
+  //       },
+  //     });
 
-      if (conflict) {
-        throw new BadRequestException(
-          'Conflicting OT Date exist (active request already exist)',
-        );
-      }
+  //     if (conflict) {
+  //       throw new BadRequestException(
+  //         'Conflicting OT Date exist (active request already exist)',
+  //       );
+  //     }
 
-      const vesselId: string | null = null;
-      let userLocationId: string | null = null;
+  //     const vesselId: string | null = null;
+  //     let userLocationId: string | null = null;
 
-      // console.log(employee.employee_type);
-      // console.log(EmployeeType.land_based);
-      // console.log(await this.getCurrentEmploymentValue(
-      //     employee_id,
-      //     EmploymentHistoryType.employee_location,
-      // ));
+  //     // console.log(employee.employee_type);
+  //     // console.log(EmployeeType.land_based);
+  //     // console.log(await this.getCurrentEmploymentValue(
+  //     //     employee_id,
+  //     //     EmploymentHistoryType.employee_location,
+  //     // ));
 
-      if (EmployeeType.land_based) {
-        userLocationId = await this.getCurrentEmploymentValue(
-          employee_id,
-          EmploymentHistoryType.employee_location,
-        );
+  //     if (EmployeeType.land_based) {
+  //       userLocationId = await this.getCurrentEmploymentValue(
+  //         employee_id,
+  //         EmploymentHistoryType.employee_location,
+  //       );
 
-        console.log('Assigned userLocationId:', userLocationId);
+  //       console.log('Assigned userLocationId:', userLocationId);
 
-        if (!userLocationId) {
-          throw new BadRequestException(
-            'Employee has no assigned work location.',
-          );
-        }
-      }
+  //       if (!userLocationId) {
+  //         throw new BadRequestException(
+  //           'Employee has no assigned work location.',
+  //         );
+  //       }
+  //     }
 
-      const salaryGradeId = await this.getCurrentEmploymentValue(
-        employee_id,
-        EmploymentHistoryType.salary_grade,
-      );
+  //     const salaryGradeId = await this.getCurrentEmploymentValue(
+  //       employee_id,
+  //       EmploymentHistoryType.salary_grade,
+  //     );
 
-      if (!salaryGradeId) {
-        throw new BadRequestException('Employee has no assigned salary grade.');
-      }
+  //     if (!salaryGradeId) {
+  //       throw new BadRequestException('Employee has no assigned salary grade.');
+  //     }
 
-      const workingDays = EmployeeType.land_based ? 26.08 : 30;
+  //     const workingDays = EmployeeType.land_based ? 26.08 : 30;
 
-      const monthlySalary = Number(employee.salary_grade?.rate);
+  //     const monthlySalary = Number(employee.salary_grade?.rate);
 
-      const dailyRate = monthlySalary / workingDays;
+  //     const dailyRate = monthlySalary / workingDays;
 
-      const hourlyRate = dailyRate / 8;
+  //     const hourlyRate = dailyRate / 8;
 
-      const perMinuteRate = hourlyRate / 60;
+  //     const perMinuteRate = hourlyRate / 60;
 
-      // if (employee.employee_type === EmployeeType.sea_based) {
-      //   vesselId = await this.getCurrentEmploymentValue(
-      //       employee_id,
-      //       EmploymentHistoryType.vessel,
-      //   );
+  //     // if (employee.employee_type === EmployeeType.sea_based) {
+  //     //   vesselId = await this.getCurrentEmploymentValue(
+  //     //       employee_id,
+  //     //       EmploymentHistoryType.vessel,
+  //     //   );
 
-      //   if (!vesselId) {
-      //       throw new BadRequestException(
-      //           'Employee has no assigned vessel.',
-      //       );
-      //   }
-      // }
+  //     //   if (!vesselId) {
+  //     //       throw new BadRequestException(
+  //     //           'Employee has no assigned vessel.',
+  //     //       );
+  //     //   }
+  //     // }
 
-      if (vesselId) {
-        const vessel = await tx.vessel.findUnique({
-          where: { id: vesselId },
-        });
+  //     if (vesselId) {
+  //       const vessel = await tx.vessel.findUnique({
+  //         where: { id: vesselId },
+  //       });
 
-        if (!vessel) {
-          throw new BadRequestException('Invalid vessel.');
-        }
-      }
+  //       if (!vessel) {
+  //         throw new BadRequestException('Invalid vessel.');
+  //       }
+  //     }
 
-      // if (userLocationId) {
-      //   const location = await this.prisma.userLocation.findUnique({
-      //     where: { id: userLocationId },
-      //   });
+  //     // if (userLocationId) {
+  //     //   const location = await this.prisma.userLocation.findUnique({
+  //     //     where: { id: userLocationId },
+  //     //   });
 
-      //   if (!location) {
-      //     throw new BadRequestException('Invalid work location.');
-      //   }
-      // }
+  //     //   if (!location) {
+  //     //     throw new BadRequestException('Invalid work location.');
+  //     //   }
+  //     // }
 
-      const totalHours = this.calculateTotalHours(
-        time_from ?? '',
-        time_to ?? '',
-      );
+  //     const totalHours = this.calculateTotalHours(
+  //       time_from ?? '',
+  //       time_to ?? '',
+  //     );
 
-      const totalMinutes = totalHours * 60;
+  //     const totalMinutes = totalHours * 60;
 
-      const basicPay = totalMinutes * perMinuteRate;
+  //     const basicPay = totalMinutes * perMinuteRate;
 
-      const timeFrom = this.combineDateAndTime(
-        dto.overtime_date,
-        dto.time_from!,
-      );
-      const timeTo = this.combineDateAndTime(dto.overtime_date, dto.time_to!);
+  //     const timeFrom = this.combineDateAndTime(
+  //       dto.overtime_date,
+  //       dto.time_from!,
+  //     );
+  //     const timeTo = this.combineDateAndTime(dto.overtime_date, dto.time_to!);
 
-      // Overnight OT (22:00 -> 02:00)
-      if (timeTo < timeFrom) {
-        timeTo.setDate(timeTo.getDate() + 1);
-      }
+  //     // Overnight OT (22:00 -> 02:00)
+  //     if (timeTo < timeFrom) {
+  //       timeTo.setDate(timeTo.getDate() + 1);
+  //     }
 
-      const overtimeRate = await tx.hrOvertimeRate.findUnique({
-        where: {
-          id: overtime_rate_id,
-        },
-      });
+  //     const overtimeRate = await tx.hrOvertimeRate.findUnique({
+  //       where: {
+  //         id: overtime_rate_id,
+  //       },
+  //     });
 
-      const computedRate = basicPay * Number(overtimeRate?.rate);
+  //     const computedRate = basicPay * Number(overtimeRate?.rate);
 
-      console.log({
-        vesselId,
-        userLocationId,
-      });
+  //     console.log({
+  //       vesselId,
+  //       userLocationId,
+  //     });
 
-      const overtimeRequest = await tx.hrOvertimeRequest.create({
-        data: {
-          employee_id,
-          vessel_id: dto.vessel_id,
-          user_location_id: userLocationId,
-          overtime_rate_id: dto.overtime_rate_id,
-          date_filed: new Date(dto.date_filed),
-          overtime_date: new Date(dto.overtime_date),
-          time_from: timeFrom,
-          time_to: timeTo,
-          total_hours: totalHours,
-          rate: computedRate,
-          reason: dto.reason,
-          created_by: user.id,
-        },
-      });
+  //     const overtimeRequest = await tx.hrOvertimeRequest.create({
+  //       data: {
+  //         employee_id,
+  //         vessel_id: dto.vessel_id,
+  //         user_location_id: userLocationId,
+  //         overtime_rate_id: dto.overtime_rate_id,
+  //         date_filed: new Date(dto.date_filed),
+  //         overtime_date: new Date(dto.overtime_date),
+  //         time_from: timeFrom,
+  //         time_to: timeTo,
+  //         total_hours: totalHours,
+  //         rate: computedRate,
+  //         reason: dto.reason,
+  //         created_by: user.id,
+  //       },
+  //     });
 
-      // Format time in api response
-      const response = {
-        ...overtimeRequest,
-        time_from: overtimeRequest.time_from?.toISOString().slice(11, 19),
-        time_to: overtimeRequest.time_to?.toISOString().slice(11, 19),
-      };
+  //     //query users first
+  //     const [verifierUser, approverUser, currentUser] = await Promise.all([
+  //       tx.user.findUnique({
+  //         where: {
+  //           id: dto.verifier_id,
+  //         },
+  //         select: {
+  //           id: true,
+  //           employee: {
+  //             select: {
+  //               person: {
+  //                 select: {
+  //                   first_name: true,
+  //                   middle_name: true,
+  //                   last_name: true,
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       }),
 
-      return {
-        status: 'success',
-        message: 'Overtime Request created',
-        overtimeRequest: response,
-      };
-    });
-  }
+  //       tx.user.findUnique({
+  //         where: {
+  //           id: dto.approver_id,
+  //         },
+  //         select: {
+  //           id: true,
+  //           employee: {
+  //             select: {
+  //               person: {
+  //                 select: {
+  //                   first_name: true,
+  //                   middle_name: true,
+  //                   last_name: true,
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       }),
+
+  //       tx.user.findUnique({
+  //         where: {
+  //           id: requestUser.id,
+  //         },
+  //         select: {
+  //           id: true,
+  //           employee: {
+  //             select: {
+  //               person: {
+  //                 select: {
+  //                   first_name: true,
+  //                   middle_name: true,
+  //                   last_name: true,
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       }),
+  //     ]);
+
+  //     // build names
+  //     const verifierName = verifierUser
+  //       ? [
+  //           verifierUser.employee?.person?.first_name,
+  //           verifierUser.employee?.person?.middle_name,
+  //           verifierUser.employee?.person?.last_name,
+  //         ]
+  //           .filter(Boolean)
+  //           .join(' ')
+  //       : '';
+
+  //     const approverName = approverUser
+  //       ? [
+  //           approverUser.employee?.person?.first_name,
+  //           approverUser.employee?.person?.middle_name,
+  //           approverUser.employee?.person?.last_name,
+  //         ]
+  //           .filter(Boolean)
+  //           .join(' ')
+  //       : '';
+
+  //     const creatorName = currentUser
+  //       ? [
+  //           currentUser.employee?.person?.first_name,
+  //           currentUser.employee?.person?.middle_name,
+  //           currentUser.employee?.person?.last_name,
+  //         ]
+  //           .filter(Boolean)
+  //           .join(' ')
+  //       : '';
+
+  //     await tx.workflowAction.createMany({
+  //       data: [
+  //         {
+  //           actionable_type: WORKFLOW_ENTITY.OVERTIME_REQUEST,
+  //           actionable_id: overtimeRequest.id,
+  //           action: WorkflowActionType.creation,
+  //           acted_by: requestUser.id,
+  //           metadata: {
+  //             title: 'Overtime Request created',
+  //             message: 'You have created a new Overtime Request',
+  //             user: creatorName,
+  //             role: 'creator',
+  //           },
+  //         },
+  //         {
+  //           actionable_type: WORKFLOW_ENTITY.OVERTIME_REQUEST,
+  //           actionable_id: overtimeRequest.id,
+  //           action: WorkflowActionType.verification,
+  //           acted_by: dto.verifier_id,
+  //           metadata: {
+  //             title: 'Verify Overtime Request',
+  //             message: 'You have new Verify Request',
+  //             user: verifierName,
+  //             role: 'verifier',
+  //           },
+  //           acted_at: null,
+  //         },
+  //         {
+  //           actionable_type: WORKFLOW_ENTITY.OVERTIME_REQUEST,
+  //           actionable_id: overtimeRequest.id,
+  //           action: WorkflowActionType.approval,
+  //           acted_by: dto.approver_id,
+  //           metadata: {
+  //             title: 'Approve Overtime Request',
+  //             message: 'You have a new Approval Request',
+  //             user: approverName,
+  //             role: 'approver',
+  //           },
+  //           acted_at: null,
+  //         },
+  //       ],
+  //     });
+
+  //     const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+  //     const userPosition = requestUser.employee.position?.name;
+
+  //     // Format time in api response
+  //     const response = {
+  //       ...overtimeRequest,
+  //       time_from: overtimeRequest.time_from?.toISOString().slice(11, 19),
+  //       time_to: overtimeRequest.time_to?.toISOString().slice(11, 19),
+  //     };
+
+  //     return {
+  //       status: 'success',
+  //       message: 'Overtime Request created',
+  //       overtimeRequest: response,
+  //       created_by: `${userName} - ${userPosition}`,
+  //     };
+  //   });
+  // }
 }
