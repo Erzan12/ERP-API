@@ -72,4 +72,20 @@ export class CreateOvertimeCaseDto {
     default: 'Reason of your overtime',
   })
   reason: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  @ApiProperty({
+    example: 'User UUID for verifier of this leave request',
+    description: 'The uuid of verifier user for this leave request',
+  })
+  verifier_id: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  @ApiProperty({
+    example: 'User UUID for leave request approver',
+    description: 'The uuid of approver user for this user leave request',
+  })
+  approver_id: string;
 }
