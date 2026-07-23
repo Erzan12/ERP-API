@@ -523,13 +523,19 @@ export class OvertimeCasesService {
       //   }
       // }
 
-      const totalHours = this.calculateTotalHours(time_from ?? '', time_to ?? '');
+      const totalHours = this.calculateTotalHours(
+        time_from ?? '',
+        time_to ?? '',
+      );
 
       const totalMinutes = totalHours * 60;
 
       const basicPay = totalMinutes * perMinuteRate;
 
-      const timeFrom = this.combineDateAndTime(dto.overtime_date, dto.time_from!);
+      const timeFrom = this.combineDateAndTime(
+        dto.overtime_date,
+        dto.time_from!,
+      );
       const timeTo = this.combineDateAndTime(dto.overtime_date, dto.time_to!);
 
       // Overnight OT (22:00 -> 02:00)
@@ -570,12 +576,8 @@ export class OvertimeCasesService {
       // Format time in api response
       const response = {
         ...overtimeRequest,
-        time_from: overtimeRequest.time_from
-          ?.toISOString()
-          .slice(11, 19),
-        time_to: overtimeRequest.time_to
-          ?.toISOString()
-          .slice(11, 19),
+        time_from: overtimeRequest.time_from?.toISOString().slice(11, 19),
+        time_to: overtimeRequest.time_to?.toISOString().slice(11, 19),
       };
 
       return {

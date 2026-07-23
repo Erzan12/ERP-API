@@ -16,9 +16,6 @@
 
 */
 -- CreateEnum
-CREATE TYPE "EmploymentHistoryType" AS ENUM ('company', 'division', 'department', 'section', 'sub_section', 'position', 'salary_grade', 'employment_status', 'vessel', 'employee_location', 'developmental_assignment');
-
--- CreateEnum
 CREATE TYPE "EmployeeStatusPeriodType" AS ENUM ('active', 'leave', 'suspension', 'floating', 'training', 'maternity_leave', 'paternity_leave');
 
 -- AlterTable
@@ -29,9 +26,9 @@ DROP COLUMN "from_val",
 DROP COLUMN "to_date",
 DROP COLUMN "to_val",
 DROP COLUMN "value_changed",
+DROP COLUMN    "type",
 ADD COLUMN     "current_id" UUID,
 ADD COLUMN     "previous_id" UUID,
-ADD COLUMN     "type" "EmploymentHistoryType" NOT NULL,
 ALTER COLUMN "remarks" DROP NOT NULL;
 
 -- AlterTable
