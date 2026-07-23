@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EmploymentHistory, EmploymentHistoryType } from '@prisma/client';
-import { Type } from 'class-transformer';
+import { EmploymentHistory } from '@prisma/client';
+// import { Type } from 'class-transformer';
 import {
   IsDateString,
-  IsEnum,
+  // IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -26,17 +26,17 @@ export class CreateEmploymentHistoryDto {
   // })
   // employee_id: string;
 
-  @IsNotEmpty()
-  @IsEnum(EmploymentHistoryType, {
-    message:
-      'Valid employment history type: company, division, department, section, sub_section, position, salary_grade, employment_status, vessel, employee_location, development_assignment',
-  })
-  @Type(() => String)
-  @ApiProperty({
-    enum: EmploymentHistoryType,
-    required: true,
-  })
-  type: EmploymentHistoryType;
+  // @IsNotEmpty()
+  // @IsEnum(EmploymentHistoryType, {
+  //   message:
+  //     'Valid employment history type: company, division, department, section, sub_section, position, salary_grade, employment_status, vessel, employee_location, development_assignment',
+  // })
+  // @Type(() => String)
+  // @ApiProperty({
+  //   enum: EmploymentHistoryType,
+  //   required: true,
+  // })
+  // type: EmploymentHistoryType;
 
   @IsUUID()
   @IsNotEmpty()
