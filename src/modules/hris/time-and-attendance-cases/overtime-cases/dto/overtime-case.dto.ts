@@ -18,12 +18,12 @@ export class CreateOvertimeCaseDto {
   employee_id: string;
 
   @IsUUID()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     example: 'Vessel UUID',
     description: 'The vessel uuid PK',
   })
-  vessel_id: string;
+  vessel_id?: string;
 
   @IsUUID()
   @IsNotEmpty()
