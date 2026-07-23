@@ -60,24 +60,24 @@ enum EmployeeType {
   sea_based
 }
 
-enum EmploymentHistoryType {
+//enum EmploymentHistoryType {
   // Organization
-  company
-  division
-  department
-  section
-  sub_section
+  //company
+  //division
+  //department
+  //section
+  //sub_section
 
   // Job
-  position
-  salary_grade
-  employment_status
+  //position
+  //salary_grade
+  //employment_status
 
   // Assignment
-  vessel
-  employee_location
-  developmental_assignment
-}
+  //vessel
+  //employee_location
+  //developmental_assignment
+//}
 
 enum EmployeeStatusPeriodType {
   active
@@ -784,8 +784,8 @@ model Employee {
 model EmploymentHistory {
   id                String           @id @default(uuid()) @db.Uuid
   employee_id       String           @db.Uuid
-  effectivity_date  DateTime
-  type              EmploymentHistoryType
+  effective_date    DateTime
+  //type              EmploymentHistoryType
 
   previous_id       String? @db.Uuid
   current_id        String? @db.Uuid
@@ -807,8 +807,8 @@ model EmploymentHistory {
   employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
 
   @@index([employee_id])
-  @@index([effectivity_date])
-  @@index([employee_id, effectivity_date])
+  @@index([effective_date])
+  @@index([employee_id, effective_date])
 }
 
 model HrEmployeeStatusPeriod {
