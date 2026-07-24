@@ -17,8 +17,49 @@
   - Added the required column `overtime_date` to the `HrOvertimeRequest` table without a default value. This is not possible if the table is not empty.
 
 */
--- CreateEnum
-CREATE TYPE "EmployeeStatusPeriodType" AS ENUM ('active', 'leave', 'suspension', 'floating', 'training', 'maternity_leave', 'paternity_leave');
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type
+        WHERE typname = 'EmploymentHistoryType'
+    ) THEN
+        CREATE TYPE "EmploymentHistoryType" AS ENUM (
+            'company',
+            'division',
+            'department',
+            'section',
+            'sub_section',
+            'position',
+            'salary_grade',
+            'employment_status',
+            'vessel',
+            'employee_location',
+            'developmental_assignment'
+        );
+    END IF;
+END
+$$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type
+        WHERE typname = 'EmployeeStatusPeriodType'
+    ) THEN
+        CREATE TYPE "EmployeeStatusPeriodType" AS ENUM (
+            'active',
+            'leave',
+            'suspension',
+            'floating',
+            'training',
+            'maternity_leave',
+            'paternity_leave'
+        );
+    END IF;
+END
+$$;
 
 -- DropForeignKey
 ALTER TABLE "Employee" DROP CONSTRAINT "Employee_position_id_fkey";

@@ -60,24 +60,24 @@ enum EmployeeType {
   sea_based
 }
 
-//enum EmploymentHistoryType {
+enum EmploymentHistoryType {
   // Organization
-  //company
-  //division
-  //department
-  //section
-  //sub_section
+  company
+  division
+  department
+  section
+  sub_section
 
   // Job
-  //position
-  //salary_grade
-  //employment_status
+  position
+  salary_grade
+  employment_status
 
   // Assignment
-  //vessel
-  //employee_location
-  //developmental_assignment
-//}
+  vessel
+  employee_location
+  developmental_assignment
+}
 
 enum EmployeeStatusPeriodType {
   active
@@ -785,7 +785,7 @@ model EmploymentHistory {
   id                String           @id @default(uuid()) @db.Uuid
   employee_id       String           @db.Uuid
   effective_date    DateTime
-  //type              EmploymentHistoryType
+  type              EmploymentHistoryType
 
   previous_id       String? @db.Uuid
   current_id        String? @db.Uuid
