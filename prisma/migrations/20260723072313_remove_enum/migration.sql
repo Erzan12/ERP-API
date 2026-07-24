@@ -61,16 +61,12 @@ BEGIN
 END
 $$;
 
--- DropForeignKey
-ALTER TABLE "Employee" DROP CONSTRAINT "Employee_position_id_fkey";
-
 -- AlterTable
 ALTER TABLE "CareerPosting" ADD COLUMN     "approver_id" UUID,
 ADD COLUMN     "verifier_id" UUID;
 
 -- AlterTable
 ALTER TABLE "Employee" ADD COLUMN     "salary_grade_id" UUID,
-ALTER COLUMN "position_id" DROP NOT NULL,
 ALTER COLUMN "salary" DROP NOT NULL;
 
 -- AlterTable
@@ -141,9 +137,6 @@ CREATE INDEX "EmploymentHistory_effective_date_idx" ON "EmploymentHistory"("effe
 
 -- CreateIndex
 CREATE INDEX "EmploymentHistory_employee_id_effective_date_idx" ON "EmploymentHistory"("employee_id", "effective_date");
-
--- AddForeignKey
-ALTER TABLE "Employee" ADD CONSTRAINT "Employee_position_id_fkey" FOREIGN KEY ("position_id") REFERENCES "Position"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Employee" ADD CONSTRAINT "Employee_salary_grade_id_fkey" FOREIGN KEY ("salary_grade_id") REFERENCES "SalaryGrade"("id") ON DELETE SET NULL ON UPDATE CASCADE;

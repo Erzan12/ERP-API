@@ -715,7 +715,7 @@ model Employee {
   person_id                 String          @unique @db.Uuid
   employee_id               String          @unique
   department_id             String          @db.Uuid
-  position_id               String?         @db.Uuid
+  position_id               String          @db.Uuid
   division_id               String          @db.Uuid
   user_id                   String?         @db.Uuid
   vessel_id                 String?         @db.Uuid
@@ -752,7 +752,7 @@ model Employee {
   company           Company          @relation(fields: [company_id], references: [id])
   department        Department       @relation(fields: [department_id], references: [id])
   person            Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
-  position          Position?        @relation(fields: [position_id], references: [id])
+  position          Position        @relation(fields: [position_id], references: [id])
   division          Division         @relation(fields: [division_id], references: [id])
   user_location     UserLocation?    @relation(fields: [user_location_id], references: [id])
   vessel            Vessel?          @relation(fields: [vessel_id], references: [id])
