@@ -15,7 +15,7 @@ import {
   Gender,
   CivilStatus,
   Prisma,
-  // EmploymentHistoryType,
+  EmploymentHistoryType,
 } from '@prisma/client';
 
 @Injectable()
@@ -166,84 +166,84 @@ export class EmployeeMasterlistService {
           },
         });
 
-        // const histories = [
-        //   {
-        //     employee_id: employee.id,
-        //     type: EmploymentHistoryType.company,
-        //     current_id: employee.company_id,
-        //     previous_id: null,
-        //     effectivity_date: hireDate,
-        //     created_by: user.id,
-        //     remarks: 'Initial employment assignment',
-        //   },
-        //   {
-        //     employee_id: employee.id,
-        //     type: EmploymentHistoryType.department,
-        //     current_id: employee.department_id,
-        //     previous_id: null,
-        //     effectivity_date: hireDate,
-        //     created_by: user.id,
-        //     remarks: 'Initial employment assignment',
-        //   },
-        //   {
-        //     employee_id: employee.id,
-        //     type: EmploymentHistoryType.position,
-        //     current_id: employee.position_id ?? '',
-        //     previous_id: null,
-        //     effectivity_date: hireDate,
-        //     created_by: user.id,
-        //     remarks: 'Initial employment assignment',
-        //   },
-        //   {
-        //     employee_id: employee.id,
-        //     type: EmploymentHistoryType.division,
-        //     current_id: employee.division_id,
-        //     previous_id: null,
-        //     effectivity_date: hireDate,
-        //     created_by: user.id,
-        //     remarks: 'Initial employment assignment',
-        //   },
-        //   {
-        //     employee_id: employee.id,
-        //     type: EmploymentHistoryType.vessel,
-        //     current_id: employee.vessel_id ?? '',
-        //     previous_id: null,
-        //     effectivity_date: hireDate,
-        //     created_by: user.id,
-        //     remarks: 'Initial employment assignment',
-        //   },
-        //   {
-        //     employee_id: employee.id,
-        //     type: EmploymentHistoryType.employee_location,
-        //     current_id: employee.user_location_id ?? '',
-        //     previous_id: null,
-        //     effectivity_date: hireDate,
-        //     created_by: user.id,
-        //     remarks: 'Initial employment assignment',
-        //   },
-        //   {
-        //     employee_id: employee.id,
-        //     type: EmploymentHistoryType.salary_grade,
-        //     current_id: employee.salary_grade_id,
-        //     previous_id: null,
-        //     effectivity_date: hireDate,
-        //     created_by: user.id,
-        //     remarks: 'Initial employment assignment',
-        //   },
-        //   {
-        //     employee_id: employee.id,
-        //     type: EmploymentHistoryType.employment_status,
-        //     current_id: employee.employment_status_id,
-        //     previous_id: null,
-        //     effectivity_date: hireDate,
-        //     created_by: user.id,
-        //     remarks: 'Initial employment assignment',
-        //   },
-        // ].filter((h) => h.current_id);
+        const histories = [
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.company,
+            current_id: employee.company_id,
+            previous_id: null,
+            effective_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.department,
+            current_id: employee.department_id,
+            previous_id: null,
+            effective_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.position,
+            current_id: employee.position_id ?? '',
+            previous_id: null,
+            effective_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.division,
+            current_id: employee.division_id,
+            previous_id: null,
+            effective_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.vessel,
+            current_id: employee.vessel_id ?? '',
+            previous_id: null,
+            effective_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.employee_location,
+            current_id: employee.user_location_id ?? '',
+            previous_id: null,
+            effective_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.salary_grade,
+            current_id: employee.salary_grade_id,
+            previous_id: null,
+            effective_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+          {
+            employee_id: employee.id,
+            type: EmploymentHistoryType.employment_status,
+            current_id: employee.employment_status_id,
+            previous_id: null,
+            effective_date: hireDate,
+            created_by: user.id,
+            remarks: 'Initial employment assignment',
+          },
+        ].filter((h) => h.current_id);
 
-        // await tx.employmentHistory.createMany({
-        //   data: histories,
-        // });
+        await tx.employmentHistory.createMany({
+          data: histories,
+        });
 
         const requestUser = await tx.user.findUnique({
           where: { id: user.id },
