@@ -114,9 +114,9 @@ export class EmploymentHistoryService {
       employmentHistories.map(async (history) => ({
         ...history,
 
-        // previous: await this.resolve(history.type, history.previous_id),
+        previous: await this.resolve(history.type, history.previous_id),
 
-        // current: await this.resolve(history.type, history.current_id),
+        current: await this.resolve(history.type, history.current_id),
       })),
     );
 

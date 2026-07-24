@@ -15,7 +15,7 @@ import {
   Gender,
   CivilStatus,
   Prisma,
-  EmploymentHistoryType
+  EmploymentHistoryType,
 } from '@prisma/client';
 
 @Injectable()
