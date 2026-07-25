@@ -62,11 +62,16 @@ END
 $$;
 
 -- AlterTable
-ALTER TABLE "CareerPosting" ADD COLUMN     "approver_id" UUID,
-ADD COLUMN     "verifier_id" UUID;
+ALTER TABLE "CareerPosting" 
+ADD COLUMN IF NOT EXISTS "approver_id" UUID;
 
 -- AlterTable
-ALTER TABLE "Employee" ADD COLUMN     "salary_grade_id" UUID,
+ALTER TABLE "CareerPosting" 
+ADD COLUMN IF NOT EXISTS "verifier_id" UUID;
+
+-- AlterTable
+ALTER TABLE "Employee" 
+ADD COLUMN "salary_grade_id" UUID,
 ALTER COLUMN "salary" DROP NOT NULL;
 
 -- AlterTable
@@ -88,12 +93,17 @@ ADD COLUMN     "evaluation_period_end" TIMESTAMP(3) NOT NULL,
 ADD COLUMN     "evaluation_period_start" TIMESTAMP(3) NOT NULL;
 
 -- AlterTable
-ALTER TABLE "HrExtendedLeaveRequest" ADD COLUMN     "approver_id" UUID,
-ADD COLUMN     "verifier_id" UUID;
+ALTER TABLE "HrExtendedLeaveRequest" 
+ADD COLUMN IF NOT EXISTS "approver_id" UUID,
 
 -- AlterTable
-ALTER TABLE "HrLeaveRequest" ADD COLUMN     "approver_id" UUID,
-ADD COLUMN     "verifier_id" UUID;
+ALTER TABLE "HrExtendedLeaveRequest"
+ADD COLUMN IF NOT EXISTS "verifier_id" UUID;
+
+-- AlterTable
+ALTER TABLE "HrLeaveRequest" 
+ADD COLUMN IF NOT EXISTS "approver_id" UUID,
+ADD COLUMN IF NOT EXISTS "verifier_id" UUID;
 
 -- AlterTable
 ALTER TABLE "HrOvertimeRequest" DROP COLUMN "computed",
