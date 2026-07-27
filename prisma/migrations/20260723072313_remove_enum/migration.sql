@@ -103,8 +103,8 @@ ADD COLUMN IF NOT EXISTS "approver_id" UUID,
 ADD COLUMN IF NOT EXISTS "verifier_id" UUID;
 
 -- AlterTable
-ALTER TABLE "HrOvertimeRequest" DROP IF EXISTS COLUMN "computed",
-DROP IF EXISTS COLUMN "ot_date",
+ALTER TABLE "HrOvertimeRequest" DROP COLUMN IF EXISTS "computed",
+DROP COLUMN IF EXISTS "ot_date",
 ADD COLUMN IF NOT EXISTS "approver_id" UUID,
 ADD COLUMN IF NOT EXISTS "is_computed" BOOLEAN DEFAULT false,
 ADD COLUMN IF NOT EXISTS "overtime_date" TIMESTAMP(3) NOT NULL,
