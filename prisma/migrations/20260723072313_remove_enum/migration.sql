@@ -95,9 +95,6 @@ ADD COLUMN     "evaluation_period_start" TIMESTAMP(3) NOT NULL;
 -- AlterTable
 ALTER TABLE "HrExtendedLeaveRequest" 
 ADD COLUMN IF NOT EXISTS "approver_id" UUID,
-
--- AlterTable
-ALTER TABLE "HrExtendedLeaveRequest"
 ADD COLUMN IF NOT EXISTS "verifier_id" UUID;
 
 -- AlterTable
