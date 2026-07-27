@@ -75,22 +75,22 @@ ADD COLUMN IF NOT EXISTS "salary_grade_id" UUID,
 ALTER COLUMN "salary" DROP NOT NULL;
 
 -- AlterTable
-ALTER TABLE "EmploymentHistory" DROP COLUMN "evaluation_stage",
-DROP COLUMN "evaluation_status",
-DROP COLUMN "from_date",
-DROP COLUMN "from_val",
-DROP COLUMN "to_date",
-DROP COLUMN "to_val",
-DROP COLUMN "value_changed",
-ADD COLUMN     "current_id" UUID,
-ADD COLUMN     "previous_id" UUID,
+ALTER TABLE "EmploymentHistory" DROP COLUMN IF EXISTS "evaluation_stage",
+DROP COLUMN IF EXISTS "evaluation_status",
+DROP COLUMN IF EXISTS "from_date",
+DROP COLUMN IF EXISTS "from_val",
+DROP COLUMN IF EXISTS "to_date",
+DROP COLUMN IF EXISTS "to_val",
+DROP COLUMN IF EXISTS "value_changed",
+ADD COLUMN IF NOT EXISTS "current_id" UUID,
+ADD COLUMN IF NOT EXISTS "previous_id" UUID,
 ALTER COLUMN "remarks" DROP NOT NULL;
 
 -- AlterTable
-ALTER TABLE "HrEmployeeEvaluation" DROP COLUMN "probation_date",
-DROP COLUMN "regularization_date",
-ADD COLUMN     "evaluation_period_end" TIMESTAMP(3) NOT NULL,
-ADD COLUMN     "evaluation_period_start" TIMESTAMP(3) NOT NULL;
+ALTER TABLE "HrEmployeeEvaluation" DROP COLUMN IF EXISTS "probation_date",
+DROP COLUMN IF EXISTS "regularization_date",
+ADD COLUMN IF NOT EXISTS "evaluation_period_end" TIMESTAMP(3) NOT NULL,
+ADD COLUMN IF NOT EXISTS "evaluation_period_start" TIMESTAMP(3) NOT NULL;
 
 -- AlterTable
 ALTER TABLE "HrExtendedLeaveRequest" 
@@ -103,12 +103,12 @@ ADD COLUMN IF NOT EXISTS "approver_id" UUID,
 ADD COLUMN IF NOT EXISTS "verifier_id" UUID;
 
 -- AlterTable
-ALTER TABLE "HrOvertimeRequest" DROP COLUMN "computed",
-DROP COLUMN "ot_date",
-ADD COLUMN     "approver_id" UUID,
-ADD COLUMN     "is_computed" BOOLEAN DEFAULT false,
-ADD COLUMN     "overtime_date" TIMESTAMP(3) NOT NULL,
-ADD COLUMN     "verifier_id" UUID;
+ALTER TABLE "HrOvertimeRequest" DROP COLUMN IF EXISTS "computed",
+DROP COLUMN IF EXISTS "ot_date",
+ADD COLUMN IF NOT EXISTS "approver_id" UUID,
+ADD COLUMN IF NOT EXISTS "is_computed" BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS "overtime_date" TIMESTAMP(3) NOT NULL,
+ADD COLUMN IF NOT EXISTS "verifier_id" UUID;
 
 -- CreateTable
 CREATE TABLE "HrEmployeeStatusPeriod" (
