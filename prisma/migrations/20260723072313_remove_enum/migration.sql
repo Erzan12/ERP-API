@@ -71,7 +71,7 @@ ADD COLUMN IF NOT EXISTS "verifier_id" UUID;
 
 -- AlterTable
 ALTER TABLE "Employee" 
-ADD COLUMN "salary_grade_id" UUID,
+ADD COLUMN IF NOT EXISTS "salary_grade_id" UUID,
 ALTER COLUMN "salary" DROP NOT NULL;
 
 -- AlterTable
