@@ -5,4 +5,4 @@
 
 */
 -- AlterTable
-ALTER TABLE "EmploymentHistory" ADD COLUMN     "type" "EmploymentHistoryType" NOT NULL;
+ALTER TABLE "EmploymentHistory" ADD COLUMN IF NOT EXISTS "type" "EmploymentHistoryType" NOT NULL;
