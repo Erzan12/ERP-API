@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SalaryGradeService } from './salary-grade.service';
@@ -27,6 +28,7 @@ import {
   ACTION_UPDATE,
   SALARY_GRADE,
 } from 'src/utils/constants/ability.constant';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Human Resources - Salary Grade')
 @Controller({ path: 'hris', version: '2' })
@@ -37,8 +39,11 @@ export class SalaryGradeController {
   @ApiOperation({ summary: 'List of all Salary Grades' })
   @ApiGetResponse('List of Salary Grades')
   @Can({ action: ACTION_READ, subject: SALARY_GRADE })
-  getSalaryGrades(@SessionUser() user: RequestUser) {
-    return this.salaryGradeService.getSalaryGrades(user);
+  getSalaryGrades(
+    @SessionUser() user: RequestUser,
+    @Query() dto: PaginationDto,
+  ) {
+    return this.salaryGradeService.getSalaryGrades(user, dto);
   }
 
   @Get('salary-grades/:salaryGradeId')
