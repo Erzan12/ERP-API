@@ -383,7 +383,7 @@ export class CareerPostingService {
   }
 
   //create career posting
-  async create(createCareerPosting: CreateCareerPostingDto, user: RequestUser) {
+  async createCareerPosting(dto: CreateCareerPostingDto, user: RequestUser) {
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -422,7 +422,7 @@ export class CareerPostingService {
 
     const posting = await this.prisma.position.findUnique({
       where: {
-        id: createCareerPosting.position_id,
+        id: dto.position_id,
       },
       select: {
         id: true,
@@ -444,28 +444,158 @@ export class CareerPostingService {
     return this.prisma.$transaction(async (tx) => {
       const recruitment = await tx.careerPosting.create({
         data: {
-          position_id: createCareerPosting.position_id,
-          slots: createCareerPosting.slots,
+          position_id: dto.position_id,
+          slots: dto.slots,
           // job_description: posting.job_description || '',
           created_by: user.id,
-          department_id: createCareerPosting.department_id,
-          employee_type: createCareerPosting.employee_type,
-          employment_type: createCareerPosting.employment_type,
-          user_location_id: createCareerPosting.user_location_id,
+          department_id: dto.department_id,
+          employee_type: dto.employee_type,
+          employment_type: dto.employment_type,
+          user_location_id: dto.user_location_id,
+          approver_id: dto.approver_id,
+          verifier_id: dto.verifier_id,
         },
       });
 
-      await tx.workflowAction.create({
-        data: {
-          actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
-          actionable_id: recruitment.id,
-          action: WorkflowActionType.creation,
-          acted_by: requestUser.id,
-        },
+      //query users first
+      const [verifierUser, approverUser, currentUser] = await Promise.all([
+        tx.user.findUnique({
+          where: {
+            id: dto.verifier_id,
+          },
+          select: {
+            id: true,
+            employee: {
+              select: {
+                person: {
+                  select: {
+                    first_name: true,
+                    middle_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        }),
+
+        tx.user.findUnique({
+          where: {
+            id: dto.approver_id,
+          },
+          select: {
+            id: true,
+            employee: {
+              select: {
+                person: {
+                  select: {
+                    first_name: true,
+                    middle_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        }),
+
+        tx.user.findUnique({
+          where: {
+            id: requestUser.id,
+          },
+          select: {
+            id: true,
+            employee: {
+              select: {
+                person: {
+                  select: {
+                    first_name: true,
+                    middle_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        }),
+      ]);
+
+      // build names
+      const verifierName = verifierUser
+        ? [
+            verifierUser.employee?.person?.first_name,
+            verifierUser.employee?.person?.middle_name,
+            verifierUser.employee?.person?.last_name,
+          ]
+            .filter(Boolean)
+            .join(' ')
+        : '';
+
+      const approverName = approverUser
+        ? [
+            approverUser.employee?.person?.first_name,
+            approverUser.employee?.person?.middle_name,
+            approverUser.employee?.person?.last_name,
+          ]
+            .filter(Boolean)
+            .join(' ')
+        : '';
+
+      const creatorName = currentUser
+        ? [
+            currentUser.employee?.person?.first_name,
+            currentUser.employee?.person?.middle_name,
+            currentUser.employee?.person?.last_name,
+          ]
+            .filter(Boolean)
+            .join(' ')
+        : '';
+
+      await tx.workflowAction.createMany({
+        data: [
+          {
+            actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
+            actionable_id: recruitment.id,
+            action: WorkflowActionType.creation,
+            acted_by: requestUser.id,
+            metadata: {
+              title: 'Career Posting created',
+              message: 'You have created a new Career Posting',
+              user: creatorName,
+              role: 'creator',
+            },
+          },
+          {
+            actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
+            actionable_id: recruitment.id,
+            action: WorkflowActionType.verification,
+            acted_at: null,
+            acted_by: dto.verifier_id,
+            metadata: {
+              title: 'Verify Career Posting',
+              message: 'You have new Verify Request',
+              user: verifierName,
+              role: 'verifier',
+            },
+          },
+          {
+            actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
+            actionable_id: recruitment.id,
+            action: WorkflowActionType.approval,
+            acted_by: dto.approver_id,
+            metadata: {
+              title: 'Approve Career Posting',
+              message: 'You have a new Approval Request',
+              user: approverName,
+              role: 'approver',
+            },
+            acted_at: null,
+          },
+        ],
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
 
       return {
         status: 'success',
@@ -476,9 +606,9 @@ export class CareerPostingService {
     });
   }
 
-  async update(
+  async updateCareerPosting(
     recruitmentId: string,
-    updateCareerPostingDto: UpdateCareerPostingDto,
+    dto: UpdateCareerPostingDto,
     user: RequestUser,
   ) {
     // Auth check first
@@ -517,74 +647,219 @@ export class CareerPostingService {
       );
     }
 
-    const careerPosting = await this.prisma.careerPosting.findUnique({
-      where: { id: recruitmentId },
-    });
+    return await this.prisma.$transaction(async (tx) => {
+      const careerPosting = await tx.careerPosting.findFirst({
+        where: { 
+          id: recruitmentId,
+          is_active: true,
+          status: {
+            in: [CareerPostingStatus.draft],
+          },
+        },
+      });
 
-    if (!careerPosting) {
-      throw new NotFoundException('Job/Career posting not found');
-    }
+      if (!careerPosting) {
+        throw new NotFoundException('Job/Career posting not found');
+      }
 
-    // Determine the resulting status (incoming or existing)
-    const nextStatus =
-      updateCareerPostingDto.status &&
-      updateCareerPostingDto.status !== CareerPostingStatus.all
-        ? updateCareerPostingDto.status
-        : careerPosting.status;
+      // Determine the resulting status (incoming or existing)
+      const nextStatus =
+        dto.status &&
+        dto.status !== CareerPostingStatus.all
+          ? dto.status
+          : careerPosting.status;
 
-    // Determine intended publish state
-    const nextIsPublished =
-      updateCareerPostingDto.is_published ?? careerPosting.is_published;
+      // Determine intended publish state
+      const nextIsPublished =
+        dto.is_published ?? careerPosting.is_published;
 
-    // Validation rule
-    if (nextIsPublished && nextStatus !== CareerPostingStatus.approved) {
-      throw new BadRequestException(
-        'Only approved career postings can be published.',
+      // Validation rule
+      if (nextIsPublished && nextStatus !== CareerPostingStatus.approved) {
+        throw new BadRequestException(
+          'Only approved career postings can be published.',
+        );
+      }
+
+      let publishDate: Date | undefined = undefined;
+
+      if (
+        nextIsPublished &&
+        nextStatus === CareerPostingStatus.approved &&
+        !careerPosting.published_on
+      ) {
+        publishDate = new Date();
+      }
+
+      const updateRecruitment = await tx.careerPosting.update({
+        where: { id: recruitmentId, is_active: true },
+        data: {
+          position_id: dto.position_id ?? undefined,
+          slots: dto.slots ?? undefined,
+          // job_description: updateCareerPostingDto.job_description ?? undefined,
+          department_id: dto.department_id ?? undefined,
+          user_location_id: dto.user_location_id ?? undefined,
+          // is_published: updateCareerPostingDto.is_published ?? undefined,
+          is_published: nextIsPublished,
+          published_on: publishDate,
+          is_active: dto.is_active ?? undefined,
+          employment_type: dto.employment_type ?? undefined,
+          employee_type: dto.employee_type ?? undefined,
+          status:
+            dto.status &&
+            dto.status !== CareerPostingStatus.all
+              ? dto.status
+              : undefined,
+          updated_by: user.id,
+        },
+      });
+
+      // Workflow Logic fetch current pending workflow routing lines
+      const pendingWorkflowActions = await tx.workflowAction.findMany({
+        where: {
+          actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
+          actionable_id: updateRecruitment.id,
+          action: {
+            in: [WorkflowActionType.verification, WorkflowActionType.approval],
+          },
+          acted_at: null,
+        },
+      });
+
+      const currentVerificationStep = pendingWorkflowActions.find(
+        (a) => a.action === WorkflowActionType.verification,
       );
-    }
 
-    let publishDate: Date | undefined = undefined;
+      const currentApprovalStep = pendingWorkflowActions.find(
+        (a) => a.action === WorkflowActionType.approval,
+      );
 
-    if (
-      nextIsPublished &&
-      nextStatus === CareerPostingStatus.approved &&
-      !careerPosting.published_on
-    ) {
-      publishDate = new Date();
-    }
+      // Handle verifier update/patch
+      if (dto.verifier_id) {
+        // Fetch name from User Table (since WorkflowAction.acted_by maps to User)
+        const targetUser = await tx.user.findUnique({
+          where: { id: dto.verifier_id },
+          include: {
+            employee: {
+              select: {
+                person: {
+                  select: {
+                    first_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        });
 
-    const recruitment = await this.prisma.careerPosting.update({
-      where: { id: recruitmentId, is_active: true },
-      data: {
-        position_id: updateCareerPostingDto.position_id ?? undefined,
-        slots: updateCareerPostingDto.slots ?? undefined,
-        // job_description: updateCareerPostingDto.job_description ?? undefined,
-        department_id: updateCareerPostingDto.department_id ?? undefined,
-        user_location_id: updateCareerPostingDto.user_location_id ?? undefined,
-        // is_published: updateCareerPostingDto.is_published ?? undefined,
-        is_published: nextIsPublished,
-        published_on: publishDate,
-        is_active: updateCareerPostingDto.is_active ?? undefined,
-        employment_type: updateCareerPostingDto.employment_type ?? undefined,
-        employee_type: updateCareerPostingDto.employee_type ?? undefined,
-        status:
-          updateCareerPostingDto.status &&
-          updateCareerPostingDto.status !== CareerPostingStatus.all
-            ? updateCareerPostingDto.status
-            : undefined,
-        updated_by: user.id,
-      },
-    });
+        const verifierName = targetUser
+          ? `${targetUser.employee.person.first_name} ${targetUser.employee.person.last_name}`.trim()
+          : 'Unknown User';
 
-    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-    const userPosition = requestUser.employee.position?.name;
+        if (currentVerificationStep) {
+          // If asssigned verifier change, update the row
+          if (currentVerificationStep.acted_by !== dto.verifier_id) {
+            await tx.workflowAction.update({
+              where: { id: currentVerificationStep.id },
+              data: {
+                acted_by: dto.verifier_id,
+                metadata: {
+                  title: 'Verify Career Posting',
+                  message: 'You have a new Verify Request',
+                  user: verifierName,
+                  role: 'verifier',
+                },
+              },
+            });
+          }
+        } else {
+          // Edge case safety net if it didnt exist for some reason create it
+          await tx.workflowAction.create({
+            data: {
+              actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
+              actionable_id: recruitmentId,
+              action: WorkflowActionType.verification,
+              acted_by: dto.verifier_id,
+              acted_at: null,
+              metadata: {
+                title: 'Verify Career Posting',
+                message: 'You have a new Verify Request',
+                user: verifierName,
+                role: 'verifier',
+              },
+            },
+          });
+        }
+      }
 
-    return {
-      status: 'success',
-      message: `Career/Job posting has been updated successfully!`,
-      recruitment,
-      updated_by_user: `${userName} - ${userPosition}`,
-    };
+      // Handle APprover update/patch
+      if (dto.approver_id) {
+        const targetUser = await tx.user.findUnique({
+          where: { id: dto.approver_id },
+          include: {
+            employee: {
+              select: {
+                person: {
+                  select: {
+                    first_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const approverName = targetUser
+          ? `${targetUser.employee.person.first_name} ${targetUser.employee.person.last_name}`.trim()
+          : 'Unknown User';
+
+        if (currentApprovalStep) {
+          // If assigned approver changed, update the row
+          if (currentApprovalStep.acted_by !== dto.approver_id) {
+            await tx.workflowAction.update({
+              where: { id: currentApprovalStep.id },
+              data: {
+                acted_by: dto.approver_id,
+                metadata: {
+                  title: 'Approve Career Posting',
+                  message: 'You have a new Approval Request',
+                  user: approverName,
+                  role: 'approver',
+                },
+              },
+            });
+          }
+        } else {
+          // Edge case safety net: Create if missing
+          await tx.workflowAction.create({
+            data: {
+              actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
+              actionable_id: recruitmentId,
+              action: WorkflowActionType.approval,
+              acted_by: dto.approver_id,
+              acted_at: null,
+              metadata: {
+                title: 'Approve Career Posting',
+                message: 'You have a new Approval Request',
+                user: approverName,
+                role: 'approver',
+              },
+            },
+          });
+        }
+      }
+
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      return {
+        status: 'success',
+        message: `Career/Job posting has been updated successfully!`,
+        updateRecruitment,
+        updated_by_user: `${userName} - ${userPosition}`,
+      };
+    })
   }
 
   async statusCount(user: RequestUser) {
@@ -714,22 +989,29 @@ export class CareerPostingService {
       const submitRecruitment = await tx.careerPosting.update({
         where: { id: careerPostingId, status: CareerPostingStatus.draft },
         data: {
-          // status: 'for_verification',
+          status: 'submitted',
           updated_by: requestUser.id,
         },
       });
+
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
 
       await tx.workflowAction.create({
         data: {
           actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
           actionable_id: careerPostingId,
           action: WorkflowActionType.submission,
+          acted_at: new Date,
           acted_by: requestUser.id,
+          metadata: {
+            title: 'Career Posting submitted',
+            message: 'You have submitted a new Career Posting',
+            user: `${userName} - ${userPosition}`,
+            role: 'creator',
+          },
         },
       });
-
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
 
       return {
         status: 'success',
@@ -782,7 +1064,7 @@ export class CareerPostingService {
         where: { id: careerPostingId },
       });
 
-      if (careerPosting?.status !== 'for_verification') {
+      if (careerPosting?.status !== CareerPostingStatus.submitted) {
         throw new BadRequestException('Invalid! status must be: submitted');
       }
 
@@ -794,17 +1076,34 @@ export class CareerPostingService {
         },
       });
 
-      await tx.workflowAction.create({
-        data: {
-          actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      const currentVerificationStep = await tx.workflowAction.findFirst({
+        where: {
+          actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
           actionable_id: careerPostingId,
-          action: WorkflowActionType.verification,
-          acted_by: requestUser.id,
+          action: WorkflowActionType.verification, 
+          acted_at: null,
         },
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      if (!currentVerificationStep) {
+        throw new NotFoundException("No pending verification workflow action found.");
+      }
+
+      await tx.workflowAction.update({
+        where: { id: currentVerificationStep.id },
+        data: {
+          acted_at: new Date(),
+          metadata: {
+            title: 'Career Posting Verified',
+            message: 'You have verified this Career Posting',
+            user: `${userName} - ${userPosition}`,
+            role: 'verifier',
+          },
+        },
+      });
 
       return {
         status: 'success',
@@ -868,17 +1167,34 @@ export class CareerPostingService {
         },
       });
 
-      await tx.workflowAction.create({
-        data: {
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      const currentApprovalStep = await tx.workflowAction.findFirst({
+        where: {
           actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
           actionable_id: careerPostingId,
           action: WorkflowActionType.approval,
-          acted_by: requestUser.id,
+          acted_at: null,
         },
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      if (!currentApprovalStep) {
+        throw new NotFoundException("No pending approval workflow action found.");
+      }
+
+      await tx.workflowAction.update({
+        where: { id: currentApprovalStep.id },
+        data: {
+          acted_at: new Date(),
+          metadata: {
+            title: 'Career Posting Approved',
+            message: 'You have approved this Career Posting',
+            user: `${userName} - ${userPosition}`,
+            role: 'approver',
+          },
+        },
+      });
 
       return {
         status: 'success',
@@ -978,8 +1294,8 @@ export class CareerPostingService {
         },
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
 
       return {
         status: 'success',
