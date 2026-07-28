@@ -485,7 +485,7 @@ export class SubModuleService {
     dto: AssignSubModulePermissionDto,
     user: RequestUser,
   ) {
-    const { sub_module_actions_id, sub_module_id } = dto;
+    const { sub_module_actions_id = [], sub_module_id } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -523,8 +523,8 @@ export class SubModuleService {
       );
     }
 
-    const existingSubModule = await this.prisma.subModule.findFirst({
-      where: { id: sub_module_id },
+    const existingSubModule = await this.prisma.subModule.findUnique({
+      where: { id: sub_module_id, is_active: true },
       include: {
         module: true,
       },
