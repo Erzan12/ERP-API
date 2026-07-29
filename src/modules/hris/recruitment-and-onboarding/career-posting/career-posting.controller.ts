@@ -117,9 +117,9 @@ export class CareerPostingController {
   }
 
   // CAREER/JOB POSTING WORKFLOW STATUS
-  @Post('recruitments/:recruitmentId/submit')
+  @Put('recruitments/:recruitmentId/submit')
   @ApiOperation({ summary: 'Submit Career/Job Posting' })
-  @ApiPostResponse('Career/Job Posting submitted')
+  @ApiPatchResponse('Career/Job Posting submitted')
   @Can({ action: ACTION_SUBMIT, subject: CAREER_POSTING })
   submitCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
@@ -128,9 +128,9 @@ export class CareerPostingController {
     return this.careerPostingService.submit(recruitmentId, user);
   }
 
-  @Post('recruitments/:recruitmentId/verify')
+  @Put('recruitments/:recruitmentId/verify')
   @ApiOperation({ summary: 'Verify Career/Job Posting' })
-  @ApiPostResponse('Career/Job Posting verified')
+  @ApiPatchResponse('Career/Job Posting verified')
   @Can({ action: ACTION_VERIFY, subject: CAREER_POSTING })
   verifyCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
@@ -139,9 +139,9 @@ export class CareerPostingController {
     return this.careerPostingService.verify(recruitmentId, user);
   }
 
-  @Post('recruitments/:recruitmentId/approve')
+  @Put('recruitments/:recruitmentId/approve')
   @ApiOperation({ summary: 'Approve Career/Job Posting' })
-  @ApiPostResponse('Career/Job Posting approved')
+  @ApiPatchResponse('Career/Job Posting approved')
   @Can({ action: ACTION_APPROVE, subject: CAREER_POSTING })
   approveCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
@@ -150,9 +150,9 @@ export class CareerPostingController {
     return this.careerPostingService.approve(recruitmentId, user);
   }
 
-  @Post('recruitments/:recruitmentId/reject')
+  @Put('recruitments/:recruitmentId/reject')
   @ApiOperation({ summary: 'Reject Career/Job Posting' })
-  @ApiPostResponse('Career/Job Posting rejected')
+  @ApiPatchResponse('Career/Job Posting rejected')
   @Can({ action: ACTION_REJECT, subject: CAREER_POSTING })
   rejectCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
