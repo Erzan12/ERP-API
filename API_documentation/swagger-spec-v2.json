@@ -5904,7 +5904,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/submit": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_submitExtendedLeave_v2",
         "parameters": [
           {
@@ -5917,7 +5917,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request submitted"
           },
           "400": {
@@ -5929,8 +5929,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5943,7 +5943,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/verify": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_verifyExtendedLeave_v2",
         "parameters": [
           {
@@ -5956,7 +5956,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request verified"
           },
           "400": {
@@ -5968,8 +5968,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5982,7 +5982,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/approve": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_approveExtendedLeave_v2",
         "parameters": [
           {
@@ -5995,7 +5995,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request approved"
           },
           "400": {
@@ -6007,8 +6007,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -6021,7 +6021,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/process": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_processExtendedLeave_v2",
         "parameters": [
           {
@@ -6034,7 +6034,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request processed"
           },
           "400": {
@@ -6046,8 +6046,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -6060,7 +6060,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/reject": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_rejectExtendedLeave_v2",
         "parameters": [
           {
@@ -6073,7 +6073,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request rejected"
           },
           "400": {
@@ -6085,8 +6085,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -6099,7 +6099,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/cancel": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_cancelExtendedLeave_v2",
         "parameters": [
           {
@@ -6112,7 +6112,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request cancelled"
           },
           "400": {
@@ -6124,8 +6124,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"

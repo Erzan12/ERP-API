@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -120,11 +121,11 @@ export class ExtendedLeaveCasesController {
   }
 
   // EXTENDED LEAVE REQUEST WORKFLOW STATUS
-  @Post(
+  @Put(
     'time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/submit',
   )
   @ApiOperation({ summary: 'Submit Extended Leave Request' })
-  @ApiPostResponse('Extended Leave Request submitted')
+  @ApiPatchResponse('Extended Leave Request submitted')
   @Can({ action: ACTION_SUBMIT, subject: EXTENDED_LEAVE_REQUEST })
   submitExtendedLeave(
     @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
@@ -137,11 +138,11 @@ export class ExtendedLeaveCasesController {
     );
   }
 
-  @Post(
+  @Put(
     'time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/verify',
   )
   @ApiOperation({ summary: 'Verify Leave Request' })
-  @ApiPostResponse('Extended Leave Request verified')
+  @ApiPatchResponse('Extended Leave Request verified')
   @Can({ action: ACTION_VERIFY, subject: EXTENDED_LEAVE_REQUEST })
   verifyExtendedLeave(
     @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
@@ -154,11 +155,11 @@ export class ExtendedLeaveCasesController {
     );
   }
 
-  @Post(
+  @Put(
     'time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/approve',
   )
   @ApiOperation({ summary: 'Approve Extended Leave Request' })
-  @ApiPostResponse('Extended Leave Request approved')
+  @ApiPatchResponse('Extended Leave Request approved')
   @Can({ action: ACTION_APPROVE, subject: EXTENDED_LEAVE_REQUEST })
   approveExtendedLeave(
     @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
@@ -171,9 +172,9 @@ export class ExtendedLeaveCasesController {
     );
   }
 
-  @Post('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/process')
+  @Put('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/process')
   @ApiOperation({ summary: 'Process Extended Leave Request' })
-  @ApiPostResponse('Extended Leave Request processed')
+  @ApiPatchResponse('Extended Leave Request processed')
   @Can({ action: ACTION_PROCESS, subject: EXTENDED_LEAVE_REQUEST })
   processExtendedLeave(
     @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
@@ -186,9 +187,9 @@ export class ExtendedLeaveCasesController {
     );
   }
 
-  @Post('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/reject')
+  @Put('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/reject')
   @ApiOperation({ summary: 'Reject Extended Leave Request' })
-  @ApiPostResponse('Extended Leave Request rejected')
+  @ApiPatchResponse('Extended Leave Request rejected')
   @Can({ action: ACTION_REJECT, subject: EXTENDED_LEAVE_REQUEST })
   rejectExtendedLeave(
     @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
@@ -201,9 +202,9 @@ export class ExtendedLeaveCasesController {
     );
   }
 
-  @Post('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/cancel')
+  @Put('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/cancel')
   @ApiOperation({ summary: 'Cancel Extended Leave Request' })
-  @ApiPostResponse('Extended Leave Request cancelled')
+  @ApiPatchResponse('Extended Leave Request cancelled')
   @Can({ action: ACTION_CANCEL, subject: EXTENDED_LEAVE_REQUEST })
   cancelExtendedLeave(
     @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
