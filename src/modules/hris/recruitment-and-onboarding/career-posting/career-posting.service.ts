@@ -649,7 +649,7 @@ export class CareerPostingService {
 
     return await this.prisma.$transaction(async (tx) => {
       const careerPosting = await tx.careerPosting.findFirst({
-        where: { 
+        where: {
           id: recruitmentId,
           is_active: true,
           status: {
@@ -664,14 +664,12 @@ export class CareerPostingService {
 
       // Determine the resulting status (incoming or existing)
       const nextStatus =
-        dto.status &&
-        dto.status !== CareerPostingStatus.all
+        dto.status && dto.status !== CareerPostingStatus.all
           ? dto.status
           : careerPosting.status;
 
       // Determine intended publish state
-      const nextIsPublished =
-        dto.is_published ?? careerPosting.is_published;
+      const nextIsPublished = dto.is_published ?? careerPosting.is_published;
 
       // Validation rule
       if (nextIsPublished && nextStatus !== CareerPostingStatus.approved) {
@@ -705,8 +703,7 @@ export class CareerPostingService {
           employment_type: dto.employment_type ?? undefined,
           employee_type: dto.employee_type ?? undefined,
           status:
-            dto.status &&
-            dto.status !== CareerPostingStatus.all
+            dto.status && dto.status !== CareerPostingStatus.all
               ? dto.status
               : undefined,
           updated_by: user.id,
@@ -859,7 +856,7 @@ export class CareerPostingService {
         updateRecruitment,
         updated_by_user: `${userName} - ${userPosition}`,
       };
-    })
+    });
   }
 
   async statusCount(user: RequestUser) {
@@ -1002,7 +999,7 @@ export class CareerPostingService {
           actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
           actionable_id: careerPostingId,
           action: WorkflowActionType.submission,
-          acted_at: new Date,
+          acted_at: new Date(),
           acted_by: requestUser.id,
           metadata: {
             title: 'Career Posting submitted',
@@ -1083,13 +1080,15 @@ export class CareerPostingService {
         where: {
           actionable_type: WORKFLOW_ENTITY.CAREER_POSTING,
           actionable_id: careerPostingId,
-          action: WorkflowActionType.verification, 
+          action: WorkflowActionType.verification,
           acted_at: null,
         },
       });
 
       if (!currentVerificationStep) {
-        throw new NotFoundException("No pending verification workflow action found.");
+        throw new NotFoundException(
+          'No pending verification workflow action found.',
+        );
       }
 
       await tx.workflowAction.update({
@@ -1180,7 +1179,9 @@ export class CareerPostingService {
       });
 
       if (!currentApprovalStep) {
-        throw new NotFoundException("No pending approval workflow action found.");
+        throw new NotFoundException(
+          'No pending approval workflow action found.',
+        );
       }
 
       await tx.workflowAction.update({
