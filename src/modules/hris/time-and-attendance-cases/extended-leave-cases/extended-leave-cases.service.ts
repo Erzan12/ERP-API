@@ -594,8 +594,8 @@ export class ExtendedLeaveCasesService {
         ],
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
 
       return {
         status: 'success',
@@ -756,7 +756,7 @@ export class ExtendedLeaveCasesService {
         });
 
         const verifierName = targetUser
-          ? `${targetUser.employee.person?.first_name ?? ''} ${targetUser.employee.person?.last_name ?? ''}`.trim()
+          ? `${targetUser.employee.person.first_name} ${targetUser.employee.person.last_name}`.trim()
           : 'Unknown User';
 
         if (currentVerificationStep) {
@@ -1132,8 +1132,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
 
       return {
         status: 'success',
@@ -1205,8 +1205,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
 
       return {
         status: 'success',
@@ -1278,8 +1278,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
 
       return {
         status: 'success',
@@ -1381,8 +1381,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
 
       return {
         status: 'success',
@@ -1470,8 +1470,8 @@ export class ExtendedLeaveCasesService {
         },
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
 
       return {
         status: 'success',

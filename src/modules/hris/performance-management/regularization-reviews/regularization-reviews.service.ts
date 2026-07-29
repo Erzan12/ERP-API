@@ -198,7 +198,7 @@ export class RegularizationReviewsService {
               employment_history: {
                 where: { is_active: true },
                 take: 1,
-                orderBy: { effectivity_date: 'desc' },
+                orderBy: { effective_date: 'desc' },
               },
               created_at: true,
             },

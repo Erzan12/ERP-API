@@ -6020,7 +6020,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance-cases/leave/{extendedHrLeaveRequestId}/process": {
+    "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/process": {
       "post": {
         "operationId": "ExtendedLeaveCasesController_processExtendedLeave_v2",
         "parameters": [
@@ -6059,7 +6059,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance-cases/leave/{extendedHrLeaveRequestId}/reject": {
+    "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/reject": {
       "post": {
         "operationId": "ExtendedLeaveCasesController_rejectExtendedLeave_v2",
         "parameters": [
@@ -6098,7 +6098,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance-cases/leave/{extendedHrLeaveRequestId}/cancel": {
+    "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/cancel": {
       "post": {
         "operationId": "ExtendedLeaveCasesController_cancelExtendedLeave_v2",
         "parameters": [
@@ -6140,7 +6140,66 @@
     "/v2/hris/time-and-attendance/overtime-rates": {
       "get": {
         "operationId": "OvertimeRateController_getOvertimeRates_v2",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of Overtime Rates"
@@ -6163,7 +6222,7 @@
         },
         "summary": "List of Overtime Rates",
         "tags": [
-          "Human Resources - Time and Attendance Cases (Overtime Rates)"
+          "Human Resources - Time and Attendance Cases (Overtime Rate)"
         ]
       },
       "post": {
@@ -6202,7 +6261,7 @@
         },
         "summary": "Create a overtime rate",
         "tags": [
-          "Human Resources - Time and Attendance Cases (Overtime Rates)"
+          "Human Resources - Time and Attendance Cases (Overtime Rate)"
         ]
       }
     },
@@ -6241,7 +6300,7 @@
         },
         "summary": "Get a single id Overtime Rate",
         "tags": [
-          "Human Resources - Time and Attendance Cases (Overtime Rates)"
+          "Human Resources - Time and Attendance Cases (Overtime Rate)"
         ]
       },
       "put": {
@@ -6289,7 +6348,7 @@
         },
         "summary": "Update a overtime rate",
         "tags": [
-          "Human Resources - Time and Attendance Cases (Overtime Rates)"
+          "Human Resources - Time and Attendance Cases (Overtime Rate)"
         ]
       }
     },
@@ -6390,7 +6449,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateOvertimeCaseDto"
+                "$ref": "#/components/schemas/CreateOvertimeRequestDto"
               }
             }
           }
@@ -6458,12 +6517,305 @@
         "tags": [
           "Human Resources - Time and Attendance Cases (Overtime Request)"
         ]
+      },
+      "put": {
+        "operationId": "OvertimeCasesController_updateOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update Overtime Request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOvertimeRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Overtime Request updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a overtime request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}/submit": {
+      "put": {
+        "operationId": "OvertimeCasesController_submitOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overtime Request submitted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Submit Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}/verify": {
+      "put": {
+        "operationId": "OvertimeCasesController_verifyOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overtime Request verified"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Verify Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}/approve": {
+      "put": {
+        "operationId": "OvertimeCasesController_approveOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overtime Request approved"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Approve Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}/processed": {
+      "put": {
+        "operationId": "OvertimeCasesController_processOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overtime Request processed"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Process Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}/reject": {
+      "put": {
+        "operationId": "OvertimeCasesController_rejectOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overtime Request rejected"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Reject Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
       }
     },
     "/v2/hris/salary-grades": {
       "get": {
         "operationId": "SalaryGradeController_getSalaryGrades_v2",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of Salary Grades"
@@ -9111,6 +9463,16 @@
             "type": "string",
             "example": "User Location PK UUID",
             "description": "The PK uuid of the user location"
+          },
+          "verifier_id": {
+            "type": "string",
+            "example": "User UUID for verifier of this career posting",
+            "description": "The uuid of verifier user for this career posting"
+          },
+          "approver_id": {
+            "type": "string",
+            "example": "User UUID for career posting approver",
+            "description": "The uuid of approver user for this career posting"
           }
         },
         "required": [
@@ -9119,7 +9481,9 @@
           "department_id",
           "employee_type",
           "employment_type",
-          "user_location_id"
+          "user_location_id",
+          "verifier_id",
+          "approver_id"
         ]
       },
       "UpdateCareerPostingDto": {
@@ -9187,6 +9551,16 @@
             "type": "string",
             "example": "User Location PK UUID",
             "description": "The PK uuid of the user location"
+          },
+          "verifier_id": {
+            "type": "string",
+            "example": "User UUID for verifier of this career posting",
+            "description": "The uuid of verifier user for this career posting"
+          },
+          "approver_id": {
+            "type": "string",
+            "example": "User UUID for career posting approver",
+            "description": "The uuid of approver user for this career posting"
           }
         },
         "required": [
@@ -9198,7 +9572,9 @@
           "is_active",
           "employment_type",
           "status",
-          "user_location_id"
+          "user_location_id",
+          "verifier_id",
+          "approver_id"
         ]
       },
       "UpdateApplicantDto": {
@@ -10056,7 +10432,7 @@
           "is_active"
         ]
       },
-      "CreateOvertimeCaseDto": {
+      "CreateOvertimeRequestDto": {
         "type": "object",
         "properties": {
           "employee_id": {
@@ -10098,6 +10474,16 @@
             "type": "string",
             "example": "Reason of overtime",
             "default": "Reason of your overtime"
+          },
+          "verifier_id": {
+            "type": "string",
+            "example": "User UUID for verifier of this leave request",
+            "description": "The uuid of verifier user for this leave request"
+          },
+          "approver_id": {
+            "type": "string",
+            "example": "User UUID for leave request approver",
+            "description": "The uuid of approver user for this user leave request"
           }
         },
         "required": [
@@ -10108,7 +10494,70 @@
           "overtime_date",
           "time_from",
           "time_to",
-          "reason"
+          "reason",
+          "verifier_id",
+          "approver_id"
+        ]
+      },
+      "UpdateOvertimeRequestDto": {
+        "type": "object",
+        "properties": {
+          "vessel_id": {
+            "type": "string",
+            "example": "Vessel UUID",
+            "description": "The vessel uuid PK"
+          },
+          "overtime_rate_id": {
+            "type": "string",
+            "example": "Overtime Rate UUID",
+            "description": "The overtime rate uuid PK"
+          },
+          "date_filed": {
+            "type": "string",
+            "example": "2026-05-12",
+            "description": "Date Overtime is filed"
+          },
+          "overtime_date": {
+            "type": "string",
+            "example": "2026-05-08",
+            "description": "Date of the overtime happen"
+          },
+          "time_from": {
+            "type": "string",
+            "example": "18:00:00",
+            "description": "Overtime start time"
+          },
+          "time_to": {
+            "type": "string",
+            "example": "22:00:00",
+            "description": "Overtime end time"
+          },
+          "reason": {
+            "type": "string",
+            "example": "Reason of overtime",
+            "default": "Reason of your overtime"
+          },
+          "verifier_id": {
+            "type": "string",
+            "example": "User UUID for verifier of this leave request",
+            "description": "The uuid of verifier user for this leave request"
+          },
+          "approver_id": {
+            "type": "string",
+            "example": "User UUID for leave request approver",
+            "description": "The uuid of approver user for this leave request"
+          }
+        },
+        "required": [
+          "vessel_id",
+          "overtime_rate_id",
+          "date_filed",
+          "overtime_date",
+          "time_from",
+          "time_to",
+          "reason",
+          "verifier_id",
+          "approver_id"
         ]
       },
       "CreateSalaryGradeDto": {

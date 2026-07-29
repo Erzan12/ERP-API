@@ -222,8 +222,8 @@ export class PerformanceEvaluationService {
         },
       });
 
-      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-      const userPosition = requestUser.employee.position?.name;
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
 
       return {
         status: 'success',
