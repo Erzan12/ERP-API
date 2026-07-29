@@ -2,7 +2,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString } from 'class-validator';
 
-export class OvertimeCasesPaginationDto {
+export class OvertimeRequestsPaginationDto {
   @IsOptional()
   @IsString()
   @ApiPropertyOptional({ default: '' })

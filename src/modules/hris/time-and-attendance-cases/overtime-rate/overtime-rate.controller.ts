@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OvertimeRateService } from './overtime-rate.service';
@@ -27,8 +28,9 @@ import {
   CreateOvertimeRateDto,
   UpdateOvertimeRateDto,
 } from './dto/overtime-rate.dto';
+import { OvertimeRequestsPaginationDto } from 'src/utils/dtos/overtime-request-pagination.dto';
 
-@ApiTags('Human Resources - Time and Attendance Cases (Overtime Rates)')
+@ApiTags('Human Resources - Time and Attendance Cases (Overtime Rate)')
 @Controller({ path: 'hris', version: '2' })
 export class OvertimeRateController {
   constructor(private readonly overtimeService: OvertimeRateService) {}
@@ -37,8 +39,11 @@ export class OvertimeRateController {
   @ApiOperation({ summary: 'List of Overtime Rates' })
   @ApiGetResponse('List of Overtime Rates')
   @Can({ action: ACTION_UPDATE, subject: OVERTIME_RATE })
-  getOvertimeRates(@SessionUser() user: RequestUser) {
-    return this.overtimeService.getOvertimeRates(user);
+  getOvertimeRates(
+    @SessionUser() user: RequestUser,
+    @Query() dto: OvertimeRequestsPaginationDto,
+  ) {
+    return this.overtimeService.getOvertimeRates(user, dto);
   }
 
   @Get('/time-and-attendance/overtime-rates/:overtimeRateId')
