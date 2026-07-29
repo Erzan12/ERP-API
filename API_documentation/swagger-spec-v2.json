@@ -6645,6 +6645,45 @@
         ]
       }
     },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}/approve": {
+      "put": {
+        "operationId": "OvertimeCasesController_approveOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Overtime Request approved"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Approve Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
     "/v2/hris/salary-grades": {
       "get": {
         "operationId": "SalaryGradeController_getSalaryGrades_v2",
