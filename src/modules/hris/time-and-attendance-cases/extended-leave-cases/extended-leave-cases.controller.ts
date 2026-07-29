@@ -171,7 +171,7 @@ export class ExtendedLeaveCasesController {
     );
   }
 
-  @Post('time-and-attendance-cases/leave/:extendedHrLeaveRequestId/process')
+  @Post('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/process')
   @ApiOperation({ summary: 'Process Extended Leave Request' })
   @ApiPostResponse('Extended Leave Request processed')
   @Can({ action: ACTION_PROCESS, subject: EXTENDED_LEAVE_REQUEST })
@@ -186,7 +186,7 @@ export class ExtendedLeaveCasesController {
     );
   }
 
-  @Post('time-and-attendance-cases/leave/:extendedHrLeaveRequestId/reject')
+  @Post('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/reject')
   @ApiOperation({ summary: 'Reject Extended Leave Request' })
   @ApiPostResponse('Extended Leave Request rejected')
   @Can({ action: ACTION_REJECT, subject: EXTENDED_LEAVE_REQUEST })
@@ -201,7 +201,7 @@ export class ExtendedLeaveCasesController {
     );
   }
 
-  @Post('time-and-attendance-cases/leave/:extendedHrLeaveRequestId/cancel')
+  @Post('time-and-attendance-cases/extended-leave/:extendedHrLeaveRequestId/cancel')
   @ApiOperation({ summary: 'Cancel Extended Leave Request' })
   @ApiPostResponse('Extended Leave Request cancelled')
   @Can({ action: ACTION_CANCEL, subject: EXTENDED_LEAVE_REQUEST })
