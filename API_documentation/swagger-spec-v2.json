@@ -6020,7 +6020,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance-cases/leave/{extendedHrLeaveRequestId}/process": {
+    "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/process": {
       "post": {
         "operationId": "ExtendedLeaveCasesController_processExtendedLeave_v2",
         "parameters": [
@@ -6059,7 +6059,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance-cases/leave/{extendedHrLeaveRequestId}/reject": {
+    "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/reject": {
       "post": {
         "operationId": "ExtendedLeaveCasesController_rejectExtendedLeave_v2",
         "parameters": [
@@ -6098,7 +6098,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance-cases/leave/{extendedHrLeaveRequestId}/cancel": {
+    "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/cancel": {
       "post": {
         "operationId": "ExtendedLeaveCasesController_cancelExtendedLeave_v2",
         "parameters": [
@@ -6581,7 +6581,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Overtime Request submitted"
           },
           "400": {
@@ -6593,8 +6593,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -6620,7 +6620,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Overtime Request verified"
           },
           "400": {
@@ -6632,8 +6632,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -6659,7 +6659,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Overtime Request approved"
           },
           "400": {
@@ -6671,14 +6671,92 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
           }
         },
         "summary": "Approve Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}/processed": {
+      "put": {
+        "operationId": "OvertimeCasesController_processOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overtime Request processed"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Process Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}/reject": {
+      "put": {
+        "operationId": "OvertimeCasesController_rejectOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overtime Request rejected"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Reject Overtime Request",
         "tags": [
           "Human Resources - Time and Attendance Cases (Overtime Request)"
         ]
