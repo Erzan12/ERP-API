@@ -186,9 +186,9 @@ export class ApplicantsController {
   }
 
   // HIRING PIPELINE WORKFLOW STATUS
-  @Post('applicants/:applicantId/for-interview')
+  @Put('applicants/:applicantId/for-interview')
   @ApiOperation({ summary: 'Set an Applicant for Interview' })
-  @ApiPostResponse('Applicant has been set for interview')
+  @ApiPatchResponse('Applicant has been set for interview')
   @Can({ action: ACTION_SUBMIT, subject: APPLICANT })
   forInterview(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
@@ -197,9 +197,9 @@ export class ApplicantsController {
     return this.hiringPipelineService.forInterview(applicantId, user);
   }
 
-  @Post('applicants/:applicantId/accept')
+  @Put('applicants/:applicantId/accept')
   @ApiOperation({ summary: 'Accept an Applicant' })
-  @ApiPostResponse('Applicant has been accepted')
+  @ApiPatchResponse('Applicant has been accepted')
   @Can({ action: ACTION_ACCEPT, subject: APPLICANT })
   accept(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
@@ -208,9 +208,9 @@ export class ApplicantsController {
     return this.hiringPipelineService.accepted(applicantId, user);
   }
 
-  @Post('applicants/:applicantId/onboard')
+  @Put('applicants/:applicantId/onboard')
   @ApiOperation({ summary: 'Onbaord an Applicant' })
-  @ApiPostResponse('Applicant is now onboard')
+  @ApiPatchResponse('Applicant is now onboard')
   @Can({ action: ACTION_ONBOARD, subject: APPLICANT })
   onBoard(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
@@ -219,9 +219,9 @@ export class ApplicantsController {
     return this.hiringPipelineService.onBoarding(applicantId, user);
   }
 
-  @Post('applicants/:applicantId/reject')
+  @Put('applicants/:applicantId/reject')
   @ApiOperation({ summary: 'Reject an Applicant' })
-  @ApiPostResponse('Applicant has been rejected')
+  @ApiPatchResponse('Applicant has been rejected')
   @Can({ action: ACTION_REJECT, subject: APPLICANT })
   reject(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
@@ -285,6 +285,7 @@ export class InterviewApplicantController {
    */
   @Post('applicants/interview/assign-interview-panel') // post for creation
   @ApiOperation({ summary: 'Assign the full interview panel to an applicant' })
+  @ApiPostResponse('Applicant has been assign to an interview panel')
   @Can({ action: ACTION_UPDATE, subject: INTERVIEW_APPLICANT })
   assignInterviewer(
     @Body() dto: BulkAssignInterviewDto,
@@ -297,8 +298,9 @@ export class InterviewApplicantController {
    * PHASE 2: ASSESSMENT
    * Updates one specific interview slot with results and exam ratings
    */
-  @Patch('applicants/interview/assess-interview/:interviewerId')
+  @Put('applicants/interview/assess-interview/:interviewerId')
   @ApiOperation({ summary: 'Submit assessment for a specific interview stage' })
+  @ApiPatchResponse('Assess applicant interview')
   @Can({ action: ACTION_UPDATE, subject: INTERVIEW_APPLICANT })
   async assessInterview(
     @Param('interviewerId', new ParseUUIDPipe()) interviewerId: string,
