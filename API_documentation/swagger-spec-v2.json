@@ -5414,7 +5414,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/submit": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_submitLeave_v2",
         "parameters": [
           {
@@ -5427,7 +5427,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request submitted"
           },
           "400": {
@@ -5439,8 +5439,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5453,7 +5453,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/verify": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_verifyLeave_v2",
         "parameters": [
           {
@@ -5466,7 +5466,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request verified"
           },
           "400": {
@@ -5478,8 +5478,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5492,7 +5492,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/approve": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_approveLeave_v2",
         "parameters": [
           {
@@ -5505,7 +5505,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request approved"
           },
           "400": {
@@ -5517,8 +5517,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5531,7 +5531,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/process": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_processLeave_v2",
         "parameters": [
           {
@@ -5544,7 +5544,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request processed"
           },
           "400": {
@@ -5556,8 +5556,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5570,7 +5570,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/reject": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_rejectLeave_v2",
         "parameters": [
           {
@@ -5583,7 +5583,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request rejected"
           },
           "400": {
@@ -5595,8 +5595,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5609,7 +5609,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/cancel": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_cancelLeave_v2",
         "parameters": [
           {
@@ -5622,7 +5622,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request cancelled"
           },
           "400": {
@@ -5634,8 +5634,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
