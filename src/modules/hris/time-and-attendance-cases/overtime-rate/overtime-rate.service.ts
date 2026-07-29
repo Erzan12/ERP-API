@@ -17,7 +17,10 @@ import { Prisma } from '@prisma/client';
 export class OvertimeRateService {
   constructor(private prisma: PrismaService) {}
 
-  async getOvertimeRates(user: RequestUser, dto: OvertimeRequestsPaginationDto) {
+  async getOvertimeRates(
+    user: RequestUser,
+    dto: OvertimeRequestsPaginationDto,
+  ) {
     const { search, sortBy, order, page, perPage } = dto;
 
     // Auth check first
