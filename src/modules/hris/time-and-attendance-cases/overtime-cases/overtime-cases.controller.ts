@@ -12,12 +12,14 @@ import { OvertimeCasesService } from './overtime-cases.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
+  ApiPatchResponse,
   ApiPostResponse,
 } from 'src/utils/helpers/swagger-response.helper';
 import {
   ACTION_APPROVE,
   ACTION_CREATE,
   ACTION_READ,
+  ACTION_REJECT,
   ACTION_SUBMIT,
   ACTION_UPDATE,
   ACTION_VERIFY,
@@ -100,7 +102,7 @@ export class OvertimeCasesController {
   // OVERTIME REQUEST WORKFLOW STATUS
   @Put('time-and-attendance-cases/overtimes/:overtimeRequestId/submit')
   @ApiOperation({ summary: 'Submit Overtime Request' })
-  @ApiPostResponse('Overtime Request submitted')
+  @ApiPatchResponse('Overtime Request submitted')
   @Can({ action: ACTION_SUBMIT, subject: OVERTIME_REQUEST })
   submitOvertimeRequest(
     @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
@@ -114,7 +116,7 @@ export class OvertimeCasesController {
 
   @Put('time-and-attendance-cases/overtimes/:overtimeRequestId/verify')
   @ApiOperation({ summary: 'Verify Overtime Request' })
-  @ApiPostResponse('Overtime Request verified')
+  @ApiPatchResponse('Overtime Request verified')
   @Can({ action: ACTION_VERIFY, subject: OVERTIME_REQUEST })
   verifyOvertimeRequest(
     @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
@@ -128,13 +130,41 @@ export class OvertimeCasesController {
 
   @Put('time-and-attendance-cases/overtimes/:overtimeRequestId/approve')
   @ApiOperation({ summary: 'Approve Overtime Request' })
-  @ApiPostResponse('Overtime Request approved')
+  @ApiPatchResponse('Overtime Request approved')
   @Can({ action: ACTION_APPROVE, subject: OVERTIME_REQUEST })
   approveOvertimeRequest(
     @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.overtimeCasesService.approveOvertimeRequest(
+      overtimeRequestId,
+      user,
+    );
+  }
+
+  @Put('time-and-attendance-cases/overtimes/:overtimeRequestId/processed')
+  @ApiOperation({ summary: 'Process Overtime Request' })
+  @ApiPatchResponse('Overtime Request processed')
+  @Can({ action: ACTION_APPROVE, subject: OVERTIME_REQUEST })
+  processOvertimeRequest(
+    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.overtimeCasesService.processeOvertimeRequest(
+      overtimeRequestId,
+      user,
+    );
+  }
+
+  @Put('time-and-attendance-cases/overtimes/:overtimeRequestId/reject')
+  @ApiOperation({ summary: 'Reject Overtime Request' })
+  @ApiPatchResponse('Overtime Request rejected')
+  @Can({ action: ACTION_REJECT, subject: OVERTIME_REQUEST })
+  rejectOvertimeRequest(
+    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.overtimeCasesService.rejectOvertimeRequest(
       overtimeRequestId,
       user,
     );
