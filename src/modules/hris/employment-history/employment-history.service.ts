@@ -102,7 +102,7 @@ export class EmploymentHistoryService {
         employee_id: employeeId,
       },
       orderBy: {
-        effectivity_date: 'desc',
+        effective_date: 'desc',
       },
     });
 
@@ -136,10 +136,10 @@ export class EmploymentHistoryService {
     const latestHistory = await this.prisma.employmentHistory.findFirst({
       where: {
         employee_id: employeeId,
-        type: dto.type,
+        // type: dto.type,
       },
       orderBy: {
-        effectivity_date: 'desc',
+        effective_date: 'desc',
       },
     });
 
@@ -159,7 +159,7 @@ export class EmploymentHistoryService {
           type: dto.type,
           previous_id: previousId,
           current_id: dto.current_id,
-          effectivity_date: new Date(dto.effectivity_date),
+          effective_date: new Date(dto.effectivity_date),
           remarks: dto.remarks,
           created_by: user.id,
         },

@@ -276,8 +276,11 @@ enum VesselType {
 
 enum OvertimeStatus {
   draft
+  submitted
   for_verification
+  verified
   for_approval
+  approved
   for_processing
   processed
   cancelled
@@ -480,13 +483,18 @@ model User {
   // Workflow action
   workflow_actions  WorkflowAction[]
 
-  relieved_requests         HrLeaveRequest[] @relation("LeaveRequestReliever")
-  relieved_extended_request HrExtendedLeaveRequest[] @relation("ExtendedLeaveRequestReliever")
-  //verified_requests       HrLeaveRequest[] @relation("LeaveRequestVerifier")
-  //approved_requests       HrLeaveRequest[] @relation("LeaveRequestApprover")
-
-  //employee_evaluations_verified HrEmployeeEvaluation[] @relation("EmployeeEvaluationVerifier")
-  //employee_evaluations_approved HrEmployeeEvaluation[] @relation("EmployeeEvaluationApprover")
+  career_posting_verify           CareerPosting[]           @relation("CareerPostingVerifier")
+  career_posting_approver         CareerPosting[]           @relation("CareerPostingApprover")
+  relieved_requests               HrLeaveRequest[]          @relation("LeaveRequestReliever")
+  relieved_extended_request       HrExtendedLeaveRequest[]  @relation("ExtendedLeaveRequestReliever")
+  leave_request_verify            HrLeaveRequest[]          @relation("LeaveRequestVerifier")
+  leave_request_approve           HrLeaveRequest[]          @relation("LeaveRequestApprover")
+  extended_leave_request_verify   HrExtendedLeaveRequest[]  @relation("ExtendedLeaveRequestVerifier")
+  extended_leave_request_approve  HrExtendedLeaveRequest[]  @relation("ExtendedLeaveRequestApprover")
+  overtime_request_verify         HrOvertimeRequest[]       @relation("OvertimeRequestVerifier")
+  overtime_request_approver       HrOvertimeRequest[]       @relation("OvertimeRequestApprover")
+  employee_evaluations_verify     HrEmployeeEvaluation[]    @relation("EmployeeEvaluationVerifier")
+  employee_evaluations_approve    HrEmployeeEvaluation[]    @relation("EmployeeEvaluationApprover")
 
   // Cascade delete tokens when user is removed
   passwordHistories            PasswordHistory[]
@@ -710,7 +718,7 @@ model Employee {
   person_id                 String          @unique @db.Uuid
   employee_id               String          @unique
   department_id             String          @db.Uuid
-  position_id               String?         @db.Uuid
+  position_id               String          @db.Uuid
   division_id               String          @db.Uuid
   user_id                   String?         @db.Uuid
   vessel_id                 String?         @db.Uuid
@@ -747,7 +755,7 @@ model Employee {
   company           Company          @relation(fields: [company_id], references: [id])
   department        Department       @relation(fields: [department_id], references: [id])
   person            Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
-  position          Position?        @relation(fields: [position_id], references: [id])
+  position          Position        @relation(fields: [position_id], references: [id])
   division          Division         @relation(fields: [division_id], references: [id])
   user_location     UserLocation?    @relation(fields: [user_location_id], references: [id])
   vessel            Vessel?          @relation(fields: [vessel_id], references: [id])
@@ -779,7 +787,7 @@ model Employee {
 model EmploymentHistory {
   id                String           @id @default(uuid()) @db.Uuid
   employee_id       String           @db.Uuid
-  effectivity_date  DateTime
+  effective_date    DateTime
   type              EmploymentHistoryType
 
   previous_id       String? @db.Uuid
@@ -802,8 +810,8 @@ model EmploymentHistory {
   employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
 
   @@index([employee_id])
-  @@index([effectivity_date])
-  @@index([employee_id, effectivity_date])
+  @@index([effective_date])
+  @@index([employee_id, effective_date])
 }
 
 model HrEmployeeStatusPeriod {
@@ -953,8 +961,8 @@ model HrEmployeeEvaluation {
 
   employee  Employee @relation("HrEmployeeEvaluations", fields: [employee_id], references: [id], onDelete: Cascade)
   evaluator Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id], onDelete: Cascade)
-  //verifier  User? @relation("EmployeeEvaluationVerifier", fields: [verifier_id], references: [id])
-  //approver  User? @relation("EmployeeEvaluationApprover", fields: [approver_id], references: [id])
+  verifier  User? @relation("EmployeeEvaluationVerifier", fields: [verifier_id], references: [id])
+  approver  User? @relation("EmployeeEvaluationApprover", fields: [approver_id], references: [id])
   
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -1112,8 +1120,8 @@ model CareerPosting {
   published_on     DateTime?
   employment_type  EmploymentType?
   employee_type    EmployeeType?
-  //verifier_id      String?             @db.Uuid
-  //approver_id      String?             @db.Uuid
+  verifier_id      String?             @db.Uuid
+  approver_id      String?             @db.Uuid
   status           CareerPostingStatus @default(draft)
   is_active        Boolean             @default(true)
 
@@ -1123,8 +1131,8 @@ model CareerPosting {
   createdBy User? @relation("CareerPostingCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("CareerPostingUpdatedBy", fields: [updated_by], references: [id])
 
-  //verifier User @relation("CareerPostingVerifier", fields: [verifier_id], references: [id])
-  //approver User @relation("CareerPostingApprover", fields: [approver_id], references: [id])
+  verifier User? @relation("CareerPostingVerifier", fields: [verifier_id], references: [id])
+  approver User? @relation("CareerPostingApprover", fields: [approver_id], references: [id])
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -1305,7 +1313,9 @@ model HrLeaveRequest {
   status            LeaveRequestStatus @default(draft)
   is_active         Boolean            @default(true)
 
-  reliever_id String  @db.Uuid
+  reliever_id String   @db.Uuid
+  verifier_id String?  @db.Uuid
+  approver_id String?  @db.Uuid
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -1319,8 +1329,11 @@ model HrLeaveRequest {
   category  HrLeaveCategory? @relation(fields: [leave_category_id], references: [id])
 
   employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
-  reliever User  @relation("LeaveRequestReliever", fields: [reliever_id], references: [id])
-  
+
+  reliever User   @relation("LeaveRequestReliever", fields: [reliever_id], references: [id])
+  verifier User?  @relation("LeaveRequestVerifier", fields: [verifier_id], references: [id])
+  approver User?  @relation("LeaveRequestApprover", fields: [approver_id], references: [id])
+
   //hr_leave_transactions HrLeaveTransaction[]
   hr_leave_dates        HrLeaveDates[]
   hr_extended_leave_request  HrExtendedLeaveRequest[]
@@ -1341,6 +1354,9 @@ model HrExtendedLeaveRequest {
   no_of_days                    Float?
   contact_no_while_on_leave     String
   is_active                     Boolean   @default(true)
+
+  verifier_id  String? @db.Uuid
+  approver_id  String? @db.Uuid
   
   created_by   String? @db.Uuid
   updated_by   String? @db.Uuid
@@ -1352,6 +1368,8 @@ model HrExtendedLeaveRequest {
   updatedBy User? @relation("HrExtendedLeaveRequestUpdatedBy", fields: [updated_by], references: [id])
 
   reliever User  @relation("ExtendedLeaveRequestReliever", fields: [reliever_id], references: [id])
+  verifier User? @relation("ExtendedLeaveRequestVerifier", fields: [verifier_id], references: [id])
+  approver User? @relation("ExtendedLeaveRequestApprover", fields: [approver_id], references: [id])
 
   hr_leave_dates   HrLeaveDates[]
   hr_leave_request HrLeaveRequest @relation(fields: [leave_request_id], references: [id])
@@ -1375,6 +1393,9 @@ model HrOvertimeRequest {
   is_active          Boolean   @default(true)
   status             OvertimeStatus @default(draft)
   is_computed        Boolean?  @default(false)
+
+  verifier_id  String? @db.Uuid
+  approver_id  String? @db.Uuid
   
   created_by   String? @db.Uuid
   updated_by   String? @db.Uuid
@@ -1386,6 +1407,9 @@ model HrOvertimeRequest {
   updatedBy    User? @relation("HrOvertimeRequestUpdatedBy", fields: [updated_by], references: [id])
 
   employee           Employee  @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  verifier           User?     @relation("OvertimeRequestVerifier", fields: [verifier_id], references: [id])
+  approver           User?     @relation("OvertimeRequestApprover", fields: [approver_id], references: [id])
+
   vessel             Vessel?   @relation(fields: [vessel_id], references: [id])
   userLocation       UserLocation?   @relation(fields: [user_location_id], references: [id])  
   overtimeRate       HrOvertimeRate? @relation(fields: [overtime_rate_id], references: [id])

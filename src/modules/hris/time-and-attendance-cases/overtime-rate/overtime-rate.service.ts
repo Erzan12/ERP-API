@@ -10,12 +10,19 @@ import {
   CreateOvertimeRateDto,
   UpdateOvertimeRateDto,
 } from './dto/overtime-rate.dto';
+import { OvertimeRequestsPaginationDto } from 'src/utils/dtos/overtime-request-pagination.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class OvertimeRateService {
   constructor(private prisma: PrismaService) {}
 
-  async getOvertimeRates(user: RequestUser) {
+  async getOvertimeRates(
+    user: RequestUser,
+    dto: OvertimeRequestsPaginationDto,
+  ) {
+    const { search, sortBy, order, page, perPage } = dto;
+
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -52,12 +59,47 @@ export class OvertimeRateService {
       );
     }
 
-    const overtimeRates = await this.prisma.hrOvertimeRate.findMany({
-      where: { is_active: true },
-      include: {
-        overtimeRequests: true,
-      },
-    });
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: Prisma.HrOvertimeRateWhereInput = {
+      is_active: true,
+    };
+
+    const whereConditions: Prisma.HrOvertimeRateWhereInput = {};
+
+    if (search) {
+      const terms = search.split(' ');
+
+      whereConditions.OR = terms.flatMap((term) => [
+        {
+          type: { contains: term, mode: 'insensitive' },
+        },
+      ]);
+    }
+
+    const allowSortFields = ['created_by'];
+
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
+
+    const [total, overtimeRates] = await this.prisma.$transaction([
+      this.prisma.hrOvertimeRate.count({
+        where: {
+          ...whereCondition,
+          ...whereConditions,
+        },
+      }),
+      this.prisma.hrOvertimeRate.findMany({
+        where: {
+          ...whereCondition,
+          ...whereConditions,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [safeSortBy]: order,
+        },
+      }),
+    ]);
 
     if (overtimeRates.length === 0) {
       throw new NotFoundException('No overtime rate is available');
@@ -65,7 +107,10 @@ export class OvertimeRateService {
 
     return {
       status: 'success',
-      message: 'List of overtime rates available',
+      message: 'List of Overtime Rate',
+      count: total,
+      page,
+      perPage,
       overtimeRates,
     };
   }

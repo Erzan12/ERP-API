@@ -81,6 +81,22 @@ export class CreateCareerPostingDto {
     description: 'The PK uuid of the user location',
   })
   user_location_id: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  @ApiProperty({
+    example: 'User UUID for verifier of this career posting',
+    description: 'The uuid of verifier user for this career posting',
+  })
+  verifier_id: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  @ApiProperty({
+    example: 'User UUID for career posting approver',
+    description: 'The uuid of approver user for this career posting',
+  })
+  approver_id: string;
 }
 
 export class UpdateCareerPostingDto {
@@ -184,4 +200,20 @@ export class UpdateCareerPostingDto {
     description: 'The PK uuid of the user location',
   })
   user_location_id?: string;
+
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({
+    example: 'User UUID for verifier of this career posting',
+    description: 'The uuid of verifier user for this career posting',
+  })
+  verifier_id?: string;
+
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({
+    example: 'User UUID for career posting approver',
+    description: 'The uuid of approver user for this career posting',
+  })
+  approver_id?: string;
 }
