@@ -276,8 +276,11 @@ enum VesselType {
 
 enum OvertimeStatus {
   draft
+  submitted
   for_verification
+  verified
   for_approval
+  approved
   for_processing
   processed
   cancelled

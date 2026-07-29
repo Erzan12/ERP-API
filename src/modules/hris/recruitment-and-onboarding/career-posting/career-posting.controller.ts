@@ -93,7 +93,7 @@ export class CareerPostingController {
     @Body() dto: CreateCareerPostingDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.careerPostingService.create(dto, user);
+    return this.careerPostingService.createCareerPosting(dto, user);
   }
 
   @Put('recruitments/:recruitmentId')
@@ -106,12 +106,12 @@ export class CareerPostingController {
   @Can({ action: ACTION_UPDATE, subject: CAREER_POSTING })
   updateCareerPosting(
     @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
-    @Body() updateCareerPostingDto: UpdateCareerPostingDto,
+    @Body() dto: UpdateCareerPostingDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.careerPostingService.update(
+    return this.careerPostingService.updateCareerPosting(
       recruitmentId,
-      updateCareerPostingDto,
+      dto,
       user,
     );
   }

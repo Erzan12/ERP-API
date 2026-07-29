@@ -11,6 +11,8 @@ import {
   CreateSalaryGradeDto,
   UpdateSalaryGradeDto,
 } from './dto/salary-grade.dto';
+import { PaginationDto } from 'src/utils/dtos/pagination.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class SalaryGradeService {
@@ -68,7 +70,9 @@ export class SalaryGradeService {
     };
   }
 
-  async getSalaryGrades(user: RequestUser) {
+  async getSalaryGrades(user: RequestUser, dto: PaginationDto) {
+    const { search, sortBy, order, page, perPage } = dto;
+
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -105,9 +109,51 @@ export class SalaryGradeService {
       );
     }
 
-    const salaryGrades = await this.prisma.salaryGrade.findMany({
-      where: { is_active: true },
-    });
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: Prisma.SalaryGradeWhereInput = {
+      is_active: true,
+    };
+
+    const whereConditions: Prisma.SalaryGradeWhereInput = {};
+
+    if (search) {
+      const terms = search.split(' ');
+
+      whereConditions.OR = terms.flatMap((term) => [
+        {
+          grade: { contains: term, mode: 'insensitive' },
+        },
+      ]);
+    }
+
+    const allowSortFields = ['created_by'];
+
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
+
+    const [total, salaryGrades] = await this.prisma.$transaction([
+      this.prisma.salaryGrade.count({
+        where: {
+          ...whereCondition,
+          ...whereConditions,
+        },
+      }),
+      this.prisma.salaryGrade.findMany({
+        where: {
+          ...whereCondition,
+          ...whereConditions,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [safeSortBy]: order,
+        },
+      }),
+    ]);
+
+    // const salaryGrades = await this.prisma.salaryGrade.findMany({
+    //   where: { is_active: true },
+    // });
 
     if (salaryGrades.length === 0) {
       throw new NotFoundException('No salary grades found!');
@@ -116,6 +162,9 @@ export class SalaryGradeService {
     return {
       status: 'success',
       message: 'List of Salary Grades',
+      count: total,
+      page,
+      perPage,
       salaryGrades,
     };
   }

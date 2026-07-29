@@ -388,25 +388,29 @@ async function main() {
   ] = positions;
 
   const subModulesData = [
-    { name: 'Dashboard', module_id: hrModule.id },
+    { name: 'HR Dashboard', module_id: hrModule.id },
     { name: 'Employee Masterlist', module_id: hrModule.id },
     { name: 'Career Posting', module_id: hrModule.id },
     { name: 'Hiring Pipeline', module_id: hrModule.id },
     { name: 'Regularization Review', module_id: hrModule.id },
     { name: 'Performance Competency', module_id: hrModule.id },
     { name: 'Leave Category', module_id: hrModule.id },
-    { name: 'Leave Cases', module_id: hrModule.id },
-    { name: 'Extended Leave Cases', module_id: hrModule.id },
+    { name: 'Leave Request', module_id: hrModule.id },
+    { name: 'Extended Leave Request', module_id: hrModule.id },
+    { name: 'Overtime Request', module_id: hrModule.id },
+    { name: 'Overtime Rate', module_id: hrModule.id },
+    { name: 'Salary Grade', module_id: hrModule.id },
     { name: 'Performance Evaluation', module_id: employeeModule.id },
     { name: 'User Account', module_id: managerModule.id },
     { name: 'Permission Template', module_id: managerModule.id },
-    { name: 'Dashboard', module_id: managerModule.id },
+    { name: 'Manager Dashboard', module_id: managerModule.id },
     { name: 'Inbox', module_id: managerModule.id },
-    { name: 'Dashboard', module_id: adminModule.id },
+    { name: 'Administrator Dashboard', module_id: adminModule.id },
     { name: 'Audit Trail', module_id: adminModule.id },
     { name: 'Mastertables', module_id: adminModule.id },
     { name: 'User Token Keys', module_id: adminModule.id },
     { name: 'System Management', module_id: adminModule.id },
+    { name: 'Role Management', module_id: adminModule.id },
     { name: 'DB Query', module_id: adminModule.id },
   ];
 
@@ -425,7 +429,7 @@ async function main() {
   const subModules = await prisma.subModule.findMany();
 
   // 6.5 Create Permissions for submodules
-  const defaultActions = ['create', 'read', 'update', 'delete', 'note', 'verify', 'approve', 'evaluate', 'submit', 'acknowledge', 'reject', 'cancel', 'process', 'return', 'escalate', 'reopen', 'hold', 'screen', 'shortlist', 'set_interview', 'accept', 'onboard'];
+  const defaultActions = ['create', 'read', 'update', 'delete', 'verify', 'approve', 'submit', 'reject', 'cancel', 'process'];
 
   const resultAction = await prisma.subModuleAction.createMany({
     data: defaultActions.map(action => ({
@@ -478,6 +482,7 @@ async function main() {
     'Sr. Systems Developer',
     'HR Clerk',
     'HR Staff',
+    'HR Recruiter',
     'HR Manager',
     'Supervisor',
     'Guest',
