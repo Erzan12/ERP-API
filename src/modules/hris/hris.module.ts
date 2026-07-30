@@ -15,7 +15,6 @@ import { CareerPostingController } from './recruitment-and-onboarding/career-pos
 
 import {
   HiringPipelineService,
-  InterviewApplicantService,
 } from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.service';
 import {
   ApplicantsController,
@@ -49,7 +48,6 @@ import { EmploymentHistoryService } from './employment-history/employment-histor
     DashboardService,
     CareerPostingService,
     HiringPipelineService,
-    InterviewApplicantService,
     RegularizationReviewsService,
     PerformanceCompetencyService,
     LeaveCategoryService,
