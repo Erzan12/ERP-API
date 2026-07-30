@@ -918,6 +918,10 @@ export class HiringPipelineService {
         },
       });
 
+      if (accepted.completed_interview !== true) {
+        throw new BadRequestException('Invalid! Applicant must complete Interview stage first to be accepted.');
+      }
+
       await tx.workflowAction.create({
         data: {
           actionable_type: WORKFLOW_ENTITY.APPLICANT,
