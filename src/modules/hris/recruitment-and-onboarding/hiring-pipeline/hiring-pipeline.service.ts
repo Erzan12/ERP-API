@@ -158,7 +158,7 @@ export class HiringPipelineService {
 
     const documents = await this.prisma.attachments.findMany({
       where: {
-        transaction_type: WORKFLOW_ENTITY.HIRING_PIPELINE,
+        transaction_type: TRANSACTION_TYPE.APPLICANT_DOC,
         transaction_id: applicant.id,
       },
     });
@@ -833,8 +833,8 @@ export class HiringPipelineService {
         where: { id: applicantId },
       });
 
-      if (forInterview?.application_status !== ApplicationStatus.applied) {
-        throw new BadRequestException('Invalid! status must be: applied');
+      if (forInterview?.application_status !== ApplicationStatus.shortlisted) {
+        throw new BadRequestException('Invalid! status must be: shortlisted');
       }
 
       const verifyForInterview = await tx.applicant.update({
