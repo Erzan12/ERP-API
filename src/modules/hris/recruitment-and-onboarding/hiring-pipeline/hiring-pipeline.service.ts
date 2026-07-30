@@ -110,6 +110,66 @@ export class HiringPipelineService {
     };
   }
 
+  
+  async getApplicantDocuments(applicantId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const applicant = await this.prisma.applicant.findUnique({
+      where: { id: applicantId },
+    });
+
+    if (!applicant) {
+      throw new NotFoundException('Applicant not found');
+    }
+
+    const documents = await this.prisma.attachments.findMany({
+      where: {
+        transaction_type: WORKFLOW_ENTITY.HIRING_PIPELINE,
+        transaction_id: applicant.id,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'These are the Applicants Documents',
+      documents,
+    };
+  }
+
   async getApplicants(user: RequestUser, dto: RecruitmentPaginationDto) {
     const { search, status, sortBy, order, page, perPage } = dto;
 
@@ -472,8 +532,8 @@ export class HiringPipelineService {
           acted_by: requestUser.id,
           acted_at: new Date(),
           metadata: {
-            title: 'Career/Job Posting created',
-            message: 'You have created a new Career/Job Posting',
+            title: 'Applicant created',
+            message: 'You have created a new Applicant',
             user: creatorName,
             role: 'creator',
           },
@@ -661,6 +721,76 @@ export class HiringPipelineService {
     };
   }
 
+  async screenApplicant(applicantId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const screenApplicant = await tx.applicant.update({
+        where: {
+          id: applicantId,
+          application_status: ApplicationStatus.applied,
+        },
+        data: {
+          application_status: ApplicationStatus.shortlisted,
+          updated_by: requestUser.id,
+        },
+      });
+
+      await tx.workflowAction.create({
+        data: {
+          actionable_type: WORKFLOW_ENTITY.APPLICANT,
+          actionable_id: applicantId,
+          action: WorkflowActionType.shortlisting,
+          acted_by: user.id,
+        },
+      });
+
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      return {
+        status: 'success',
+        message: 'Applicant has been shortlisted',
+        screenApplicant,
+        shortlisted_by: `${userName} - ${userPosition}`,
+      };
+    });
+  }
+
   async forInterview(applicantId: string, user: RequestUser) {
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -699,7 +829,15 @@ export class HiringPipelineService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      const forInterview = await tx.applicant.update({
+      const forInterview = await tx.applicant.findFirst({
+        where: { id: applicantId },
+      });
+
+      if (forInterview?.application_status !== ApplicationStatus.applied) {
+        throw new BadRequestException('Invalid! status must be: applied');
+      }
+
+      const verifyForInterview = await tx.applicant.update({
         where: {
           id: applicantId,
           application_status: ApplicationStatus.shortlisted,
@@ -725,7 +863,7 @@ export class HiringPipelineService {
       return {
         status: 'success',
         message: 'Applicant has been set for interview',
-        forInterview,
+        verifyForInterview,
         set_by: `${userName} - ${userPosition}`,
       };
     });
@@ -977,143 +1115,6 @@ export class HiringPipelineService {
         }
         // throw new Error ('Applicant cannot be rejected')
       }
-    });
-  }
-}
-
-/**
- * SCREENING SERVICE SECTION
- */
-@Injectable()
-export class ScreeningApplicantService {
-  constructor(private readonly prisma: PrismaService) {}
-
-  async getApplicantDocuments(applicantId: string, user: RequestUser) {
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
-    const applicant = await this.prisma.applicant.findUnique({
-      where: { id: applicantId },
-    });
-
-    if (!applicant) {
-      throw new NotFoundException('Applicant not found');
-    }
-
-    const documents = await this.prisma.attachments.findMany({
-      where: {
-        transaction_type: WORKFLOW_ENTITY.HIRING_PIPELINE,
-        transaction_id: applicant.id,
-      },
-    });
-
-    return {
-      status: 'success',
-      message: 'These are the Applicants Documents',
-      documents,
-    };
-  }
-
-  async screenApplicant(applicantId: string, user: RequestUser) {
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
-    return this.prisma.$transaction(async (tx) => {
-      const screenApplicant = await tx.applicant.update({
-        where: {
-          id: applicantId,
-          application_status: ApplicationStatus.applied,
-        },
-        data: {
-          application_status: ApplicationStatus.shortlisted,
-          updated_by: requestUser.id,
-        },
-      });
-
-      await tx.workflowAction.create({
-        data: {
-          actionable_type: WORKFLOW_ENTITY.APPLICANT,
-          actionable_id: applicantId,
-          action: WorkflowActionType.shortlisting,
-          acted_by: user.id,
-        },
-      });
-
-      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-      const userPosition = requestUser.employee.position.name;
-
-      return {
-        status: 'success',
-        message: 'Applicant has been shortlisted',
-        screenApplicant,
-        shortlisted_by: `${userName} - ${userPosition}`,
-      };
     });
   }
 }

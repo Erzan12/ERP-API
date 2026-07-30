@@ -16,12 +16,10 @@ import { CareerPostingController } from './recruitment-and-onboarding/career-pos
 import {
   HiringPipelineService,
   InterviewApplicantService,
-  ScreeningApplicantService,
 } from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.service';
 import {
   ApplicantsController,
   InterviewApplicantController,
-  ScreeningApplicantController,
 } from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.controller';
 import { RegularizationReviewsService } from './performance-management/regularization-reviews/regularization-reviews.service';
 import { RegularizationReviewsController } from './performance-management/regularization-reviews/regularization-reviews.controller';
@@ -57,13 +55,11 @@ import { EmploymentHistoryService } from './employment-history/employment-histor
     LeaveCategoryService,
     LeaveCasesService,
     AttachmentUploadService,
-    ScreeningApplicantService,
     ExtendedLeaveCasesService,
     OvertimeRateService,
     OvertimeCasesService,
     SalaryGradeService,
     EmploymentHistoryService,
-    // ScreeningApplicantService,
   ],
   controllers: [
     EmployeeMasterlistController,
@@ -71,11 +67,9 @@ import { EmploymentHistoryService } from './employment-history/employment-histor
     DashboardController,
     CareerPostingController,
     ApplicantsController,
-    // ScreeningApplicantController,
     InterviewApplicantController,
     RegularizationReviewsController,
     PerformanceCompetencyController,
-    ScreeningApplicantController,
     LeaveCategoryController,
     LeaveCasesController,
     ExtendedLeaveCasesController,
