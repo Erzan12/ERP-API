@@ -29,7 +29,7 @@ import {
   ACTION_REJECT,
   ACTION_SUBMIT,
   ACTION_UPDATE,
-  APPLICANT,
+  HIRING_PIPELINE,
   INTERVIEW_APPLICANT,
   SCREENING_APPLICANT,
 } from 'src/utils/constants/ability.constant';
@@ -54,7 +54,7 @@ export class ApplicantsController {
   @Get('applicants')
   @ApiOperation({ summary: 'List of all applicant posted' })
   @ApiGetResponse('List of employees')
-  @Can({ action: ACTION_READ, subject: APPLICANT })
+  @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
   getCareerPostings(
     @SessionUser() user: RequestUser,
     @Query() dto: RecruitmentPaginationDto,
@@ -71,7 +71,7 @@ export class ApplicantsController {
   @Get('applicants/status-count')
   @ApiOperation({ summary: 'List of all Applicants status' })
   @ApiGetResponse('List of all Applicants status')
-  @Can({ action: ACTION_READ, subject: APPLICANT })
+  @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
   getStatusCountActive(@SessionUser() user: RequestUser) {
     return this.hiringPipelineService.statusCount(user);
   }
@@ -79,7 +79,7 @@ export class ApplicantsController {
   @Get('applicants/:applicantId')
   @ApiOperation({ summary: 'Get a Applicant' })
   @ApiGetResponse('Get a Applicant')
-  @Can({ action: ACTION_READ, subject: APPLICANT })
+  @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
   getCareerPosting(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
@@ -166,7 +166,7 @@ export class ApplicantsController {
   })
   @ApiOperation({ summary: 'Applicant posting' })
   @ApiPostResponse('Applicant posted successfully')
-  @Can({ action: ACTION_CREATE, subject: APPLICANT })
+  @Can({ action: ACTION_CREATE, subject: HIRING_PIPELINE })
   createApplicant(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() dto: CreateApplicantDto,
@@ -182,7 +182,7 @@ export class ApplicantsController {
   })
   @ApiOperation({ summary: 'Update a current applicants information' })
   @ApiPatchResponse('Career Posting updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: APPLICANT })
+  @Can({ action: ACTION_UPDATE, subject: HIRING_PIPELINE })
   updateCareerPosting(
     @Param('applicationId', new ParseUUIDPipe()) applicationId: string,
     @UploadedFiles() files: Express.Multer.File[],
@@ -212,7 +212,7 @@ export class ApplicantsController {
   @Put('applicants/:applicantId/for-interview')
   @ApiOperation({ summary: 'Set an Applicant for Interview' })
   @ApiPatchResponse('Applicant has been set for interview')
-  @Can({ action: ACTION_SUBMIT, subject: APPLICANT })
+  @Can({ action: ACTION_SUBMIT, subject: HIRING_PIPELINE })
   forInterview(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
@@ -223,7 +223,7 @@ export class ApplicantsController {
   @Put('applicants/:applicantId/accept')
   @ApiOperation({ summary: 'Accept an Applicant' })
   @ApiPatchResponse('Applicant has been accepted')
-  @Can({ action: ACTION_ACCEPT, subject: APPLICANT })
+  @Can({ action: ACTION_ACCEPT, subject: HIRING_PIPELINE })
   accept(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
@@ -234,7 +234,7 @@ export class ApplicantsController {
   @Put('applicants/:applicantId/onboard')
   @ApiOperation({ summary: 'Onbaord an Applicant' })
   @ApiPatchResponse('Applicant is now onboard')
-  @Can({ action: ACTION_ONBOARD, subject: APPLICANT })
+  @Can({ action: ACTION_ONBOARD, subject: HIRING_PIPELINE })
   onBoard(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
@@ -245,7 +245,7 @@ export class ApplicantsController {
   @Put('applicants/:applicantId/reject')
   @ApiOperation({ summary: 'Reject an Applicant' })
   @ApiPatchResponse('Applicant has been rejected')
-  @Can({ action: ACTION_REJECT, subject: APPLICANT })
+  @Can({ action: ACTION_REJECT, subject: HIRING_PIPELINE })
   reject(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
