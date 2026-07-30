@@ -155,6 +155,7 @@ export class EmployeeMasterlistService {
             salary: dto.employee.salary,
             hire_date: hireDate,
             pay_frequency: dto.employee.pay_frequency,
+            user_location_id: dto.employee.user_location_id,
             employment_status_id: dto.employee.employment_status_id,
             employment_type: dto.employee.employment_type,
             employee_type: dto.employee.employee_type,
@@ -162,7 +163,7 @@ export class EmployeeMasterlistService {
             archive_date: dto.employee.archive_date,
             other_employee_data: dto.employee.other_employee_data,
             corporate_rank_id: dto.employee.corporate_rank_id,
-            created_by: user.id ?? null,
+            created_by: user.id,
           },
         });
 
