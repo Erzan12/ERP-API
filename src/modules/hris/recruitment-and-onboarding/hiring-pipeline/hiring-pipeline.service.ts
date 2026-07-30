@@ -907,6 +907,14 @@ export class HiringPipelineService {
     }
 
     return this.prisma.$transaction(async (tx) => {
+      const forAcceptance = await tx.applicant.findFirst({
+        where: { id: applicantId, application_status: 'for_interview' },
+      });
+
+      if (forAcceptance?.completed_interview !== true ) {
+        throw new BadRequestException('Invalid! Interview Stage must be completed first before acceptance.');
+      }
+
       const accepted = await tx.applicant.update({
         where: {
           id: applicantId,
@@ -1123,10 +1131,98 @@ export class HiringPipelineService {
   }
 
   // Interview API
+  async getInterviews(user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const existingInterviews = await this.prisma.interviewer.findMany({
+      include: {
+        applicant: true,
+        employee: {
+          select: {
+            id: true,
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const grouped = Object.values(
+    existingInterviews.reduce<Record<string, { applicant: any; interviews: any[] }>>((acc, interview) => {
+
+      const applicantId = String(interview.applicant_id);
+
+      if (!acc[applicantId]) {
+        acc[applicantId] = {
+          applicant: interview.applicant,
+          interviews: [],
+        };
+      }
+      
+      acc[applicantId].interviews.push({
+        id: interview.id,
+        employee: interview.employee,
+        stage: interview.stage,
+        date_of_interview: interview.date_of_interview,
+        is_completed: interview.is_completed,
+        remarks: interview.remarks,
+        total_points: interview.total_points,
+        recommendations: interview.recommendations,
+      });
+
+
+      return acc;
+
+    }, {}));
+
+    return {
+      status: 'success',
+      message: 'List of Interviews',
+      interviews: grouped,
+    };
+  }
+
   async assignInterviewPanel(user: RequestUser, dto: BulkAssignInterviewDto) {
     const { applicant_id, interviews } = dto;
-
-    console.log('User id:', user.id);
 
    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -1290,8 +1386,8 @@ export class HiringPipelineService {
     });
   }
 
-  async assessInterviewPanel(user: RequestUser, dto: AssessInterviewDto) {
-    const { interviewer_id, ratings, ...assessmentData } = dto;
+  async assessInterviewPanel(user: RequestUser, dto: AssessInterviewDto, interviewId: string) {
+    const { ratings, ...assessmentData } = dto;
 
     // auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -1331,16 +1427,47 @@ export class HiringPipelineService {
 
     // Fetch current interviewer and their stage
     const currentInterviewer = await this.prisma.interviewer.findUnique({
-      where: { id: interviewer_id },
+      where: { id: interviewId },
     });
 
-    if (!currentInterviewer)
-      throw new NotFoundException('Interviewer record not found');
+    if (!currentInterviewer) {
+      throw new NotFoundException('Interview record not found');
+    }
+
+    if ((currentInterviewer.total_points ?? 0) > 0) {
+      throw new BadRequestException(
+        'This interview has already been assessed.',
+      );
+    }
+
+    if (currentInterviewer.employee_id !== requestUser.employee.id) {
+      throw new ForbiddenException(
+        'You are not assigned to this interview.',
+      );
+    }
+
+    const applicant = await this.prisma.applicant.findUnique({
+      where: {
+        id: currentInterviewer.applicant_id,
+      },
+    });
+
+    if (!applicant) {
+      throw new NotFoundException('Applicant not found');
+    }
+
+    if (applicant.application_status !== 'for_interview') {
+      throw new BadRequestException(
+        'Applicant is not currently in interview stage.',
+      );
+    }
+
+    const stage = currentInterviewer.stage;
 
     // Sequential Logic Check
-    if (currentInterviewer.stage !== InterviewStage.initial) {
+    if (stage !== InterviewStage.initial) {
       const previousStage =
-        currentInterviewer.stage === InterviewStage.final
+        stage === InterviewStage.final
           ? InterviewStage.second
           : InterviewStage.initial;
 
@@ -1348,6 +1475,7 @@ export class HiringPipelineService {
         where: {
           applicant_id: currentInterviewer.applicant_id,
           stage: previousStage,
+          is_completed: true,
         },
       });
 
@@ -1363,19 +1491,40 @@ export class HiringPipelineService {
     return await this.prisma.$transaction(async (tx) => {
       // Update the interviewer record
       const updated = await tx.interviewer.update({
-        where: { id: interviewer_id },
+        where: { id: interviewId },
         data: {
           ...assessmentData,
+          is_completed: true,
           updated_by: user.id,
         },
       });
 
+      // If this is the final interview stage, mark the applicant as having completed all interviews
+      if (currentInterviewer.stage === InterviewStage.final) {
+        await tx.applicant.update({
+          where: {
+            id: currentInterviewer.applicant_id,
+          },
+          data: {
+            completed_interview: true,
+            updated_by: user.id,
+          },
+        });
+      }
+
       // Create the exam ratings
       if (ratings.length > 0) {
         await tx.examinationRating.createMany({
-          data: ratings.map((r) => ({
-            ...r,
-            interviewer_id: interviewer_id,
+          // data: ratings.map((r) => ({
+          //   ...r,
+          //   interviewer_id: interviewer_id,
+          //   created_by: user.id,
+          // })),
+          data: ratings.map((rating) => ({
+            exam_name: rating.exam_name,
+            result: rating.result,
+            remarks: rating.remarks,
+            interviewer_id: interviewId,
             created_by: user.id,
           })),
         });

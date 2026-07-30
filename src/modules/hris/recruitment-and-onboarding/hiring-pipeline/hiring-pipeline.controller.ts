@@ -65,6 +65,17 @@ export class ApplicantsController {
     return this.hiringPipelineService.getApplicants(user, dto);
   }
 
+  @Get('applicants/interviews')
+  @ApiOperation({ summary: 'List of Interviews' })
+  @ApiGetResponse('List of Interviews')
+  @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
+  getLeaveRequest(
+    @SessionUser() user: RequestUser,
+    // @Query() dto: LeaveRequestPaginationDto,
+  ) {
+    return this.hiringPipelineService.getInterviews(user);
+  }
+
   @Get('applicants/status-count')
   @ApiOperation({ summary: 'List of all Applicants status' })
   @ApiGetResponse('List of all Applicants status')
@@ -286,19 +297,16 @@ export class InterviewApplicantController {
    * PHASE 2: ASSESSMENT
    * Updates one specific interview slot with results and exam ratings
    */
-  @Put('applicants/interview/assess-interview/:interviewerId')
+  @Put('applicants/interview/assess-interview/:interviewId')
   @ApiOperation({ summary: 'Submit assessment for a specific interview stage' })
   @ApiPatchResponse('Assess applicant interview')
   @Can({ action: ACTION_UPDATE, subject: HIRING_PIPELINE })
   async assessInterview(
-    @Param('interviewerId', new ParseUUIDPipe()) interviewerId: string,
+    @Param('interviewId', new ParseUUIDPipe()) interviewId: string,
     @Body() dto: AssessInterviewDto,
     @SessionUser() user: RequestUser,
   ) {
     // We pass the ID from the URL into the DTO or directly to the service
-    return this.hiringPipelineService.assessInterviewPanel(user, {
-      ...dto,
-      interviewer_id: interviewerId,
-    });
+    return this.hiringPipelineService.assessInterviewPanel(user, dto, interviewId);
   }
 }
