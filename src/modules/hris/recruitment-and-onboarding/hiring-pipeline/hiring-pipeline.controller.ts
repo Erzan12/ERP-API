@@ -13,7 +13,6 @@ import {
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   HiringPipelineService,
-  InterviewApplicantService,
 } from './hiring-pipeline.service';
 import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import {
@@ -30,8 +29,6 @@ import {
   ACTION_SUBMIT,
   ACTION_UPDATE,
   HIRING_PIPELINE,
-  INTERVIEW_APPLICANT,
-  SCREENING_APPLICANT,
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -223,7 +220,7 @@ export class ApplicantsController {
   @Put('applicants/:applicantId/accept')
   @ApiOperation({ summary: 'Accept an Applicant' })
   @ApiPatchResponse('Applicant has been accepted')
-  @Can({ action: ACTION_ACCEPT, subject: HIRING_PIPELINE })
+  @Can({ action: ACTION_CREATE, subject: HIRING_PIPELINE })
   accept(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
@@ -252,6 +249,7 @@ export class ApplicantsController {
   ) {
     return this.hiringPipelineService.reject(applicantId, user);
   }
+
 }
 
 /**
@@ -266,7 +264,7 @@ export class ApplicantsController {
 @Controller({ path: 'hris', version: '2' })
 export class InterviewApplicantController {
   constructor(
-    private readonly interviewApplicantService: InterviewApplicantService,
+    private readonly hiringPipelineService: HiringPipelineService
   ) {}
 
   /**
@@ -276,12 +274,12 @@ export class InterviewApplicantController {
   @Post('applicants/interview/assign-interview-panel') // post for creation
   @ApiOperation({ summary: 'Assign the full interview panel to an applicant' })
   @ApiPostResponse('Applicant has been assign to an interview panel')
-  @Can({ action: ACTION_UPDATE, subject: INTERVIEW_APPLICANT })
+  @Can({ action: ACTION_UPDATE, subject: HIRING_PIPELINE })
   assignInterviewer(
     @Body() dto: BulkAssignInterviewDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.interviewApplicantService.assignInterviewPanel(user, dto);
+    return this.hiringPipelineService.assignInterviewPanel(user, dto);
   }
 
   /**
@@ -291,14 +289,14 @@ export class InterviewApplicantController {
   @Put('applicants/interview/assess-interview/:interviewerId')
   @ApiOperation({ summary: 'Submit assessment for a specific interview stage' })
   @ApiPatchResponse('Assess applicant interview')
-  @Can({ action: ACTION_UPDATE, subject: INTERVIEW_APPLICANT })
+  @Can({ action: ACTION_UPDATE, subject: HIRING_PIPELINE })
   async assessInterview(
     @Param('interviewerId', new ParseUUIDPipe()) interviewerId: string,
     @Body() dto: AssessInterviewDto,
     @SessionUser() user: RequestUser,
   ) {
     // We pass the ID from the URL into the DTO or directly to the service
-    return this.interviewApplicantService.assessInterviewPanel(user, {
+    return this.hiringPipelineService.assessInterviewPanel(user, {
       ...dto,
       interviewer_id: interviewerId,
     });

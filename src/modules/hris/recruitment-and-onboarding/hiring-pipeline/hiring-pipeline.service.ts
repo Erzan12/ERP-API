@@ -1121,19 +1121,14 @@ export class HiringPipelineService {
       }
     });
   }
-}
 
-/**
- * INTERVIEW SERVICE SECTION
- */
-
-export class InterviewApplicantService {
-  constructor(private prisma: PrismaService) {}
-
+  // Interview API
   async assignInterviewPanel(user: RequestUser, dto: BulkAssignInterviewDto) {
-    const { applicant_id, interviewer_ids, date_of_interview } = dto;
+    const { applicant_id, interviews } = dto;
 
-    // auth check first
+    console.log('User id:', user.id);
+
+   // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -1169,36 +1164,129 @@ export class InterviewApplicantService {
       );
     }
 
-    const stages = [
-      InterviewStage.initial,
-      InterviewStage.second,
-      InterviewStage.final,
-    ];
+    return this.prisma.$transaction(async (tx) => {
+      const existingApplicant = await tx.applicant.findFirst({
+        where: {
+          id: applicant_id,
+          is_active: true,
+        }
+      })
+      
 
-    //map the ids to the data structure
-    const dataToCreate = interviewer_ids.map((employee_id, index) => ({
-      employee_id,
-      applicant_id,
-      stage: stages[index],
-      remarks: '',
-      date_of_interview: date_of_interview,
-      // total_points: 0,
-      // recommendations: '',
-      created_by: user.id,
-    }));
+      if (existingApplicant?.application_status !== 'for_interview') {
+        throw new BadRequestException('Invalid! Applicant application status must be for_interview to proceed.');
+      }
 
-    // Optional: validate length (must be 3)
-    // if (interviewers.length !== 3) {
-    //     throw new Error('You must assign exactly 3 interviewers');
-    // }
+      const existingInterview = await tx.interviewer.findFirst({
+        where: {
+          applicant_id,
+        },
+      });
 
-    // if (!Object.values(InterviewStage)) {
-    //     throw new ForbiddenException('Error! Please use initial, second, third');
-    // }
+      if (existingInterview) {
+        throw new BadRequestException(
+          'Interview panel has already been assigned for this applicant.',
+        );
+      }
 
-    //using createmany for better perfomance than mapping multi create calls
-    return await this.prisma.interviewer.createMany({
-      data: dataToCreate,
+      const stages = interviews.map(i => i.stage);
+
+      const existingStages = await tx.interviewer.findMany({
+        where: {
+          applicant_id,
+          stage: {
+            in: stages,
+          },
+        },
+        select: {
+          stage: true,
+        },
+      });
+
+      if (existingStages.length > 0) {
+        throw new BadRequestException(
+          `Interview stage(s) already exist: ${existingStages
+            .map(s => s.stage)
+            .join(', ')}.`,
+        );
+      }
+
+      const employeeIds = interviews.map(i => i.employee_id);
+
+      const existingEmployees = await tx.interviewer.findMany({
+        where: {
+          applicant_id,
+          employee_id: {
+            in: employeeIds,
+          },
+        },
+        select: {
+          employee_id: true,
+        },
+      });
+
+      if (existingEmployees.length > 0) {
+        throw new BadRequestException(
+          'One or more interviewers are already assigned.',
+        );
+      }
+
+      const conflicts = await tx.interviewer.findMany({
+        where: {
+          OR: interviews.map(i => ({
+            employee_id: i.employee_id,
+            date_of_interview: new Date(i.date_of_interview),
+          })),
+        },
+        include: {
+          applicant: true,
+        },
+      });
+
+      if (conflicts.length > 0) {
+        throw new BadRequestException(
+          'One or more interviewers are already scheduled at the selected date and time.',
+        );
+      }
+      
+      //map the ids to the data structure
+      const dataToCreate = interviews.map((interview) => ({
+        applicant_id,
+        employee_id: interview.employee_id,
+        stage: interview.stage,
+        date_of_interview: new Date(interview.date_of_interview),
+        remarks: '',
+        created_by: user.id,
+      }));
+
+      // Optional: validate length (must be 3)
+      // if (interviewers.length !== 3) {
+      //     throw new Error('You must assign exactly 3 interviewers');
+      // }
+
+      // if (!Object.values(InterviewStage)) {
+      //     throw new ForbiddenException('Error! Please use initial, second, third');
+      // }
+
+      //using createmany for better perfomance than mapping multi create calls
+      await tx.interviewer.createMany({
+        data: dataToCreate,
+      });
+
+      const interviewPanel = await tx.interviewer.findMany({
+        where: {
+          applicant_id,
+        },
+        orderBy: {
+          date_of_interview: 'asc',
+        },
+      });
+
+      return {
+        status: 'success',
+        message: 'Assigned interview panel for this applicant successful',
+        interviewPanel,
+      };
     });
   }
 
