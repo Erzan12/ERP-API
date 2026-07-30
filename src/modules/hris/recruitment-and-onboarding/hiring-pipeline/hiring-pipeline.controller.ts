@@ -90,7 +90,7 @@ export class ApplicantsController {
   @Get('applicants/:applicantId/documents')
   @ApiOperation({ summary: 'Get Applicant document' })
   @ApiGetResponse('Get Applicant document')
-  @Can({ action: ACTION_READ, subject: SCREENING_APPLICANT })
+  @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
   getApplicantDocuments(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
@@ -201,7 +201,7 @@ export class ApplicantsController {
   @Put('applicants/:applicantId/shortlist')
   @ApiOperation({ summary: 'Shortlist an Applicant' })
   @ApiPatchResponse('Applicant has been shortlisted')
-  @Can({ action: ACTION_SUBMIT, subject: SCREENING_APPLICANT })
+  @Can({ action: ACTION_SUBMIT, subject: HIRING_PIPELINE })
   submitLeave(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
