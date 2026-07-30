@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { InterviewStage } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
@@ -9,7 +8,7 @@ import {
   Min,
   IsArray,
   ValidateNested,
-  IsEnum,
+  ArrayMinSize,
 } from 'class-validator';
 
 export class ExaminationRatingDto {
@@ -39,56 +38,64 @@ export class ExaminationRatingDto {
 }
 
 export class AssessInterviewDto {
-  @IsUUID()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: '',
-    description: 'The interviewers uuid',
-  })
-  interviewer_id: string; // The ID of the Interviewer record being updated
+  // @IsUUID()
+  // @IsNotEmpty()
+  // @ApiProperty({
+  //   example: 'Interviewer UUID is the employee UUID',
+  //   description: 'The UUID of the interviewer assignment record.',
+  // })
+  // interviewer_id: string; // The ID of the Interviewer record being updated
 
   @IsString()
   @IsNotEmpty()
-  @IsString()
-  @IsNotEmpty()
   @ApiProperty({
-    example: 'Interviewer remarks',
+    example: 'Applicant showed strong communication skills.',
     description: 'The remark of the interviewer',
   })
   remarks: string;
 
-  @IsString()
-  @IsEnum(InterviewStage, {
-    message: 'Interview stage initial, second and final',
-  })
-  @Type(() => String)
-  @ApiProperty({
-    enum: InterviewStage,
-    example: InterviewStage.initial,
-    description: 'The interview stage for the interviewer',
-  })
-  stage: InterviewStage;
+  // @IsString()
+  // @IsEnum(InterviewStage, {
+  //   message: 'Interview stage initial, second and final',
+  // })
+  // @Type(() => String)
+  // @ApiProperty({
+  //   enum: InterviewStage,
+  //   example: InterviewStage.initial,
+  //   description: 'The interview stage for the interviewer',
+  // })
+  // stage: InterviewStage;
 
   @IsInt()
   @Min(0)
   @IsNotEmpty()
   @ApiProperty({
-    example: 'Points',
-    description: 'total points of the applicant',
+    example: 87,
+    description: 'Total points given by the interviewer.',
   })
   total_points: number;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    example: 'Recommendations',
-    description: 'What are the recommendations from interviewer',
+    example: 'Recommended for next stage.',
+    description: 'Recommendation of the interviewer.',
   })
   recommendations: string;
 
   @IsArray()
+  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => ExaminationRatingDto)
-  @ApiProperty({ type: [ExaminationRatingDto] })
+  @ApiProperty({
+    type: [ExaminationRatingDto],
+    example: [
+      {
+        exam_name: 'Written Exam',
+        result: 'Passed',
+        remarks: 'Good technical understanding.',
+      },
+    ],
+  })
   ratings: ExaminationRatingDto[];
 }
