@@ -4,7 +4,6 @@ import {
   Get,
   Param,
   ParseUUIDPipe,
-  Patch,
   Post,
   Put,
   Query,
@@ -12,11 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  HiringPipelineService,
-  InterviewApplicantService,
-  ScreeningApplicantService,
-} from './hiring-pipeline.service';
+import { HiringPipelineService } from './hiring-pipeline.service';
 import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import {
   ApiGetResponse,
@@ -31,9 +26,7 @@ import {
   ACTION_REJECT,
   ACTION_SUBMIT,
   ACTION_UPDATE,
-  APPLICANT,
-  INTERVIEW_APPLICANT,
-  SCREENING_APPLICANT,
+  HIRING_PIPELINE,
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -56,7 +49,7 @@ export class ApplicantsController {
   @Get('applicants')
   @ApiOperation({ summary: 'List of all applicant posted' })
   @ApiGetResponse('List of employees')
-  @Can({ action: ACTION_READ, subject: APPLICANT })
+  @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
   getCareerPostings(
     @SessionUser() user: RequestUser,
     @Query() dto: RecruitmentPaginationDto,
@@ -70,10 +63,21 @@ export class ApplicantsController {
     return this.hiringPipelineService.getApplicants(user, dto);
   }
 
+  @Get('applicants/interviews')
+  @ApiOperation({ summary: 'List of Interviews' })
+  @ApiGetResponse('List of Interviews')
+  @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
+  getLeaveRequest(
+    @SessionUser() user: RequestUser,
+    // @Query() dto: LeaveRequestPaginationDto,
+  ) {
+    return this.hiringPipelineService.getInterviews(user);
+  }
+
   @Get('applicants/status-count')
   @ApiOperation({ summary: 'List of all Applicants status' })
   @ApiGetResponse('List of all Applicants status')
-  @Can({ action: ACTION_READ, subject: APPLICANT })
+  @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
   getStatusCountActive(@SessionUser() user: RequestUser) {
     return this.hiringPipelineService.statusCount(user);
   }
@@ -81,12 +85,23 @@ export class ApplicantsController {
   @Get('applicants/:applicantId')
   @ApiOperation({ summary: 'Get a Applicant' })
   @ApiGetResponse('Get a Applicant')
-  @Can({ action: ACTION_READ, subject: APPLICANT })
+  @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
   getCareerPosting(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.hiringPipelineService.getApplicant(applicantId, user);
+  }
+
+  @Get('applicants/:applicantId/documents')
+  @ApiOperation({ summary: 'Get Applicant document' })
+  @ApiGetResponse('Get Applicant document')
+  @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
+  getApplicantDocuments(
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.hiringPipelineService.getApplicantDocuments(applicantId, user);
   }
 
   @Post('applicants')
@@ -154,7 +169,7 @@ export class ApplicantsController {
   })
   @ApiOperation({ summary: 'Applicant posting' })
   @ApiPostResponse('Applicant posted successfully')
-  @Can({ action: ACTION_CREATE, subject: APPLICANT })
+  @Can({ action: ACTION_CREATE, subject: HIRING_PIPELINE })
   createApplicant(
     @UploadedFiles() files: Express.Multer.File[],
     @Body() dto: CreateApplicantDto,
@@ -163,14 +178,14 @@ export class ApplicantsController {
     return this.hiringPipelineService.createApplicant(dto, user, files);
   }
 
-  @Put('applicants/:applicationId')
+  @Put('applicants/:applicantId')
   @ApiBody({
     type: UpdateApplicantDto,
     description: 'Payload to update career posting',
   })
   @ApiOperation({ summary: 'Update a current applicants information' })
   @ApiPatchResponse('Career Posting updated successfully')
-  @Can({ action: ACTION_UPDATE, subject: APPLICANT })
+  @Can({ action: ACTION_UPDATE, subject: HIRING_PIPELINE })
   updateCareerPosting(
     @Param('applicationId', new ParseUUIDPipe()) applicationId: string,
     @UploadedFiles() files: Express.Multer.File[],
@@ -186,10 +201,21 @@ export class ApplicantsController {
   }
 
   // HIRING PIPELINE WORKFLOW STATUS
-  @Post('applicants/:applicantId/for-interview')
+  @Put('applicants/:applicantId/shortlist')
+  @ApiOperation({ summary: 'Shortlist an Applicant' })
+  @ApiPatchResponse('Applicant has been shortlisted')
+  @Can({ action: ACTION_SUBMIT, subject: HIRING_PIPELINE })
+  submitLeave(
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.hiringPipelineService.screenApplicant(applicantId, user);
+  }
+
+  @Put('applicants/:applicantId/for-interview')
   @ApiOperation({ summary: 'Set an Applicant for Interview' })
-  @ApiPostResponse('Applicant has been set for interview')
-  @Can({ action: ACTION_SUBMIT, subject: APPLICANT })
+  @ApiPatchResponse('Applicant has been set for interview')
+  @Can({ action: ACTION_SUBMIT, subject: HIRING_PIPELINE })
   forInterview(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
@@ -197,10 +223,10 @@ export class ApplicantsController {
     return this.hiringPipelineService.forInterview(applicantId, user);
   }
 
-  @Post('applicants/:applicantId/accept')
+  @Put('applicants/:applicantId/accept')
   @ApiOperation({ summary: 'Accept an Applicant' })
-  @ApiPostResponse('Applicant has been accepted')
-  @Can({ action: ACTION_ACCEPT, subject: APPLICANT })
+  @ApiPatchResponse('Applicant has been accepted')
+  @Can({ action: ACTION_ACCEPT, subject: HIRING_PIPELINE })
   accept(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
@@ -208,10 +234,10 @@ export class ApplicantsController {
     return this.hiringPipelineService.accepted(applicantId, user);
   }
 
-  @Post('applicants/:applicantId/onboard')
+  @Put('applicants/:applicantId/onboard')
   @ApiOperation({ summary: 'Onbaord an Applicant' })
-  @ApiPostResponse('Applicant is now onboard')
-  @Can({ action: ACTION_ONBOARD, subject: APPLICANT })
+  @ApiPatchResponse('Applicant is now onboard')
+  @Can({ action: ACTION_ONBOARD, subject: HIRING_PIPELINE })
   onBoard(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
@@ -219,10 +245,10 @@ export class ApplicantsController {
     return this.hiringPipelineService.onBoarding(applicantId, user);
   }
 
-  @Post('applicants/:applicantId/reject')
+  @Put('applicants/:applicantId/reject')
   @ApiOperation({ summary: 'Reject an Applicant' })
-  @ApiPostResponse('Applicant has been rejected')
-  @Can({ action: ACTION_REJECT, subject: APPLICANT })
+  @ApiPatchResponse('Applicant has been rejected')
+  @Can({ action: ACTION_REJECT, subject: HIRING_PIPELINE })
   reject(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
@@ -235,39 +261,6 @@ export class ApplicantsController {
  * SCREENING CONTROLLER SECTION
  */
 
-@ApiTags('Human Resources - Recruitment and Onboarding (Screening Applicant)')
-@Controller({ path: 'hris', version: '2' })
-export class ScreeningApplicantController {
-  constructor(
-    private readonly screeningApplicantService: ScreeningApplicantService,
-  ) {}
-
-  @Get('applicants/:applicantId/documents')
-  @ApiOperation({ summary: 'Get Applicant document' })
-  @ApiGetResponse('Get Applicant document')
-  @Can({ action: ACTION_READ, subject: SCREENING_APPLICANT })
-  getApplicantDocuments(
-    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.screeningApplicantService.getApplicantDocuments(
-      applicantId,
-      user,
-    );
-  }
-
-  @Post('applicants/:applicantId/submit')
-  @ApiOperation({ summary: 'Shortlist an Applicant' })
-  @ApiPostResponse('Applicant has been shortlisted')
-  @Can({ action: ACTION_SUBMIT, subject: SCREENING_APPLICANT })
-  submitLeave(
-    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.screeningApplicantService.screenApplicant(applicantId, user);
-  }
-}
-
 /**
  * INTERVIEW CONTROLLER SECTION
  */
@@ -275,9 +268,7 @@ export class ScreeningApplicantController {
 @ApiTags('Human Resources - Recruitment and Onboarding (Interview Applicant)')
 @Controller({ path: 'hris', version: '2' })
 export class InterviewApplicantController {
-  constructor(
-    private readonly interviewApplicantService: InterviewApplicantService,
-  ) {}
+  constructor(private readonly hiringPipelineService: HiringPipelineService) {}
 
   /**
    * PHASE 1: ASSIGNMENT
@@ -285,30 +276,33 @@ export class InterviewApplicantController {
    */
   @Post('applicants/interview/assign-interview-panel') // post for creation
   @ApiOperation({ summary: 'Assign the full interview panel to an applicant' })
-  @Can({ action: ACTION_UPDATE, subject: INTERVIEW_APPLICANT })
+  @ApiPostResponse('Applicant has been assign to an interview panel')
+  @Can({ action: ACTION_UPDATE, subject: HIRING_PIPELINE })
   assignInterviewer(
     @Body() dto: BulkAssignInterviewDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.interviewApplicantService.assignInterviewPanel(user, dto);
+    return this.hiringPipelineService.assignInterviewPanel(user, dto);
   }
 
   /**
    * PHASE 2: ASSESSMENT
    * Updates one specific interview slot with results and exam ratings
    */
-  @Patch('applicants/interview/assess-interview/:interviewerId')
+  @Put('applicants/interview/assess-interview/:interviewId')
   @ApiOperation({ summary: 'Submit assessment for a specific interview stage' })
-  @Can({ action: ACTION_UPDATE, subject: INTERVIEW_APPLICANT })
+  @ApiPatchResponse('Assess applicant interview')
+  @Can({ action: ACTION_UPDATE, subject: HIRING_PIPELINE })
   async assessInterview(
-    @Param('interviewerId', new ParseUUIDPipe()) interviewerId: string,
+    @Param('interviewId', new ParseUUIDPipe()) interviewId: string,
     @Body() dto: AssessInterviewDto,
     @SessionUser() user: RequestUser,
   ) {
     // We pass the ID from the URL into the DTO or directly to the service
-    return this.interviewApplicantService.assessInterviewPanel(user, {
-      ...dto,
-      interviewer_id: interviewerId,
-    });
+    return this.hiringPipelineService.assessInterviewPanel(
+      user,
+      dto,
+      interviewId,
+    );
   }
 }

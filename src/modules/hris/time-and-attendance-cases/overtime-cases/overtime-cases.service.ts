@@ -477,7 +477,7 @@ export class OvertimeCasesService {
       if (EmployeeType.land_based) {
         userLocationId = await this.getCurrentEmploymentValue(
           employee_id,
-          EmploymentHistoryType.employee_location,
+          EmploymentHistoryType.user_location,
         );
 
         console.log('Assigned userLocationId:', userLocationId);
@@ -1485,7 +1485,7 @@ export class OvertimeCasesService {
         OvertimeStatus.submitted,
         OvertimeStatus.approved,
       ];
-      
+
       if (!allowedStatuses.includes(existingOvertimeRequest.status)) {
         throw new BadRequestException(
           'Invalid! status must be: for_verification, for_approval or for_processing',
@@ -1526,8 +1526,8 @@ export class OvertimeCasesService {
             title: 'Overtime Request Rejected',
             message: 'You have rejected this Overtime Request',
             user: `${userName} - ${userPosition}`,
-            role: 'HR Manager'
-          }
+            role: 'HR Manager',
+          },
         },
       });
 

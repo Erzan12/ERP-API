@@ -3835,7 +3835,7 @@
       }
     },
     "/v2/hris/recruitments/{recruitmentId}/submit": {
-      "post": {
+      "put": {
         "operationId": "CareerPostingController_submitCareerPosting_v2",
         "parameters": [
           {
@@ -3848,7 +3848,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Career/Job Posting submitted"
           },
           "400": {
@@ -3860,8 +3860,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -3874,7 +3874,7 @@
       }
     },
     "/v2/hris/recruitments/{recruitmentId}/verify": {
-      "post": {
+      "put": {
         "operationId": "CareerPostingController_verifyCareerPosting_v2",
         "parameters": [
           {
@@ -3887,7 +3887,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Career/Job Posting verified"
           },
           "400": {
@@ -3899,8 +3899,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -3913,7 +3913,7 @@
       }
     },
     "/v2/hris/recruitments/{recruitmentId}/approve": {
-      "post": {
+      "put": {
         "operationId": "CareerPostingController_approveCareerPosting_v2",
         "parameters": [
           {
@@ -3926,7 +3926,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Career/Job Posting approved"
           },
           "400": {
@@ -3938,8 +3938,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -3952,7 +3952,7 @@
       }
     },
     "/v2/hris/recruitments/{recruitmentId}/reject": {
-      "post": {
+      "put": {
         "operationId": "CareerPostingController_rejectCareerPosting_v2",
         "parameters": [
           {
@@ -3965,7 +3965,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Career/Job Posting rejected"
           },
           "400": {
@@ -3977,8 +3977,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -4154,6 +4154,36 @@
         ]
       }
     },
+    "/v2/hris/applicants/interviews": {
+      "get": {
+        "operationId": "ApplicantsController_getLeaveRequest_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of Interviews"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of Interviews",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
     "/v2/hris/applicants/status-count": {
       "get": {
         "operationId": "ApplicantsController_getStatusCountActive_v2",
@@ -4221,9 +4251,7 @@
         "tags": [
           "Human Resources - Recruitment and Onboarding (Applicants)"
         ]
-      }
-    },
-    "/v2/hris/applicants/{applicationId}": {
+      },
       "put": {
         "operationId": "ApplicantsController_updateCareerPosting_v2",
         "parameters": [
@@ -4273,8 +4301,86 @@
         ]
       }
     },
+    "/v2/hris/applicants/{applicantId}/documents": {
+      "get": {
+        "operationId": "ApplicantsController_getApplicantDocuments_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get Applicant document"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Applicant document",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
+    "/v2/hris/applicants/{applicantId}/shortlist": {
+      "put": {
+        "operationId": "ApplicantsController_submitLeave_v2",
+        "parameters": [
+          {
+            "name": "applicantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Applicant has been shortlisted"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Shortlist an Applicant",
+        "tags": [
+          "Human Resources - Recruitment and Onboarding (Applicants)"
+        ]
+      }
+    },
     "/v2/hris/applicants/{applicantId}/for-interview": {
-      "post": {
+      "put": {
         "operationId": "ApplicantsController_forInterview_v2",
         "parameters": [
           {
@@ -4287,7 +4393,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Applicant has been set for interview"
           },
           "400": {
@@ -4299,8 +4405,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -4313,7 +4419,7 @@
       }
     },
     "/v2/hris/applicants/{applicantId}/accept": {
-      "post": {
+      "put": {
         "operationId": "ApplicantsController_accept_v2",
         "parameters": [
           {
@@ -4326,7 +4432,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Applicant has been accepted"
           },
           "400": {
@@ -4338,8 +4444,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -4352,7 +4458,7 @@
       }
     },
     "/v2/hris/applicants/{applicantId}/onboard": {
-      "post": {
+      "put": {
         "operationId": "ApplicantsController_onBoard_v2",
         "parameters": [
           {
@@ -4365,7 +4471,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Applicant is now onboard"
           },
           "400": {
@@ -4377,8 +4483,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -4391,7 +4497,7 @@
       }
     },
     "/v2/hris/applicants/{applicantId}/reject": {
-      "post": {
+      "put": {
         "operationId": "ApplicantsController_reject_v2",
         "parameters": [
           {
@@ -4404,7 +4510,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Applicant has been rejected"
           },
           "400": {
@@ -4416,8 +4522,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -4445,7 +4551,22 @@
         },
         "responses": {
           "201": {
-            "description": ""
+            "description": "Applicant has been assign to an interview panel"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "summary": "Assign the full interview panel to an applicant",
@@ -4454,12 +4575,12 @@
         ]
       }
     },
-    "/v2/hris/applicants/interview/assess-interview/{interviewerId}": {
-      "patch": {
+    "/v2/hris/applicants/interview/assess-interview/{interviewId}": {
+      "put": {
         "operationId": "InterviewApplicantController_assessInterview_v2",
         "parameters": [
           {
-            "name": "interviewerId",
+            "name": "interviewId",
             "required": true,
             "in": "path",
             "schema": {
@@ -4479,7 +4600,22 @@
         },
         "responses": {
           "200": {
-            "description": ""
+            "description": "Assess applicant interview"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         },
         "summary": "Submit assessment for a specific interview stage",
@@ -4930,84 +5066,6 @@
         ]
       }
     },
-    "/v2/hris/applicants/{applicantId}/documents": {
-      "get": {
-        "operationId": "ScreeningApplicantController_getApplicantDocuments_v2",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Get Applicant document"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get Applicant document",
-        "tags": [
-          "Human Resources - Recruitment and Onboarding (Screening Applicant)"
-        ]
-      }
-    },
-    "/v2/hris/applicants/{applicantId}/submit": {
-      "post": {
-        "operationId": "ScreeningApplicantController_submitLeave_v2",
-        "parameters": [
-          {
-            "name": "applicantId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Applicant has been shortlisted"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Shortlist an Applicant",
-        "tags": [
-          "Human Resources - Recruitment and Onboarding (Screening Applicant)"
-        ]
-      }
-    },
     "/v2/hris/time-and-attendance-cases/leave-category": {
       "get": {
         "operationId": "LeaveCategoryController_getLeaveCategories_v2",
@@ -5414,7 +5472,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/submit": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_submitLeave_v2",
         "parameters": [
           {
@@ -5427,7 +5485,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request submitted"
           },
           "400": {
@@ -5439,8 +5497,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5453,7 +5511,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/verify": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_verifyLeave_v2",
         "parameters": [
           {
@@ -5466,7 +5524,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request verified"
           },
           "400": {
@@ -5478,8 +5536,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5492,7 +5550,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/approve": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_approveLeave_v2",
         "parameters": [
           {
@@ -5505,7 +5563,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request approved"
           },
           "400": {
@@ -5517,8 +5575,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5531,7 +5589,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/process": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_processLeave_v2",
         "parameters": [
           {
@@ -5544,7 +5602,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request processed"
           },
           "400": {
@@ -5556,8 +5614,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5570,7 +5628,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/reject": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_rejectLeave_v2",
         "parameters": [
           {
@@ -5583,7 +5641,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request rejected"
           },
           "400": {
@@ -5595,8 +5653,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5609,7 +5667,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/leave/{hrLeaveRequestId}/cancel": {
-      "post": {
+      "put": {
         "operationId": "LeaveCasesController_cancelLeave_v2",
         "parameters": [
           {
@@ -5622,7 +5680,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Leave Request cancelled"
           },
           "400": {
@@ -5634,8 +5692,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5904,7 +5962,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/submit": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_submitExtendedLeave_v2",
         "parameters": [
           {
@@ -5917,7 +5975,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request submitted"
           },
           "400": {
@@ -5929,8 +5987,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5943,7 +6001,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/verify": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_verifyExtendedLeave_v2",
         "parameters": [
           {
@@ -5956,7 +6014,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request verified"
           },
           "400": {
@@ -5968,8 +6026,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -5982,7 +6040,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/approve": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_approveExtendedLeave_v2",
         "parameters": [
           {
@@ -5995,7 +6053,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request approved"
           },
           "400": {
@@ -6007,8 +6065,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -6021,7 +6079,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/process": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_processExtendedLeave_v2",
         "parameters": [
           {
@@ -6034,7 +6092,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request processed"
           },
           "400": {
@@ -6046,8 +6104,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -6060,7 +6118,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/reject": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_rejectExtendedLeave_v2",
         "parameters": [
           {
@@ -6073,7 +6131,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request rejected"
           },
           "400": {
@@ -6085,8 +6143,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -6099,7 +6157,7 @@
       }
     },
     "/v2/hris/time-and-attendance-cases/extended-leave/{extendedHrLeaveRequestId}/cancel": {
-      "post": {
+      "put": {
         "operationId": "ExtendedLeaveCasesController_cancelExtendedLeave_v2",
         "parameters": [
           {
@@ -6112,7 +6170,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": "Extended Leave Request cancelled"
           },
           "400": {
@@ -6124,8 +6182,8 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
@@ -9153,6 +9211,11 @@
             "example": "PK uuid of division",
             "description": "Division of the employee"
           },
+          "user_location_id": {
+            "type": "string",
+            "example": "PK uuid of user location",
+            "description": "User location of the employee"
+          },
           "salary": {
             "type": "number",
             "example": 21000,
@@ -9213,6 +9276,7 @@
           "department_id",
           "position_id",
           "division_id",
+          "user_location_id",
           "salary",
           "hire_date",
           "pay_frequency",
@@ -9311,6 +9375,11 @@
             "example": "PK uuid of division",
             "description": "Division of the employee"
           },
+          "user_location_id": {
+            "type": "string",
+            "example": "PK uuid of user location",
+            "description": "User location of the employee"
+          },
           "salary": {
             "type": "number",
             "example": 21000,
@@ -9397,7 +9466,7 @@
               "salary_grade",
               "employment_status",
               "vessel",
-              "employee_location",
+              "user_location",
               "developmental_assignment"
             ]
           },
@@ -9660,29 +9729,24 @@
           "isActive"
         ]
       },
-      "BulkAssignInterviewDto": {
+      "InterviewAssignmentDto": {
         "type": "object",
         "properties": {
-          "applicant_id": {
+          "employee_id": {
             "type": "string",
-            "example": "Applicant uuid",
-            "description": "The uuid of the applicant"
+            "example": "d322a787-e823-4a16-8ef0-641196bb0ae0"
           },
-          "interviewer_ids": {
-            "example": [
-              "uuid-1",
-              "uuid-2",
-              "uuid-3"
-            ],
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          "stage": {
+            "type": "string",
+            "enum": [
+              "initial",
+              "second",
+              "final"
+            ]
           },
           "date_of_interview": {
             "type": "string",
-            "example": "",
-            "description": "The date of interview of the applicant"
+            "example": "2026-08-01T09:00:00Z"
           },
           "remarks": {
             "type": "string",
@@ -9691,10 +9755,51 @@
           }
         },
         "required": [
-          "applicant_id",
-          "interviewer_ids",
+          "employee_id",
+          "stage",
           "date_of_interview",
           "remarks"
+        ]
+      },
+      "BulkAssignInterviewDto": {
+        "type": "object",
+        "properties": {
+          "applicant_id": {
+            "type": "string",
+            "example": "Applicant uuid",
+            "description": "The uuid of the applicant"
+          },
+          "interviews": {
+            "description": "List of interview assignments for the applicant.",
+            "example": [
+              {
+                "employee_id": "EMP-UUID",
+                "stage": "initial",
+                "date_of_interview": "2026-08-01T09:00:00.000Z",
+                "remarks": "Initial HR screening."
+              },
+              {
+                "employee_id": "EMP-UUID",
+                "stage": "second",
+                "date_of_interview": "2026-08-03T10:00:00.000Z",
+                "remarks": "Technical interview."
+              },
+              {
+                "employee_id": "EMP-UUID",
+                "stage": "final",
+                "date_of_interview": "2026-08-05T01:00:00.000Z",
+                "remarks": "Final interview with the department head."
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InterviewAssignmentDto"
+            }
+          }
+        },
+        "required": [
+          "applicant_id",
+          "interviews"
         ]
       },
       "ExaminationRatingDto": {
@@ -9725,37 +9830,29 @@
       "AssessInterviewDto": {
         "type": "object",
         "properties": {
-          "interviewer_id": {
-            "type": "string",
-            "example": "",
-            "description": "The interviewers uuid"
-          },
           "remarks": {
             "type": "string",
-            "example": "Interviewer remarks",
+            "example": "Applicant showed strong communication skills.",
             "description": "The remark of the interviewer"
-          },
-          "stage": {
-            "type": "string",
-            "enum": [
-              "initial",
-              "second",
-              "final"
-            ],
-            "example": "initial",
-            "description": "The interview stage for the interviewer"
           },
           "total_points": {
             "type": "number",
-            "example": "Points",
-            "description": "total points of the applicant"
+            "example": 87,
+            "description": "Total points given by the interviewer."
           },
           "recommendations": {
             "type": "string",
-            "example": "Recommendations",
-            "description": "What are the recommendations from interviewer"
+            "example": "Recommended for next stage.",
+            "description": "Recommendation of the interviewer."
           },
           "ratings": {
+            "example": [
+              {
+                "exam_name": "Written Exam",
+                "result": "Passed",
+                "remarks": "Good technical understanding."
+              }
+            ],
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ExaminationRatingDto"
@@ -9763,9 +9860,7 @@
           }
         },
         "required": [
-          "interviewer_id",
           "remarks",
-          "stage",
           "total_points",
           "recommendations",
           "ratings"
