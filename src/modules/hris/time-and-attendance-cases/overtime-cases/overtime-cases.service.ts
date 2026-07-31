@@ -477,7 +477,7 @@ export class OvertimeCasesService {
       if (EmployeeType.land_based) {
         userLocationId = await this.getCurrentEmploymentValue(
           employee_id,
-          EmploymentHistoryType.employee_location,
+          EmploymentHistoryType.user_location,
         );
 
         console.log('Assigned userLocationId:', userLocationId);
@@ -1347,6 +1347,195 @@ export class OvertimeCasesService {
         message: 'Overtime Request Approved',
         approveOvertimeRequest,
         approved_by: `${userName} - ${userPosition}`,
+      };
+    });
+  }
+
+  async processeOvertimeRequest(overtimeRequestId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const overtimeRequest = await tx.hrOvertimeRequest.findUnique({
+        where: { id: overtimeRequestId },
+      });
+
+      console.log('Current id:', user.id);
+      console.log('Approver id:', overtimeRequest?.approver_id);
+
+      if (overtimeRequest?.status !== OvertimeStatus.approved) {
+        throw new BadRequestException('Invalid! status must be: approved');
+      }
+
+      const processOvertimeRequest = await tx.hrOvertimeRequest.update({
+        where: { id: overtimeRequestId },
+        data: {
+          status: OvertimeStatus.processed,
+        },
+      });
+
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      await tx.workflowAction.create({
+        data: {
+          actionable_type: WORKFLOW_ENTITY.OVERTIME_REQUEST,
+          actionable_id: overtimeRequest.id,
+          action: WorkflowActionType.processing,
+          acted_by: requestUser.id,
+          metadata: {
+            title: 'Overtime Request processed',
+            message: 'You have processed a Overtime Request',
+            user: `${userName} - ${userPosition}`,
+            role: 'HR Manager',
+          },
+        },
+      });
+
+      return {
+        status: 'success',
+        message: 'Overtime Request created',
+        processOvertimeRequest,
+        processed_by: `${userName} - ${userPosition}`,
+      };
+    });
+  }
+
+  async rejectOvertimeRequest(overtimeRequestId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    return await this.prisma.$transaction(async (tx) => {
+      const existingOvertimeRequest = await tx.hrOvertimeRequest.findUnique({
+        where: { id: overtimeRequestId },
+      });
+
+      if (!existingOvertimeRequest) {
+        throw new NotFoundException('Overtime Request does not exist');
+      }
+
+      const allowedStatuses: OvertimeStatus[] = [
+        OvertimeStatus.verified,
+        OvertimeStatus.submitted,
+        OvertimeStatus.approved,
+      ];
+
+      if (!allowedStatuses.includes(existingOvertimeRequest.status)) {
+        throw new BadRequestException(
+          'Invalid! status must be: for_verification, for_approval or for_processing',
+        );
+      }
+
+      const rejectOvertimeRequest = await tx.hrOvertimeRequest.updateMany({
+        where: {
+          id: overtimeRequestId,
+          status: {
+            in: [
+              OvertimeStatus.verified,
+              OvertimeStatus.submitted,
+              OvertimeStatus.approved,
+            ],
+          },
+        },
+        data: {
+          status: OvertimeStatus.rejected,
+          updated_by: requestUser.id,
+        },
+      });
+
+      if (rejectOvertimeRequest.count === 0) {
+        throw new BadRequestException('Update failed due to invalid status');
+      }
+
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      await tx.workflowAction.create({
+        data: {
+          actionable_type: WORKFLOW_ENTITY.OVERTIME_REQUEST,
+          actionable_id: overtimeRequestId,
+          action: WorkflowActionType.rejection,
+          acted_by: requestUser.id,
+          metadata: {
+            title: 'Overtime Request Rejected',
+            message: 'You have rejected this Overtime Request',
+            user: `${userName} - ${userPosition}`,
+            role: 'HR Manager',
+          },
+        },
+      });
+
+      return {
+        status: 'success',
+        message: 'Overtime Request Rejected',
+        rejectOvertimeRequest,
+        rejected_by: `${userName} - ${userPosition}`,
       };
     });
   }

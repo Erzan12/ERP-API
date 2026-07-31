@@ -29,7 +29,7 @@ export class EmploymentHistoryService {
       salary_grade: this.prisma.salaryGrade,
       employment_status: this.prisma.employmentStatus,
       vessel: this.prisma.vessel,
-      employee_location: this.prisma.userLocation,
+      user_location: this.prisma.userLocation,
       developmental_assignment: this.prisma.company,
     };
   }
@@ -174,7 +174,7 @@ export class EmploymentHistoryService {
         position: 'position_id',
         vessel: 'vessel_id',
         employment_status: 'employment_status_id',
-        employee_location: 'user_location_id',
+        user_location: 'user_location_id',
         salary_grade: 'salary_grade_id',
         // salary_grade:
       };

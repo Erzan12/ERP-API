@@ -1065,6 +1065,10 @@ export class CareerPostingService {
         throw new BadRequestException('Invalid! status must be: submitted');
       }
 
+      if (careerPosting.verifier_id !== user.id) {
+        throw new BadRequestException('User is not allowed to verify');
+      }
+
       const verifyCareerPosting = await tx.careerPosting.update({
         // where: { id: careerPostingId, status: "for_verification" },
         where: { id: careerPostingId },
@@ -1157,6 +1161,10 @@ export class CareerPostingService {
 
       if (careerPosting?.status !== CareerPostingStatus.verified) {
         throw new BadRequestException('Invalid! status must be: submitted');
+      }
+
+      if (careerPosting.approver_id !== user.id) {
+        throw new BadRequestException('User is not allowed to approve');
       }
 
       const approveCareerPosting = await tx.careerPosting.update({
