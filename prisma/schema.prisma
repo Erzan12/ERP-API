@@ -75,7 +75,7 @@ enum EmploymentHistoryType {
 
   // Assignment
   vessel
-  employee_location
+  user_location
   developmental_assignment
 }
 
@@ -122,6 +122,7 @@ enum InterviewStage {
   initial
   second
   final
+  completed
 }
 
 enum EvaluationStage {
@@ -762,6 +763,7 @@ model Employee {
   salary_grade      SalaryGrade?     @relation(fields: [salary_grade_id], references: [id])
 
   user                        User?
+  interviewer                 Interviewer[]
   employment_history          EmploymentHistory[]
   hr_employee_status_period   HrEmployeeStatusPeriod[]
   regularizationEligibility   RegularizationEligibility?
@@ -1159,6 +1161,7 @@ model Applicant {
   application_status ApplicationStatus @default(applied)
   date_applied       DateTime
   is_active          Boolean           @default(true)
+  completed_interview Boolean          @default(false)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -1203,6 +1206,7 @@ model Interviewer {
   employee_id  String         @db.Uuid
   applicant_id String         @db.Uuid
   stage        InterviewStage //ADD THIs -> for enums
+  is_completed Boolean        @default(false)    
 
   date_of_interview DateTime?
   remarks           String?
@@ -1219,7 +1223,8 @@ model Interviewer {
   updated_at DateTime @updatedAt
 
   examinationRating ExaminationRating[]
-  applicant         Applicant           @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+  applicant         Applicant   @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+  employee          Employee    @relation(fields: [employee_id], references: [id])
 }
 
 model ExaminationRating {

@@ -13,15 +13,10 @@ import { AdministratorModule } from '../administrator/administrator.module';
 import { CareerPostingService } from './recruitment-and-onboarding/career-posting/career-posting.service';
 import { CareerPostingController } from './recruitment-and-onboarding/career-posting/career-posting.controller';
 
-import {
-  HiringPipelineService,
-  InterviewApplicantService,
-  ScreeningApplicantService,
-} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.service';
+import { HiringPipelineService } from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.service';
 import {
   ApplicantsController,
   InterviewApplicantController,
-  ScreeningApplicantController,
 } from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.controller';
 import { RegularizationReviewsService } from './performance-management/regularization-reviews/regularization-reviews.service';
 import { RegularizationReviewsController } from './performance-management/regularization-reviews/regularization-reviews.controller';
@@ -51,19 +46,16 @@ import { EmploymentHistoryService } from './employment-history/employment-histor
     DashboardService,
     CareerPostingService,
     HiringPipelineService,
-    InterviewApplicantService,
     RegularizationReviewsService,
     PerformanceCompetencyService,
     LeaveCategoryService,
     LeaveCasesService,
     AttachmentUploadService,
-    ScreeningApplicantService,
     ExtendedLeaveCasesService,
     OvertimeRateService,
     OvertimeCasesService,
     SalaryGradeService,
     EmploymentHistoryService,
-    // ScreeningApplicantService,
   ],
   controllers: [
     EmployeeMasterlistController,
@@ -71,11 +63,9 @@ import { EmploymentHistoryService } from './employment-history/employment-histor
     DashboardController,
     CareerPostingController,
     ApplicantsController,
-    // ScreeningApplicantController,
     InterviewApplicantController,
     RegularizationReviewsController,
     PerformanceCompetencyController,
-    ScreeningApplicantController,
     LeaveCategoryController,
     LeaveCasesController,
     ExtendedLeaveCasesController,

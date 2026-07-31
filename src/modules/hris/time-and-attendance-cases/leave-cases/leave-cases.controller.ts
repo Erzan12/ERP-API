@@ -103,9 +103,9 @@ export class LeaveCasesController {
   }
 
   // LEAVE REQUEST WORKFLOW STATUS
-  @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/submit')
+  @Put('time-and-attendance-cases/leave/:hrLeaveRequestId/submit')
   @ApiOperation({ summary: 'Submit Leave Request' })
-  @ApiPostResponse('Leave Request submitted')
+  @ApiPatchResponse('Leave Request submitted')
   @Can({ action: ACTION_SUBMIT, subject: LEAVE_REQUEST })
   submitLeave(
     @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
@@ -114,9 +114,9 @@ export class LeaveCasesController {
     return this.leaveCasesService.submitLeave(hrLeaveRequestId, user);
   }
 
-  @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/verify')
+  @Put('time-and-attendance-cases/leave/:hrLeaveRequestId/verify')
   @ApiOperation({ summary: 'Verify Leave Request' })
-  @ApiPostResponse('Leave Request verified')
+  @ApiPatchResponse('Leave Request verified')
   @Can({ action: ACTION_VERIFY, subject: LEAVE_REQUEST })
   verifyLeave(
     @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
@@ -125,9 +125,9 @@ export class LeaveCasesController {
     return this.leaveCasesService.verifyLeave(hrLeaveRequestId, user);
   }
 
-  @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/approve')
+  @Put('time-and-attendance-cases/leave/:hrLeaveRequestId/approve')
   @ApiOperation({ summary: 'Approve Leave Request' })
-  @ApiPostResponse('Leave Request approved')
+  @ApiPatchResponse('Leave Request approved')
   @Can({ action: ACTION_APPROVE, subject: LEAVE_REQUEST })
   approveLeave(
     @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
@@ -136,9 +136,9 @@ export class LeaveCasesController {
     return this.leaveCasesService.approveLeave(hrLeaveRequestId, user);
   }
 
-  @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/process')
+  @Put('time-and-attendance-cases/leave/:hrLeaveRequestId/process')
   @ApiOperation({ summary: 'Process Leave Request' })
-  @ApiPostResponse('Leave Request processed')
+  @ApiPatchResponse('Leave Request processed')
   @Can({ action: ACTION_PROCESS, subject: LEAVE_REQUEST })
   processLeave(
     @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
@@ -147,9 +147,9 @@ export class LeaveCasesController {
     return this.leaveCasesService.processLeave(hrLeaveRequestId, user);
   }
 
-  @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/reject')
+  @Put('time-and-attendance-cases/leave/:hrLeaveRequestId/reject')
   @ApiOperation({ summary: 'Reject Leave Request' })
-  @ApiPostResponse('Leave Request rejected')
+  @ApiPatchResponse('Leave Request rejected')
   @Can({ action: ACTION_REJECT, subject: LEAVE_REQUEST })
   rejectLeave(
     @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
@@ -158,9 +158,9 @@ export class LeaveCasesController {
     return this.leaveCasesService.rejectLeave(hrLeaveRequestId, user);
   }
 
-  @Post('time-and-attendance-cases/leave/:hrLeaveRequestId/cancel')
+  @Put('time-and-attendance-cases/leave/:hrLeaveRequestId/cancel')
   @ApiOperation({ summary: 'Cancel Leave Request' })
-  @ApiPostResponse('Leave Request cancelled')
+  @ApiPatchResponse('Leave Request cancelled')
   @Can({ action: ACTION_CANCEL, subject: LEAVE_REQUEST })
   cancelLeave(
     @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
