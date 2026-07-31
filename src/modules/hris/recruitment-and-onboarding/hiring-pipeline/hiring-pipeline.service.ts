@@ -110,7 +110,6 @@ export class HiringPipelineService {
     };
   }
 
-  
   async getApplicantDocuments(applicantId: string, user: RequestUser) {
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -911,8 +910,10 @@ export class HiringPipelineService {
         where: { id: applicantId, application_status: 'for_interview' },
       });
 
-      if (forAcceptance?.completed_interview !== true ) {
-        throw new BadRequestException('Invalid! Interview Stage must be completed first before acceptance.');
+      if (forAcceptance?.completed_interview !== true) {
+        throw new BadRequestException(
+          'Invalid! Interview Stage must be completed first before acceptance.',
+        );
       }
 
       const accepted = await tx.applicant.update({
@@ -927,7 +928,9 @@ export class HiringPipelineService {
       });
 
       if (accepted.completed_interview !== true) {
-        throw new BadRequestException('Invalid! Applicant must complete Interview stage first to be accepted.');
+        throw new BadRequestException(
+          'Invalid! Applicant must complete Interview stage first to be accepted.',
+        );
       }
 
       await tx.workflowAction.create({
@@ -1035,13 +1038,13 @@ export class HiringPipelineService {
 
       const onboarderName = currentUser
         ? [
-          currentUser.employee.person.first_name,
-          currentUser.employee.person.middle_name,
-          currentUser.employee.person.last_name,
-        ]
-          .filter(Boolean)
-          .join(' ')
-      : '';
+            currentUser.employee.person.first_name,
+            currentUser.employee.person.middle_name,
+            currentUser.employee.person.last_name,
+          ]
+            .filter(Boolean)
+            .join(' ')
+        : '';
 
       await tx.workflowAction.create({
         data: {
@@ -1210,32 +1213,32 @@ export class HiringPipelineService {
     });
 
     const grouped = Object.values(
-    existingInterviews.reduce<Record<string, { applicant: any; interviews: any[] }>>((acc, interview) => {
+      existingInterviews.reduce<
+        Record<string, { applicant: any; interviews: any[] }>
+      >((acc, interview) => {
+        const applicantId = String(interview.applicant_id);
 
-      const applicantId = String(interview.applicant_id);
+        if (!acc[applicantId]) {
+          acc[applicantId] = {
+            applicant: interview.applicant,
+            interviews: [],
+          };
+        }
 
-      if (!acc[applicantId]) {
-        acc[applicantId] = {
-          applicant: interview.applicant,
-          interviews: [],
-        };
-      }
-      
-      acc[applicantId].interviews.push({
-        id: interview.id,
-        employee: interview.employee,
-        stage: interview.stage,
-        date_of_interview: interview.date_of_interview,
-        is_completed: interview.is_completed,
-        remarks: interview.remarks,
-        total_points: interview.total_points,
-        recommendations: interview.recommendations,
-      });
+        acc[applicantId].interviews.push({
+          id: interview.id,
+          employee: interview.employee,
+          stage: interview.stage,
+          date_of_interview: interview.date_of_interview,
+          is_completed: interview.is_completed,
+          remarks: interview.remarks,
+          total_points: interview.total_points,
+          recommendations: interview.recommendations,
+        });
 
-
-      return acc;
-
-    }, {}));
+        return acc;
+      }, {}),
+    );
 
     return {
       status: 'success',
@@ -1247,7 +1250,7 @@ export class HiringPipelineService {
   async assignInterviewPanel(user: RequestUser, dto: BulkAssignInterviewDto) {
     const { applicant_id, interviews } = dto;
 
-   // Auth check first
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -1288,12 +1291,13 @@ export class HiringPipelineService {
         where: {
           id: applicant_id,
           is_active: true,
-        }
-      })
-      
+        },
+      });
 
       if (existingApplicant?.application_status !== 'for_interview') {
-        throw new BadRequestException('Invalid! Applicant application status must be for_interview to proceed.');
+        throw new BadRequestException(
+          'Invalid! Applicant application status must be for_interview to proceed.',
+        );
       }
 
       const existingInterview = await tx.interviewer.findFirst({
@@ -1308,7 +1312,7 @@ export class HiringPipelineService {
         );
       }
 
-      const stages = interviews.map(i => i.stage);
+      const stages = interviews.map((i) => i.stage);
 
       const existingStages = await tx.interviewer.findMany({
         where: {
@@ -1325,12 +1329,12 @@ export class HiringPipelineService {
       if (existingStages.length > 0) {
         throw new BadRequestException(
           `Interview stage(s) already exist: ${existingStages
-            .map(s => s.stage)
+            .map((s) => s.stage)
             .join(', ')}.`,
         );
       }
 
-      const employeeIds = interviews.map(i => i.employee_id);
+      const employeeIds = interviews.map((i) => i.employee_id);
 
       const existingEmployees = await tx.interviewer.findMany({
         where: {
@@ -1352,7 +1356,7 @@ export class HiringPipelineService {
 
       const conflicts = await tx.interviewer.findMany({
         where: {
-          OR: interviews.map(i => ({
+          OR: interviews.map((i) => ({
             employee_id: i.employee_id,
             date_of_interview: new Date(i.date_of_interview),
           })),
@@ -1367,7 +1371,7 @@ export class HiringPipelineService {
           'One or more interviewers are already scheduled at the selected date and time.',
         );
       }
-      
+
       //map the ids to the data structure
       const dataToCreate = interviews.map((interview) => ({
         applicant_id,
@@ -1409,7 +1413,11 @@ export class HiringPipelineService {
     });
   }
 
-  async assessInterviewPanel(user: RequestUser, dto: AssessInterviewDto, interviewId: string) {
+  async assessInterviewPanel(
+    user: RequestUser,
+    dto: AssessInterviewDto,
+    interviewId: string,
+  ) {
     const { ratings, ...assessmentData } = dto;
 
     // auth check first
@@ -1464,9 +1472,7 @@ export class HiringPipelineService {
     }
 
     if (currentInterviewer.employee_id !== requestUser.employee.id) {
-      throw new ForbiddenException(
-        'You are not assigned to this interview.',
-      );
+      throw new ForbiddenException('You are not assigned to this interview.');
     }
 
     const applicant = await this.prisma.applicant.findUnique({
