@@ -516,9 +516,9 @@ export class HiringPipelineService {
 
       const creatorName = currentUser
         ? [
-            currentUser.employee?.person?.first_name,
-            currentUser.employee?.person?.middle_name,
-            currentUser.employee?.person?.last_name,
+            currentUser.employee.person.first_name,
+            currentUser.employee.person.middle_name,
+            currentUser.employee.person.last_name,
           ]
             .filter(Boolean)
             .join(' ')
@@ -989,55 +989,85 @@ export class HiringPipelineService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      try {
-        const checkStatus = await tx.applicant.findUnique({
-          where: { id: applicantId },
-        });
+      const checkStatus = await tx.applicant.findUnique({
+        where: { id: applicantId },
+      });
 
-        if (
-          !checkStatus ||
-          checkStatus.application_status !== ApplicationStatus.accepted
-        ) {
-          throw new BadRequestException(
-            'Applicant must be accepted first before can be onboarded',
-          );
-        }
-
-        const onBoard = await tx.applicant.update({
-          where: {
-            id: applicantId,
-            application_status: ApplicationStatus.accepted,
-          },
-          data: {
-            application_status: ApplicationStatus.onboarding,
-            updated_by: requestUser.id,
-          },
-        });
-
-        await tx.workflowAction.create({
-          data: {
-            actionable_type: WORKFLOW_ENTITY.APPLICANT,
-            actionable_id: applicantId,
-            action: ApplicationStatus.onboarding,
-            acted_by: requestUser.id,
-          },
-        });
-
-        const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-        const userPosition = requestUser.employee.position?.name;
-
-        return {
-          status: 'success',
-          message: 'Applicant is now Onboard',
-          onBoard,
-          onboarded_by: `${userName} - ${userPosition}`,
-        };
-      } catch (e) {
-        if (e instanceof BadRequestException) {
-          throw e; // keep your validation errors
-        }
-        throw new Error('Leave Request cannot be approved');
+      if (
+        !checkStatus ||
+        checkStatus.application_status !== ApplicationStatus.accepted
+      ) {
+        throw new BadRequestException(
+          'Applicant must be accepted first before can be onboarded',
+        );
       }
+
+      const onBoard = await tx.applicant.update({
+        where: {
+          id: applicantId,
+          application_status: ApplicationStatus.accepted,
+        },
+        data: {
+          application_status: ApplicationStatus.onboarding,
+          updated_by: requestUser.id,
+        },
+      });
+
+      const currentUser = await tx.user.findUnique({
+        where: {
+          id: requestUser.id,
+        },
+        select: {
+          id: true,
+          employee: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const onboarderName = currentUser
+        ? [
+          currentUser.employee.person.first_name,
+          currentUser.employee.person.middle_name,
+          currentUser.employee.person.last_name,
+        ]
+          .filter(Boolean)
+          .join(' ')
+      : '';
+
+      await tx.workflowAction.create({
+        data: {
+          actionable_type: WORKFLOW_ENTITY.APPLICANT,
+          actionable_id: applicantId,
+          action: ApplicationStatus.onboarding,
+          acted_by: requestUser.id,
+          acted_at: new Date(),
+          metadata: {
+            title: 'Applicant onboarded',
+            message: 'You have onboarded an Applicant',
+            user: onboarderName,
+            role: 'recruiter',
+          },
+        },
+      });
+
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
+
+      return {
+        status: 'success',
+        message: 'Applicant is now Onboard',
+        onBoard,
+        onboarded_by: `${userName} - ${userPosition}`,
+      };
     });
   }
 
