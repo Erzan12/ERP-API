@@ -215,7 +215,7 @@ export class EmployeeMasterlistService {
           },
           {
             employee_id: employee.id,
-            type: EmploymentHistoryType.employee_location,
+            type: EmploymentHistoryType.user_location,
             current_id: employee.user_location_id ?? '',
             previous_id: null,
             effective_date: hireDate,

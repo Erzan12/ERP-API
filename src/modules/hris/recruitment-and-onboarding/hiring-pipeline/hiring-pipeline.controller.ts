@@ -11,9 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  HiringPipelineService,
-} from './hiring-pipeline.service';
+import { HiringPipelineService } from './hiring-pipeline.service';
 import { CreateApplicantDto, UpdateApplicantDto } from './dto/applicant.dto';
 import {
   ApiGetResponse,
@@ -103,10 +101,7 @@ export class ApplicantsController {
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.getApplicantDocuments(
-      applicantId,
-      user,
-    );
+    return this.hiringPipelineService.getApplicantDocuments(applicantId, user);
   }
 
   @Post('applicants')
@@ -260,7 +255,6 @@ export class ApplicantsController {
   ) {
     return this.hiringPipelineService.reject(applicantId, user);
   }
-
 }
 
 /**
@@ -274,9 +268,7 @@ export class ApplicantsController {
 @ApiTags('Human Resources - Recruitment and Onboarding (Interview Applicant)')
 @Controller({ path: 'hris', version: '2' })
 export class InterviewApplicantController {
-  constructor(
-    private readonly hiringPipelineService: HiringPipelineService
-  ) {}
+  constructor(private readonly hiringPipelineService: HiringPipelineService) {}
 
   /**
    * PHASE 1: ASSIGNMENT
@@ -307,6 +299,10 @@ export class InterviewApplicantController {
     @SessionUser() user: RequestUser,
   ) {
     // We pass the ID from the URL into the DTO or directly to the service
-    return this.hiringPipelineService.assessInterviewPanel(user, dto, interviewId);
+    return this.hiringPipelineService.assessInterviewPanel(
+      user,
+      dto,
+      interviewId,
+    );
   }
 }

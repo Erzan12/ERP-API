@@ -13,9 +13,7 @@ import { AdministratorModule } from '../administrator/administrator.module';
 import { CareerPostingService } from './recruitment-and-onboarding/career-posting/career-posting.service';
 import { CareerPostingController } from './recruitment-and-onboarding/career-posting/career-posting.controller';
 
-import {
-  HiringPipelineService,
-} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.service';
+import { HiringPipelineService } from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.service';
 import {
   ApplicantsController,
   InterviewApplicantController,
