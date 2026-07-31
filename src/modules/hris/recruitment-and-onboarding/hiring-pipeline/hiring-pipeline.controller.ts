@@ -231,7 +231,7 @@ export class ApplicantsController {
   @Put('applicants/:applicantId/accept')
   @ApiOperation({ summary: 'Accept an Applicant' })
   @ApiPatchResponse('Applicant has been accepted')
-  @Can({ action: ACTION_CREATE, subject: HIRING_PIPELINE })
+  @Can({ action: ACTION_ACCEPT, subject: HIRING_PIPELINE })
   accept(
     @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
     @SessionUser() user: RequestUser,
