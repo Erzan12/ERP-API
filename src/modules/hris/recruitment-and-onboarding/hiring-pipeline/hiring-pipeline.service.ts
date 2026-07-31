@@ -1109,54 +1109,47 @@ export class HiringPipelineService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      try {
-        const checkStatus = await tx.applicant.findUnique({
-          where: { id: applicantId },
-        });
+      const checkStatus = await tx.applicant.findUnique({
+        where: { id: applicantId },
+      });
 
-        if (
-          !checkStatus ||
-          checkStatus.application_status === ApplicationStatus.onboarding
-        ) {
-          throw new BadRequestException(
-            'Applicant is now onboarding cannot be rejected',
-          );
-        }
-
-        const reject = await tx.applicant.update({
-          where: {
-            id: applicantId,
-          },
-          data: {
-            application_status: ApplicationStatus.rejected,
-            updated_by: requestUser.id,
-          },
-        });
-
-        await tx.workflowAction.create({
-          data: {
-            actionable_type: WORKFLOW_ENTITY.APPLICANT,
-            actionable_id: applicantId,
-            action: WorkflowActionType.rejection,
-            acted_by: requestUser.id,
-          },
-        });
-
-        const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-        const userPosition = requestUser.employee.position?.name;
-
-        return {
-          status: 'success',
-          message: 'Applicant has been rejected',
-          reject,
-          rejected_by: `${userName} - ${userPosition}`,
-        };
-      } catch (e) {
-        if (e instanceof BadRequestException) {
-          throw e; // keep your validation errors
-        }
-        // throw new Error ('Applicant cannot be rejected')
+      if (
+        !checkStatus ||
+        checkStatus.application_status === ApplicationStatus.onboarding
+      ) {
+        throw new BadRequestException(
+          'Applicant is now onboarded cannot be rejected',
+        );
       }
+
+      const reject = await tx.applicant.update({
+        where: {
+          id: applicantId,
+        },
+        data: {
+          application_status: ApplicationStatus.rejected,
+          updated_by: requestUser.id,
+        },
+      });
+
+      await tx.workflowAction.create({
+        data: {
+          actionable_type: WORKFLOW_ENTITY.APPLICANT,
+          actionable_id: applicantId,
+          action: WorkflowActionType.rejection,
+          acted_by: requestUser.id,
+        },
+      });
+
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
+
+      return {
+        status: 'success',
+        message: 'Applicant has been rejected',
+        reject,
+        rejected_by: `${userName} - ${userPosition}`,
+      };
     });
   }
 
