@@ -61,6 +61,15 @@ export class CreateEmployeeDto {
   })
   division_id: string;
 
+  @IsUUID()
+  @IsNotEmpty()
+  @ApiProperty({
+    name: 'user_location_id',
+    example: 'PK uuid of user location',
+    description: 'User location of the employee',
+  })
+  user_location_id: string;
+
   @IsInt()
   @IsNotEmpty()
   @ApiProperty({

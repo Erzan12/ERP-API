@@ -37,7 +37,6 @@ export const ROLE_MANAGEMENT = 'role management';
 export const SALARY_GRADE = 'salary grade';
 export const HIRING_PIPELINE = 'hiring pipeline';
 export const CAREER_POSTING = 'career posting';
-export const APPLICANT = 'applicant';
 export const INTERVIEW_APPLICANT = 'interview applicant';
 export const REGULARIZATION_REVIEW = 'regularization review';
 export const PERFORMANCE_COMPETENCIES = 'performance competencies';
