@@ -3,7 +3,6 @@ import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsString,
-  IsUUID,
   IsInt,
   Min,
   IsArray,

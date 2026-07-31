@@ -1,13 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  ArrayMaxSize,
   ArrayMinSize,
   IsArray,
   IsNotEmpty,
   IsUUID,
-  IsDateString,
-  IsString,
-  IsOptional,
   ValidateNested,
 } from 'class-validator';
 import { InterviewAssignmentDto } from './interview-assignment.dto';
