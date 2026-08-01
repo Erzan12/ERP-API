@@ -519,9 +519,8 @@ export class UserManagementService {
             // plainPassword,
             tokenKey,
           );
-        } catch (err) {
-          console.error('MAIL ERROR:', err);
-          throw err;
+        } catch (e) {
+          console.error('MAIL ERROR:', e);
         }
 
         // console.log('Email sent');
