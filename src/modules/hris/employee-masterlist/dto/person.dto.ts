@@ -43,6 +43,14 @@ export class CreatePersonDto {
   })
   date_of_birth: string;
 
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    example: '09633316398',
+    description: 'Employee phone number or contact number',
+  })
+  contact_number: string;
+
   @Type(() => String)
   @IsString()
   @ApiProperty({
