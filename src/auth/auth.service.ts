@@ -25,11 +25,13 @@ import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-per
 import { MailService } from 'src/jobs/mail/mail.service';
 import {
   generateOtp,
+  getOtpExpiration,
   OTP_VERIFICATION,
 } from 'src/utils/constants/otp-verification.constants';
 import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
 import { addMinutes } from 'date-fns/addMinutes';
 import { ActionEntry } from './type/action-entry.type';
+import { OtpPurposeTemplate } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -221,7 +223,7 @@ export class AuthService {
     const existingOtp = await this.prisma.otpVerification.findFirst({
       where: {
         user_id: user.id,
-        purpose: OTP_VERIFICATION.FORGOT_PASSWORD,
+        purpose: OtpPurposeTemplate.forgot_password,
         is_used: false,
         expires_at: {
           gt: new Date(),
@@ -235,19 +237,18 @@ export class AuthService {
       );
     }
 
-    const otp = generateOtp();
-
     const generatedOtp = await this.prisma.otpVerification.create({
       data: {
+        employee_id: user.employee_id,
         user_id: user.id,
-        code: otp,
-        purpose: OTP_VERIFICATION.FORGOT_PASSWORD,
-        expires_at: addMinutes(new Date(), 10),
+        code: generateOtp(),
+        purpose: OtpPurposeTemplate.forgot_password,
+        expires_at: getOtpExpiration(),
       },
     });
 
     try {
-      await this.mailService.sendOtp(user.email, otp);
+      await this.mailService.sendOtp(user.email, generateOtp());
     } catch {
       throw new InternalServerErrorException('Failed to send OTP email.');
     }
@@ -284,7 +285,7 @@ export class AuthService {
       where: {
         user_id: user.id,
         code: dto.otp,
-        purpose: OTP_VERIFICATION.FORGOT_PASSWORD,
+        purpose: OtpPurposeTemplate.forgot_password,
         is_used: false,
         expires_at: { gt: new Date() },
       },
