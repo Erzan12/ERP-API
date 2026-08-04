@@ -20,9 +20,16 @@ export class SmsService {
         }
     }
 
-    async sendWelcomeSMS(phoneNumber: string, username: string) {
-        const message = `Hello ${username}! Welcome to Avega Bros. This is a notice that you have subscribe to sms notifications, thank you!`;
+    async sendWelcomeSMS(phoneNumber: string, username: string, employeeId: string) {
+        // const message = `Hello ${username}! Welcome to Avega Bros. To verify your identity, here is the verification code: ${code}`;
+        // const message = `Hello ${username}! Welcome to Avega Bros. This is a notice that you have subscribe to sms notifications, thank you!`;
+        
+        const message = `Hello ${username}! Welcome to Avega Bros. This is a notice that you are now enrolled to the system you can now log in to set your password, Here is your username: ${employeeId} thank you!`;
+        return this.sendSMS(phoneNumber, message);
+    }
 
+    async sendSmsNotificationSubscription(phoneNumber: string, username: string) {
+        const message = `Hello ${username}! Welcome to Avega Bros. This is a notice that you have subscribe to sms notifications, thank you!`;
         return this.sendSMS(phoneNumber, message);
     }
 
