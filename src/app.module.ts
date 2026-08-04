@@ -36,6 +36,7 @@ import { UserLocationService } from './modules/mastertable/user_location/user_lo
 import { AttachmentUploadService } from './jobs/attachment-upload/attachment-upload.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { SmsModule } from './jobs/sms/sms.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { memoryStorage } from 'multer';
     UserManagementModule,
     EmployeeDashboardModule,
     PrismaModule,
+    SmsModule,
     // HealthCheckModule,
     // HealthModule,
   ],

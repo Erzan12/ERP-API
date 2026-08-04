@@ -37,9 +37,10 @@ import { SalaryGradeService } from './salary-grade/salary-grade.service';
 import { SalaryGradeController } from './salary-grade/salary-grade.controller';
 import { EmploymentHistoryController } from './employment-history/employment-history.controller';
 import { EmploymentHistoryService } from './employment-history/employment-history.service';
+import { SmsModule } from 'src/jobs/sms/sms.module';
 
 @Module({
-  imports: [AuthModule, AdministratorModule],
+  imports: [AuthModule, AdministratorModule, SmsModule],
   providers: [
     EmployeeMasterlistService,
     PrismaService,

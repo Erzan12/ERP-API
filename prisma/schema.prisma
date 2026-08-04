@@ -89,6 +89,23 @@ enum EmployeeStatusPeriodType {
   paternity_leave
 }
 
+enum SmsTemplate {
+  welcome
+  otp
+  leave_approved
+  leave_rejected
+  payslip_ready
+  regularization
+  overtime_approved
+}
+
+enum OtpPurposeTemplate {
+  forgot_password
+  login
+  verify_phone
+  register_employee
+}
+
 enum SeaBasedCategory {
   all_ranks
   all_officers
@@ -364,6 +381,7 @@ model MobileNumber {
   updated_at DateTime @updatedAt
 
   employee   Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  hr_employee_sms_subscription  HrEmployeeSmsSubscription[]
 
   @@index([employee_id]) 
 }
@@ -480,6 +498,8 @@ model User {
   SalaryGradeUpdatedBy                     SalaryGrade[]                      @relation("SalaryGradeUpdatedBy")
   HrEmployeeStatusPeriodCreatedBy          HrEmployeeStatusPeriod[]           @relation("HrEmployeeStatusPeriodCreatedBy")
   HrEmployeeStatusPeriodUpdatedBy          HrEmployeeStatusPeriod[]           @relation("HrEmployeeStatusPeriodUpdatedBy")
+  HrEmployeeSmsSubscriptionCreatedBy       HrEmployeeSmsSubscription[]        @relation("HrEmployeeSmsSubscriptionCreatedBy")
+  HrEmployeeSmsSubscriptionUpdatedBy       HrEmployeeSmsSubscription[]        @relation("HrEmployeeSmsSubscriptionUpdatedBy")
 
   // Workflow action
   workflow_actions  WorkflowAction[]
@@ -756,7 +776,7 @@ model Employee {
   company           Company          @relation(fields: [company_id], references: [id])
   department        Department       @relation(fields: [department_id], references: [id])
   person            Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
-  position          Position        @relation(fields: [position_id], references: [id])
+  position          Position         @relation(fields: [position_id], references: [id])
   division          Division         @relation(fields: [division_id], references: [id])
   user_location     UserLocation?    @relation(fields: [user_location_id], references: [id])
   vessel            Vessel?          @relation(fields: [vessel_id], references: [id])
@@ -778,8 +798,11 @@ model Employee {
   // Overtime system
   overtimes          HrOvertimeRequest[]  
 
-  // Additional details
+  // Additional details or Sms Push Notifs
+  notification_preference EmployeeNotificationPreference?
+  sms_subscription   HrEmployeeSmsSubscription[]
   mobile_numbers     MobileNumber[]
+  otp_verifications  OtpVerification[]
 
   @@index([department_id])
   @@index([company_id])
@@ -844,6 +867,43 @@ model HrEmployeeStatusPeriod {
   @@index([employee_id])
   @@index([from_date])
   @@index([to_date])
+}
+
+model HrEmployeeSmsSubscription {
+  id                String    @id @default(uuid()) @db.Uuid
+  employee_id       String    @db.Uuid
+  mobile_number_id  String?   @db.Uuid
+  is_enabled        Boolean   @default(true)
+  is_verified       Boolean   @default(false)
+
+  template          SmsTemplate
+
+  subscribed_at     DateTime  @default(now())
+  verified_at       DateTime?
+
+  created_by        String?   @db.Uuid
+  updated_by        String?   @db.Uuid
+
+  createdBy User? @relation("HrEmployeeSmsSubscriptionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrEmployeeSmsSubscriptionUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  employee          Employee  @relation(fields:[employee_id], references: [id], onDelete: Cascade)
+  mobile_number     MobileNumber? @relation(fields: [mobile_number_id], references:[id])
+
+  @@unique([employee_id, template])
+}
+
+model EmployeeNotificationPreference {
+  id            String  @id @default(uuid()) @db.Uuid
+  employee_id   String  @unique @db.Uuid
+  sms_enabled   Boolean @default(false)
+  email_enabled Boolean @default(true)
+  push_enabled  Boolean @default(false)
+
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
 }
 
 model Vessel {
@@ -1521,10 +1581,11 @@ model SalaryGrade {
 model OtpVerification {
   id      String  @id @default(uuid()) @db.Uuid
 
-  user_id String  @db.Uuid
+  employee_id String  @db.Uuid
+  user_id String?  @db.Uuid
   
   code    String
-  purpose String  // FORGOT_PASSWORD, LOGIN, VERIFY_PHONE .etc
+  purpose OtpPurposeTemplate  // FORGOT_PASSWORD, LOGIN, VERIFY_PHONE .etc
 
   is_used    Boolean @default(false)
   expires_at DateTime
@@ -1532,7 +1593,8 @@ model OtpVerification {
 
   created_at DateTime @default(now())
 
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade) 
+  employee   Employee  @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  user       User?     @relation(fields: [user_id], references: [id], onDelete: Cascade) 
 }
 
 model WorkflowAction {
