@@ -16,11 +16,23 @@ import {
   CivilStatus,
   Prisma,
   EmploymentHistoryType,
+  SmsTemplate,
+  OtpPurposeTemplate,
 } from '@prisma/client';
+import { SmsService } from 'src/jobs/sms/sms.service';
+import { ManualSmsNotificationPreferenceDto } from './dto/sms.dto';
+import {
+  generateOtp,
+  getOtpExpiration,
+} from 'src/utils/constants/otp-verification.constants';
+import { OtpVerificationDto } from './dto/otp.dto';
 
 @Injectable()
 export class EmployeeMasterlistService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly smsService: SmsService,
+  ) {}
 
   async createEmployee(dto: CreateEmployeeWithDetailsDto, user: RequestUser) {
     // Auth check first
@@ -60,229 +72,302 @@ export class EmployeeMasterlistService {
       );
     }
 
-    return await this.prisma.$transaction(async (tx) => {
-      try {
-        const { gender, civil_status } = dto.person;
+    const result = await this.prisma.$transaction(async (tx) => {
+      const { gender, civil_status } = dto.person;
 
-        if (!Object.values(Gender).includes(gender)) {
-          throw new ForbiddenException('Error! Please use male or female');
-        }
+      if (!Object.values(Gender).includes(gender)) {
+        throw new ForbiddenException('Error! Please use male or female');
+      }
 
-        if (!Object.values(CivilStatus).includes(civil_status)) {
-          throw new ForbiddenException(
-            'Error! Please use single, married, separated, or widowed',
+      if (!Object.values(CivilStatus).includes(civil_status)) {
+        throw new ForbiddenException(
+          'Error! Please use single, married, separated, or widowed',
+        );
+      }
+
+      const company = await tx.company.findUnique({
+        where: { id: dto.employee.company_id },
+      });
+      if (!company) throw new BadRequestException('Invalid company_id');
+
+      const department = await tx.department.findUnique({
+        where: { id: dto.employee.department_id },
+      });
+      if (!department) throw new BadRequestException('Invalid department_id');
+
+      const companyId = dto.employee.company_id;
+
+      const existingPerson = await tx.person.findFirst({
+        where: {
+          email: dto.person.email,
+        },
+      });
+
+      if (existingPerson) {
+        //optionally, check if they're already employed
+        const existingEmployee = await tx.employee.findFirst({
+          where: {
+            person_id: existingPerson.id,
+            company_id: dto.employee.company_id,
+          },
+        });
+
+        if (existingEmployee) {
+          throw new BadRequestException(
+            'This person is already employed in the company.',
           );
         }
 
-        const company = await tx.company.findUnique({
-          where: { id: dto.employee.company_id },
-        });
-        if (!company) throw new BadRequestException('Invalid company_id');
+        //if they exist but not employed yet, you can reuse `person.id` below
+      }
 
-        const department = await tx.department.findUnique({
-          where: { id: dto.employee.department_id },
-        });
-        if (!department) throw new BadRequestException('Invalid department_id');
+      // console.log('Creating person');
 
-        const companyId = dto.employee.company_id;
-
-        const existingPerson = await tx.person.findFirst({
-          where: {
+      const person =
+        existingPerson ??
+        (await tx.person.create({
+          data: {
+            first_name: dto.person.first_name,
+            middle_name: dto.person.middle_name,
+            last_name: dto.person.last_name,
+            date_of_birth: new Date(dto.person.date_of_birth),
+            contact_no: dto.person.contact_number,
+            gender,
+            civil_status,
             email: dto.person.email,
           },
-        });
+        }));
 
-        if (existingPerson) {
-          //optionally, check if they're already employed
-          const existingEmployee = await tx.employee.findFirst({
-            where: {
-              person_id: existingPerson.id,
-              company_id: dto.employee.company_id,
-            },
-          });
+      const hireDate = new Date(dto.employee.hire_date);
+      const generatedEmpID = await this.createUniqueEmpID(
+        tx,
+        companyId,
+        hireDate,
+      );
 
-          if (existingEmployee) {
-            throw new BadRequestException(
-              'This person is already employed in the company.',
-            );
-          }
+      // double check this person isn't already employed
+      const employeeCheck = await tx.employee.findFirst({
+        where: {
+          person_id: person.id,
+          company_id: companyId,
+        },
+      });
 
-          //if they exist but not employed yet, you can reuse `person.id` below
-        }
-        const person =
-          existingPerson ??
-          (await tx.person.create({
-            data: {
-              first_name: dto.person.first_name,
-              middle_name: dto.person.middle_name,
-              last_name: dto.person.last_name,
-              date_of_birth: new Date(dto.person.date_of_birth),
-              gender,
-              civil_status,
-              email: dto.person.email,
-            },
-          }));
-
-        const hireDate = new Date(dto.employee.hire_date);
-        const generatedEmpID = await this.createUniqueEmpID(
-          tx,
-          companyId,
-          hireDate,
+      if (employeeCheck) {
+        throw new BadRequestException(
+          'Employee already exists for this person in this company.',
         );
-
-        // double check this person isn't already employed
-        const employeeCheck = await tx.employee.findFirst({
-          where: {
-            person_id: person.id,
-            company_id: companyId,
-          },
-        });
-
-        if (employeeCheck) {
-          throw new BadRequestException(
-            'Employee already exists for this person in this company.',
-          );
-        }
-
-        const employee = await tx.employee.create({
-          data: {
-            person_id: person.id,
-            employee_id: generatedEmpID,
-            company_id: companyId,
-            department_id: dto.employee.department_id,
-            position_id: dto.employee.position_id,
-            division_id: dto.employee.division_id,
-            salary: dto.employee.salary,
-            hire_date: hireDate,
-            pay_frequency: dto.employee.pay_frequency,
-            user_location_id: dto.employee.user_location_id,
-            employment_status_id: dto.employee.employment_status_id,
-            employment_type: dto.employee.employment_type,
-            employee_type: dto.employee.employee_type,
-            monthly_equivalent_salary: dto.employee.monthly_equivalent_salary,
-            archive_date: dto.employee.archive_date,
-            other_employee_data: dto.employee.other_employee_data,
-            corporate_rank_id: dto.employee.corporate_rank_id,
-            created_by: user.id,
-          },
-        });
-
-        const histories = [
-          {
-            employee_id: employee.id,
-            type: EmploymentHistoryType.company,
-            current_id: employee.company_id,
-            previous_id: null,
-            effective_date: hireDate,
-            created_by: user.id,
-            remarks: 'Initial employment assignment',
-          },
-          {
-            employee_id: employee.id,
-            type: EmploymentHistoryType.department,
-            current_id: employee.department_id,
-            previous_id: null,
-            effective_date: hireDate,
-            created_by: user.id,
-            remarks: 'Initial employment assignment',
-          },
-          {
-            employee_id: employee.id,
-            type: EmploymentHistoryType.position,
-            current_id: employee.position_id ?? '',
-            previous_id: null,
-            effective_date: hireDate,
-            created_by: user.id,
-            remarks: 'Initial employment assignment',
-          },
-          {
-            employee_id: employee.id,
-            type: EmploymentHistoryType.division,
-            current_id: employee.division_id,
-            previous_id: null,
-            effective_date: hireDate,
-            created_by: user.id,
-            remarks: 'Initial employment assignment',
-          },
-          {
-            employee_id: employee.id,
-            type: EmploymentHistoryType.vessel,
-            current_id: employee.vessel_id ?? '',
-            previous_id: null,
-            effective_date: hireDate,
-            created_by: user.id,
-            remarks: 'Initial employment assignment',
-          },
-          {
-            employee_id: employee.id,
-            type: EmploymentHistoryType.user_location,
-            current_id: employee.user_location_id ?? '',
-            previous_id: null,
-            effective_date: hireDate,
-            created_by: user.id,
-            remarks: 'Initial employment assignment',
-          },
-          {
-            employee_id: employee.id,
-            type: EmploymentHistoryType.salary_grade,
-            current_id: employee.salary_grade_id,
-            previous_id: null,
-            effective_date: hireDate,
-            created_by: user.id,
-            remarks: 'Initial employment assignment',
-          },
-          {
-            employee_id: employee.id,
-            type: EmploymentHistoryType.employment_status,
-            current_id: employee.employment_status_id,
-            previous_id: null,
-            effective_date: hireDate,
-            created_by: user.id,
-            remarks: 'Initial employment assignment',
-          },
-        ].filter((h) => h.current_id);
-
-        await tx.employmentHistory.createMany({
-          data: histories,
-        });
-
-        const requestUser = await tx.user.findUnique({
-          where: { id: user.id },
-          include: {
-            employee: {
-              include: {
-                person: true,
-                position: true,
-              },
-            },
-          },
-        });
-
-        if (!requestUser?.employee?.person) {
-          throw new BadRequestException(`User does not exist.`);
-        }
-
-        const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-        const userPosition = requestUser.employee.position?.name;
-
-        return {
-          status: 'success',
-          message: 'Employee created',
-          employee,
-          created_by_user: `${userName} - ${userPosition}`,
-        };
-      } catch (error) {
-        console.error('CREATE EMPLOYEE ERROR');
-        console.error(
-          'Message:',
-          error instanceof Error ? error.message : String(error),
-        );
-        console.error('Stack:', error instanceof Error ? error.stack : 'N/A');
-        console.error('Full error:', error);
-        console.error('Transaction failed:', error);
-        throw error;
       }
+
+      // console.log('Creating employee');
+
+      const employee = await tx.employee.create({
+        data: {
+          person_id: person.id,
+          employee_id: generatedEmpID,
+          company_id: companyId,
+          department_id: dto.employee.department_id,
+          position_id: dto.employee.position_id,
+          division_id: dto.employee.division_id,
+          salary: dto.employee.salary,
+          hire_date: hireDate,
+          pay_frequency: dto.employee.pay_frequency,
+          user_location_id: dto.employee.user_location_id,
+          employment_status_id: dto.employee.employment_status_id,
+          employment_type: dto.employee.employment_type,
+          employee_type: dto.employee.employee_type,
+          monthly_equivalent_salary: dto.employee.monthly_equivalent_salary,
+          archive_date: dto.employee.archive_date,
+          other_employee_data: dto.employee.other_employee_data,
+          corporate_rank_id: dto.employee.corporate_rank_id,
+          created_by: user.id,
+        },
+      });
+
+      // console.log('Creating history');
+
+      const histories = [
+        {
+          employee_id: employee.id,
+          type: EmploymentHistoryType.company,
+          current_id: employee.company_id,
+          previous_id: null,
+          effective_date: hireDate,
+          created_by: user.id,
+          remarks: 'Initial employment assignment',
+        },
+        {
+          employee_id: employee.id,
+          type: EmploymentHistoryType.department,
+          current_id: employee.department_id,
+          previous_id: null,
+          effective_date: hireDate,
+          created_by: user.id,
+          remarks: 'Initial employment assignment',
+        },
+        {
+          employee_id: employee.id,
+          type: EmploymentHistoryType.position,
+          current_id: employee.position_id ?? '',
+          previous_id: null,
+          effective_date: hireDate,
+          created_by: user.id,
+          remarks: 'Initial employment assignment',
+        },
+        {
+          employee_id: employee.id,
+          type: EmploymentHistoryType.division,
+          current_id: employee.division_id,
+          previous_id: null,
+          effective_date: hireDate,
+          created_by: user.id,
+          remarks: 'Initial employment assignment',
+        },
+        {
+          employee_id: employee.id,
+          type: EmploymentHistoryType.vessel,
+          current_id: employee.vessel_id ?? '',
+          previous_id: null,
+          effective_date: hireDate,
+          created_by: user.id,
+          remarks: 'Initial employment assignment',
+        },
+        {
+          employee_id: employee.id,
+          type: EmploymentHistoryType.user_location,
+          current_id: employee.user_location_id ?? '',
+          previous_id: null,
+          effective_date: hireDate,
+          created_by: user.id,
+          remarks: 'Initial employment assignment',
+        },
+        {
+          employee_id: employee.id,
+          type: EmploymentHistoryType.salary_grade,
+          current_id: employee.salary_grade_id,
+          previous_id: null,
+          effective_date: hireDate,
+          created_by: user.id,
+          remarks: 'Initial employment assignment',
+        },
+        {
+          employee_id: employee.id,
+          type: EmploymentHistoryType.employment_status,
+          current_id: employee.employment_status_id,
+          previous_id: null,
+          effective_date: hireDate,
+          created_by: user.id,
+          remarks: 'Initial employment assignment',
+        },
+      ].filter((h) => h.current_id);
+
+      await tx.employmentHistory.createMany({
+        data: histories,
+      });
+
+      // const smsRegistration = await tx.otpVerification.create({
+      //   data: {
+      //     employee_id: employee.id,
+      //     code: generateOtp(),
+      //     purpose: OtpPurposeTemplate.register_employee,
+      //     expires_at: getOtpExpiration(),
+      //   }
+      // })
+
+      const preferredNotification =
+        await tx.employeeNotificationPreference.create({
+          data: {
+            employee_id: employee.id,
+            sms_enabled: dto.sms.subscribe ?? false,
+            email_enabled: true,
+            push_enabled: false,
+          },
+        });
+
+      if (dto.sms?.subscribe && dto.sms.mobile_number) {
+        const mobile = await tx.mobileNumber.create({
+          data: {
+            employee_id: employee.id,
+            mobile_number: dto.sms.mobile_number,
+            is_primary: true,
+            is_verified: false,
+          },
+        });
+
+        await tx.hrEmployeeSmsSubscription.create({
+          data: {
+            employee_id: employee.id,
+            template: SmsTemplate.welcome,
+            mobile_number_id: mobile.id,
+            is_verified: false,
+            created_by: user.id,
+          },
+        });
+      }
+
+      console.log('Loading request user');
+
+      const requestUser = await tx.user.findUnique({
+        where: { id: user.id },
+        include: {
+          employee: {
+            include: {
+              person: true,
+              position: true,
+            },
+          },
+        },
+      });
+
+      if (!requestUser?.employee?.person) {
+        throw new BadRequestException(`User does not exist.`);
+      }
+
+      // console.log('Returning result');
+
+      const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+      const userPosition = requestUser.employee.position?.name;
+
+      return {
+        employee,
+        person,
+        userName,
+        userPosition,
+        preferredNotification,
+        // smsRegistration,
+        created_by_user: `${userName} - ${userPosition}`,
+      };
     });
+
+    // console.log('Transaction committed');
+    try {
+      await this.smsService.sendWelcomeSMS(
+        dto.sms.mobile_number,
+        result.person.first_name,
+        result.employee.employee_id,
+      );
+    } catch (e) {
+      console.error('Welcome SMS failed', e);
+      // swallow — employee creation already succeeded, don't fail the request
+    }
+
+    if (result.preferredNotification.sms_enabled === true) {
+      try {
+        await this.smsService.sendSmsNotificationSubscription(
+          dto.sms.mobile_number,
+          result.person.first_name,
+        );
+      } catch (e) {
+        console.error('Subscription SMS failed', e);
+      }
+    }
+
+    return {
+      status: 'success',
+      message: 'Employee created',
+      employee: result.employee,
+      created_by_user: `${result.userName} - ${result.userPosition}`,
+    };
   }
 
   //UNIQUE COMPANY EMPLOYEE ID FORMAT - ABISC-250710-001
@@ -882,8 +967,246 @@ export class EmployeeMasterlistService {
       message: 'Employee has been deleted',
     };
   }
-}
 
+  async employeeSmsVerify(dto: OtpVerificationDto) {
+    const result = await this.prisma.$transaction(async (tx) => {
+      const otpRecord = await tx.otpVerification.findFirst({
+        where: {
+          code: dto.otp_code,
+          purpose: OtpPurposeTemplate.register_employee,
+          is_used: false,
+          expires_at: {
+            gt: new Date(),
+          },
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+        include: {
+          employee: {
+            include: {
+              sms_subscription: true,
+              user: true,
+              person: true,
+            },
+          },
+        },
+      });
+
+      if (!otpRecord) {
+        throw new BadRequestException('Invalid OTP.');
+      }
+
+      if (otpRecord.expires_at < new Date()) {
+        throw new BadRequestException('Otp has expired.');
+      }
+
+      await tx.otpVerification.update({
+        where: { id: otpRecord.id },
+        data: {
+          is_used: true,
+          used_at: new Date(),
+        },
+      });
+
+      // const subscription = await tx.hrEmployeeSmsSubscription.findFirst({
+      //   where: {
+      //     employee_id: otpRecord.employee_id,
+      //     is_verified: false,
+      //   },
+      // });
+
+      // if (!subscription) {
+      //   throw new NotFoundException('Employee SMS subcripstion does not exist');
+      // }
+
+      const existingMobile = await tx.mobileNumber.findFirst({
+        where: {
+          employee_id: dto.employeeId,
+          is_verified: false,
+        },
+        orderBy: {
+          created_at: 'desc',
+        },
+      });
+
+      if (!existingMobile) {
+        throw new NotFoundException('Mobile number not found');
+      }
+
+      const mobile = await tx.mobileNumber.update({
+        where: {
+          id: existingMobile.id,
+        },
+        data: {
+          is_verified: true,
+          verified_at: new Date(),
+        },
+      });
+
+      // await tx.hrEmployeeSmsSubscription.create({
+      //   data: {
+      //     employee_id: employeeId,
+      //     mobile_number_id: mobile.id,
+      //     is_verified: true,
+      //     is_enabled: true,
+      //     template: 'otp',
+      //     created_by: otpRecord.employee.user?.id,
+      //     verified_at: new Date(),
+      //   },
+      // });
+
+      // await tx.employeeNotificationPreference.update({
+      //   where: {
+      //     employee_id: otpRecord.employee_id,
+      //   },
+      //   data: {
+      //     sms_enabled: true,
+      //   },
+      // });
+
+      const subscription = await tx.hrEmployeeSmsSubscription.findFirst({
+        where: {
+          employee_id: dto.employeeId,
+        },
+      });
+
+      if (subscription) {
+        await tx.hrEmployeeSmsSubscription.update({
+          where: {
+            id: subscription.id,
+          },
+          data: {
+            mobile_number_id: mobile.id,
+            is_verified: true,
+            is_enabled: true,
+            verified_at: new Date(),
+          },
+        });
+        await tx.employeeNotificationPreference.update({
+          where: {
+            employee_id: dto.employeeId,
+          },
+          data: {
+            sms_enabled: true,
+          },
+        });
+      } else {
+        await tx.hrEmployeeSmsSubscription.create({
+          data: {
+            employee_id: dto.employeeId,
+            mobile_number_id: mobile.id,
+            is_verified: true,
+            is_enabled: true,
+            template: 'otp',
+            created_by: otpRecord.employee.user_id,
+            verified_at: new Date(),
+          },
+        });
+        await tx.employeeNotificationPreference.update({
+          where: {
+            employee_id: dto.employeeId,
+          },
+          data: {
+            sms_enabled: true,
+          },
+        });
+      }
+
+      return {
+        mobile,
+        otpRecord,
+      };
+    });
+
+    try {
+      await this.smsService.sendSmsNotificationSubscription(
+        result.mobile.mobile_number,
+        result.otpRecord.employee.person.first_name,
+      );
+    } catch (e) {
+      console.error('Subscription SMS failed', e);
+    }
+
+    return {
+      status: 'success',
+      message: 'Otp Verified successfully.',
+    };
+  }
+
+  async employeeManualSmsNotificationRegistration(
+    dto: ManualSmsNotificationPreferenceDto,
+  ) {
+    const existingEmployee = await this.prisma.employee.findUnique({
+      where: { id: dto.employee_id },
+      include: {
+        user: true,
+        person: true,
+      },
+    });
+
+    if (!existingEmployee) {
+      throw new NotFoundException('Employee does not exist.');
+    }
+
+    const existingSubscription =
+      await this.prisma.hrEmployeeSmsSubscription.findFirst({
+        where: {
+          employee_id: dto.employee_id,
+        },
+      });
+
+    if (
+      existingSubscription?.mobile_number_id &&
+      existingSubscription?.is_enabled === true &&
+      existingSubscription?.is_verified === true
+    ) {
+      throw new BadRequestException('Employee SMS Subcription already enabled');
+    }
+
+    await this.prisma.mobileNumber.create({
+      data: {
+        employee_id: existingEmployee?.id,
+        mobile_number: dto.mobile_number,
+        is_primary: true,
+        is_verified: false,
+      },
+    });
+
+    // const employeeSmsRegistration = await this.prisma.hrEmployeeSmsSubscription.create({
+    //   data: {
+    //     employee_id: employeeId,
+    //     mobile_number_id: mobile.id,
+    //     is_enabled: false,
+    //     is_verified: false,
+    //     template: 'otp',
+    //     created_by: existingEmployee?.user?.id,
+    //   },
+    // });
+
+    const otp = await this.prisma.otpVerification.create({
+      data: {
+        employee_id: dto.employee_id,
+        code: generateOtp(),
+        purpose: OtpPurposeTemplate.register_employee,
+        expires_at: getOtpExpiration(),
+        created_at: new Date(),
+      },
+    });
+
+    try {
+      await this.smsService.sendOTP(dto.mobile_number, otp.code);
+    } catch (e) {
+      console.error('OTP SMS failed', e);
+    }
+
+    return {
+      status: 'success',
+      message:
+        'Employee Sms Notification registered, check your SMS inbox for OTP code to verify',
+    };
+  }
+}
 /**
  * Employment History SERVICE SECTION
  */

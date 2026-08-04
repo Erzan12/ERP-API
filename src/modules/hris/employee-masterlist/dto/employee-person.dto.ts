@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreatePersonDto, UpdatePersonDto } from './person.dto';
+import { SmsNotificationPreferenceDto } from './sms.dto';
 
 export class CreateEmployeeWithDetailsDto {
   //wrapper dto for nested dto
@@ -15,6 +16,11 @@ export class CreateEmployeeWithDetailsDto {
   @ValidateNested()
   @Type(() => CreateEmployeeDto)
   employee: CreateEmployeeDto;
+
+  @ApiProperty({ type: () => SmsNotificationPreferenceDto }) // to load or map the example value in createEmpoyeeDto ApiProperty
+  @ValidateNested()
+  @Type(() => SmsNotificationPreferenceDto)
+  sms: SmsNotificationPreferenceDto;
 }
 
 export class UpdateEmployeeWithDetailsDto {
@@ -28,4 +34,9 @@ export class UpdateEmployeeWithDetailsDto {
   @ValidateNested()
   @Type(() => UpdateEmployeeDto)
   employee: UpdateEmployeeDto;
+
+  @ApiProperty({ type: () => SmsNotificationPreferenceDto }) // to load or map the example value in createEmpoyeeDto ApiProperty
+  @ValidateNested()
+  @Type(() => SmsNotificationPreferenceDto)
+  sms: SmsNotificationPreferenceDto;
 }
