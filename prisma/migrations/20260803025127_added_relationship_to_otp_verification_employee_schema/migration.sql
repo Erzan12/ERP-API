@@ -4,8 +4,21 @@
   - Added the required column `employee_id` to the `OtpVerification` table without a default value. This is not possible if the table is not empty.
 
 */
--- CreateEnum
-CREATE TYPE "OtpPurposeTemplate" AS ENUM ('forgot_password', 'login', 'verify_phone', 'register_employee');
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type
+        WHERE typname = 'OtpPurposeTemplate'
+    ) THEN
+        CREATE TYPE "OtpPurposeTemplate" AS ENUM (
+            'forgot_password',
+            'login',
+            'verify_phone',
+            'register_employee'
+        );
+    END IF;
+END $$;
 
 -- AlterTable
 ALTER TABLE "OtpVerification" ADD COLUMN     "employee_id" UUID NOT NULL,
