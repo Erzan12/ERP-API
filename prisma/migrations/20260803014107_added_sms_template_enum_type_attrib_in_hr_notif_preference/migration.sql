@@ -6,7 +6,7 @@
 
 */
 -- AlterTable
-ALTER TABLE "HrEmployeeSmsSubscription" ADD COLUMN     "template" "SmsTemplate" NOT NULL;
+ALTER TABLE "HrEmployeeSmsSubscription" ADD COLUMN IF NOT EXISTS "template" "SmsTemplate" NOT NULL;
 
 -- CreateIndex
 CREATE UNIQUE INDEX "HrEmployeeSmsSubscription_employee_id_template_key" ON "HrEmployeeSmsSubscription"("employee_id", "template");
