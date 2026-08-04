@@ -36,7 +36,10 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
 import { EmployeeMasterlistService } from './employee-masterlist.service';
-import { ManualSmsNotificationPreferenceDto, SmsNotificationPreferenceDto } from './dto/sms.dto';
+import {
+  ManualSmsNotificationPreferenceDto,
+  SmsNotificationPreferenceDto,
+} from './dto/sms.dto';
 import { OtpVerificationDto } from './dto/otp.dto';
 
 // @ApiCookieAuth('access-token')
@@ -93,20 +96,18 @@ export class EmployeeMasterlistController {
   @Post('employees/sms-notification-registration')
   @ApiBody({
     type: SmsNotificationPreferenceDto,
-    description: 'Payload to register employee to sms notifications'
+    description: 'Payload to register employee to sms notifications',
   })
   @ApiOperation({ summary: 'Employee SMS Registration' })
-  smsNotificationRegistration(
-    @Body() dto: ManualSmsNotificationPreferenceDto,
-  ) {
-    return this.employeeMasterlistService.employeeManualSmsNotificationRegistration(dto)
+  smsNotificationRegistration(@Body() dto: ManualSmsNotificationPreferenceDto) {
+    return this.employeeMasterlistService.employeeManualSmsNotificationRegistration(
+      dto,
+    );
   }
 
   @Post('employees/sms-notification-registration/verify-otp')
   @ApiOperation({ summary: 'Verify otp of employee' })
-  verifyEmployeeSmsOtp(
-    @Body() dto: OtpVerificationDto,
-  ) {
+  verifyEmployeeSmsOtp(@Body() dto: OtpVerificationDto) {
     return this.employeeMasterlistService.employeeSmsVerify(dto);
   }
 
