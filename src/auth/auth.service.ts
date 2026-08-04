@@ -26,10 +26,8 @@ import { MailService } from 'src/jobs/mail/mail.service';
 import {
   generateOtp,
   getOtpExpiration,
-  OTP_VERIFICATION,
 } from 'src/utils/constants/otp-verification.constants';
 import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
-import { addMinutes } from 'date-fns/addMinutes';
 import { ActionEntry } from './type/action-entry.type';
 import { OtpPurposeTemplate } from '@prisma/client';
 
