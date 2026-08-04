@@ -3503,6 +3503,57 @@
         ]
       }
     },
+    "/v2/hris/employees/sms-notification-registration": {
+      "post": {
+        "operationId": "EmployeeMasterlistController_smsNotificationRegistration_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to register employee to sms notifications",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmsNotificationPreferenceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Employee SMS Registration",
+        "tags": [
+          "Human Resources - Employees (Employee Masterlist)"
+        ]
+      }
+    },
+    "/v2/hris/employees/sms-notification-registration/verify-otp": {
+      "post": {
+        "operationId": "EmployeeMasterlistController_verifyEmployeeSmsOtp_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpVerificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Verify otp of employee",
+        "tags": [
+          "Human Resources - Employees (Employee Masterlist)"
+        ]
+      }
+    },
     "/employment-history/employees/employment-history/{employeeId}": {
       "get": {
         "operationId": "EmploymentHistoryController_getEmploymentHistories",
@@ -9293,6 +9344,23 @@
           "corporate_rank_id"
         ]
       },
+      "SmsNotificationPreferenceDto": {
+        "type": "object",
+        "properties": {
+          "subscribe": {
+            "type": "boolean",
+            "example": "true or false"
+          },
+          "mobile_number": {
+            "type": "string",
+            "example": "Employee Phone Number"
+          }
+        },
+        "required": [
+          "subscribe",
+          "mobile_number"
+        ]
+      },
       "CreateEmployeeWithDetailsDto": {
         "type": "object",
         "properties": {
@@ -9301,11 +9369,32 @@
           },
           "employee": {
             "$ref": "#/components/schemas/CreateEmployeeDto"
+          },
+          "sms": {
+            "$ref": "#/components/schemas/SmsNotificationPreferenceDto"
           }
         },
         "required": [
           "person",
-          "employee"
+          "employee",
+          "sms"
+        ]
+      },
+      "OtpVerificationDto": {
+        "type": "object",
+        "properties": {
+          "otp_code": {
+            "type": "string",
+            "example": "Sms verification otp"
+          },
+          "employeeId": {
+            "type": "string",
+            "example": "Employee UUID PK"
+          }
+        },
+        "required": [
+          "otp_code",
+          "employeeId"
         ]
       },
       "UpdatePersonDto": {
@@ -9455,11 +9544,15 @@
           },
           "employee": {
             "$ref": "#/components/schemas/UpdateEmployeeDto"
+          },
+          "sms": {
+            "$ref": "#/components/schemas/SmsNotificationPreferenceDto"
           }
         },
         "required": [
           "person",
-          "employee"
+          "employee",
+          "sms"
         ]
       },
       "CreateEmploymentHistoryDto": {
