@@ -157,6 +157,7 @@ jobs:
             export \$(grep -v '^#' $STG_PATH/.env | xargs) &&
             cd $STG_PATH &&
             npm install --omit=dev &&
+            npx prisma generate &&
             npx prisma migrate deploy
           "
 
