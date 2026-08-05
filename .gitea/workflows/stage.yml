@@ -131,7 +131,7 @@ jobs:
 
           echo "✅ rsync completed successfully on attempt $attempt"
 
-      - name: Install deps & Run Prisma Migrations on Staging
+      - name: Install Dependencies on Staging
         env:
           STG_HOST: ${{ secrets.STG_HOST }}
           STG_USER: ${{ secrets.STG_USER }}
@@ -142,8 +142,21 @@ jobs:
             export PATH=/opt/cpanel/ea-nodejs22/bin:\$PATH &&
             export \$(grep -v '^#' $STG_PATH/.env | xargs) &&
             cd $STG_PATH &&
-            # npm install --omit=dev &&
-            npm install &&
+            npm ci
+          "
+
+      - name: Run Prisma Migrations on Staging
+        env:
+          STG_HOST: ${{ secrets.STG_HOST }}
+          STG_USER: ${{ secrets.STG_USER }}
+          STG_PASSWORD: ${{ secrets.STG_PASSWORD }}
+          STG_PATH: /home/avegabrosnet/public_html/abas-api-v2
+        run: |
+          sshpass -p "$STG_PASSWORD" ssh -o StrictHostKeyChecking=no $STG_USER@$STG_HOST "
+            export PATH=/opt/cpanel/ea-nodejs22/bin:\$PATH &&
+            export \$(grep -v '^#' $STG_PATH/.env | xargs) &&
+            cd $STG_PATH &&
+            npm install --omit=dev &&
             npx prisma migrate deploy
           "
 
