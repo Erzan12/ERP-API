@@ -14,5 +14,5 @@ export class OtpVerificationDto {
   @ApiProperty({
     example: 'Employee UUID PK',
   })
-  employeeId: string;
+  employee_id: string;
 }
