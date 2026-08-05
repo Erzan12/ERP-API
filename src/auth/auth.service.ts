@@ -693,6 +693,7 @@ export class AuthService {
       message: 'User is validated successfully',
       data: {
         id: user.id,
+        employee_id: employee.id,
         full_name: [
           employee.person?.first_name,
           employee.person?.middle_name,
