@@ -99,7 +99,8 @@ jobs:
            --exclude='src' \
            --exclude='dist/test' \
            --exclude='__test__' \
-           API_documentation prisma views dist node_modules public package.json package-lock.json app.js nest-cli.json prisma.config.js tsconfig.json \
+           --exclude='node_modules' \
+           API_documentation prisma views dist public package.json package-lock.json app.js nest-cli.json prisma.config.js tsconfig.json \
            $STG_USER@$STG_HOST:$STG_PATH
 
       - name: Install deps & Run Prisma Migrations on Staging
