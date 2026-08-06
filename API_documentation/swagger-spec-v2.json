@@ -9387,14 +9387,14 @@
             "type": "string",
             "example": "Sms verification otp"
           },
-          "employeeId": {
+          "employee_id": {
             "type": "string",
             "example": "Employee UUID PK"
           }
         },
         "required": [
           "otp_code",
-          "employeeId"
+          "employee_id"
         ]
       },
       "UpdatePersonDto": {
