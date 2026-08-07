@@ -215,7 +215,7 @@ export class OvertimeCasesService {
     user: RequestUser,
     dto: OvertimeRequestsPaginationDto,
   ) {
-    const { search, sortBy, order, page, perPage } = dto;
+    const { search, status, date_filed_from, date_filed_to, sortBy, order, page, perPage } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -280,6 +280,48 @@ export class OvertimeCasesService {
           },
         },
       ]);
+    }
+
+    // if (time_from) {
+    //   whereConditions.time_from = {
+    //     gte: new Date(`1970-01-01T${time_from}`),
+    //   };
+    // }
+
+    // if (time_to) {
+    //   whereConditions.time_to = {
+    //     lte: new Date(`1970-01-01T${time_to}`),
+    //   };
+    // }
+
+    const today = new Date();
+
+    //  End of today
+    today.setHours(23, 59, 59, 999);
+
+    if (date_filed_from || date_filed_to) {
+      const dateFilter: Prisma.DateTimeFilter = {};
+
+      if (date_filed_from) {
+        dateFilter.gte = new Date(date_filed_from);
+      }
+
+      if (date_filed_to) {
+        const endDate = new Date(date_filed_to);
+
+        //  Dont allow dates beyond today
+        if (endDate > today) {
+          dateFilter.lte = today;
+        } else {
+          endDate.setHours(23, 59, 59, 999);
+          dateFilter.lte = endDate;
+        }
+      } else {
+        // If no "to" is supplied, default to today
+        dateFilter.lte = today;
+      }
+
+      whereConditions.date_filed = dateFilter;
     }
 
     const allowSortFields = ['created_by'];
