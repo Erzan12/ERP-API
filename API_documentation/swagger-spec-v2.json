@@ -6238,6 +6238,15 @@
             }
           },
           {
+            "name": "employee_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -6469,6 +6478,15 @@
             "description": "Filter record up to",
             "schema": {
               "example": "2026-07-20",
+              "type": "string"
+            }
+          },
+          {
+            "name": "employee_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
               "type": "string"
             }
           },

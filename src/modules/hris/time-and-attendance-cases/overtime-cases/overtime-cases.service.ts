@@ -215,7 +215,7 @@ export class OvertimeCasesService {
     user: RequestUser,
     dto: OvertimeRequestsPaginationDto,
   ) {
-    const { search, status, date_filed_from, date_filed_to, sortBy, order, page, perPage } = dto;
+    const { search, status, date_filed_from, date_filed_to, employee_id, sortBy, order, page, perPage } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -322,6 +322,27 @@ export class OvertimeCasesService {
       }
 
       whereConditions.date_filed = dateFilter;
+    }
+
+    await this.prisma.employee.findFirst({
+      where: { id: employee_id, },
+      include: {
+        overtimes: true,
+      },
+    });
+
+    if (employee_id) {
+      const existingEmployee = await this.prisma.employee.findFirst({
+        where: {
+          id: employee_id,
+        },
+      });
+
+      if (!existingEmployee) {
+        throw new NotFoundException('Employee does not exist');
+      }
+
+      whereCondition.employee_id = employee_id;
     }
 
     const allowSortFields = ['created_by'];
