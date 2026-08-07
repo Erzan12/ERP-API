@@ -3503,57 +3503,6 @@
         ]
       }
     },
-    "/v2/hris/employees/sms-notification-registration": {
-      "post": {
-        "operationId": "EmployeeMasterlistController_smsNotificationRegistration_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to register employee to sms notifications",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SmsNotificationPreferenceDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "summary": "Employee SMS Registration",
-        "tags": [
-          "Human Resources - Employees (Employee Masterlist)"
-        ]
-      }
-    },
-    "/v2/hris/employees/sms-notification-registration/verify-otp": {
-      "post": {
-        "operationId": "EmployeeMasterlistController_verifyEmployeeSmsOtp_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OtpVerificationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "summary": "Verify otp of employee",
-        "tags": [
-          "Human Resources - Employees (Employee Masterlist)"
-        ]
-      }
-    },
     "/employment-history/employees/employment-history/{employeeId}": {
       "get": {
         "operationId": "EmploymentHistoryController_getEmploymentHistories",
@@ -7077,6 +7026,57 @@
         ]
       }
     },
+    "/v2/sms/employees/sms-notification-registration": {
+      "post": {
+        "operationId": "SmsController_smsNotificationRegistration_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to register employee to sms notifications",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmsNotificationPreferenceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Employee SMS Registration",
+        "tags": [
+          "Sms Module - Employee Sms Registration"
+        ]
+      }
+    },
+    "/v2/sms/employees/sms-notification-registration/verify-otp": {
+      "post": {
+        "operationId": "SmsController_verifyEmployeeSmsOtp_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpVerificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Verify otp of employee",
+        "tags": [
+          "Sms Module - Employee Sms Registration"
+        ]
+      }
+    },
     "/v2/manager/permission-template": {
       "get": {
         "operationId": "PermissionTemplateController_getPermissionTemplates_v2",
@@ -9380,23 +9380,6 @@
           "sms"
         ]
       },
-      "OtpVerificationDto": {
-        "type": "object",
-        "properties": {
-          "otp_code": {
-            "type": "string",
-            "example": "Sms verification otp"
-          },
-          "employee_id": {
-            "type": "string",
-            "example": "Employee UUID PK"
-          }
-        },
-        "required": [
-          "otp_code",
-          "employee_id"
-        ]
-      },
       "UpdatePersonDto": {
         "type": "object",
         "properties": {
@@ -10819,6 +10802,23 @@
           "rate",
           "level",
           "is_confidential"
+        ]
+      },
+      "OtpVerificationDto": {
+        "type": "object",
+        "properties": {
+          "otp_code": {
+            "type": "string",
+            "example": "Sms verification otp"
+          },
+          "employee_id": {
+            "type": "string",
+            "example": "Employee UUID PK"
+          }
+        },
+        "required": [
+          "otp_code",
+          "employee_id"
         ]
       },
       "CreatePermissionTemplateDto": {
