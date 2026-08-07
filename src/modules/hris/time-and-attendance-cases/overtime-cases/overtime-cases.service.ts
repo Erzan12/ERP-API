@@ -214,8 +214,18 @@ export class OvertimeCasesService {
   async getOvertimeRequests(
     user: RequestUser,
     dto: OvertimeRequestsPaginationDto,
+    // statusDto: OvertimeRequestStatusPaginationDto,
   ) {
-    const { search, sortBy, order, page, perPage } = dto;
+    const {
+      search,
+      date_filed_from,
+      date_filed_to,
+      employee_id,
+      sortBy,
+      order,
+      page,
+      perPage,
+    } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -259,6 +269,14 @@ export class OvertimeCasesService {
       is_active: true,
     };
 
+    if (dto.show_by_status?.length) {
+      whereCondition.status = {
+        in: dto.show_by_status,
+      };
+    } else if (dto.status) {
+      whereCondition.status = dto.status as OvertimeStatus;
+    }
+
     const whereConditions: Prisma.HrOvertimeRequestWhereInput = {};
 
     if (search) {
@@ -282,6 +300,69 @@ export class OvertimeCasesService {
       ]);
     }
 
+    // if (time_from) {
+    //   whereConditions.time_from = {
+    //     gte: new Date(`1970-01-01T${time_from}`),
+    //   };
+    // }
+
+    // if (time_to) {
+    //   whereConditions.time_to = {
+    //     lte: new Date(`1970-01-01T${time_to}`),
+    //   };
+    // }
+
+    const today = new Date();
+
+    //  End of today
+    today.setHours(23, 59, 59, 999);
+
+    if (date_filed_from || date_filed_to) {
+      const dateFilter: Prisma.DateTimeFilter = {};
+
+      if (date_filed_from) {
+        dateFilter.gte = new Date(date_filed_from);
+      }
+
+      if (date_filed_to) {
+        const endDate = new Date(date_filed_to);
+
+        //  Dont allow dates beyond today
+        if (endDate > today) {
+          dateFilter.lte = today;
+        } else {
+          endDate.setHours(23, 59, 59, 999);
+          dateFilter.lte = endDate;
+        }
+      } else {
+        // If no "to" is supplied, default to today
+        dateFilter.lte = today;
+      }
+
+      whereConditions.date_filed = dateFilter;
+    }
+
+    await this.prisma.employee.findFirst({
+      where: { id: employee_id },
+      include: {
+        overtimes: true,
+      },
+    });
+
+    if (employee_id) {
+      const existingEmployee = await this.prisma.employee.findFirst({
+        where: {
+          id: employee_id,
+        },
+      });
+
+      if (!existingEmployee) {
+        throw new NotFoundException('Employee does not exist');
+      }
+
+      whereCondition.employee_id = employee_id;
+    }
+
     const allowSortFields = ['created_by'];
 
     const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
@@ -297,6 +378,30 @@ export class OvertimeCasesService {
         where: {
           ...whereCondition,
           ...whereConditions,
+        },
+        include: {
+          employee: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                },
+              },
+              user_location: {
+                select: {
+                  location_name: true,
+                },
+              },
+              vessel: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+          overtimeRate: true,
         },
         skip,
         take: perPage,
@@ -361,6 +466,28 @@ export class OvertimeCasesService {
       overtimes: formattedOvertimes,
     };
   }
+
+  // async getOvertimeRequestWithStatuses(dto: OvertimeRequestStatusPaginationDto) {
+  // const whereCondition: Prisma.HrOvertimeRequestWhereInput = {
+  //   is_active: true,
+  // };
+
+  // if (dto.show_by_status?.length) {
+  //   whereCondition.status = {
+  //     in: dto.show_by_status,
+  //   };
+  // }
+
+  // const requests = await this.prisma.hrOvertimeRequest.findMany({
+  //   where: whereCondition,
+  // });
+
+  // return {
+  //   status: 'success',
+  //   message: 'List of Overtime Request based on status',
+  //   requests,
+  // }
+  // }
 
   async createOvertimeRequest(
     user: RequestUser,

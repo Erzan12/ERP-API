@@ -3503,57 +3503,6 @@
         ]
       }
     },
-    "/v2/hris/employees/sms-notification-registration": {
-      "post": {
-        "operationId": "EmployeeMasterlistController_smsNotificationRegistration_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to register employee to sms notifications",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SmsNotificationPreferenceDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "summary": "Employee SMS Registration",
-        "tags": [
-          "Human Resources - Employees (Employee Masterlist)"
-        ]
-      }
-    },
-    "/v2/hris/employees/sms-notification-registration/verify-otp": {
-      "post": {
-        "operationId": "EmployeeMasterlistController_verifyEmployeeSmsOtp_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OtpVerificationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "summary": "Verify otp of employee",
-        "tags": [
-          "Human Resources - Employees (Employee Masterlist)"
-        ]
-      }
-    },
     "/employment-history/employees/employment-history/{employeeId}": {
       "get": {
         "operationId": "EmploymentHistoryController_getEmploymentHistories",
@@ -6269,6 +6218,35 @@
             }
           },
           {
+            "name": "date_filed_from",
+            "required": false,
+            "in": "query",
+            "description": "Filter record from date filed",
+            "schema": {
+              "example": "2026-07-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_filed_to",
+            "required": false,
+            "in": "query",
+            "description": "Filter record up to",
+            "schema": {
+              "example": "2026-07-20",
+              "type": "string"
+            }
+          },
+          {
+            "name": "employee_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -6306,6 +6284,33 @@
               "default": 10,
               "example": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "show_by_status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": [
+                "for_verification",
+                "for_approval"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "submitted",
+                  "for_verification",
+                  "verified",
+                  "for_approval",
+                  "approved",
+                  "for_processing",
+                  "processed",
+                  "cancelled",
+                  "rejected"
+                ]
+              }
             }
           }
         ],
@@ -6484,6 +6489,35 @@
             }
           },
           {
+            "name": "date_filed_from",
+            "required": false,
+            "in": "query",
+            "description": "Filter record from date filed",
+            "schema": {
+              "example": "2026-07-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_filed_to",
+            "required": false,
+            "in": "query",
+            "description": "Filter record up to",
+            "schema": {
+              "example": "2026-07-20",
+              "type": "string"
+            }
+          },
+          {
+            "name": "employee_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -6521,6 +6555,31 @@
               "default": 10,
               "example": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "show_by_status",
+            "required": false,
+            "in": "query",
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "submitted",
+                  "for_verification",
+                  "verified",
+                  "for_approval",
+                  "approved",
+                  "for_processing",
+                  "processed",
+                  "cancelled",
+                  "rejected"
+                ]
+              }
             }
           }
         ],
@@ -7074,6 +7133,57 @@
         "summary": "Update a current Salary Grade",
         "tags": [
           "Human Resources - Salary Grade"
+        ]
+      }
+    },
+    "/v2/sms/employees/sms-notification-registration": {
+      "post": {
+        "operationId": "SmsController_smsNotificationRegistration_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to register employee to sms notifications",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmsNotificationPreferenceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Employee SMS Registration",
+        "tags": [
+          "Sms Module - Employee Sms Registration"
+        ]
+      }
+    },
+    "/v2/sms/employees/sms-notification-registration/verify-otp": {
+      "post": {
+        "operationId": "SmsController_verifyEmployeeSmsOtp_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpVerificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Verify otp of employee",
+        "tags": [
+          "Sms Module - Employee Sms Registration"
         ]
       }
     },
@@ -9380,23 +9490,6 @@
           "sms"
         ]
       },
-      "OtpVerificationDto": {
-        "type": "object",
-        "properties": {
-          "otp_code": {
-            "type": "string",
-            "example": "Sms verification otp"
-          },
-          "employee_id": {
-            "type": "string",
-            "example": "Employee UUID PK"
-          }
-        },
-        "required": [
-          "otp_code",
-          "employee_id"
-        ]
-      },
       "UpdatePersonDto": {
         "type": "object",
         "properties": {
@@ -10819,6 +10912,23 @@
           "rate",
           "level",
           "is_confidential"
+        ]
+      },
+      "OtpVerificationDto": {
+        "type": "object",
+        "properties": {
+          "otp_code": {
+            "type": "string",
+            "example": "Sms verification otp"
+          },
+          "employee_id": {
+            "type": "string",
+            "example": "Employee UUID PK"
+          }
+        },
+        "required": [
+          "otp_code",
+          "employee_id"
         ]
       },
       "CreatePermissionTemplateDto": {
