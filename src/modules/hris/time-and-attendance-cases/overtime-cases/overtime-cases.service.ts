@@ -370,6 +370,30 @@ export class OvertimeCasesService {
           ...whereCondition,
           ...whereConditions,
         },
+        include: {
+          employee: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                },
+              },
+              user_location: {
+                select: {
+                  location_name: true,
+                }
+              },
+              vessel: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+          overtimeRate: true,
+        },
         skip,
         take: perPage,
         orderBy: {
