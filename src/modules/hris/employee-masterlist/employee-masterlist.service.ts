@@ -569,7 +569,7 @@ export class EmployeeMasterlistService {
           user: {
             select: {
               id: true,
-            }
+            },
           },
           person: {
             select: {

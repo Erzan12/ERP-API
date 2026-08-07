@@ -1,13 +1,22 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { OtpPurposeTemplate, OtpVerification } from '@prisma/client';
+import { OtpPurposeTemplate } from '@prisma/client';
 import { firstValueFrom } from 'rxjs';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { OtpVerificationDto } from 'src/modules/hris/employee-masterlist/dto/otp.dto';
 import { ManualSmsNotificationPreferenceDto } from 'src/modules/hris/employee-masterlist/dto/sms.dto';
 import { EmployeeMasterlistService } from 'src/modules/hris/employee-masterlist/employee-masterlist.service';
-import { generateOtp, getOtpExpiration } from 'src/utils/constants/otp-verification.constants';
+import {
+  generateOtp,
+  getOtpExpiration,
+} from 'src/utils/constants/otp-verification.constants';
 
 interface SmsApiResponse {
   success?: boolean;
@@ -105,46 +114,46 @@ export class SmsService {
 
   // Module API's
   async employeeManualSmsNotificationRegistration(
-      dto: ManualSmsNotificationPreferenceDto,
+    dto: ManualSmsNotificationPreferenceDto,
   ) {
-      const result = await this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const existingEmployee = await tx.employee.findUnique({
-          where: { id: dto.employee_id },
-          include: {
+        where: { id: dto.employee_id },
+        include: {
           user: true,
           person: true,
-          },
+        },
       });
 
       if (!existingEmployee) {
-          throw new NotFoundException('Employee does not exist.');
+        throw new NotFoundException('Employee does not exist.');
       }
 
       const existingSubscription = await tx.hrEmployeeSmsSubscription.findFirst(
-          {
+        {
           where: {
-              employee_id: dto.employee_id,
+            employee_id: dto.employee_id,
           },
-          },
+        },
       );
 
       if (
-          existingSubscription?.mobile_number_id &&
-          existingSubscription?.is_enabled === true &&
-          existingSubscription?.is_verified === true
+        existingSubscription?.mobile_number_id &&
+        existingSubscription?.is_enabled === true &&
+        existingSubscription?.is_verified === true
       ) {
-          throw new BadRequestException(
+        throw new BadRequestException(
           'Employee SMS Subcription already enabled',
-          );
+        );
       }
 
       await tx.mobileNumber.create({
-          data: {
+        data: {
           employee_id: existingEmployee?.id,
           mobile_number: dto.mobile_number,
           is_primary: true,
           is_verified: false,
-          },
+        },
       });
 
       // const employeeSmsRegistration = await this.prisma.hrEmployeeSmsSubscription.create({
@@ -169,138 +178,138 @@ export class SmsService {
       });
 
       return {
-          otp,
-        };
-      });
+        otp,
+      };
+    });
 
-      try {
-        await this.sendOTP(dto.mobile_number, result.otp.code);
-      } catch (e) {
-        console.error('OTP SMS failed', e);
-      }
+    try {
+      await this.sendOTP(dto.mobile_number, result.otp.code);
+    } catch (e) {
+      console.error('OTP SMS failed', e);
+    }
 
-      return {
+    return {
       status: 'success',
       message:
-          'Employee Sms Notification registered, check your SMS inbox for OTP code to verify',
-      };
+        'Employee Sms Notification registered, check your SMS inbox for OTP code to verify',
+    };
   }
 
   async employeeSmsVerify(dto: OtpVerificationDto) {
     const { mobile, otpRecord } = await this.prisma.$transaction(async (tx) => {
       // Find OTP
       const otpRecord = await tx.otpVerification.findFirst({
-          where: {
+        where: {
           code: dto.otp_code,
           purpose: OtpPurposeTemplate.register_employee,
           is_used: false,
           employee_id: dto.employee_id,
           expires_at: {
-              gt: new Date(),
+            gt: new Date(),
           },
-          },
-          orderBy: {
+        },
+        orderBy: {
           created_at: 'desc',
-          },
-          include: {
+        },
+        include: {
           employee: {
-              include: {
+            include: {
               sms_subscription: true,
               user: true,
               person: true,
-              },
+            },
           },
-          },
+        },
       });
 
       if (!otpRecord) {
-          throw new BadRequestException('Invalid OTP.');
+        throw new BadRequestException('Invalid OTP.');
       }
 
       // Mark OTP as used
       await tx.otpVerification.update({
-          where: {
+        where: {
           id: otpRecord.id,
-          },
-          data: {
+        },
+        data: {
           is_used: true,
           used_at: new Date(),
-          },
+        },
       });
 
       // Find unverified mobile number
       const existingMobile = await tx.mobileNumber.findFirst({
-          where: {
+        where: {
           employee_id: dto.employee_id,
           is_verified: false,
-          },
-          orderBy: {
+        },
+        orderBy: {
           created_at: 'desc',
-          },
+        },
       });
 
       if (!existingMobile) {
-          throw new NotFoundException('Mobile number not found.');
+        throw new NotFoundException('Mobile number not found.');
       }
 
       // Verify mobile number
       const mobile = await tx.mobileNumber.update({
-          where: {
+        where: {
           id: existingMobile.id,
-          },
-          data: {
+        },
+        data: {
           is_verified: true,
           verified_at: new Date(),
-          },
+        },
       });
 
       // Create or update SMS subscription
       const subscription = await tx.hrEmployeeSmsSubscription.findFirst({
-          where: {
+        where: {
           employee_id: dto.employee_id,
-          },
+        },
       });
 
       if (subscription) {
-          await tx.hrEmployeeSmsSubscription.update({
+        await tx.hrEmployeeSmsSubscription.update({
           where: {
-              id: subscription.id,
+            id: subscription.id,
           },
           data: {
-              mobile_number_id: mobile.id,
-              is_verified: true,
-              is_enabled: true,
-              verified_at: new Date(),
+            mobile_number_id: mobile.id,
+            is_verified: true,
+            is_enabled: true,
+            verified_at: new Date(),
           },
-          });
+        });
 
-          await tx.employeeNotificationPreference.update({
+        await tx.employeeNotificationPreference.update({
           where: {
-              employee_id: dto.employee_id,
+            employee_id: dto.employee_id,
           },
           data: {
-              sms_enabled: true,
+            sms_enabled: true,
           },
-          });
+        });
       } else {
-          await tx.hrEmployeeSmsSubscription.create({
+        await tx.hrEmployeeSmsSubscription.create({
           data: {
-              employee_id: dto.employee_id,
-              mobile_number_id: mobile.id,
-              is_verified: true,
-              is_enabled: true,
-              template: 'otp',
-              created_by: otpRecord.employee.user_id,
-              verified_at: new Date(),
+            employee_id: dto.employee_id,
+            mobile_number_id: mobile.id,
+            is_verified: true,
+            is_enabled: true,
+            template: 'otp',
+            created_by: otpRecord.employee.user_id,
+            verified_at: new Date(),
           },
-          });
+        });
 
-          await tx.employeeNotificationPreference.create({
+        await tx.employeeNotificationPreference.create({
           data: {
-              employee_id: dto.employee_id,
-              sms_enabled: true,
+            employee_id: dto.employee_id,
+            sms_enabled: true,
           },
-          });
+        });
       }
 
       return { mobile, otpRecord };
@@ -308,19 +317,19 @@ export class SmsService {
 
     // Outside the transaction — DB work is already committed.
     try {
-        await this.sendSmsNotificationSubscription(
-            mobile.mobile_number,
-            otpRecord.employee.person.first_name,
-        );
+      await this.sendSmsNotificationSubscription(
+        mobile.mobile_number,
+        otpRecord.employee.person.first_name,
+      );
     } catch (err) {
-        // Log it, maybe flag the subscription for retry — but don't
-        // roll back the OTP/verification/subscription records.
-        this.logger.error('Welcome SMS failed after OTP verification', err);
+      // Log it, maybe flag the subscription for retry — but don't
+      // roll back the OTP/verification/subscription records.
+      this.logger.error('Welcome SMS failed after OTP verification', err);
     }
 
     return {
-        status: 'success',
-        message: 'OTP verified successfully.',
+      status: 'success',
+      message: 'OTP verified successfully.',
     };
   }
 }
