@@ -264,6 +264,8 @@ export class OvertimeCasesService {
       whereCondition.status = {
         in: dto.show_by_status,
       };
+    } else if (dto.status) {
+      whereCondition.status = dto.status as OvertimeStatus;
     }
 
     const whereConditions: Prisma.HrOvertimeRequestWhereInput = {};
