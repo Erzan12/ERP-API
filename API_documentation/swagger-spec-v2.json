@@ -6218,6 +6218,26 @@
             }
           },
           {
+            "name": "date_filed_from",
+            "required": false,
+            "in": "query",
+            "description": "Filter record from date filed",
+            "schema": {
+              "example": "2026-07-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_filed_to",
+            "required": false,
+            "in": "query",
+            "description": "Filter record up to",
+            "schema": {
+              "example": "2026-07-20",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -6429,6 +6449,26 @@
             "in": "query",
             "schema": {
               "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_filed_from",
+            "required": false,
+            "in": "query",
+            "description": "Filter record from date filed",
+            "schema": {
+              "example": "2026-07-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_filed_to",
+            "required": false,
+            "in": "query",
+            "description": "Filter record up to",
+            "schema": {
+              "example": "2026-07-20",
               "type": "string"
             }
           },
