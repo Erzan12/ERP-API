@@ -216,7 +216,16 @@ export class OvertimeCasesService {
     dto: OvertimeRequestsPaginationDto,
     // statusDto: OvertimeRequestStatusPaginationDto,
   ) {
-    const { search, status, date_filed_from, date_filed_to, employee_id, sortBy, order, page, perPage, show_by_status } = dto;
+    const {
+      search,
+      date_filed_from,
+      date_filed_to,
+      employee_id,
+      sortBy,
+      order,
+      page,
+      perPage,
+    } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -334,7 +343,7 @@ export class OvertimeCasesService {
     }
 
     await this.prisma.employee.findFirst({
-      where: { id: employee_id, },
+      where: { id: employee_id },
       include: {
         overtimes: true,
       },
@@ -383,7 +392,7 @@ export class OvertimeCasesService {
               user_location: {
                 select: {
                   location_name: true,
-                }
+                },
               },
               vessel: {
                 select: {
@@ -459,25 +468,25 @@ export class OvertimeCasesService {
   }
 
   // async getOvertimeRequestWithStatuses(dto: OvertimeRequestStatusPaginationDto) {
-    // const whereCondition: Prisma.HrOvertimeRequestWhereInput = {
-    //   is_active: true,
-    // };
+  // const whereCondition: Prisma.HrOvertimeRequestWhereInput = {
+  //   is_active: true,
+  // };
 
-    // if (dto.show_by_status?.length) {
-    //   whereCondition.status = {
-    //     in: dto.show_by_status,
-    //   };
-    // }
+  // if (dto.show_by_status?.length) {
+  //   whereCondition.status = {
+  //     in: dto.show_by_status,
+  //   };
+  // }
 
-    // const requests = await this.prisma.hrOvertimeRequest.findMany({
-    //   where: whereCondition,
-    // });
+  // const requests = await this.prisma.hrOvertimeRequest.findMany({
+  //   where: whereCondition,
+  // });
 
-    // return {
-    //   status: 'success',
-    //   message: 'List of Overtime Request based on status',
-    //   requests,
-    // }
+  // return {
+  //   status: 'success',
+  //   message: 'List of Overtime Request based on status',
+  //   requests,
+  // }
   // }
 
   async createOvertimeRequest(

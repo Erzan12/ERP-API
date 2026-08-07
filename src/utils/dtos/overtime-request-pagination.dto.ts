@@ -1,4 +1,4 @@
-import { ApiPropertyOptional, ApiQuery } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { OvertimeStatus } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 import { IsArray, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
@@ -80,18 +80,20 @@ export class OvertimeRequestsPaginationDto {
   perPage: number = 10;
 
   @IsOptional()
-  // @Transform(({ value }) => {
-  //   if (!value) return [];
-  //   return Array.isArray(value) ? value : value.split(',');
-  // })\
-  @Transform(({ value }) => {
-    if (!value) return [];
-
-    if (Array.isArray(value)) {
-      return value;
+  @Transform(({ value }: { value: unknown }) => {
+    if (value == null || value === '') {
+      return [];
     }
 
-    return value.split(',');
+    if (Array.isArray(value)) {
+      return value.filter((item): item is string => typeof item === 'string');
+    }
+
+    if (typeof value === 'string') {
+      return value.split(',');
+    }
+
+    return [];
   })
   @IsArray()
   @IsEnum(OvertimeStatus, { each: true })
