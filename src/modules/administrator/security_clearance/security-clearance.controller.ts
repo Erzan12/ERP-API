@@ -7,7 +7,6 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import {
   ACTION_UPDATE,
   USER_ACCOUNT,
-  SEC_LVL_9,
   SEC_LVL_7,
 } from 'src/utils/constants/ability.constant';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
@@ -29,10 +28,6 @@ export class SecurityClearanceController {
     @Body() dto: UpdateSecurityClearanceDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.clearanceService.updateUserClearance(
-      userId,
-      user,
-      dto,
-    );
+    return this.clearanceService.updateUserClearance(userId, user, dto);
   }
 }

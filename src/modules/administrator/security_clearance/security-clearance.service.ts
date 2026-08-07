@@ -2,7 +2,6 @@ import {
   Injectable,
   BadRequestException,
   ForbiddenException,
-  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { UpdateSecurityClearanceDto } from './dto/update-security-clearance.dto';
