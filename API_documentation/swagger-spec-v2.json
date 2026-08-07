@@ -6285,6 +6285,33 @@
               "example": 10,
               "type": "number"
             }
+          },
+          {
+            "name": "show_by_status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": [
+                "for_verification",
+                "for_approval"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "submitted",
+                  "for_verification",
+                  "verified",
+                  "for_approval",
+                  "approved",
+                  "for_processing",
+                  "processed",
+                  "cancelled",
+                  "rejected"
+                ]
+              }
+            }
           }
         ],
         "responses": {
@@ -6528,6 +6555,33 @@
               "default": 10,
               "example": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "show_by_status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": [
+                "for_verification",
+                "for_approval"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "submitted",
+                  "for_verification",
+                  "verified",
+                  "for_approval",
+                  "approved",
+                  "for_processing",
+                  "processed",
+                  "cancelled",
+                  "rejected"
+                ]
+              }
             }
           }
         ],

@@ -214,8 +214,9 @@ export class OvertimeCasesService {
   async getOvertimeRequests(
     user: RequestUser,
     dto: OvertimeRequestsPaginationDto,
+    // statusDto: OvertimeRequestStatusPaginationDto,
   ) {
-    const { search, status, date_filed_from, date_filed_to, employee_id, sortBy, order, page, perPage } = dto;
+    const { search, status, date_filed_from, date_filed_to, employee_id, sortBy, order, page, perPage, show_by_status } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -258,6 +259,12 @@ export class OvertimeCasesService {
     const whereCondition: Prisma.HrOvertimeRequestWhereInput = {
       is_active: true,
     };
+
+    if (dto.show_by_status?.length) {
+      whereCondition.status = {
+        in: dto.show_by_status,
+      };
+    }
 
     const whereConditions: Prisma.HrOvertimeRequestWhereInput = {};
 
@@ -424,6 +431,28 @@ export class OvertimeCasesService {
       overtimes: formattedOvertimes,
     };
   }
+
+  // async getOvertimeRequestWithStatuses(dto: OvertimeRequestStatusPaginationDto) {
+  //   const whereCondition: Prisma.HrOvertimeRequestWhereInput = {
+  //     is_active: true,
+  //   };
+
+  //   if (dto.show_by_status?.length) {
+  //     whereCondition.status = {
+  //       in: dto.show_by_status,
+  //     };
+  //   }
+
+  //   const requests = await this.prisma.hrOvertimeRequest.findMany({
+  //     where: whereCondition,
+  //   });
+
+  //   return {
+  //     status: 'success',
+  //     message: 'List of Overtime Request based on status',
+  //     requests,
+  //   }
+  // }
 
   async createOvertimeRequest(
     user: RequestUser,
