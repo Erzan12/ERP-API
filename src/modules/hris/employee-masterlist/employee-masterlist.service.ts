@@ -3,7 +3,6 @@ import {
   BadRequestException,
   ForbiddenException,
   NotFoundException,
-  Logger,
 } from '@nestjs/common';
 import { RequestUser } from '../../../utils/types/request-user.interface';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
@@ -18,15 +17,8 @@ import {
   Prisma,
   EmploymentHistoryType,
   SmsTemplate,
-  OtpPurposeTemplate,
 } from '@prisma/client';
 import { SmsService } from 'src/jobs/sms/sms.service';
-import { ManualSmsNotificationPreferenceDto } from './dto/sms.dto';
-import {
-  generateOtp,
-  getOtpExpiration,
-} from 'src/utils/constants/otp-verification.constants';
-import { OtpVerificationDto } from './dto/otp.dto';
 
 @Injectable()
 export class EmployeeMasterlistService {
@@ -574,6 +566,11 @@ export class EmployeeMasterlistService {
         select: {
           id: true,
           employee_id: true,
+          user: {
+            select: {
+              id: true,
+            }
+          },
           person: {
             select: {
               first_name: true,
