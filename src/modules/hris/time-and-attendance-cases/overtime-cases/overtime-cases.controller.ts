@@ -33,6 +33,7 @@ import {
   CreateOvertimeRequestDto,
   UpdateOvertimeRequestDto,
 } from './dto/overtime-case.dto';
+import { OvertimeStatus } from '@prisma/client';
 
 @ApiTags('Human Resources - Time and Attendance Cases (Overtime Request)')
 @Controller({ path: 'hris', version: '2' })
@@ -42,6 +43,14 @@ export class OvertimeCasesController {
   @Get('time-and-attendance-cases/overtimes')
   @ApiOperation({ summary: 'List of Overtime Requests' })
   @ApiGetResponse('List of Overtime Requests')
+  @ApiQuery({
+    name: 'show_by_status',
+    required: false,
+    isArray: true,
+    enum: OvertimeStatus,
+    style: 'form',
+    explode: false,
+  })
   @Can({ action: ACTION_READ, subject: OVERTIME_REQUEST })
   getOvertimeRequest(
     @SessionUser() user: RequestUser,

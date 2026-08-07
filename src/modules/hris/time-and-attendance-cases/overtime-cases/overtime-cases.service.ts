@@ -433,25 +433,25 @@ export class OvertimeCasesService {
   }
 
   // async getOvertimeRequestWithStatuses(dto: OvertimeRequestStatusPaginationDto) {
-  //   const whereCondition: Prisma.HrOvertimeRequestWhereInput = {
-  //     is_active: true,
-  //   };
+    // const whereCondition: Prisma.HrOvertimeRequestWhereInput = {
+    //   is_active: true,
+    // };
 
-  //   if (dto.show_by_status?.length) {
-  //     whereCondition.status = {
-  //       in: dto.show_by_status,
-  //     };
-  //   }
+    // if (dto.show_by_status?.length) {
+    //   whereCondition.status = {
+    //     in: dto.show_by_status,
+    //   };
+    // }
 
-  //   const requests = await this.prisma.hrOvertimeRequest.findMany({
-  //     where: whereCondition,
-  //   });
+    // const requests = await this.prisma.hrOvertimeRequest.findMany({
+    //   where: whereCondition,
+    // });
 
-  //   return {
-  //     status: 'success',
-  //     message: 'List of Overtime Request based on status',
-  //     requests,
-  //   }
+    // return {
+    //   status: 'success',
+    //   message: 'List of Overtime Request based on status',
+    //   requests,
+    // }
   // }
 
   async createOvertimeRequest(
