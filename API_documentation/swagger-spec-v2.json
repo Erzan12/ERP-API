@@ -6561,11 +6561,9 @@
             "name": "show_by_status",
             "required": false,
             "in": "query",
+            "style": "form",
+            "explode": false,
             "schema": {
-              "example": [
-                "for_verification",
-                "for_approval"
-              ],
               "type": "array",
               "items": {
                 "type": "string",
