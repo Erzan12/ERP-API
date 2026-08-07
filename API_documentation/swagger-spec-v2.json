@@ -1116,13 +1116,13 @@
         ]
       }
     },
-    "/v2/administrator/security_clearance/{id}": {
+    "/v2/administrator/security_clearance/{userId}": {
       "put": {
         "description": "This endpoint requires a minimun security clearance of level 7.",
         "operationId": "SecurityClearanceController_updateClearance_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "userId",
             "required": true,
             "in": "path",
             "schema": {
