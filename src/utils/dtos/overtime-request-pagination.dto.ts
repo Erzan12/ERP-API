@@ -53,6 +53,11 @@ export class OvertimeRequestsPaginationDto {
 
   @IsOptional()
   @IsString()
+  @ApiPropertyOptional({ default: '' })
+  employee_id?: string;
+
+  @IsOptional()
+  @IsString()
   @ApiPropertyOptional({ example: 'created_at', default: 'created_at' })
   sortBy: string = 'created_at';
 
