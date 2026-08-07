@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { OvertimeCasesService } from './overtime-cases.service';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPatchResponse,
@@ -33,6 +33,7 @@ import {
   CreateOvertimeRequestDto,
   UpdateOvertimeRequestDto,
 } from './dto/overtime-case.dto';
+import { OvertimeStatus } from '@prisma/client';
 
 @ApiTags('Human Resources - Time and Attendance Cases (Overtime Request)')
 @Controller({ path: 'hris', version: '2' })
@@ -42,6 +43,14 @@ export class OvertimeCasesController {
   @Get('time-and-attendance-cases/overtimes')
   @ApiOperation({ summary: 'List of Overtime Requests' })
   @ApiGetResponse('List of Overtime Requests')
+  @ApiQuery({
+    name: 'show_by_status',
+    required: false,
+    isArray: true,
+    enum: OvertimeStatus,
+    style: 'form',
+    explode: false,
+  })
   @Can({ action: ACTION_READ, subject: OVERTIME_REQUEST })
   getOvertimeRequest(
     @SessionUser() user: RequestUser,
@@ -49,6 +58,26 @@ export class OvertimeCasesController {
   ) {
     return this.overtimeCasesService.getOvertimeRequests(user, dto);
   }
+
+  // @Get('time-and-attendance-cases/overtimes/statuses')
+  // @ApiOperation({ summary: 'List of Overtime Request based on Statuses' })
+  // @ApiGetResponse('List of Overtime Request based on Statuses')
+  // @ApiQuery({
+  //   name: 'show_by_status',
+  //   required: false,
+  //   isArray: true,
+  //   enum: OvertimeStatus,
+  //   style: 'form',
+  //   explode: false,
+  // })
+  // @Can({ action: ACTION_READ, subject: OVERTIME_REQUEST })
+  // getOvertimeRequestStatuses(
+  //   // @SessionUser() user: RequestUser,
+  //   // @Query() dto: OvertimeRequestsPaginationDto,
+  //   @Query() dto: OvertimeRequestStatusPaginationDto,
+  // ) {
+  //   return this.overtimeCasesService.getOvertimeRequestWithStatuses(dto);
+  // }
 
   @Get('time-and-attendance-cases/overtimes/:overtimeRequestId')
   @ApiOperation({ summary: 'Get a single Overtime Request' })
