@@ -1,6 +1,7 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString } from 'class-validator';
+import { ApiPropertyOptional, ApiQuery } from '@nestjs/swagger';
+import { OvertimeStatus } from '@prisma/client';
+import { Transform, Type } from 'class-transformer';
+import { IsArray, IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
 
 export class OvertimeRequestsPaginationDto {
   @IsOptional()
@@ -77,4 +78,52 @@ export class OvertimeRequestsPaginationDto {
   @IsInt()
   @ApiPropertyOptional({ example: 10, default: 10 })
   perPage: number = 10;
+
+  @IsOptional()
+  // @Transform(({ value }) => {
+  //   if (!value) return [];
+  //   return Array.isArray(value) ? value : value.split(',');
+  // })\
+  @Transform(({ value }) => {
+    if (!value) return [];
+
+    if (Array.isArray(value)) {
+      return value;
+    }
+
+    return value.split(',');
+  })
+  @IsArray()
+  @IsEnum(OvertimeStatus, { each: true })
+  @ApiPropertyOptional({
+    example: ['for_verification', 'for_approval'],
+    isArray: true,
+    enum: OvertimeStatus,
+  })
+  show_by_status?: OvertimeStatus[];
 }
+
+// export class OvertimeRequestStatusPaginationDto {
+//   @IsOptional()
+//   // @Transform(({ value }) => {
+//   //   if (!value) return [];
+//   //   return Array.isArray(value) ? value : value.split(',');
+//   // })\
+//   @Transform(({ value }) => {
+//     if (!value) return [];
+
+//     if (Array.isArray(value)) {
+//       return value;
+//     }
+
+//     return value.split(',');
+//   })
+//   @IsArray()
+//   @IsEnum(OvertimeStatus, { each: true })
+//   @ApiPropertyOptional({
+//     example: ['for_verification', 'for_approval'],
+//     isArray: true,
+//     enum: OvertimeStatus,
+//   })
+//   show_by_status?: OvertimeStatus[];
+// }
