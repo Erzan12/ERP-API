@@ -19,21 +19,20 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 export class SecurityClearanceController {
   constructor(private clearanceService: SecurityClearanceService) {}
 
-  @Put('/security_clearance/:id')
+  @Put('/security_clearance/:userId')
   @ApiOperation({ summary: 'Assign the security clearance level for user' })
   @ApiSecurityClearance(SEC_LVL_7)
   @SecurityClearance(SEC_LVL_7) // admin must be 9+ to update others
   @Can({ action: ACTION_UPDATE, subject: USER_ACCOUNT })
   updateClearance(
-    @Param('id', new ParseUUIDPipe()) targetId: string,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
     @Body() dto: UpdateSecurityClearanceDto,
-    @SessionUser() admin: RequestUser,
+    @SessionUser() user: RequestUser,
   ) {
     return this.clearanceService.updateUserClearance(
-      admin.id,
-      String(targetId),
-      dto.new_level,
-      admin.security_clearance_level,
+      userId,
+      user,
+      dto,
     );
   }
 }
