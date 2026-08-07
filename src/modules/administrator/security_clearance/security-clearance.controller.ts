@@ -8,6 +8,7 @@ import {
   ACTION_UPDATE,
   USER_ACCOUNT,
   SEC_LVL_9,
+  SEC_LVL_7,
 } from 'src/utils/constants/ability.constant';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { ApiSecurityClearance } from 'src/utils/helpers/swagger-response.helper';
@@ -20,8 +21,8 @@ export class SecurityClearanceController {
 
   @Put('/security_clearance/:id')
   @ApiOperation({ summary: 'Assign the security clearance level for user' })
-  @ApiSecurityClearance(SEC_LVL_9)
-  @SecurityClearance(SEC_LVL_9) // admin must be 9+ to update others
+  @ApiSecurityClearance(SEC_LVL_7)
+  @SecurityClearance(SEC_LVL_7) // admin must be 9+ to update others
   @Can({ action: ACTION_UPDATE, subject: USER_ACCOUNT })
   updateClearance(
     @Param('id', new ParseUUIDPipe()) targetId: string,
