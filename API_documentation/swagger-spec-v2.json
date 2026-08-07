@@ -1118,7 +1118,7 @@
     },
     "/v2/administrator/security_clearance/{id}": {
       "put": {
-        "description": "This endpoint requires a minimun security clearance of level 9.",
+        "description": "This endpoint requires a minimun security clearance of level 7.",
         "operationId": "SecurityClearanceController_updateClearance_v2",
         "parameters": [
           {
