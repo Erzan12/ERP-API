@@ -8,7 +8,7 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { EmploymentStatusService } from './employment_status.service';
+import { EmploymentStatusService } from './employment-status.service';
 import { Can } from '../../../utils/decorators/can.decorator';
 import { SessionUser } from '../../../utils/decorators/session-user.decorator';
 import {

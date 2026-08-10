@@ -11,12 +11,12 @@ import { PositionController } from './position/position.controller';
 import { DepartmentController } from './department/department.controller';
 import { CompanyController } from './company/company.controller';
 import { DivisionController } from './division/division.controller';
-import { EmploymentStatusService } from './employment_status/employment_status.service';
-import { EmploymentStatusController } from './employment_status/employment_status.controller';
+import { EmploymentStatusService } from './employment-status/employment-status.service';
+import { EmploymentStatusController } from './employment-status/employment-status.controller';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { UserLocationService } from './user_location/user_location.service';
+import { UserLocationService } from './user-location/user-location.service';
 import { AuthModule } from 'src/auth/auth.module';
-import { UserLocationController } from './user_location/user_location.controller';
+import { UserLocationController } from './user-location/user-location.controller';
 import { VesselController } from './vessel/vessel.controller';
 import { VesselService } from './vessel/vessel.service';
 
