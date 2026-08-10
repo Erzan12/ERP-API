@@ -19,6 +19,8 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UserLocationController } from './user-location/user-location.controller';
 import { VesselController } from './vessel/vessel.controller';
 import { VesselService } from './vessel/vessel.service';
+import { ErCaseArticlesService } from './employee-relations-cases/er-case-articles/er-case-articles.service';
+import { ErCaseArticlesController } from './employee-relations-cases/er-case-articles/er-case-articles.controller';
 
 @Module({
   imports: [AuthModule],
@@ -35,6 +37,7 @@ import { VesselService } from './vessel/vessel.service';
     CreateCompanyDto,
     UserLocationService,
     VesselService,
+    ErCaseArticlesService,
   ],
   controllers: [
     PositionController,
@@ -44,6 +47,7 @@ import { VesselService } from './vessel/vessel.service';
     EmploymentStatusController,
     UserLocationController,
     VesselController,
+    ErCaseArticlesController
   ],
   exports: [],
 })
