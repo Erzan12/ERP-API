@@ -500,6 +500,10 @@ model User {
   HrEmployeeStatusPeriodUpdatedBy          HrEmployeeStatusPeriod[]           @relation("HrEmployeeStatusPeriodUpdatedBy")
   HrEmployeeSmsSubscriptionCreatedBy       HrEmployeeSmsSubscription[]        @relation("HrEmployeeSmsSubscriptionCreatedBy")
   HrEmployeeSmsSubscriptionUpdatedBy       HrEmployeeSmsSubscription[]        @relation("HrEmployeeSmsSubscriptionUpdatedBy")
+  HrErCaseArticleCreatedBy                 HrErCaseArticle[]                  @relation("HrErCaseArticleCreatedBy")
+  HrErCaseArticleUpdatedBy                 HrErCaseArticle[]                  @relation("HrErCaseArticleUpdatedBy")
+  HrErCaseViolationCreatedBy               HrErCaseViolation[]                @relation("HrErCaseViolationCreatedBy")
+  HrErCaseViolationUpdatedBy               HrErCaseViolation[]                @relation("HrErCaseViolationUpdatedBy")
 
   // Workflow action
   workflow_actions  WorkflowAction[]
@@ -1573,6 +1577,45 @@ model SalaryGrade {
   updatedBy User? @relation("SalaryGradeUpdatedBy", fields: [updated_by], references: [id])
 
   employee Employee[]
+}
+
+model HrErCaseArticle {
+  id          String    @id @default(uuid()) @db.Uuid
+  title       String    @db.Text
+  is_active   Boolean   @default(true)
+
+  created_by   String? @db.Uuid
+  updated_by   String? @db.Uuid
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  createdBy  User?  @relation("HrErCaseArticleCreatedBy", fields: [created_by], references: [id])
+  updatedBy  User?  @relation("HrErCaseArticleUpdatedBy", fields: [updated_by], references: [id])
+
+  hr_er_case_violations HrErCaseViolation[]
+}
+
+model HrErCaseViolation {
+  id          String   @id @default(uuid()) @db.Uuid
+  article_id  String   @db.Uuid
+  section     Int
+  behavior    String   @db.Text
+  category    String
+  is_active   Boolean  @default(true)
+
+  created_by   String? @db.Uuid
+  updated_by   String? @db.Uuid
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  createdBy  User?  @relation("HrErCaseViolationCreatedBy", fields: [created_by], references: [id])
+  updatedBy  User?  @relation("HrErCaseViolationUpdatedBy", fields: [updated_by], references: [id])
+
+  article    HrErCaseArticle @relation(fields: [article_id], references: [id], onDelete: Cascade)
+
+  @@index([article_id])
 }
 
 ////////////////////////////////////////
