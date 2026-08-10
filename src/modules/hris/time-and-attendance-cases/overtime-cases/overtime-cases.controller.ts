@@ -17,6 +17,7 @@ import {
 } from 'src/utils/helpers/swagger-response.helper';
 import {
   ACTION_APPROVE,
+  ACTION_CANCEL,
   ACTION_CREATE,
   ACTION_READ,
   ACTION_REJECT,
@@ -194,6 +195,20 @@ export class OvertimeCasesController {
     @SessionUser() user: RequestUser,
   ) {
     return this.overtimeCasesService.rejectOvertimeRequest(
+      overtimeRequestId,
+      user,
+    );
+  }
+
+  @Put('time-and-attendance-cases/overtimes/:overtimeRequestId/cancel')
+  @ApiOperation({ summary: 'Cancel Overtime Request' })
+  @ApiPatchResponse('Overtime Request cancelled')
+  @Can({ action: ACTION_CANCEL, subject: OVERTIME_REQUEST })
+  cancelOvertimeRequest(
+    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.overtimeCasesService.cancelOvertimeRequest(
       overtimeRequestId,
       user,
     );
