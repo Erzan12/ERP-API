@@ -117,6 +117,14 @@ export class OvertimeCasesService {
       const overtimeRequest = await this.prisma.hrOvertimeRequest.findUnique({
         where: { id: overtimeRequestId, is_active: true },
         include: {
+          overtimeRate: {
+            select: {
+              id: true,
+              type: true,
+              rate: true,
+              is_active: true,
+            },
+          },
           employee: {
             select: {
               id: true,
