@@ -3275,6 +3275,212 @@
         ]
       }
     },
+    "/v2/mastertable/er-case-articles/{erCaseArticleId}": {
+      "get": {
+        "operationId": "ErCaseArticlesController_getArticle_v2",
+        "parameters": [
+          {
+            "name": "erCaseArticleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the ER Case Article"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a ER Case Article",
+        "tags": [
+          "Mastertable - Employee Relation Case(Article)"
+        ]
+      },
+      "put": {
+        "operationId": "ErCaseArticlesController_updateErCaseArticle_v2",
+        "parameters": [
+          {
+            "name": "erCaseArticleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update ER Case Article",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateErCaseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ER Case Article updated succesffuly"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current ER Case Article",
+        "tags": [
+          "Mastertable - Employee Relation Case(Article)"
+        ]
+      }
+    },
+    "/v2/mastertable/er-case-articles": {
+      "get": {
+        "operationId": "ErCaseArticlesController_getArticles_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of ER Case Articles"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get all ER Case Articles",
+        "tags": [
+          "Mastertable - Employee Relation Case(Article)"
+        ]
+      },
+      "post": {
+        "operationId": "ErCaseArticlesController_createErCaseArticle_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create ER Case Articles",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateErCaseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ER Case Article created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a new ER Case Article",
+        "tags": [
+          "Mastertable - Employee Relation Case(Article)"
+        ]
+      }
+    },
     "/v2/hris/employees": {
       "get": {
         "operationId": "EmployeeMasterlistController_getEmployees_v2",
@@ -9327,6 +9533,35 @@
         "required": [
           "update_vessel",
           "update_vessel_details"
+        ]
+      },
+      "CreateErCaseDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Article I. Use of Time Card & Attendance Sheet"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "UpdateErCaseDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Article I. Use of Time Card & Attendance Sheet"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": "true or false"
+          }
+        },
+        "required": [
+          "title",
+          "is_active"
         ]
       },
       "CreatePersonDto": {
