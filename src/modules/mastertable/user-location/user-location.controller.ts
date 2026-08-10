@@ -8,7 +8,7 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { UserLocationService } from './user_location.service';
+import { UserLocationService } from './user-location.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CreateUserLocationDto,

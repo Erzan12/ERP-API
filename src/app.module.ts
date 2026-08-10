@@ -27,12 +27,12 @@ import { PositionService } from './modules/mastertable/position/position.service
 import { EmployeeMasterlistService } from './modules/hris/employee-masterlist/employee-masterlist.service';
 import { CaslAbilityService } from './middleware/casl/casl.service';
 import { DepartmentService } from './modules/mastertable/department/department.service';
-import { EmploymentStatusService } from './modules/mastertable/employment_status/employment_status.service';
+import { EmploymentStatusService } from './modules/mastertable/employment-status/employment-status.service';
 import { CompanyService } from './modules/mastertable/company/company.service';
 import { PrismaService } from './config/prisma/prisma.service';
 import { DivisionService } from './modules/mastertable/division/division.service';
 import { MailService } from './jobs/mail/mail.service';
-import { UserLocationService } from './modules/mastertable/user_location/user_location.service';
+import { UserLocationService } from './modules/mastertable/user-location/user-location.service';
 import { AttachmentUploadService } from './jobs/attachment-upload/attachment-upload.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
