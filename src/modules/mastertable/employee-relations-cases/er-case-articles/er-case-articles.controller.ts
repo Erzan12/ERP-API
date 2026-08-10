@@ -1,10 +1,9 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ErCaseArticlesService } from './er-case-articles.service';
-import { CreateErCaseDto, UpdateErCaseDto } from './dto/er-case-articles.dto';
+import { CreateErCaseArticleDto, UpdateErCaseArticleDto } from './dto/er-case-articles.dto';
 import { ApiGetResponse, ApiPatchResponse, ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, MASTERTABLES } from 'src/utils/constants/ability.constant';
-import { subject } from '@casl/ability';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -39,14 +38,14 @@ export class ErCaseArticlesController {
 
     @Post('er-case-articles')
     @ApiBody({
-        type: CreateErCaseDto,
+        type: CreateErCaseArticleDto,
         description: 'Payload to create ER Case Articles',
     })
     @ApiOperation({ summary: 'Create a new ER Case Article' })
     @ApiPostResponse('ER Case Article created successfully')
     @Can({ action: ACTION_CREATE, subject: MASTERTABLES })
     createErCaseArticle(
-        @Body() dto: CreateErCaseDto,
+        @Body() dto: CreateErCaseArticleDto,
         @SessionUser() user: RequestUser,
     ) {
         return this.erCaseArticleService.createArticle(dto, user);
@@ -54,7 +53,7 @@ export class ErCaseArticlesController {
 
     @Put('er-case-articles/:erCaseArticleId')
     @ApiBody({
-        type: UpdateErCaseDto,
+        type: UpdateErCaseArticleDto,
         description: 'Payload to update ER Case Article',
     })
     @ApiOperation({ summary: 'Update a current ER Case Article' })
@@ -62,7 +61,7 @@ export class ErCaseArticlesController {
     @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
     updateErCaseArticle(
         @Param('erCaseArticleId', new ParseUUIDPipe()) erCaseArticleId: string,
-        @Body() dto: UpdateErCaseDto,
+        @Body() dto: UpdateErCaseArticleDto,
         @SessionUser() user: RequestUser,
     ) {
         return this.erCaseArticleService.updateArticle(

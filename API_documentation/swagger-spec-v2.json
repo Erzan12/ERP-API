@@ -3331,7 +3331,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateErCaseDto"
+                "$ref": "#/components/schemas/UpdateErCaseArticleDto"
               }
             }
           }
@@ -3450,7 +3450,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateErCaseDto"
+                "$ref": "#/components/schemas/CreateErCaseArticleDto"
               }
             }
           }
@@ -9535,7 +9535,7 @@
           "update_vessel_details"
         ]
       },
-      "CreateErCaseDto": {
+      "CreateErCaseArticleDto": {
         "type": "object",
         "properties": {
           "title": {
@@ -9547,7 +9547,7 @@
           "title"
         ]
       },
-      "UpdateErCaseDto": {
+      "UpdateErCaseArticleDto": {
         "type": "object",
         "properties": {
           "title": {

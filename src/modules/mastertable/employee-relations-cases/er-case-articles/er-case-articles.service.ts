@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { CreateErCaseDto, UpdateErCaseDto } from './dto/er-case-articles.dto';
+import { CreateErCaseArticleDto, UpdateErCaseArticleDto } from './dto/er-case-articles.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ErCaseArticlePaginationDto } from 'src/utils/dtos/er-case-article-pagination.dto';
 import { Prisma } from '@prisma/client';
@@ -176,7 +176,7 @@ export class ErCaseArticlesService {
         };
     }
 
-    async createArticle(dto: CreateErCaseDto, user: RequestUser) {
+    async createArticle(dto: CreateErCaseArticleDto, user: RequestUser) {
         // Auth check first
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
@@ -237,7 +237,7 @@ export class ErCaseArticlesService {
         };
     }
 
-    async updateArticle(erCaseArticleId: string, dto: UpdateErCaseDto, user: RequestUser) {
+    async updateArticle(erCaseArticleId: string, dto: UpdateErCaseArticleDto, user: RequestUser) {
         // Auth check first
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },

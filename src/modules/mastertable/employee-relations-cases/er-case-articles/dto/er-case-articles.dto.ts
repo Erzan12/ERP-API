@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
-export class CreateErCaseDto {
+export class CreateErCaseArticleDto {
     @IsNotEmpty()
     @ApiProperty({
         example: "Article I. Use of Time Card & Attendance Sheet",
@@ -10,7 +10,7 @@ export class CreateErCaseDto {
     title: string;
 }
 
-export class UpdateErCaseDto {
+export class UpdateErCaseArticleDto {
     @IsOptional()
     @ApiProperty({
         example: "Article I. Use of Time Card & Attendance Sheet",
