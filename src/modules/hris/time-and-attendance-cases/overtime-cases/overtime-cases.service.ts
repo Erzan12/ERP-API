@@ -1718,7 +1718,9 @@ export class OvertimeCasesService {
       });
 
       if (!existingOvertimeRequest || !existingOvertimeRequest.is_active) {
-        throw new BadRequestException('Overtime Request does not exist or is inactive.');
+        throw new BadRequestException(
+          'Overtime Request does not exist or is inactive.',
+        );
       }
 
       const allowedStatuses: OvertimeStatus[] = [
@@ -1731,7 +1733,7 @@ export class OvertimeCasesService {
 
       if (!allowedStatuses.includes(existingOvertimeRequest.status)) {
         throw new BadRequestException(
-          'Invalid! Overtime Request cannot be cancelled anymore since status is now for_processing.'
+          'Invalid! Overtime Request cannot be cancelled anymore since status is now for_processing.',
         );
       }
 
