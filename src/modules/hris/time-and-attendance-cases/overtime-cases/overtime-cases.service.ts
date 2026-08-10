@@ -1674,4 +1674,114 @@ export class OvertimeCasesService {
       };
     });
   }
+
+  async cancelOvertimeRequest(overtimeRequestId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const existingOvertimeRequest = await tx.hrOvertimeRequest.findUnique({
+        where: { id: overtimeRequestId },
+      });
+
+      if (!existingOvertimeRequest || !existingOvertimeRequest.is_active) {
+        throw new BadRequestException('Overtime Request does not exist or is inactive.');
+      }
+
+      const allowedStatuses: OvertimeStatus[] = [
+        OvertimeStatus.draft,
+        OvertimeStatus.for_verification,
+        OvertimeStatus.verified,
+        OvertimeStatus.for_approval,
+        OvertimeStatus.approved,
+      ];
+
+      if (!allowedStatuses.includes(existingOvertimeRequest.status)) {
+        throw new BadRequestException(
+          'Invalid! Overtime Request cannot be cancelled anymore since status is now for_processing.'
+        );
+      }
+
+      const cancelOvertimeRequest = await tx.hrOvertimeRequest.updateMany({
+        where: {
+          id: overtimeRequestId,
+          status: {
+            in: [
+              OvertimeStatus.draft,
+              OvertimeStatus.for_verification,
+              OvertimeStatus.verified,
+              OvertimeStatus.for_approval,
+              OvertimeStatus.approved,
+            ],
+          },
+        },
+        data: {
+          status: OvertimeStatus.cancelled,
+          updated_by: requestUser.id,
+        },
+      });
+
+      if (cancelOvertimeRequest.count === 0) {
+        throw new BadRequestException('Update failed due to invalid status');
+      }
+
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      await tx.workflowAction.create({
+        data: {
+          actionable_type: WORKFLOW_ENTITY.OVERTIME_REQUEST,
+          actionable_id: overtimeRequestId,
+          action: WorkflowActionType.rejection,
+          acted_by: requestUser.id,
+          metadata: {
+            title: 'Overtime Request Cancelled',
+            message: 'You have cancelled this Overtime Request',
+            user: `${userName} - ${userPosition}`,
+            role: 'creator',
+          },
+        },
+      });
+
+      return {
+        status: 'success',
+        message: 'Overtime Request Cancelled',
+        cancelOvertimeRequest,
+        cancelled_by: `${userName} - ${userPosition}`,
+      };
+    });
+  }
 }

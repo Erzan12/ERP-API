@@ -6930,6 +6930,45 @@
         ]
       }
     },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}/cancel": {
+      "put": {
+        "operationId": "OvertimeCasesController_cancelOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overtime Request cancelled"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Cancel Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
     "/v2/hris/salary-grades": {
       "get": {
         "operationId": "SalaryGradeController_getSalaryGrades_v2",
