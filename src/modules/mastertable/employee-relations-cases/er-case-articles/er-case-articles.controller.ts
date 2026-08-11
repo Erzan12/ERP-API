@@ -7,7 +7,7 @@ import { ACTION_CREATE, ACTION_READ, ACTION_UPDATE, MASTERTABLES } from 'src/uti
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { ErCaseArticlePaginationDto } from 'src/utils/dtos/er-case-article-pagination.dto';
+import { ErCaseArticlePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
 
 @ApiTags('Mastertable - Employee Relation Case(Article)')
 @Controller({ path:'mastertable', version: '2'})
@@ -57,7 +57,7 @@ export class ErCaseArticlesController {
         description: 'Payload to update ER Case Article',
     })
     @ApiOperation({ summary: 'Update a current ER Case Article' })
-    @ApiPatchResponse('ER Case Article updated succesffuly')
+    @ApiPatchResponse('ER Case Article updated succesfully')
     @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
     updateErCaseArticle(
         @Param('erCaseArticleId', new ParseUUIDPipe()) erCaseArticleId: string,
