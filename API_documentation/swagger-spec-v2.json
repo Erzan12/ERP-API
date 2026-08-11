@@ -3338,7 +3338,7 @@
         },
         "responses": {
           "200": {
-            "description": "ER Case Article updated succesffuly"
+            "description": "ER Case Article updated succesfully"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -3478,6 +3478,214 @@
         "summary": "Create a new ER Case Article",
         "tags": [
           "Mastertable - Employee Relation Case(Article)"
+        ]
+      }
+    },
+    "/v2/er-case-violations/er-case-violations/{erCaseViolationId}": {
+      "get": {
+        "operationId": "ErCaseViolationsController_getViolation_v2",
+        "parameters": [
+          {
+            "name": "erCaseViolationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the ER Case Violation"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a ER Case Violation",
+        "tags": [
+          "Mastertable - Employee Relation Case(Violation)"
+        ]
+      }
+    },
+    "/v2/er-case-violations/er-case-violations": {
+      "get": {
+        "operationId": "ErCaseViolationsController_getViolations_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of ER Case Violations"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get all ER Case Violations",
+        "tags": [
+          "Mastertable - Employee Relation Case(Violation)"
+        ]
+      },
+      "post": {
+        "operationId": "ErCaseViolationsController_createErCaseViolation_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create ER Case Violations",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateErCaseViolationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ER Case Violation created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a new ER Case Violation",
+        "tags": [
+          "Mastertable - Employee Relation Case(Violation)"
+        ]
+      }
+    },
+    "/v2/er-case-violations/er-case-articles/{erCaseViolationId}": {
+      "put": {
+        "operationId": "ErCaseViolationsController_updateErCaseViolation_v2",
+        "parameters": [
+          {
+            "name": "erCaseViolationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update ER Case Violation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateErCaseViolationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ER Case Violation updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current ER Case Violation",
+        "tags": [
+          "Mastertable - Employee Relation Case(Violation)"
         ]
       }
     },
@@ -9562,6 +9770,60 @@
         "required": [
           "title",
           "is_active"
+        ]
+      },
+      "CreateErCaseViolationDto": {
+        "type": "object",
+        "properties": {
+          "article_id": {
+            "type": "string",
+            "example": "Article UUID"
+          },
+          "section": {
+            "type": "number",
+            "example": 3
+          },
+          "behavior": {
+            "type": "string",
+            "example": "Failure to punch time records or login or out"
+          },
+          "category": {
+            "type": "string",
+            "example": "A"
+          }
+        },
+        "required": [
+          "article_id",
+          "section",
+          "behavior",
+          "category"
+        ]
+      },
+      "UpdateErCaseViolationDto": {
+        "type": "object",
+        "properties": {
+          "article_id": {
+            "type": "string",
+            "example": "Article UUID"
+          },
+          "section": {
+            "type": "number",
+            "example": 3
+          },
+          "behavior": {
+            "type": "string",
+            "example": "Failure to punch time records or login or out"
+          },
+          "category": {
+            "type": "string",
+            "example": "A"
+          }
+        },
+        "required": [
+          "article_id",
+          "section",
+          "behavior",
+          "category"
         ]
       },
       "CreatePersonDto": {

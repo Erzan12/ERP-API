@@ -1,8 +1,8 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { CreateErCaseArticleDto, UpdateErCaseArticleDto } from './dto/er-case-articles.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { ErCaseArticlePaginationDto } from 'src/utils/dtos/er-case-article-pagination.dto';
+import { ErCaseArticlePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -166,7 +166,7 @@ export class ErCaseArticlesService {
         });
 
         if (!erCaseArticle || erCaseArticle.is_active === false) {
-            throw new BadRequestException('Employee Relation Case Article does not exist or is inactive');
+            throw new NotFoundException('Employee Relation Case Article does not exist or is inactive');
         }
 
         return {
@@ -279,7 +279,7 @@ export class ErCaseArticlesService {
         });
 
         if (!erCaseArticle) {
-            throw new BadRequestException('Employee Relation Case Article does not exist');
+            throw new NotFoundException('Employee Relation Case Article does not exist');
         }
 
         const updateErCaseArticle = await this.prisma.hrErCaseArticle.update({
@@ -291,14 +291,14 @@ export class ErCaseArticlesService {
             },
         }); 
 
-        const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
-        const userPosition = requestUser.employee.position?.name;
+        const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+        const userPosition = requestUser.employee.position.name;
 
         return {
             status: 'success',
             message: `${updateErCaseArticle.title} Article has been updated successfully`,
             updateErCaseArticle,
             updated_by: `${userName} - ${userPosition}`
-        }
+        };
     }
 }

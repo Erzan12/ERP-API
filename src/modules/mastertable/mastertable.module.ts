@@ -21,6 +21,8 @@ import { VesselController } from './vessel/vessel.controller';
 import { VesselService } from './vessel/vessel.service';
 import { ErCaseArticlesService } from './employee-relations-cases/er-case-articles/er-case-articles.service';
 import { ErCaseArticlesController } from './employee-relations-cases/er-case-articles/er-case-articles.controller';
+import { ErCaseViolationsService } from './employee-relations-cases/er-case-violations/er-case-violations.service';
+import { ErCaseViolationsController } from './employee-relations-cases/er-case-violations/er-case-violations.controller';
 
 @Module({
   imports: [AuthModule],
@@ -38,6 +40,7 @@ import { ErCaseArticlesController } from './employee-relations-cases/er-case-art
     UserLocationService,
     VesselService,
     ErCaseArticlesService,
+    ErCaseViolationsService,
   ],
   controllers: [
     PositionController,
@@ -47,7 +50,8 @@ import { ErCaseArticlesController } from './employee-relations-cases/er-case-art
     EmploymentStatusController,
     UserLocationController,
     VesselController,
-    ErCaseArticlesController
+    ErCaseArticlesController,
+    ErCaseViolationsController,
   ],
   exports: [],
 })
