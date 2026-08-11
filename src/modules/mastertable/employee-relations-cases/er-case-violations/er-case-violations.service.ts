@@ -4,7 +4,6 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateErCaseViolationDto, UpdateErCaseViolationDto } from './dto/er-case-violations.dto';
 import { ErCaseViolationPaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
 import { Prisma } from '@prisma/client';
-import { count } from 'console';
 
 @Injectable()
 export class ErCaseViolationsService {
