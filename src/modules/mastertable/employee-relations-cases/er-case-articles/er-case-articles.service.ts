@@ -16,12 +16,12 @@ export class ErCaseArticlesService {
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
             include: {
-            employee: {
-                include: {
-                person: true,
-                position: true,
+                employee: {
+                    include: {
+                        person: true,
+                        position: true,
+                    },
                 },
-            },
             user_roles: true,
             },
         });
@@ -126,13 +126,13 @@ export class ErCaseArticlesService {
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
             include: {
-            employee: {
-                include: {
-                person: true,
-                position: true,
+                employee: {
+                    include: {
+                        person: true,
+                        position: true,
+                    },
                 },
-            },
-            user_roles: true,
+                user_roles: true,
             },
         });
     
@@ -181,13 +181,13 @@ export class ErCaseArticlesService {
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
             include: {
-            employee: {
-                include: {
-                person: true,
-                position: true,
+                employee: {
+                    include: {
+                        person: true,
+                        position: true,
+                    },
                 },
-            },
-            user_roles: true,
+                user_roles: true,
             },
         });
     
@@ -242,13 +242,13 @@ export class ErCaseArticlesService {
         const requestUser = await this.prisma.user.findUnique({
             where: { id: user.id },
             include: {
-            employee: {
-                include: {
-                person: true,
-                position: true,
+                employee: {
+                    include: {
+                        person: true,
+                        position: true,
+                    },
                 },
-            },
-            user_roles: true,
+                user_roles: true,
             },
         });
     
