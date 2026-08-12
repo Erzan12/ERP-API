@@ -3481,7 +3481,7 @@
         ]
       }
     },
-    "/v2/er-case-violations/er-case-violations/{erCaseViolationId}": {
+    "/v2/mastertable/er-case-violations/{erCaseViolationId}": {
       "get": {
         "operationId": "ErCaseViolationsController_getViolation_v2",
         "parameters": [
@@ -3518,9 +3518,57 @@
         "tags": [
           "Mastertable - Employee Relation Case(Violation)"
         ]
+      },
+      "put": {
+        "operationId": "ErCaseViolationsController_updateErCaseViolation_v2",
+        "parameters": [
+          {
+            "name": "erCaseViolationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update ER Case Violation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateErCaseViolationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ER Case Violation updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current ER Case Violation",
+        "tags": [
+          "Mastertable - Employee Relation Case(Violation)"
+        ]
       }
     },
-    "/v2/er-case-violations/er-case-violations": {
+    "/v2/mastertable/er-case-violations": {
       "get": {
         "operationId": "ErCaseViolationsController_getViolations_v2",
         "parameters": [
@@ -3634,56 +3682,6 @@
           }
         },
         "summary": "Create a new ER Case Violation",
-        "tags": [
-          "Mastertable - Employee Relation Case(Violation)"
-        ]
-      }
-    },
-    "/v2/er-case-violations/er-case-articles/{erCaseViolationId}": {
-      "put": {
-        "operationId": "ErCaseViolationsController_updateErCaseViolation_v2",
-        "parameters": [
-          {
-            "name": "erCaseViolationId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to update ER Case Violation",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateErCaseViolationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "ER Case Violation updated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Update a current ER Case Violation",
         "tags": [
           "Mastertable - Employee Relation Case(Violation)"
         ]

@@ -10,7 +10,7 @@ import { CreateErCaseViolationDto, UpdateErCaseViolationDto } from './dto/er-cas
 import { ErCaseViolationPaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
 
 @ApiTags('Mastertable - Employee Relation Case(Violation)')
-@Controller({ path: 'er-case-violations', version: '2'})
+@Controller({ path: 'mastertable', version: '2'})
 export class ErCaseViolationsController {
     constructor (private readonly erCaseViolationService: ErCaseViolationsService) {}
 
@@ -51,7 +51,7 @@ export class ErCaseViolationsController {
         return this.erCaseViolationService.createViolation(dto, user);
     }
 
-    @Put('er-case-articles/:erCaseViolationId')
+    @Put('er-case-violations/:erCaseViolationId')
     @ApiBody({
         type: UpdateErCaseViolationDto,
         description: 'Payload to update ER Case Violation',
