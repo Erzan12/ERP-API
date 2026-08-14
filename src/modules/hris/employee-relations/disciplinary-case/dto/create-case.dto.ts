@@ -1,10 +1,27 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { HrErActionType, HrErCaseLevel, HrErCasePartyRole } from "@prisma/client";
-import { Type } from "class-transformer";
-import { ArrayMinSize, IsArray, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, registerDecorator, ValidateIf, ValidateNested, ValidationOptions } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  HrErActionType,
+  HrErCaseLevel,
+  HrErCasePartyRole,
+} from '@prisma/client';
+import { Type } from 'class-transformer';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  registerDecorator,
+  ValidateIf,
+  ValidateNested,
+  ValidationOptions,
+} from 'class-validator';
 
 export function HasRespondent(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     registerDecorator({
       name: 'hasRespondent',
       target: object.constructor,
@@ -12,7 +29,10 @@ export function HasRespondent(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(parties: CreateCasePartyDto[]) {
-          return Array.isArray(parties) && parties.some(p => p.role === 'respondent');
+          return (
+            Array.isArray(parties) &&
+            parties.some((p) => p.role === 'respondent')
+          );
         },
         defaultMessage() {
           return 'At least one party must be tagged as respondent.';
@@ -22,9 +42,14 @@ export function HasRespondent(validationOptions?: ValidationOptions) {
   };
 }
 
-export function getStageTiming(party: { stage_started_at: Date | null }, slaDays: number) {
+export function getStageTiming(
+  party: { stage_started_at: Date | null },
+  slaDays: number,
+) {
   if (!party.stage_started_at) return null;
-  const daysInStage = Math.floor((Date.now() - party.stage_started_at.getTime()) / 86_400_000);
+  const daysInStage = Math.floor(
+    (Date.now() - party.stage_started_at.getTime()) / 86_400_000,
+  );
   return {
     daysInStage,
     slaDays,
@@ -68,59 +93,71 @@ export class CreateCasePartyActionDto {
 export class CreateCasePartyDto {
   @IsUUID()
   @IsNotEmpty()
-  @ApiProperty({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', description: 'Employee UUID' })
+  @ApiProperty({
+    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    description: 'Employee UUID',
+  })
   employee_id: string;
 
   @IsEnum(HrErCasePartyRole)
-  @ApiProperty({ 
-    enum: HrErCasePartyRole, 
-    example: HrErCasePartyRole.respondent 
+  @ApiProperty({
+    enum: HrErCasePartyRole,
+    example: HrErCasePartyRole.respondent,
   })
   role: HrErCasePartyRole;
 
   // respondent-only from here down — validated conditionally below
-  @ValidateIf((o) => o.role === HrErCasePartyRole.respondent)
+  @ValidateIf(
+    (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
+  )
   @IsEnum(HrErCaseLevel)
-  @ApiProperty({ 
-    enum: HrErCaseLevel, 
-    required: false, 
-    description: 'Required when role is respondent' 
+  @ApiProperty({
+    enum: HrErCaseLevel,
+    required: false,
+    description: 'Required when role is respondent',
   })
   level?: HrErCaseLevel;
 
   // Available for Respondent only
-  @ValidateIf((o) => o.role === HrErCasePartyRole.respondent)
+  @ValidateIf(
+    (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
+  )
   @IsArray()
   @ArrayMinSize(1)
   @IsUUID(undefined, { each: true })
-  @ApiProperty({ 
-    type: [String], 
-    required: false, 
-    description: 'Committed offense IDs — required when role is respondent' 
+  @ApiProperty({
+    type: [String],
+    required: false,
+    description: 'Committed offense IDs — required when role is respondent',
   })
   offense_ids?: string[];
 
   // Available for Respondent only
-  @ValidateIf((o) => o.role === HrErCasePartyRole.respondent)
+  @ValidateIf(
+    (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
+  )
   @IsArray()
   @ArrayMinSize(1)
   @IsUUID(undefined, { each: true })
-  @ApiProperty({ 
-    type: [String], 
-    required: false, 
-    description: 'Policy violated (violation) IDs — required when role is respondent' 
+  @ApiProperty({
+    type: [String],
+    required: false,
+    description:
+      'Policy violated (violation) IDs — required when role is respondent',
   })
   violation_ids?: string[];
 
   // Available for Respondent only
-  @ValidateIf((o) => o.role === HrErCasePartyRole.respondent)
+  @ValidateIf(
+    (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
+  )
   @ValidateNested()
   @Type(() => CreateCasePartyActionDto)
   @IsOptional()
   @ApiProperty({
     type: CreateCasePartyActionDto,
     required: false,
-    description: 
+    description:
       'Preventive suspension action. Only available for respondents with major level.',
   })
   action?: CreateCasePartyActionDto;
@@ -138,31 +175,31 @@ export class CreateCaseDto {
   @IsNotEmpty()
   @ApiProperty({
     example: 'Company UUID',
-  }) 
+  })
   company_id: string;
 
-  @IsString() 
+  @IsString()
   @IsNotEmpty()
   @ApiProperty({
     example: 'Location of the incident',
   })
   incident_location: string;
 
-  @IsOptional() 
+  @IsOptional()
   @IsString()
   @ApiProperty({
     example: 'The assigned location',
-  }) 
+  })
   assigned_location?: string;
 
   @IsDateString()
   @IsNotEmpty()
   @ApiProperty({
     example: 'The date of the incident',
-  }) 
+  })
   incident_date: string;
 
-  @IsDateString() 
+  @IsDateString()
   @IsNotEmpty()
   @ApiProperty({
     example: 'The date of the report',
@@ -172,7 +209,8 @@ export class CreateCaseDto {
   @IsString()
   @IsOptional()
   @ApiProperty({
-    example: 'Describe what happened, who was involved, where it happened and supporting circumstances',
+    example:
+      'Describe what happened, who was involved, where it happened and supporting circumstances',
   })
   incident_narrative: string;
 
@@ -223,7 +261,8 @@ export class CreateCaseDto {
   @IsUUID()
   @ApiProperty({
     example: 'e5f6a7b8-c9d0-1234-ef56-789012345678',
-    description: 'If converting a Case Intake/Report into this Disciplinary Case, its UUID',
+    description:
+      'If converting a Case Intake/Report into this Disciplinary Case, its UUID',
     required: false,
   })
   intake_id?: string; // when converting

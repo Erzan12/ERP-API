@@ -1,19 +1,19 @@
-import { HrErDecisionType } from "@prisma/client";
-import { IsDateString, IsEnum, IsOptional, IsString } from "class-validator";
+import { HrErDecisionType } from '@prisma/client';
+import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class SubmitDecisionDto {
   @IsEnum(HrErDecisionType)
   decisionType: HrErDecisionType;
 
-  @IsOptional() 
-  @IsDateString() 
+  @IsOptional()
+  @IsDateString()
   effectivityStart?: string;
 
-  @IsOptional() 
-  @IsDateString() 
+  @IsOptional()
+  @IsDateString()
   effectivityEnd?: string;
 
-  @IsOptional() 
-  @IsString() 
+  @IsOptional()
+  @IsString()
   remarks?: string;
 }

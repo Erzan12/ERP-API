@@ -1,11 +1,11 @@
-import { IsArray, IsDateString, IsOptional, IsUUID } from "class-validator";
+import { IsArray, IsDateString, IsOptional, IsUUID } from 'class-validator';
 
 export class IssueNteDto {
-  @IsOptional() 
-  @IsDateString() 
+  @IsOptional()
+  @IsDateString()
   dueDate?: string;
 
-  @IsArray() 
-  @IsUUID(undefined, { each: true }) 
+  @IsArray()
+  @IsUUID(undefined, { each: true })
   reviewerIds: string[];
 }

@@ -1,27 +1,27 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateErCaseArticleDto {
-    @IsNotEmpty()
-    @ApiProperty({
-        example: "Article I. Use of Time Card & Attendance Sheet",
-    })
-    @IsString()
-    title: string;
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'Article I. Use of Time Card & Attendance Sheet',
+  })
+  @IsString()
+  title: string;
 }
 
 export class UpdateErCaseArticleDto {
-    @IsOptional()
-    @ApiProperty({
-        example: "Article I. Use of Time Card & Attendance Sheet",
-    })
-    @IsString()
-    title?: string;
+  @IsOptional()
+  @ApiProperty({
+    example: 'Article I. Use of Time Card & Attendance Sheet',
+  })
+  @IsString()
+  title?: string;
 
-    @IsOptional()
-    @IsBoolean()
-    @ApiProperty({
-        example: "true or false",
-    })
-    is_active: boolean;
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty({
+    example: 'true or false',
+  })
+  is_active: boolean;
 }
