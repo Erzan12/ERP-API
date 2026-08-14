@@ -580,11 +580,13 @@ export class EmployeeMasterlistService {
           },
           division: {
             select: {
+              id: true,
               name: true,
             },
           },
           company: {
             select: {
+              id: true,
               name: true,
             },
           },
@@ -592,27 +594,32 @@ export class EmployeeMasterlistService {
           //to include group in employee schema
           department: {
             select: {
+              id: true,
               name: true,
             },
           },
           // to include division in employee schema
           position: {
             select: {
+              id: true,
               name: true,
             },
           },
           employment_status: {
             select: {
+              id: true,
               label: true,
             },
           },
           vessel: {
             select: {
+              id: true,
               name: true,
             },
           },
           user_location: {
             select: {
+              id: true,
               location_name: true,
             },
           },
