@@ -23,6 +23,8 @@ import { ErCaseArticlesService } from './employee-relations-cases/er-case-articl
 import { ErCaseArticlesController } from './employee-relations-cases/er-case-articles/er-case-articles.controller';
 import { ErCaseViolationsService } from './employee-relations-cases/er-case-violations/er-case-violations.service';
 import { ErCaseViolationsController } from './employee-relations-cases/er-case-violations/er-case-violations.controller';
+import { ErCaseTypesOfOffenseService } from './employee-relations-cases/er-case-types-of-offense/er-case-types-of-offense.service';
+import { ErCaseTypesOfOffenseController } from './employee-relations-cases/er-case-types-of-offense/er-case-types-of-offense.controller';
 
 @Module({
   imports: [AuthModule],
@@ -41,6 +43,7 @@ import { ErCaseViolationsController } from './employee-relations-cases/er-case-v
     VesselService,
     ErCaseArticlesService,
     ErCaseViolationsService,
+    ErCaseTypesOfOffenseService,
   ],
   controllers: [
     PositionController,
@@ -52,6 +55,7 @@ import { ErCaseViolationsController } from './employee-relations-cases/er-case-v
     VesselController,
     ErCaseArticlesController,
     ErCaseViolationsController,
+    ErCaseTypesOfOffenseController,
   ],
   exports: [],
 })
