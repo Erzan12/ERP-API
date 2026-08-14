@@ -38,9 +38,14 @@ import { SalaryGradeController } from './salary-grade/salary-grade.controller';
 import { EmploymentHistoryController } from './employment-history/employment-history.controller';
 import { EmploymentHistoryService } from './employment-history/employment-history.service';
 import { SmsModule } from 'src/jobs/sms/sms.module';
+import { DisciplinaryCaseService } from './employee-relations/disciplinary-case/disciplinary-case.service';
+import { DisciplinaryCaseController } from './employee-relations/disciplinary-case/disciplinary-case.controller';
+import { ControlNumberModule } from 'src/jobs/control-number/control-number.module';
+import { NoticeOfExplainationService } from './employee-relations/notice-of-explaination/notice-of-explaination.service';
+import { NoticeOfExplainationController } from './employee-relations/notice-of-explaination/notice-of-explaination.controller';
 
 @Module({
-  imports: [AuthModule, AdministratorModule, SmsModule],
+  imports: [AuthModule, AdministratorModule, SmsModule, ControlNumberModule],
   providers: [
     EmployeeMasterlistService,
     PrismaService,
@@ -57,6 +62,8 @@ import { SmsModule } from 'src/jobs/sms/sms.module';
     OvertimeCasesService,
     SalaryGradeService,
     EmploymentHistoryService,
+    DisciplinaryCaseService,
+    NoticeOfExplainationService,
   ],
   controllers: [
     EmployeeMasterlistController,
@@ -73,6 +80,8 @@ import { SmsModule } from 'src/jobs/sms/sms.module';
     OvertimeRateController,
     OvertimeCasesController,
     SalaryGradeController,
+    DisciplinaryCaseController,
+    NoticeOfExplainationController,
   ],
   exports: [HrisModule],
 })
