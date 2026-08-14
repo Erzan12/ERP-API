@@ -35,8 +35,8 @@ enum StatusEnum {
 }
 
 enum PermissionSource {
-  role      // came from RolePermission
-  direct    // manually granted
+  role // came from RolePermission
+  direct // manually granted
 }
 
 enum CareerPostingStatus {
@@ -227,7 +227,7 @@ enum WorkflowActionType {
   creation
 
   update
-  
+
   submit
   submitted
   submission
@@ -244,7 +244,7 @@ enum WorkflowActionType {
   acknowledgment
 
   completed
-  
+
   reject
   rejected
   rejection
@@ -303,6 +303,97 @@ enum OvertimeStatus {
   processed
   cancelled
   rejected
+}
+
+enum HrErCasePartyRole {
+  respondent
+  complainant
+  witness
+}
+
+enum HrErCaseLevel {
+  minor
+  major
+}
+
+enum HrErCaseStage {
+  notice_to_explain
+  written_explanation
+  administrative_hearing
+  notice_of_decision
+  case_closed
+}
+
+enum HrErCaseStatus {
+  open
+  closed
+}
+
+enum HrErIntakeStatus {
+  pending_review
+  converted
+  ignored
+}
+
+enum HrErApprovalStepType {
+  nte_review
+  decision_approval
+}
+
+enum HrErApprovalStatus {
+  pending
+  approved
+  revise
+  rejected
+}
+
+enum HrErActionType {
+  preventive_suspension
+}
+
+enum HrErDecisionType {
+  written_reprimand
+  stern_warning
+  suspension_7d
+  suspension_15d
+  dismissal
+  acquitted
+  rehabilitation
+}
+
+enum HrErNteServiceChannel {
+  nra_office
+  personal
+  postal_mail
+}
+
+enum HrErExplanationChannel {
+  viber
+  email
+  letter
+  did_not_proceed
+}
+
+enum HrErExplanationStatus {
+  awaiting_response
+  received
+  no_response
+}
+
+enum HrErHearingChannel {
+  in_person
+  online
+  viber
+  postal_mail
+  call
+  text
+}
+
+enum HrErHearingStatus {
+  scheduled
+  conducted
+  rescheduled
+  no_show // added - respondent didnt show, but hearing is still "resolved" for progression purposes
 }
 
 ////////////////////////////////////////
@@ -369,21 +460,21 @@ model EmailAddress {
 }
 
 model MobileNumber {
-  id            String  @id @default(uuid()) @db.Uuid
-  employee_id   String  @db.Uuid
-  mobile_number String  @unique
+  id            String @id @default(uuid()) @db.Uuid
+  employee_id   String @db.Uuid
+  mobile_number String @unique
 
-  is_primary    Boolean  @default(true)
-  is_verified   Boolean  @default(false)
-  verified_at  DateTime?
+  is_primary  Boolean   @default(true)
+  is_verified Boolean   @default(false)
+  verified_at DateTime?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  employee   Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
-  hr_employee_sms_subscription  HrEmployeeSmsSubscription[]
+  employee                     Employee                    @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  hr_employee_sms_subscription HrEmployeeSmsSubscription[]
 
-  @@index([employee_id]) 
+  @@index([employee_id])
 }
 
 model User {
@@ -504,22 +595,39 @@ model User {
   HrErCaseArticleUpdatedBy                 HrErCaseArticle[]                  @relation("HrErCaseArticleUpdatedBy")
   HrErCaseViolationCreatedBy               HrErCaseViolation[]                @relation("HrErCaseViolationCreatedBy")
   HrErCaseViolationUpdatedBy               HrErCaseViolation[]                @relation("HrErCaseViolationUpdatedBy")
+  HrErCaseTypeOfOffenseCreatedBy           HrErCaseTypeOfOffense[]            @relation("HrErCaseTypeOfOffenseCreatedBy")
+  HrErCaseTypeOfOffenseUpdatedBy           HrErCaseTypeOfOffense[]            @relation("HrErCaseTypeOfOffenseUpdatedBy")
+  HrErCaseIntakeReportedBy                 HrErCaseIntake[]                   @relation("HrErCaseIntakeReportedBy")
+  HrErCaseIntakeCreatedBy                  HrErCaseIntake[]                   @relation("HrErCaseIntakeCreatedBy")
+  HrErCaseIntakeUpdatedBy                  HrErCaseIntake[]                   @relation("HrErCaseIntakeUpdatedBy")
+  HrErCaseCreatedBy                        HrErCase[]                         @relation("HrErCaseCreatedBy")
+  HrErCaseUpdatedBy                        HrErCase[]                         @relation("HrErCaseUpdatedBy")
+  HrErCasePartyCreatedBy                   HrErCaseParty[]                    @relation("HrErCasePartyCreatedBy")
+  HrErCasePartyUpdatedBy                   HrErCaseParty[]                    @relation("HrErCasePartyUpdatedBy")
+  HrErCasePartyActionCreatedBy             HrErCasePartyAction[]              @relation("HrErCasePartyActionCreatedBy")
+  HrErCaseApprovalReviewer                 HrErCaseApproval[]                 @relation("HrErCaseApprovalReviewer")
+  HrErCaseNteCreatedBy                     HrErCaseNte[]                      @relation("HrErCaseNteCreatedBy")
+  HrErCaseNteUpdatedBy                     HrErCaseNte[]                      @relation("HrErCaseNteUpdatedBy")
+  HrErCaseDecisionCreatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionCreatedBy")
+  HrErCaseDecisionUpdatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionUpdatedBy")
+  HrErCaseAttachmentUploadedBy             HrErCaseAttachment[]               @relation("HrErCaseAttachmentUploadedBy")
+  HrErCaseActivityLogActor                 HrErCaseActivityLog[]              @relation("HrErCaseActivityLogActor")
 
   // Workflow action
-  workflow_actions  WorkflowAction[]
+  workflow_actions WorkflowAction[]
 
-  career_posting_verify           CareerPosting[]           @relation("CareerPostingVerifier")
-  career_posting_approver         CareerPosting[]           @relation("CareerPostingApprover")
-  relieved_requests               HrLeaveRequest[]          @relation("LeaveRequestReliever")
-  relieved_extended_request       HrExtendedLeaveRequest[]  @relation("ExtendedLeaveRequestReliever")
-  leave_request_verify            HrLeaveRequest[]          @relation("LeaveRequestVerifier")
-  leave_request_approve           HrLeaveRequest[]          @relation("LeaveRequestApprover")
-  extended_leave_request_verify   HrExtendedLeaveRequest[]  @relation("ExtendedLeaveRequestVerifier")
-  extended_leave_request_approve  HrExtendedLeaveRequest[]  @relation("ExtendedLeaveRequestApprover")
-  overtime_request_verify         HrOvertimeRequest[]       @relation("OvertimeRequestVerifier")
-  overtime_request_approver       HrOvertimeRequest[]       @relation("OvertimeRequestApprover")
-  employee_evaluations_verify     HrEmployeeEvaluation[]    @relation("EmployeeEvaluationVerifier")
-  employee_evaluations_approve    HrEmployeeEvaluation[]    @relation("EmployeeEvaluationApprover")
+  career_posting_verify          CareerPosting[]          @relation("CareerPostingVerifier")
+  career_posting_approver        CareerPosting[]          @relation("CareerPostingApprover")
+  relieved_requests              HrLeaveRequest[]         @relation("LeaveRequestReliever")
+  relieved_extended_request      HrExtendedLeaveRequest[] @relation("ExtendedLeaveRequestReliever")
+  leave_request_verify           HrLeaveRequest[]         @relation("LeaveRequestVerifier")
+  leave_request_approve          HrLeaveRequest[]         @relation("LeaveRequestApprover")
+  extended_leave_request_verify  HrExtendedLeaveRequest[] @relation("ExtendedLeaveRequestVerifier")
+  extended_leave_request_approve HrExtendedLeaveRequest[] @relation("ExtendedLeaveRequestApprover")
+  overtime_request_verify        HrOvertimeRequest[]      @relation("OvertimeRequestVerifier")
+  overtime_request_approver      HrOvertimeRequest[]      @relation("OvertimeRequestApprover")
+  employee_evaluations_verify    HrEmployeeEvaluation[]   @relation("EmployeeEvaluationVerifier")
+  employee_evaluations_approve   HrEmployeeEvaluation[]   @relation("EmployeeEvaluationApprover")
 
   // Cascade delete tokens when user is removed
   passwordHistories            PasswordHistory[]
@@ -558,7 +666,7 @@ model UserLocation {
   employee      Employee[]
   companies     Company[]
 
-  overtimes     HrOvertimeRequest[]
+  overtimes HrOvertimeRequest[]
 
   @@index([location_name])
   @@index([address_line_1])
@@ -608,20 +716,20 @@ model PasswordResetToken {
 }
 
 model PasswordHistory {
-  id              String   @id @default(uuid()) @db.Uuid
-  user_id         String   @db.Uuid
-  password_hash   String
+  id            String @id @default(uuid()) @db.Uuid
+  user_id       String @db.Uuid
+  password_hash String
 
-  created_by      String?  @db.Uuid
-  updated_by      String?  @db.Uuid
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
   createdBy User? @relation("PasswordHistoryCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("PasswordHistoryUpdatedBy", fields: [updated_by], references: [id])
 
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  user            User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
 }
@@ -631,18 +739,18 @@ model PasswordHistory {
 ////////////////////////////////////////
 
 model Company {
-  id                String  @id @default(uuid()) @db.Uuid
-  user_location_id  String? @db.Uuid
-  name              String
-  address           String?
-  telephone_no      String?
-  fax_no            String?
-  company_tin       String?
-  abbreviation      String  @unique
-  is_top_20000      Int     @default(0)
-  is_active         Boolean @default(true)
+  id               String  @id @default(uuid()) @db.Uuid
+  user_location_id String? @db.Uuid
+  name             String
+  address          String?
+  telephone_no     String?
+  fax_no           String?
+  company_tin      String?
+  abbreviation     String  @unique
+  is_top_20000     Int     @default(0)
+  is_active        Boolean @default(true)
 
-  userLocation      UserLocation? @relation(fields: [user_location_id], references: [id])
+  userLocation UserLocation? @relation(fields: [user_location_id], references: [id])
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -654,6 +762,10 @@ model Company {
   updated_at DateTime   @updatedAt
   employee   Employee[]
   vessel     Vessel[]
+
+  hr_er_case HrErCase[]
+
+  sequence_counter SequenceCounter[]
 
   @@index([name])
   @@index([abbreviation])
@@ -697,9 +809,9 @@ model Department {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  division                        Division                       @relation(fields: [division_id], references: [id])
-  employees                       Employee[]
-  positions                       Position[]
+  division  Division   @relation(fields: [division_id], references: [id])
+  employees Employee[]
+  positions Position[]
 
   // One department -> consist of many roles
   roles Role[]
@@ -786,27 +898,31 @@ model Employee {
   vessel            Vessel?          @relation(fields: [vessel_id], references: [id])
   salary_grade      SalaryGrade?     @relation(fields: [salary_grade_id], references: [id])
 
-  user                        User?
-  interviewer                 Interviewer[]
-  employment_history          EmploymentHistory[]
-  hr_employee_status_period   HrEmployeeStatusPeriod[]
-  regularizationEligibility   RegularizationEligibility?
+  user                      User?
+  interviewer               Interviewer[]
+  employment_history        EmploymentHistory[]
+  hr_employee_status_period HrEmployeeStatusPeriod[]
+  regularizationEligibility RegularizationEligibility?
 
   // Leave system
-  leave_balances     HrLeaveBalance[]
-  leave_requests     HrLeaveRequest[]
-  //leave_transactions HrLeaveTransaction[]
-  //leave_actions      HrLeaveRequestAction[]
-  leave_dates        HrLeaveDates[]
+  leave_balances HrLeaveBalance[]
+  leave_requests HrLeaveRequest[]
+  //leave_transactions  HrLeaveTransaction[]
+  //leave_actions       HrLeaveRequestAction[]
+  leave_dates    HrLeaveDates[]
 
   // Overtime system
-  overtimes          HrOvertimeRequest[]  
+  overtimes HrOvertimeRequest[]
+
+  // Employee Relations
+  hr_er_case_intake_party HrErCaseIntakeParty[]
+  hr_er_case_party        HrErCaseParty[]
 
   // Additional details or Sms Push Notifs
   notification_preference EmployeeNotificationPreference?
-  sms_subscription   HrEmployeeSmsSubscription[]
-  mobile_numbers     MobileNumber[]
-  otp_verifications  OtpVerification[]
+  sms_subscription        HrEmployeeSmsSubscription[]
+  mobile_numbers          MobileNumber[]
+  otp_verifications       OtpVerification[]
 
   @@index([department_id])
   @@index([company_id])
@@ -814,16 +930,16 @@ model Employee {
 }
 
 model EmploymentHistory {
-  id                String           @id @default(uuid()) @db.Uuid
-  employee_id       String           @db.Uuid
-  effective_date    DateTime
-  type              EmploymentHistoryType
+  id             String                @id @default(uuid()) @db.Uuid
+  employee_id    String                @db.Uuid
+  effective_date DateTime
+  type           EmploymentHistoryType
 
-  previous_id       String? @db.Uuid
-  current_id        String? @db.Uuid
+  previous_id String? @db.Uuid
+  current_id  String? @db.Uuid
 
-  remarks           String?
-  is_active         Boolean          @default(true)
+  remarks   String?
+  is_active Boolean @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -834,7 +950,7 @@ model EmploymentHistory {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  hr_employee_status_period  HrEmployeeStatusPeriod[]
+  hr_employee_status_period HrEmployeeStatusPeriod[]
 
   employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
 
@@ -844,17 +960,17 @@ model EmploymentHistory {
 }
 
 model HrEmployeeStatusPeriod {
-  id   String @id @default(uuid()) @db.Uuid
+  id String @id @default(uuid()) @db.Uuid
 
   employee_id           String  @db.Uuid
   employment_history_id String? @db.Uuid
 
-  status      EmployeeStatusPeriodType
+  status EmployeeStatusPeriodType
 
-  from_date   DateTime
-  to_date     DateTime?
+  from_date DateTime
+  to_date   DateTime?
 
-  remarks     String?
+  remarks String?
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -862,8 +978,8 @@ model HrEmployeeStatusPeriod {
   createdBy User? @relation("HrEmployeeStatusPeriodCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("HrEmployeeStatusPeriodUpdatedBy", fields: [updated_by], references: [id])
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   employment_history EmploymentHistory? @relation(fields: [employment_history_id], references: [id], onDelete: Cascade)
   employee           Employee           @relation(fields: [employee_id], references: [id], onDelete: Cascade)
@@ -874,28 +990,28 @@ model HrEmployeeStatusPeriod {
 }
 
 model HrEmployeeSmsSubscription {
-  id                String    @id @default(uuid()) @db.Uuid
-  employee_id       String    @db.Uuid
-  mobile_number_id  String?   @db.Uuid
-  is_enabled        Boolean   @default(true)
-  is_verified       Boolean   @default(false)
+  id               String  @id @default(uuid()) @db.Uuid
+  employee_id      String  @db.Uuid
+  mobile_number_id String? @db.Uuid
+  is_enabled       Boolean @default(true)
+  is_verified      Boolean @default(false)
 
-  template          SmsTemplate
+  template SmsTemplate
 
-  subscribed_at     DateTime  @default(now())
-  verified_at       DateTime?
+  subscribed_at DateTime  @default(now())
+  verified_at   DateTime?
 
-  created_by        String?   @db.Uuid
-  updated_by        String?   @db.Uuid
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
   createdBy User? @relation("HrEmployeeSmsSubscriptionCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("HrEmployeeSmsSubscriptionUpdatedBy", fields: [updated_by], references: [id])
 
-  created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  employee          Employee  @relation(fields:[employee_id], references: [id], onDelete: Cascade)
-  mobile_number     MobileNumber? @relation(fields: [mobile_number_id], references:[id])
+  employee      Employee      @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  mobile_number MobileNumber? @relation(fields: [mobile_number_id], references: [id])
 
   @@unique([employee_id, template])
 }
@@ -911,12 +1027,12 @@ model EmployeeNotificationPreference {
 }
 
 model Vessel {
-  id  String  @id @default(uuid()) @db.Uuid
-  company_id  String    @db.Uuid
-  photo       String? @db.Text
-  name        String
-  type        VesselType  
-  is_active   Boolean @default(true)
+  id         String     @id @default(uuid()) @db.Uuid
+  company_id String     @db.Uuid
+  photo      String?    @db.Text
+  name       String
+  type       VesselType
+  is_active  Boolean    @default(true)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -927,85 +1043,85 @@ model Vessel {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  company       Company       @relation(fields: [company_id], references: [id])
-  
+  company Company @relation(fields: [company_id], references: [id])
+
   vesselDetails VesselDetails?
-  overtimes     HrOvertimeRequest[] 
+  overtimes     HrOvertimeRequest[]
   employee      Employee[]
 
   @@index([company_id])
 }
 
 model VesselDetails {
-  id                  String    @id @default(uuid()) @db.Uuid
-  vessel_id           String    @unique @db.Uuid
-  price_sold          String?
-  price_paid          String?
-  length_loa          String?
-  length_lbp          String?
-  breadth             String?
-  depth               String?
-  draft               String?
-  year_built          String?
-  builder             String?
-  place_built         String?
-  jap_dwt             String?
-  bale_capacity       String?
-  grain_capacity      String?
-  hatch_size          String?
-  hatch_type          String?
-  hull_type           String?
-  hull_number         String?
-  fuel_type           String?
-  gearbox_ratio       String?
-  year_last_drydocked String?
-  place_last_drydocked  String?
-  phil_dwt              Decimal?
-  gross_tonnage         String?
-  net_tonnage           String?
-  main_engine           String?
-  main_engine_rating    String?
-  main_engine_actual_rating   String?
-  model_serial_no       String?
-  estimated_fuel_consumption  String?
-  bow_thrusters         String?
-  propeller             String?
-  call_sign             String?
-  imo_no                String?
-  mmsi_no               String?
-  maiden_voyage         DateTime?
-  min_main_engine_rating        Float?
-  max_main_engine_rating        Float?
-  auxillary_engine_1_rating     Float?
-  auxillary_engine_2_rating     Float?
-  auxillary_engine_3_rating     Float?
-  generator_set_rating          Float?
-  crane_rating                  Float?
-  is_coupled_generator          Boolean?
-  min_service_knots             Float?
-  max_service_knots             Float?
-  bank_account_number           String?
-  bank_account_name             String?
+  id                         String    @id @default(uuid()) @db.Uuid
+  vessel_id                  String    @unique @db.Uuid
+  price_sold                 String?
+  price_paid                 String?
+  length_loa                 String?
+  length_lbp                 String?
+  breadth                    String?
+  depth                      String?
+  draft                      String?
+  year_built                 String?
+  builder                    String?
+  place_built                String?
+  jap_dwt                    String?
+  bale_capacity              String?
+  grain_capacity             String?
+  hatch_size                 String?
+  hatch_type                 String?
+  hull_type                  String?
+  hull_number                String?
+  fuel_type                  String?
+  gearbox_ratio              String?
+  year_last_drydocked        String?
+  place_last_drydocked       String?
+  phil_dwt                   Decimal?
+  gross_tonnage              String?
+  net_tonnage                String?
+  main_engine                String?
+  main_engine_rating         String?
+  main_engine_actual_rating  String?
+  model_serial_no            String?
+  estimated_fuel_consumption String?
+  bow_thrusters              String?
+  propeller                  String?
+  call_sign                  String?
+  imo_no                     String?
+  mmsi_no                    String?
+  maiden_voyage              DateTime?
+  min_main_engine_rating     Float?
+  max_main_engine_rating     Float?
+  auxillary_engine_1_rating  Float?
+  auxillary_engine_2_rating  Float?
+  auxillary_engine_3_rating  Float?
+  generator_set_rating       Float?
+  crane_rating               Float?
+  is_coupled_generator       Boolean?
+  min_service_knots          Float?
+  max_service_knots          Float?
+  bank_account_number        String?
+  bank_account_name          String?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  vessel Vessel @relation(fields: [vessel_id], references: [id])                 
+  vessel Vessel @relation(fields: [vessel_id], references: [id])
 }
 
 model HrEmployeeEvaluation {
   id String @id @default(uuid()) @db.Uuid
 
-  employee_id  String @db.Uuid
-  evaluator_id String @db.Uuid
+  employee_id  String  @db.Uuid
+  evaluator_id String  @db.Uuid
   verifier_id  String? @db.Uuid
   approver_id  String? @db.Uuid
 
   stage  EvaluationStage
   status EvaluationStatus @default(for_evaluation)
 
-  evaluation_period_start  DateTime
-  evaluation_period_end    DateTime
+  evaluation_period_start DateTime
+  evaluation_period_end   DateTime
 
   is_active Boolean @default(true)
 
@@ -1027,9 +1143,9 @@ model HrEmployeeEvaluation {
 
   employee  Employee @relation("HrEmployeeEvaluations", fields: [employee_id], references: [id], onDelete: Cascade)
   evaluator Employee @relation("EmployeeGivenEvaluations", fields: [evaluator_id], references: [id], onDelete: Cascade)
-  verifier  User? @relation("EmployeeEvaluationVerifier", fields: [verifier_id], references: [id])
-  approver  User? @relation("EmployeeEvaluationApprover", fields: [approver_id], references: [id])
-  
+  verifier  User?    @relation("EmployeeEvaluationVerifier", fields: [verifier_id], references: [id])
+  approver  User?    @relation("EmployeeEvaluationApprover", fields: [approver_id], references: [id])
+
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
 
@@ -1075,7 +1191,7 @@ model Role {
 
   department_id String? @db.Uuid
 
-  department  Department? @relation(fields: [department_id], references: [id])
+  department Department? @relation(fields: [department_id], references: [id])
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -1144,14 +1260,14 @@ model RolePermission {
 }
 
 model UserPermission {
-  id                 String @id @default(uuid()) @db.Uuid
-  action             String
-  user_id            String @db.Uuid
-  user_role_id       String @db.Uuid
-  role_permission_id String? @db.Uuid
+  id                       String  @id @default(uuid()) @db.Uuid
+  action                   String
+  user_id                  String  @db.Uuid
+  user_role_id             String  @db.Uuid
+  role_permission_id       String? @db.Uuid
   sub_module_permission_id String? @db.Uuid
 
-  source     PermissionSource?
+  source PermissionSource?
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -1162,10 +1278,10 @@ model UserPermission {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  role_permission       RolePermission?     @relation(fields: [role_permission_id], references: [id], onDelete: Cascade)
+  role_permission       RolePermission?      @relation(fields: [role_permission_id], references: [id], onDelete: Cascade)
   sub_module_permission SubModulePermission? @relation(fields: [sub_module_permission_id], references: [id], onDelete: Cascade)
-  user                  User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_role             UserRole            @relation(fields: [user_role_id], references: [id], onDelete: Cascade)
+  user                  User                 @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_role             UserRole             @relation(fields: [user_role_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, sub_module_permission_id])
   @@index([user_id])
@@ -1214,18 +1330,18 @@ model CareerPosting {
 }
 
 model Applicant {
-  id                 String            @id @default(uuid()) @db.Uuid
-  career_id          String            @db.Uuid
-  first_name         String
-  middle_name        String?
-  last_name          String
-  email              String            @unique
-  mobile_number      String
-  application_source ApplicationSource
-  application_status ApplicationStatus @default(applied)
-  date_applied       DateTime
-  is_active          Boolean           @default(true)
-  completed_interview Boolean          @default(false)
+  id                  String            @id @default(uuid()) @db.Uuid
+  career_id           String            @db.Uuid
+  first_name          String
+  middle_name         String?
+  last_name           String
+  email               String            @unique
+  mobile_number       String
+  application_source  ApplicationSource
+  application_status  ApplicationStatus @default(applied)
+  date_applied        DateTime
+  is_active           Boolean           @default(true)
+  completed_interview Boolean           @default(false)
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -1236,31 +1352,31 @@ model Applicant {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  careerPosting CareerPosting       @relation(fields: [career_id], references: [id])
-  interviewer               Interviewer[]
+  careerPosting CareerPosting @relation(fields: [career_id], references: [id])
+  interviewer   Interviewer[]
 }
 
 model Attachments {
-  id              String   @id @default(uuid()) @db.Uuid
+  id String @id @default(uuid()) @db.Uuid
 
   // polymorphic relation
-  transaction_type String   // "Applicant", "Order", "Invoice"
-  transaction_id   String   @db.Uuid
+  transaction_type String // "Applicant", "Order", "Invoice"
+  transaction_id   String @db.Uuid
 
-  file_name       String
-  file_path       String
-  mime_type       String?
-  file_desc       String?
-  file_size       Int?
+  file_name String
+  file_path String
+  mime_type String?
+  file_desc String?
+  file_size Int?
 
-  created_by      String?  @db.Uuid
-  updated_by      String?  @db.Uuid
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
   createdBy User? @relation("AttachmentsCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("AttachmentsUpdatedBy", fields: [updated_by], references: [id])
 
-  created_at      DateTime @default(now())
-  updated_at      DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([transaction_type, transaction_id])
 }
@@ -1270,7 +1386,7 @@ model Interviewer {
   employee_id  String         @db.Uuid
   applicant_id String         @db.Uuid
   stage        InterviewStage //ADD THIs -> for enums
-  is_completed Boolean        @default(false)    
+  is_completed Boolean        @default(false)
 
   date_of_interview DateTime?
   remarks           String?
@@ -1287,8 +1403,8 @@ model Interviewer {
   updated_at DateTime @updatedAt
 
   examinationRating ExaminationRating[]
-  applicant         Applicant   @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
-  employee          Employee    @relation(fields: [employee_id], references: [id])
+  applicant         Applicant           @relation(fields: [applicant_id], references: [id], onDelete: Cascade)
+  employee          Employee            @relation(fields: [employee_id], references: [id])
 }
 
 model ExaminationRating {
@@ -1361,17 +1477,17 @@ model HrLeaveCategory {
   createdBy User? @relation("HrLeaveCategoryCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("HrLeaveCategoryUpdatedBy", fields: [updated_by], references: [id])
 
-  created_at          DateTime             @default(now())
-  updated_at          DateTime             @updatedAt
-  hrLeaveBalances     HrLeaveBalance[]
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+  hrLeaveBalances HrLeaveBalance[]
   //hrLeaveTransactions HrLeaveTransaction[]
-  hrLeaveRequest        HrLeaveRequest[]
+  hrLeaveRequest  HrLeaveRequest[]
 }
 
 model HrLeaveRequest {
   id                String             @id @default(uuid()) @db.Uuid
   employee_id       String             @db.Uuid
-  leave_category_id String?             @db.Uuid
+  leave_category_id String?            @db.Uuid
   date_from         DateTime
   date_to           DateTime
   return_date       DateTime?
@@ -1382,38 +1498,38 @@ model HrLeaveRequest {
   status            LeaveRequestStatus @default(draft)
   is_active         Boolean            @default(true)
 
-  reliever_id String   @db.Uuid
-  verifier_id String?  @db.Uuid
-  approver_id String?  @db.Uuid
+  reliever_id String  @db.Uuid
+  verifier_id String? @db.Uuid
+  approver_id String? @db.Uuid
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  created_by   String? @db.Uuid
-  updated_by   String? @db.Uuid
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
   createdBy User? @relation("HrLeaveRequestCreatedBy", fields: [created_by], references: [id])
   updatedBy User? @relation("HrLeaveRequestUpdatedBy", fields: [updated_by], references: [id])
 
-  category  HrLeaveCategory? @relation(fields: [leave_category_id], references: [id])
+  category HrLeaveCategory? @relation(fields: [leave_category_id], references: [id])
 
   employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
 
-  reliever User   @relation("LeaveRequestReliever", fields: [reliever_id], references: [id])
-  verifier User?  @relation("LeaveRequestVerifier", fields: [verifier_id], references: [id])
-  approver User?  @relation("LeaveRequestApprover", fields: [approver_id], references: [id])
+  reliever User  @relation("LeaveRequestReliever", fields: [reliever_id], references: [id])
+  verifier User? @relation("LeaveRequestVerifier", fields: [verifier_id], references: [id])
+  approver User? @relation("LeaveRequestApprover", fields: [approver_id], references: [id])
 
   //hr_leave_transactions HrLeaveTransaction[]
-  hr_leave_dates        HrLeaveDates[]
-  hr_extended_leave_request  HrExtendedLeaveRequest[]
+  hr_leave_dates            HrLeaveDates[]
+  hr_extended_leave_request HrExtendedLeaveRequest[]
 
   //actions HrLeaveRequestAction[]
 }
 
 model HrExtendedLeaveRequest {
-  id                            String    @id @default(uuid()) @db.Uuid
-  leave_request_id              String    @db.Uuid
-  reliever_id                   String    @db.Uuid
+  id                            String             @id @default(uuid()) @db.Uuid
+  leave_request_id              String             @db.Uuid
+  reliever_id                   String             @db.Uuid
   extension_date_from           DateTime
   extension_date_to             DateTime
   return_date                   DateTime?
@@ -1422,13 +1538,13 @@ model HrExtendedLeaveRequest {
   address_while_on_leave        String
   no_of_days                    Float?
   contact_no_while_on_leave     String
-  is_active                     Boolean   @default(true)
+  is_active                     Boolean            @default(true)
 
-  verifier_id  String? @db.Uuid
-  approver_id  String? @db.Uuid
-  
-  created_by   String? @db.Uuid
-  updated_by   String? @db.Uuid
+  verifier_id String? @db.Uuid
+  approver_id String? @db.Uuid
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -1447,41 +1563,41 @@ model HrExtendedLeaveRequest {
 }
 
 model HrOvertimeRequest {
-  id                 String    @id @default(uuid()) @db.Uuid
-  employee_id        String    @db.Uuid
-  vessel_id          String?   @db.Uuid
-  user_location_id   String?   @db.Uuid
-  overtime_rate_id   String?   @db.Uuid
-  date_filed         DateTime  @default(now()) 
-  overtime_date      DateTime
-  time_from          DateTime?   @db.Time
-  time_to            DateTime?   @db.Time
-  total_hours        Float
-  rate               Decimal?  @db.Decimal(10,2)
-  reason             String?   @db.Text
-  is_active          Boolean   @default(true)
-  status             OvertimeStatus @default(draft)
-  is_computed        Boolean?  @default(false)
+  id               String         @id @default(uuid()) @db.Uuid
+  employee_id      String         @db.Uuid
+  vessel_id        String?        @db.Uuid
+  user_location_id String?        @db.Uuid
+  overtime_rate_id String?        @db.Uuid
+  date_filed       DateTime       @default(now())
+  overtime_date    DateTime
+  time_from        DateTime?      @db.Time
+  time_to          DateTime?      @db.Time
+  total_hours      Float
+  rate             Decimal?       @db.Decimal(10, 2)
+  reason           String?        @db.Text
+  is_active        Boolean        @default(true)
+  status           OvertimeStatus @default(draft)
+  is_computed      Boolean?       @default(false)
 
-  verifier_id  String? @db.Uuid
-  approver_id  String? @db.Uuid
-  
-  created_by   String? @db.Uuid
-  updated_by   String? @db.Uuid
+  verifier_id String? @db.Uuid
+  approver_id String? @db.Uuid
 
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
-  createdBy    User? @relation("HrOvertimeRequestCreatedBy", fields: [created_by], references: [id])
-  updatedBy    User? @relation("HrOvertimeRequestUpdatedBy", fields: [updated_by], references: [id])
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  employee           Employee  @relation(fields: [employee_id], references: [id], onDelete: Cascade)
-  verifier           User?     @relation("OvertimeRequestVerifier", fields: [verifier_id], references: [id])
-  approver           User?     @relation("OvertimeRequestApprover", fields: [approver_id], references: [id])
+  createdBy User? @relation("HrOvertimeRequestCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrOvertimeRequestUpdatedBy", fields: [updated_by], references: [id])
 
-  vessel             Vessel?   @relation(fields: [vessel_id], references: [id])
-  userLocation       UserLocation?   @relation(fields: [user_location_id], references: [id])  
-  overtimeRate       HrOvertimeRate? @relation(fields: [overtime_rate_id], references: [id])
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  verifier User?    @relation("OvertimeRequestVerifier", fields: [verifier_id], references: [id])
+  approver User?    @relation("OvertimeRequestApprover", fields: [approver_id], references: [id])
+
+  vessel       Vessel?         @relation(fields: [vessel_id], references: [id])
+  userLocation UserLocation?   @relation(fields: [user_location_id], references: [id])
+  overtimeRate HrOvertimeRate? @relation(fields: [overtime_rate_id], references: [id])
 
   @@index([employee_id, vessel_id, overtime_rate_id])
 }
@@ -1489,11 +1605,11 @@ model HrOvertimeRequest {
 model HrOvertimeRate {
   id        String  @id @default(uuid()) @db.Uuid
   type      String  @db.Text
-  rate      Float    
+  rate      Float
   is_active Boolean @default(true)
 
-  created_by   String? @db.Uuid
-  updated_by   String? @db.Uuid
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -1506,12 +1622,12 @@ model HrOvertimeRate {
 
 //Hr Leave Balance (per year, per type)
 model HrLeaveBalance {
-  id                String @id @default(uuid()) @db.Uuid
-  employee_id       String @db.Uuid
-  leave_category_id String @db.Uuid
+  id                String               @id @default(uuid()) @db.Uuid
+  employee_id       String               @db.Uuid
+  leave_category_id String               @db.Uuid
   year              Int
   total             Int
-  used              Int    @default(0)
+  used              Int                  @default(0)
   transaction_type  LeaveTransactionType
 
   employee Employee        @relation(fields: [employee_id], references: [id], onDelete: Cascade)
@@ -1522,20 +1638,20 @@ model HrLeaveBalance {
 }
 
 model HrLeaveDates {
-  id                            String   @id @default(uuid()) @db.Uuid
-  hr_leave_request_id           String   @db.Uuid
-  hr_extended_leave_request_id  String?  @db.Uuid
-  employee_id                   String   @db.Uuid
-  leave_compensation            LeaveCompensation
-  fraction                      Float    @default(1.0) //if halday = 0.5 and fullday = 1.0
-  leave_date                    DateTime
+  id                           String            @id @default(uuid()) @db.Uuid
+  hr_leave_request_id          String            @db.Uuid
+  hr_extended_leave_request_id String?           @db.Uuid
+  employee_id                  String            @db.Uuid
+  leave_compensation           LeaveCompensation
+  fraction                     Float             @default(1.0) //if halday = 0.5 and fullday = 1.0
+  leave_date                   DateTime
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   hr_extended_leave_request HrExtendedLeaveRequest? @relation(fields: [hr_extended_leave_request_id], references: [id])
-  hr_leave_request HrLeaveRequest  @relation(fields: [hr_leave_request_id], references: [id])
-  employee         Employee        @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  hr_leave_request          HrLeaveRequest          @relation(fields: [hr_leave_request_id], references: [id])
+  employee                  Employee                @relation(fields: [employee_id], references: [id], onDelete: Cascade)
 }
 
 //Hr Leave Transaction (audit trail for employee leave)
@@ -1567,8 +1683,8 @@ model SalaryGrade {
   is_confidential Boolean
   is_active       Boolean @default(true)
 
-  created_by   String? @db.Uuid
-  updated_by   String? @db.Uuid
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -1579,81 +1695,455 @@ model SalaryGrade {
   employee Employee[]
 }
 
-model HrErCaseArticle {
-  id          String    @id @default(uuid()) @db.Uuid
-  title       String    @db.Text
-  is_active   Boolean   @default(true)
+////////////////////////////////////////
+// HR EMPLOYEE RELATIONS
+////////////////////////////////////////
 
-  created_by   String? @db.Uuid
-  updated_by   String? @db.Uuid
+model HrErCaseArticle {
+  id        String  @id @default(uuid()) @db.Uuid
+  title     String  @db.Text
+  is_active Boolean @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  createdBy  User?  @relation("HrErCaseArticleCreatedBy", fields: [created_by], references: [id])
-  updatedBy  User?  @relation("HrErCaseArticleUpdatedBy", fields: [updated_by], references: [id])
+  createdBy User? @relation("HrErCaseArticleCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrErCaseArticleUpdatedBy", fields: [updated_by], references: [id])
 
   hr_er_case_violations HrErCaseViolation[]
 }
 
 model HrErCaseViolation {
-  id          String   @id @default(uuid()) @db.Uuid
-  article_id  String   @db.Uuid
-  section     Int
-  behavior    String   @db.Text
-  category    String
-  is_active   Boolean  @default(true)
+  id         String  @id @default(uuid()) @db.Uuid
+  article_id String  @db.Uuid
+  section    Int
+  behavior   String  @db.Text
+  category   String
+  is_active  Boolean @default(true)
 
-  created_by   String? @db.Uuid
-  updated_by   String? @db.Uuid
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  createdBy  User?  @relation("HrErCaseViolationCreatedBy", fields: [created_by], references: [id])
-  updatedBy  User?  @relation("HrErCaseViolationUpdatedBy", fields: [updated_by], references: [id])
+  createdBy User? @relation("HrErCaseViolationCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrErCaseViolationUpdatedBy", fields: [updated_by], references: [id])
 
-  article    HrErCaseArticle @relation(fields: [article_id], references: [id], onDelete: Cascade)
+  article HrErCaseArticle @relation(fields: [article_id], references: [id], onDelete: Cascade)
+
+  hr_er_case_party_violations  HrErCasePartyViolation[]
+  hr_er_case_intake_violations HrErCaseIntakeViolation[]
 
   @@index([article_id])
+}
+
+model HrErCaseTypeOfOffense {
+  id              String      @id @default(uuid())  @db.Uuid
+  type_of_offense String
+  description     String      @db.Text
+  is_active       Boolean     @default(true)
+
+  created_by      String?     @db.Uuid
+  updated_by      String?     @db.Uuid
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+
+  createdBy       User?       @relation("HrErCaseTypeOfOffenseCreatedBy", fields: [created_by], references: [id])
+  updatedBy       User?       @relation("HrErCaseTypeOfOffenseUpdatedBy", fields: [updated_by], references: [id])
+
+  hr_er_case_party_offenses   HrErCasePartyOffense[]
+}
+
+// ---------- CASE INTAKE (pre-formal reports) ----------
+
+model HrErCaseIntake {
+  id                 String           @id @default(uuid()) @db.Uuid
+  reported_by        String           @db.Uuid
+  incident_narrative String           @db.Text
+  incident_date      DateTime?
+  status             HrErIntakeStatus @default(pending_review)
+  case_id            String?          @unique @db.Uuid
+
+  created_by String?  @db.Uuid
+  updated_by String?  @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  reportedBy User      @relation("HrErCaseIntakeReportedBy", fields: [reported_by], references: [id])
+  createdBy  User?     @relation("HrErCaseIntakeCreatedBy", fields: [created_by], references: [id])
+  updatedBy  User?     @relation("HrErCaseIntakeUpdatedBy", fields: [updated_by], references: [id])
+  case       HrErCase? @relation(fields: [case_id], references: [id])
+
+  parties     HrErCaseIntakeParty[]
+  violations  HrErCaseIntakeViolation[]
+  attachments HrErCaseAttachment[]
+
+  @@index([status])
+}
+
+model HrErCaseIntakeParty {
+  id          String            @id @default(uuid()) @db.Uuid
+  intake_id   String            @db.Uuid
+  employee_id String            @db.Uuid
+  role        HrErCasePartyRole
+
+  intake   HrErCaseIntake @relation(fields: [intake_id], references: [id], onDelete: Cascade)
+  employee Employee       @relation(fields: [employee_id], references: [id])
+
+  @@unique([intake_id, employee_id, role])
+  @@index([intake_id])
+}
+
+model HrErCaseIntakeViolation {
+  id           String @id @default(uuid()) @db.Uuid
+  intake_id    String @db.Uuid
+  violation_id String @db.Uuid
+
+  intake    HrErCaseIntake    @relation(fields: [intake_id], references: [id], onDelete: Cascade)
+  violation HrErCaseViolation @relation(fields: [violation_id], references: [id])
+
+  @@unique([intake_id, violation_id])
+}
+
+// ---------- CASE ----------
+
+model HrErCase {
+  id                 String         @id @default(uuid()) @db.Uuid
+  company_id         String         @db.Uuid
+  control_number     Int
+  case_code          String         @unique // ER-{ABBR}-{YYYY}-{0000}
+  incident_location  String
+  assigned_location  String?
+  incident_narrative String?        @db.Text
+  closing_remarks    String?        @db.Text
+  incident_date      DateTime
+  report_date        DateTime
+  stage              HrErCaseStage  @default(notice_to_explain) // cached: MIN(stage) across active respondents
+  stage_started_at   DateTime       @default(now())
+  status             HrErCaseStatus @default(open) // closed once ALL respondents reach case_closed
+  closed_at          DateTime?
+
+  created_by String?  @db.Uuid
+  updated_by String?  @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  company   Company @relation(fields: [company_id], references: [id])
+  createdBy User?   @relation("HrErCaseCreatedBy", fields: [created_by], references: [id])
+  updatedBy User?   @relation("HrErCaseUpdatedBy", fields: [updated_by], references: [id])
+
+  intake        HrErCaseIntake?
+  parties       HrErCaseParty[]
+  attachments   HrErCaseAttachment[]
+  activity_logs HrErCaseActivityLog[]
+
+  @@unique([company_id, control_number])
+  @@index([stage])
+  @@index([status])
+}
+
+// ---------- CASE PARTIES (Respondent / Complainant / Witness — normalized) ----------
+
+model HrErCaseParty {
+  id          String            @id @default(uuid()) @db.Uuid
+  case_id     String            @db.Uuid
+  employee_id String            @db.Uuid
+  role        HrErCasePartyRole
+
+  // respondent-only fields, nullable for complainant/witness rows still possible for all involve employee to have stages
+  level            HrErCaseLevel?
+  remarks          String?        @db.Text
+  stage            HrErCaseStage? // null for complainant/witness - they dont progress through stages
+  stage_started_at DateTime?
+
+  created_by String?  @db.Uuid
+  updated_by String?  @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  case      HrErCase @relation(fields: [case_id], references: [id], onDelete: Cascade)
+  employee  Employee @relation(fields: [employee_id], references: [id])
+  createdBy User?    @relation("HrErCasePartyCreatedBy", fields: [created_by], references: [id])
+  updatedBy User?    @relation("HrErCasePartyUpdatedBy", fields: [updated_by], references: [id])
+
+  violations    HrErCasePartyViolation[]
+  offenses      HrErCasePartyOffense[]
+  actions       HrErCasePartyAction[]
+  nte           HrErCaseNte?
+  explanation   HrErCaseExplanation?
+  hearings      HrErCaseHearing[]
+  decision      HrErCaseDecision?
+  stage_logs    HrErCaseStageLog[]
+  activity_logs HrErCaseActivityLog[]
+
+  @@unique([case_id, employee_id, role])
+  @@index([case_id])
+  @@index([role])
+}
+
+model HrErCasePartyViolation {
+  id           String @id @default(uuid()) @db.Uuid
+  party_id     String @db.Uuid
+  violation_id String @db.Uuid
+
+  party     HrErCaseParty     @relation(fields: [party_id], references: [id], onDelete: Cascade)
+  violation HrErCaseViolation @relation(fields: [violation_id], references: [id])
+
+  @@unique([party_id, violation_id])
+  @@index([party_id])
+}
+
+model HrErCasePartyOffense {
+  id         String @id @default(uuid()) @db.Uuid
+  party_id   String @db.Uuid
+  offense_id String @db.Uuid
+
+  party   HrErCaseParty         @relation(fields: [party_id], references: [id], onDelete: Cascade)
+  offense HrErCaseTypeOfOffense @relation(fields: [offense_id], references: [id])
+
+  @@unique([party_id, offense_id])
+  @@index([party_id])
+}
+
+model HrErCasePartyAction {
+  id                String         @id @default(uuid()) @db.Uuid
+  party_id          String         @db.Uuid
+  action_type       HrErActionType
+  effectivity_start DateTime
+  effectivity_end   DateTime
+  remarks           String?        @db.Text
+
+  created_by String?  @db.Uuid
+  created_at DateTime @default(now())
+
+  party     HrErCaseParty @relation(fields: [party_id], references: [id], onDelete: Cascade)
+  createdBy User?         @relation("HrErCasePartyActionCreatedBy", fields: [created_by], references: [id])
+
+  @@index([party_id])
+}
+
+// ---------- NOTICE TO EXPLAIN ----------
+
+model HrErCaseNte {
+  id               String                 @id @default(uuid()) @db.Uuid
+  party_id         String                 @unique @db.Uuid
+  issued_at        DateTime?
+  due_date         DateTime?
+  form_url         String?
+  status           HrErApprovalStatus     @default(pending)
+  service_channel  HrErNteServiceChannel?
+  reference_number String?
+
+  created_by String?  @db.Uuid
+  updated_by String?  @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  createdBy User? @relation("HrErCaseNteCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrErCaseNteUpdatedBy", fields: [updated_by], references: [id])
+
+  party     HrErCaseParty      @relation(fields: [party_id], references: [id], onDelete: Cascade)
+  approvals HrErCaseApproval[]
+}
+
+// ---------- WRITTEN EXPLANATION ----------
+model HrErCaseExplanation {
+  id            String                  @id @default(uuid()) @db.Uuid
+  party_id      String                  @unique @db.Uuid
+  status        HrErExplanationStatus   @default(awaiting_response)
+  channel       HrErExplanationChannel?
+  response_text String?                 @db.Text
+  file_url      String?
+  received_at   DateTime?
+
+  created_by String?  @db.Uuid
+  updated_by String?  @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  party HrErCaseParty @relation(fields: [party_id], references: [id], onDelete: Cascade)
+}
+
+// ---------- ADMINISTRATIVE HEARING ----------
+model HrErCaseHearing {
+  id               String              @id @default(uuid()) @db.Uuid
+  party_id         String              @db.Uuid
+  scheduled_at     DateTime?
+  channel          HrErHearingChannel?
+  status           HrErHearingStatus   @default(scheduled)
+  minutes_file_url String?
+  remarks          String?             @db.Text
+
+  created_by String?  @db.Uuid
+  updated_by String?  @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  party HrErCaseParty @relation(fields: [party_id], references: [id], onDelete: Cascade)
+
+  @@index([party_id])
+}
+
+// ---------- NOTICE OF DECISION ----------
+
+model HrErCaseDecision {
+  id                String           @id @default(uuid()) @db.Uuid
+  party_id          String           @unique @db.Uuid
+  decision_type     HrErDecisionType
+  effectivity_start DateTime?
+  effectivity_end   DateTime?
+  issued_at         DateTime?
+  signed_file_url   String?
+  remarks           String?          @db.Text
+
+  created_by String?  @db.Uuid
+  updated_by String?  @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  createdBy User? @relation("HrErCaseDecisionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrErCaseDecisionUpdatedBy", fields: [updated_by], references: [id])
+
+  party     HrErCaseParty      @relation(fields: [party_id], references: [id], onDelete: Cascade)
+  approvals HrErCaseApproval[]
+}
+
+// ---------- SHARED APPROVAL / REVIEWER STEP (reused by NTE + Decision) ----------
+
+model HrErCaseApproval {
+  id          String               @id @default(uuid()) @db.Uuid
+  step_type   HrErApprovalStepType
+  nte_id      String?              @db.Uuid
+  decision_id String?              @db.Uuid
+  reviewer_id String               @db.Uuid
+  status      HrErApprovalStatus   @default(pending)
+  remarks     String?              @db.Text
+  reviewed_at DateTime?
+  sequence    Int                  @default(0)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  nte      HrErCaseNte?      @relation(fields: [nte_id], references: [id], onDelete: Cascade)
+  decision HrErCaseDecision? @relation(fields: [decision_id], references: [id], onDelete: Cascade)
+  reviewer User              @relation("HrErCaseApprovalReviewer", fields: [reviewer_id], references: [id])
+
+  @@index([nte_id])
+  @@index([decision_id])
+}
+
+// ---------- ATTACHMENTS (shared by intake + case) ----------
+
+model HrErCaseAttachment {
+  id        String  @id @default(uuid()) @db.Uuid
+  intake_id String? @db.Uuid
+  case_id   String? @db.Uuid
+
+  file_name String
+  file_url  String
+  file_type String?
+
+  uploaded_by String?  @db.Uuid
+  created_at  DateTime @default(now())
+
+  intake     HrErCaseIntake? @relation(fields: [intake_id], references: [id], onDelete: Cascade)
+  case       HrErCase?       @relation(fields: [case_id], references: [id], onDelete: Cascade)
+  uploadedBy User?           @relation("HrErCaseAttachmentUploadedBy", fields: [uploaded_by], references: [id])
+
+  @@index([intake_id])
+  @@index([case_id])
+}
+
+// Powers the "Activity Trail" — one shared log across every stage
+model HrErCaseActivityLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  case_id     String   @db.Uuid
+  party_id    String?  @db.Uuid // null for case-level events like "Case closed"
+  actor_id    String   @db.Uuid
+  action      String // e.g. "nte_issued", "explanation_received", "hearing_conducted"
+  metadata    Json?
+  occurred_at DateTime @default(now())
+
+  case  HrErCase       @relation(fields: [case_id], references: [id], onDelete: Cascade)
+  party HrErCaseParty? @relation(fields: [party_id], references: [id], onDelete: SetNull)
+  actor User           @relation("HrErCaseActivityLogActor", fields: [actor_id], references: [id])
+
+  @@index([case_id])
+}
+
+model HrErCaseStageLog {
+  id         String        @id @default(uuid()) @db.Uuid
+  party_id   String        @db.Uuid
+  stage      HrErCaseStage
+  sla_days   Int
+  entered_at DateTime      @default(now())
+  exited_at  DateTime?
+
+  party HrErCaseParty @relation(fields: [party_id], references: [id], onDelete: Cascade)
+
+  // case            HrErCase       @relation(fields: [case_id], references: [id], onDelete: Cascade)
+  // hrErCaseParty   HrErCaseParty? @relation(fields: [hrErCasePartyId], references: [id])
+  // hrErCasePartyId String?        @db.Uuid
+
+  @@index([party_id])
+}
+
+////////////////////////////////////////
+// CONTROL NUMBER DEDICATED
+////////////////////////////////////////
+model SequenceCounter {
+  id           String @id @default(uuid()) @db.Uuid
+  company_id   String @db.Uuid
+  sequence_key String
+  year         Int
+  last_number  Int    @default(0)
+
+  company Company @relation(fields: [company_id], references: [id])
+
+  @@unique([company_id, sequence_key, year])
+  @@index([company_id])
 }
 
 ////////////////////////////////////////
 // AUDIT TRAIL & DATABASE CONTROL
 ////////////////////////////////////////
 model OtpVerification {
-  id      String  @id @default(uuid()) @db.Uuid
+  id String @id @default(uuid()) @db.Uuid
 
   employee_id String  @db.Uuid
-  user_id String?  @db.Uuid
-  
-  code    String
-  purpose OtpPurposeTemplate  // FORGOT_PASSWORD, LOGIN, VERIFY_PHONE .etc
+  user_id     String? @db.Uuid
 
-  is_used    Boolean @default(false)
+  code    String
+  purpose OtpPurposeTemplate // FORGOT_PASSWORD, LOGIN, VERIFY_PHONE .etc
+
+  is_used    Boolean   @default(false)
   expires_at DateTime
   used_at    DateTime?
 
   created_at DateTime @default(now())
 
-  employee   Employee  @relation(fields: [employee_id], references: [id], onDelete: Cascade)
-  user       User?     @relation(fields: [user_id], references: [id], onDelete: Cascade) 
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model WorkflowAction {
-  id               String              @id @default(uuid()) @db.Uuid
- 
-  //what action was performed
-  actionable_type  String              // get table name from actionable_id
-  actionable_id    String              @db.Uuid
-  action           WorkflowActionType  
-  
-  //who performed the action
-  acted_by         String              @db.Uuid
-  acted_at         DateTime?           @default(now())           
-  metadata         Json?
+  id String @id @default(uuid()) @db.Uuid
 
-  acted_by_user    User        @relation(fields: [acted_by], references: [id], onDelete: Cascade)
+  //what action was performed
+  actionable_type String // get table name from actionable_id
+  actionable_id   String             @db.Uuid
+  action          WorkflowActionType
+
+  //who performed the action
+  acted_by String    @db.Uuid
+  acted_at DateTime? @default(now())
+  metadata Json?
+
+  acted_by_user User @relation(fields: [acted_by], references: [id], onDelete: Cascade)
 }
 
 model AuditTrail {
@@ -1771,9 +2261,9 @@ model SubModule {
 }
 
 model SubModuleAction {
-  id     String @id @default(uuid()) @db.Uuid
-  action String 
-  slug   String?  @unique
+  id     String  @id @default(uuid()) @db.Uuid
+  action String
+  slug   String? @unique
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -1794,7 +2284,7 @@ model SubModulePermission {
   sub_module_action_id String @db.Uuid
   sub_module_id        String @db.Uuid
 
-  code                 String? @unique
+  code String? @unique
 
   created_by String? @db.Uuid
   updated_by String? @db.Uuid
@@ -1810,8 +2300,8 @@ model SubModulePermission {
   sub_module        SubModule        @relation(fields: [sub_module_id], references: [id], onDelete: Cascade)
   sub_module_action SubModuleAction  @relation(fields: [sub_module_action_id], references: [id], onDelete: Cascade)
 
-  @@index([sub_module_id])
   @@unique([sub_module_action_id, sub_module_id])
+  @@index([sub_module_id])
 }
 
 ////////////////////////////////////////
