@@ -7921,7 +7921,7 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/cases/party/{partyId}/no-response": {
+    "/v2/hris/employee-relations/disciplinary-cases/party/{partyId}/no-response": {
       "put": {
         "operationId": "DisciplinaryCaseController_updateMarkNoResponse_v2",
         "parameters": [

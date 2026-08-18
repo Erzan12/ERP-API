@@ -99,7 +99,7 @@ export class DisciplinaryCaseController {
     return this.disciplinaryCaseService.advanceAllEligible(caseId, user);
   }
 
-  @Put('employee-relations/cases/party/:partyId/no-response')
+  @Put('employee-relations/disciplinary-cases/party/:partyId/no-response')
   @ApiOperation({ summary: 'Party is no show will be mark as no response' })
   @ApiPatchResponse('Party or Employee involved mark as no show')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
