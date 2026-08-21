@@ -3792,7 +3792,6 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "",
               "type": "boolean"
             }
           },

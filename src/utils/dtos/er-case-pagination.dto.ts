@@ -76,14 +76,20 @@ export class ErCaseTypesOfOffensePaginationDto {
   @ApiPropertyOptional({ default: '' })
   search?: string;
 
+  // @IsOptional()
+  // @Transform(({ value }) => {
+  //   if (value === 'true') return true;
+  //   if (value === 'false') return false;
+  //   return value;
+  // })
+  // @IsBoolean()
+  // @ApiPropertyOptional({ default: '' })
+  // status?: boolean;
+
   @IsOptional()
-  @Transform(({ value }) => {
-    if (value === 'true') return true;
-    if (value === 'false') return false;
-    return value;
-  })
+  @Transform(({ value }) => value === 'true')
   @IsBoolean()
-  @ApiPropertyOptional({ default: '' })
+  @ApiPropertyOptional()
   status?: boolean;
 
   @IsOptional()
