@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ErCaseTypesOfOffenseService } from './er-case-types-of-offense.service';
@@ -27,6 +28,7 @@ import {
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
+import { ErCaseTypesOfOffensePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
 
 @ApiTags('Mastertable - Employee Relation Case(Type of Offense)')
 @Controller({ path: 'mastertable', version: '2' })
@@ -54,8 +56,11 @@ export class ErCaseTypesOfOffenseController {
   @ApiOperation({ summary: 'Get all ER Case Type of Offenses' })
   @ApiGetResponse('List of ER Case Violations')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
-  getErTypeOfOffenses(@SessionUser() user: RequestUser) {
-    return this.erCaseTypesOfOffenseService.getTypeOfOffenses(user);
+  getErTypeOfOffenses(
+    @SessionUser() user: RequestUser,
+    @Query() dto: ErCaseTypesOfOffensePaginationDto,
+  ) {
+    return this.erCaseTypesOfOffenseService.getTypeOfOffenses(user, dto);
   }
 
   @Post('er-case-type-of-offenses')
