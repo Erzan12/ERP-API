@@ -11,6 +11,8 @@ import {
   UpdateErCaseTypesOfOffenseDto,
 } from './dto/types-of-offense.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
+import { ErCaseTypesOfOffensePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ErCaseTypesOfOffenseService {
@@ -71,7 +73,9 @@ export class ErCaseTypesOfOffenseService {
     };
   }
 
-  async getTypeOfOffenses(user: RequestUser) {
+  async getTypeOfOffenses(user: RequestUser, dto: ErCaseTypesOfOffensePaginationDto) {
+    const { search, status, sortBy, order, page, perPage } = dto;
+    
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -108,8 +112,50 @@ export class ErCaseTypesOfOffenseService {
       );
     }
 
-    const erCaseTypeOfOffenses =
-      await this.prisma.hrErCaseTypeOfOffense.findMany();
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: Prisma.HrErCaseTypeOfOffenseWhereInput = {
+      is_active: true,
+    }
+
+    if (dto.status !== undefined) {
+      whereCondition.is_active = dto.status
+    }
+
+    if (search) {
+      const orConditions: Prisma.HrErCaseTypeOfOffenseWhereInput[] = [];
+    
+      orConditions.push({
+        type_of_offense: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      });
+
+      whereCondition.OR = orConditions;
+    }
+
+    const allowSortFields = ['id', 'created_at', 'updated_at'];
+
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy: 'created_at';
+
+    const [total, erCaseTypeOfOffenses] = await this.prisma.$transaction([
+      this.prisma.hrErCaseTypeOfOffense.count({
+        where: {
+          ...whereCondition,
+        },
+      }),
+      this.prisma.hrErCaseTypeOfOffense.findMany({
+        where: {
+          ...whereCondition,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [safeSortBy]: order,
+        },
+      }),
+    ]);
 
     if (erCaseTypeOfOffenses.length === 0) {
       throw new NotFoundException('No Type of Offenses yet added.');
@@ -118,6 +164,9 @@ export class ErCaseTypesOfOffenseService {
     return {
       status: 'success',
       message: 'Here is the list of Type of Offenses',
+      count: total,
+      page,
+      perPage,
       erCaseTypeOfOffenses,
     };
   }
