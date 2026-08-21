@@ -73,9 +73,12 @@ export class ErCaseTypesOfOffenseService {
     };
   }
 
-  async getTypeOfOffenses(user: RequestUser, dto: ErCaseTypesOfOffensePaginationDto) {
+  async getTypeOfOffenses(
+    user: RequestUser,
+    dto: ErCaseTypesOfOffensePaginationDto,
+  ) {
     const { search, status, sortBy, order, page, perPage } = dto;
-    
+
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -116,15 +119,15 @@ export class ErCaseTypesOfOffenseService {
 
     const whereCondition: Prisma.HrErCaseTypeOfOffenseWhereInput = {
       is_active: true,
-    }
+    };
 
-    if (dto.status !== undefined) {
-      whereCondition.is_active = dto.status
+    if (status !== undefined) {
+      whereCondition.is_active = status;
     }
 
     if (search) {
       const orConditions: Prisma.HrErCaseTypeOfOffenseWhereInput[] = [];
-    
+
       orConditions.push({
         type_of_offense: {
           contains: search,
@@ -137,7 +140,7 @@ export class ErCaseTypesOfOffenseService {
 
     const allowSortFields = ['id', 'created_at', 'updated_at'];
 
-    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy: 'created_at';
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, erCaseTypeOfOffenses] = await this.prisma.$transaction([
       this.prisma.hrErCaseTypeOfOffense.count({
