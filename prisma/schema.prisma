@@ -1813,7 +1813,7 @@ model HrErCaseIntakeViolation {
 
 model HrErCase {
   id                 String         @id @default(uuid()) @db.Uuid
-  company_id         String         @db.Uuid
+  company_id         String?        @db.Uuid
   control_number     Int
   case_code          String         @unique // ER-{ABBR}-{YYYY}-{0000}
   incident_location  String
@@ -1832,9 +1832,9 @@ model HrErCase {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  company   Company @relation(fields: [company_id], references: [id])
-  createdBy User?   @relation("HrErCaseCreatedBy", fields: [created_by], references: [id])
-  updatedBy User?   @relation("HrErCaseUpdatedBy", fields: [updated_by], references: [id])
+  company   Company? @relation(fields: [company_id], references: [id])
+  createdBy User?    @relation("HrErCaseCreatedBy", fields: [created_by], references: [id])
+  updatedBy User?    @relation("HrErCaseUpdatedBy", fields: [updated_by], references: [id])
 
   intake        HrErCaseIntake?
   parties       HrErCaseParty[]
