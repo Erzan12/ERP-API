@@ -1,6 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class ErCaseArticlePaginationDto {
   @IsOptional()
@@ -46,6 +52,18 @@ export class ErCaseViolationPaginationDto {
   // @IsString()
   // @ApiPropertyOptional({ default: '' })
   // status?: string;
+  @IsOptional()
+  @IsUUID()
+  @ApiPropertyOptional({
+    example: 'Article UUID',
+  })
+  article_id: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @ApiPropertyOptional({ example: 1 })
+  section: number;
 
   @IsOptional()
   @IsString()

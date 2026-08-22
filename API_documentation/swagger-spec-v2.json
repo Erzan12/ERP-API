@@ -3582,6 +3582,24 @@
             }
           },
           {
+            "name": "article_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "Article UUID",
+              "type": "string"
+            }
+          },
+          {
+            "name": "section",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
