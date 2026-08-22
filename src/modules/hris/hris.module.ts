@@ -43,6 +43,8 @@ import { DisciplinaryCaseController } from './employee-relations/disciplinary-ca
 import { ControlNumberModule } from 'src/jobs/control-number/control-number.module';
 import { NoticeOfExplainationService } from './employee-relations/notice-of-explaination/notice-of-explaination.service';
 import { NoticeOfExplainationController } from './employee-relations/notice-of-explaination/notice-of-explaination.controller';
+import { WrittenExplainationService } from './employee-relations/written-explanation/written-explanation.service';
+import { WrittenExplainationController } from './employee-relations/written-explanation/written-explanation.controller';
 
 @Module({
   imports: [AuthModule, AdministratorModule, SmsModule, ControlNumberModule],
@@ -64,6 +66,7 @@ import { NoticeOfExplainationController } from './employee-relations/notice-of-e
     EmploymentHistoryService,
     DisciplinaryCaseService,
     NoticeOfExplainationService,
+    WrittenExplainationService,
   ],
   controllers: [
     EmployeeMasterlistController,
@@ -82,6 +85,7 @@ import { NoticeOfExplainationController } from './employee-relations/notice-of-e
     SalaryGradeController,
     DisciplinaryCaseController,
     NoticeOfExplainationController,
+    WrittenExplainationController,
   ],
   exports: [HrisModule],
 })

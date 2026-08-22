@@ -8120,6 +8120,48 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/written-explanation/{disciplinaryCaseId}/parties/{partyId}": {
+      "post": {
+        "operationId": "WrittenExplainationController_submitExplanation_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitExplainationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Record a respondent's written explanation.",
+        "tags": [
+          "Human Resources - Employee Relations(Written Explationation)"
+        ]
+      }
+    },
     "/v2/sms/employees/sms-notification-registration": {
       "post": {
         "operationId": "SmsController_smsNotificationRegistration_v2",
@@ -12286,6 +12328,31 @@
         },
         "required": [
           "status"
+        ]
+      },
+      "SubmitExplainationDto": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "enum": [
+              "viber",
+              "email",
+              "letter",
+              "did_not_proceed"
+            ]
+          },
+          "response_text": {
+            "type": "string",
+            "example": "I acknowledge receiving the instruction and have provided the circusmtances surrounding the incident."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "URL of the uploaded written explanation file"
+          }
+        },
+        "required": [
+          "channel"
         ]
       },
       "OtpVerificationDto": {
