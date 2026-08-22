@@ -18,25 +18,18 @@ import { Prisma } from '@prisma/client';
 export class ErCaseViolationsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getViolations(user: RequestUser, dto: ErCaseViolationPaginationDto) {
-    const { search, sortBy, order, page, perPage } = dto;
-
-    // Auth check first
+  // Helper for auth check
+  private async assertHrAccess(userId: string) {
     const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
+      where: { id: userId },
       include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
+        employee: { include: { person: true, position: true } },
         user_roles: true,
       },
     });
 
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
+    if (!requestUser?.employee?.person) {
+      throw new BadRequestException('User does not exist.');
     }
 
     const allowedRoles = [
@@ -47,7 +40,7 @@ export class ErCaseViolationsService {
       'HR Clerk',
       'HR Staff',
     ];
-    const canView = requestUser?.user_roles.some((role) =>
+    const canView = requestUser.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
 
@@ -57,11 +50,28 @@ export class ErCaseViolationsService {
       );
     }
 
+    return requestUser;
+  }
+
+  async getViolations(user: RequestUser, dto: ErCaseViolationPaginationDto) {
+    const { search, article_id, section, sortBy, order, page, perPage } = dto;
+
+    // Auth check first
+    await this.assertHrAccess(user.id);
+
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.HrErCaseViolationWhereInput = {
       is_active: true,
     };
+
+    if (article_id) {
+      whereCondition.article_id = article_id;
+    }
+
+    if (section !== undefined) {
+      whereCondition.section = section;
+    }
 
     const articleField = ['title'];
 
@@ -173,40 +183,7 @@ export class ErCaseViolationsService {
 
   async getViolation(erCaseViolationId: string, user: RequestUser) {
     // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    this.assertHrAccess(user.id);
 
     const erCaseViolation = await this.prisma.hrErCaseViolation.findUnique({
       where: { id: erCaseViolationId, is_active: true },
@@ -227,40 +204,7 @@ export class ErCaseViolationsService {
 
   async createViolation(dto: CreateErCaseViolationDto, user: RequestUser) {
     // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    this.assertHrAccess(user.id);
 
     const existingViolation = await this.prisma.hrErCaseViolation.findFirst({
       where: { behavior: dto.behavior },
@@ -305,40 +249,7 @@ export class ErCaseViolationsService {
     user: RequestUser,
   ) {
     // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    const requestUser = await this.assertHrAccess(user.id);
 
     const erCaseViolation = await this.prisma.hrErCaseViolation.findUnique({
       where: { id: erCaseViolationId },
