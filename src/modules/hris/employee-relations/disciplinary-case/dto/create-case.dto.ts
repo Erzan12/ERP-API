@@ -172,11 +172,11 @@ export class CreateCasePartyDto {
 
 export class CreateCaseDto {
   @IsUUID()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     example: 'Company UUID',
   })
-  company_id: string;
+  company_id?: string;
 
   @IsString()
   @IsNotEmpty()
