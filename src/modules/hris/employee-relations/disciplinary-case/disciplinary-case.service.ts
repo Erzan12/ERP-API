@@ -284,18 +284,22 @@ export class DisciplinaryCaseService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      const company = await tx.company.findUniqueOrThrow({
-        where: { id: dto.company_id },
-      });
-      const { controlNumber, caseCode } = await this.generate(
-        dto.company_id,
-        company.abbreviation,
-        tx,
-      );
+      const company = dto.company_id
+        ? await tx.company.findUniqueOrThrow({
+            where: { id: dto.company_id },
+          })
+        : null;
+
+      const { controlNumber, caseCode } = company
+        ? await this.generate(dto.company_id!, company.abbreviation, tx)
+        : {
+            controlNumber: 0,
+            caseCode: 'null',
+          };
 
       const disciplinaryCaseReport = await tx.hrErCase.create({
         data: {
-          company_id: dto.company_id,
+          company_id: dto.company_id ?? null,
           control_number: controlNumber,
           case_code: caseCode,
           incident_location: dto.incident_location,
@@ -522,6 +526,13 @@ export class DisciplinaryCaseService {
           `No-response marking isn't applicable at stage "${party.stage}".`,
         );
       }
+
+      // await tx.hrErCaseStageLog.update({
+      //   where: { party_id: partyId },
+      //   data: {
+      //     u
+      //   }
+      // })
 
       await tx.hrErCaseActivityLog.create({
         data: {
