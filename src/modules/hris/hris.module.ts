@@ -45,6 +45,8 @@ import { NoticeOfExplainationService } from './employee-relations/notice-of-expl
 import { NoticeOfExplainationController } from './employee-relations/notice-of-explaination/notice-of-explaination.controller';
 import { WrittenExplainationService } from './employee-relations/written-explanation/written-explanation.service';
 import { WrittenExplainationController } from './employee-relations/written-explanation/written-explanation.controller';
+import { AdministrativeHearingService } from './employee-relations/administrative-hearing/administrative-hearing.service';
+import { AdministrativeHearingController } from './employee-relations/administrative-hearing/administrative-hearing.controller';
 
 @Module({
   imports: [AuthModule, AdministratorModule, SmsModule, ControlNumberModule],
@@ -67,6 +69,7 @@ import { WrittenExplainationController } from './employee-relations/written-expl
     DisciplinaryCaseService,
     NoticeOfExplainationService,
     WrittenExplainationService,
+    AdministrativeHearingService,
   ],
   controllers: [
     EmployeeMasterlistController,
@@ -86,6 +89,7 @@ import { WrittenExplainationController } from './employee-relations/written-expl
     DisciplinaryCaseController,
     NoticeOfExplainationController,
     WrittenExplainationController,
+    AdministrativeHearingController,
   ],
   exports: [HrisModule],
 })
