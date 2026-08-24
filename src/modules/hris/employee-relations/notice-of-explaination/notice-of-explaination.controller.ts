@@ -22,23 +22,12 @@ export class NoticeOfExplainationController {
     private readonly noticeOfExplainationService: NoticeOfExplainationService,
   ) {}
 
-  @Post('employee-relations/nte/:disciplinaryCaseId/parties/:partyId')
+  @Post('employee-relations/nte/parties')
   @ApiOperation({
     summary: 'Issue an NTE to a respondent and assign reviewers',
   })
-  IssueNte(
-    @Param('disciplinaryCaseId', new ParseUUIDPipe())
-    disciplinaryCaseId: string,
-    @Param('partyId', new ParseUUIDPipe()) partyId: string,
-    @Body() dto: IssueNteDto,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.noticeOfExplainationService.issueNte(
-      disciplinaryCaseId,
-      partyId,
-      dto,
-      user,
-    );
+  IssueNte(@Body() dto: IssueNteDto, @SessionUser() user: RequestUser) {
+    return this.noticeOfExplainationService.issueNte(dto, user);
   }
 
   @Put('employee-relations/nte/:nteId/approvals/:approvalId')

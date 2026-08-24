@@ -56,20 +56,15 @@ export class NoticeOfExplainationService {
     return requestUser;
   }
 
-  async issueNte(
-    disciplinaryCaseId: string,
-    partyId: string,
-    dto: IssueNteDto,
-    user: RequestUser,
-  ) {
+  async issueNte(dto: IssueNteDto, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
       const party = await tx.hrErCaseParty.findUniqueOrThrow({
-        where: { id: partyId },
+        where: { id: dto.party_id },
       });
 
-      if (party.case_id !== disciplinaryCaseId) {
+      if (party.case_id !== dto.disciplinary_case_id) {
         throw new BadRequestException('Party does not belong to this case.');
       }
 
@@ -84,7 +79,7 @@ export class NoticeOfExplainationService {
       }
 
       const existing = await tx.hrErCaseNte.findUnique({
-        where: { party_id: partyId },
+        where: { party_id: dto.party_id },
       });
 
       if (existing?.issued_at) {
@@ -110,9 +105,9 @@ export class NoticeOfExplainationService {
       }
 
       const nte = await tx.hrErCaseNte.upsert({
-        where: { party_id: partyId },
+        where: { party_id: dto.party_id },
         create: {
-          party_id: partyId,
+          party_id: dto.party_id,
           issued_at: new Date(),
           due_date: dto.due_date ? new Date(dto.due_date) : null,
           service_channel: dto.service_channel,
@@ -151,8 +146,8 @@ export class NoticeOfExplainationService {
 
       await tx.hrErCaseActivityLog.create({
         data: {
-          case_id: disciplinaryCaseId,
-          party_id: partyId,
+          case_id: dto.disciplinary_case_id,
+          party_id: dto.party_id,
           actor_id: user.id,
           action: 'nte_issued',
         },

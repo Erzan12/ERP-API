@@ -6,12 +6,29 @@ import {
   IsDateString,
   IsEnum,
   IsIn,
+  IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
 } from 'class-validator';
 
 export class IssueNteDto {
+  @IsUUID()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    description: 'Disciplinary Case UUID',
+  })
+  disciplinary_case_id: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    description: 'Party UUID',
+  })
+  party_id: string;
+
   @IsOptional()
   @IsDateString()
   @ApiProperty({
