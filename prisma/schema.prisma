@@ -1814,8 +1814,8 @@ model HrErCaseIntakeViolation {
 model HrErCase {
   id                 String         @id @default(uuid()) @db.Uuid
   company_id         String?        @db.Uuid
-  control_number     Int
-  case_code          String         @unique // ER-{ABBR}-{YYYY}-{0000}
+  control_number     Int?
+  case_code          String?        @unique // ER-{ABBR}-{YYYY}-{0000}
   incident_location  String
   assigned_location  String?
   incident_narrative String?        @db.Text

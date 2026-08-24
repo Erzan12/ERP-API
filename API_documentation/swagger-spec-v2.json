@@ -8036,27 +8036,10 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/nte/{disciplinaryCaseId}/parties/{partyId}": {
+    "/v2/hris/employee-relations/nte/parties": {
       "post": {
         "operationId": "NoticeOfExplainationController_IssueNte_v2",
-        "parameters": [
-          {
-            "name": "disciplinaryCaseId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "partyId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -8120,27 +8103,10 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/written-explanation/{disciplinaryCaseId}/parties/{partyId}": {
+    "/v2/hris/employee-relations/written-explanation/parties": {
       "post": {
         "operationId": "WrittenExplainationController_submitExplanation_v2",
-        "parameters": [
-          {
-            "name": "disciplinaryCaseId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "partyId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -12277,6 +12243,16 @@
       "IssueNteDto": {
         "type": "object",
         "properties": {
+          "disciplinary_case_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Disciplinary Case UUID"
+          },
+          "party_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Party UUID"
+          },
           "due_date": {
             "type": "string",
             "example": "2026-08-20",
@@ -12307,6 +12283,8 @@
           }
         },
         "required": [
+          "disciplinary_case_id",
+          "party_id",
           "reviewer_ids"
         ]
       },
@@ -12333,6 +12311,16 @@
       "SubmitExplainationDto": {
         "type": "object",
         "properties": {
+          "disciplinary_case_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Disciplinary Case UUID"
+          },
+          "party_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Party UUID"
+          },
           "channel": {
             "type": "string",
             "enum": [
@@ -12352,6 +12340,8 @@
           }
         },
         "required": [
+          "disciplinary_case_id",
+          "party_id",
           "channel"
         ]
       },
