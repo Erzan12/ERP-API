@@ -8128,6 +8128,115 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/administrative-hearing/parties": {
+      "post": {
+        "operationId": "AdministrativeHearingController_scheduleHearing_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleHearingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Scheduled an administrative hearing for a respondent.",
+        "tags": [
+          "Human Resources - Employee Relations(Administrative Hearing)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/administrative-hearing/{disciplinaryCaseId}/parties/{partyId}/reschedule": {
+      "put": {
+        "operationId": "AdministrativeHearingController_rescheduleHearing_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleHearingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Reschedule a respondent's administrative hearing.",
+        "tags": [
+          "Human Resources - Employee Relations(Administrative Hearing)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/administrative-hearing/{disciplinaryCaseId}/parties/{partyId}/conduct": {
+      "put": {
+        "operationId": "AdministrativeHearingController_conductHearing_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleHearingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark a respondent's administrative hearing as conducted.",
+        "tags": [
+          "Human Resources - Employee Relations(Administrative Hearing)"
+        ]
+      }
+    },
     "/v2/sms/employees/sms-notification-registration": {
       "post": {
         "operationId": "SmsController_smsNotificationRegistration_v2",
@@ -12342,6 +12451,74 @@
         "required": [
           "disciplinary_case_id",
           "party_id",
+          "channel"
+        ]
+      },
+      "ScheduleHearingDto": {
+        "type": "object",
+        "properties": {
+          "disciplinary_case_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Disciplinary Case UUID"
+          },
+          "party_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Party UUID"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "example": "2026-09-01T09:00:00.000Z"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "online",
+              "viber",
+              "postal_mail",
+              "call",
+              "text"
+            ]
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Respondent remarks for admin hearing"
+          }
+        },
+        "required": [
+          "disciplinary_case_id",
+          "party_id",
+          "scheduled_at",
+          "channel"
+        ]
+      },
+      "RescheduleHearingDto": {
+        "type": "object",
+        "properties": {
+          "scheduled_at": {
+            "type": "string",
+            "example": "2026-09-01T09:00:00.000Z"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "online",
+              "viber",
+              "postal_mail",
+              "call",
+              "text"
+            ]
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Respondent remarks for admin hearing"
+          }
+        },
+        "required": [
+          "scheduled_at",
           "channel"
         ]
       },
