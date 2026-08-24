@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { SubmitExplainationDto } from './submit-explanation.dto';
+import { SubmitExplainationDto } from './dto/submit-explanation.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
   HrErCasePartyRole,
@@ -58,9 +58,7 @@ export class WrittenExplainationService {
     return requestUser;
   }
 
-  async submitExplanation(
-    disciplinaryCaseId: string,
-    partyId: string,
+  async submitWrittenExplanation(
     dto: SubmitExplainationDto,
     user: RequestUser,
   ) {
@@ -69,11 +67,11 @@ export class WrittenExplainationService {
     return this.prisma.$transaction(async (tx) => {
       const party = await tx.hrErCaseParty.findUniqueOrThrow({
         where: {
-          id: partyId,
+          id: dto.party_id,
         },
       });
 
-      if (party.case_id !== disciplinaryCaseId) {
+      if (party.case_id !== dto.disciplinary_case_id) {
         throw new BadRequestException('Party does not belong to this case.');
       }
 
@@ -90,7 +88,7 @@ export class WrittenExplainationService {
       }
 
       const existing = await tx.hrErCaseExplanation.findUnique({
-        where: { party_id: partyId },
+        where: { party_id: dto.party_id },
       });
 
       if (existing?.status === HrErExplanationStatus.received) {
@@ -110,9 +108,9 @@ export class WrittenExplainationService {
       }
 
       const explanation = await tx.hrErCaseExplanation.upsert({
-        where: { party_id: partyId },
+        where: { party_id: dto.party_id },
         create: {
-          party_id: partyId,
+          party_id: dto.party_id,
           status: HrErExplanationStatus.received,
           channel: dto.channel,
           response_text: dto.response_text,
@@ -132,8 +130,8 @@ export class WrittenExplainationService {
 
       await tx.hrErCaseActivityLog.create({
         data: {
-          case_id: disciplinaryCaseId,
-          party_id: partyId,
+          case_id: dto.disciplinary_case_id,
+          party_id: dto.party_id,
           actor_id: user.id,
           action: 'written_explanation_received',
         },
