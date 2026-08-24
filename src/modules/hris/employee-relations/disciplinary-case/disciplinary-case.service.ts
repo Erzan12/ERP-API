@@ -204,9 +204,109 @@ export class DisciplinaryCaseService {
         intake: true,
         parties: {
           include: {
+            employee: {
+              select: {
+                id: true,
+                company: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                person: {
+                  select: {
+                    first_name: true,
+                    middle_name: true,
+                    last_name: true,
+                  },
+                },
+                employee_id: true,
+                department: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                position: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                division: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                vessel: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                user_location: {
+                  select: {
+                    id: true,
+                    location_name: true,
+                  },
+                },
+                salary_grade: {
+                  select: {
+                    id: true,
+                    grade: true,
+                    rate: true,
+                  },
+                },
+                hire_date: true,
+                salary: true,
+                pay_frequency: true,
+                employment_status: {
+                  select: {
+                    id: true,
+                    code: true,
+                  },
+                },
+                employee_type: true,
+                employment_type: true,
+                monthly_equivalent_salary: true,
+                other_employee_data: true,
+              },
+            },
             stage_logs: true,
-            offenses: true,
-            violations: true,
+            offenses: {
+              select: {
+                id: true,
+                party_id: true,
+                offense: {
+                  select: {
+                    id: true,
+                    type_of_offense: true,
+                    description: true,
+                  },
+                },
+              }
+            },
+            violations: {
+              select: {
+                id: true,
+                party_id: true,
+                violation: {
+                  select: {
+                    id: true,
+                    section: true,
+                    behavior: true,
+                    category: true,
+                    article: {
+                      select: {
+                        id: true,
+                        title: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
             actions: true,
           },
         },
