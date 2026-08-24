@@ -304,7 +304,7 @@ export class DisciplinaryCaseService {
                       description: true,
                     },
                   },
-                }
+                },
               },
               violations: {
                 select: {
@@ -443,7 +443,7 @@ export class DisciplinaryCaseService {
                     description: true,
                   },
                 },
-              }
+              },
             },
             violations: {
               select: {
