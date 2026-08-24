@@ -17,6 +17,7 @@ import { ControlNumberService } from 'src/jobs/control-number/control-number.ser
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateCaseDto, getStageTiming } from './dto/create-case.dto';
 import { SLA_DAYS, STAGE_ORDER } from './constants/hr-er-constants';
+import { ErCasePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
 
 type Eligibility = { eligible: boolean; reason?: string };
 
@@ -166,23 +167,177 @@ export class DisciplinaryCaseService {
     };
   }
 
-  async getDisciplinaryCases(user: RequestUser) {
+  async getDisciplinaryCases(dto: ErCasePaginationDto, user: RequestUser) {
+    const { search, sortBy, order, page, perPage } = dto;
+
     await this.assertHrAccess(user.id);
 
-    const disciplinaryCases = await this.prisma.hrErCase.findMany({
-      include: {
-        intake: true,
-        parties: {
-          include: {
-            stage_logs: true,
-            offenses: true,
-            violations: true,
-            actions: true,
+    const skip = (page - 1) * perPage;
+
+    const whereCondition: Prisma.HrErCaseWhereInput = {};
+
+    if (search?.trim()) {
+      whereCondition.OR = [
+        {
+          case_code: {
+            contains: search.trim(),
+            mode: 'insensitive',
           },
         },
-        attachments: true,
-      },
-    });
+        {
+          incident_location: {
+            contains: search.trim(),
+            mode: 'insensitive',
+          },
+        },
+        {
+          assigned_location: {
+            contains: search.trim(),
+            mode: 'insensitive',
+          },
+        },
+        {
+          incident_narrative: {
+            contains: search.trim(),
+            mode: 'insensitive',
+          },
+        },
+      ];
+    }
+
+    const allowSortFields = ['id', 'created_at', 'updated_at'];
+
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
+
+    const [total, disciplinaryCases] = await this.prisma.$transaction([
+      this.prisma.hrErCase.count({
+        where: {
+          ...whereCondition,
+        },
+      }),
+      this.prisma.hrErCase.findMany({
+        where: {
+          ...whereCondition,
+        },
+        include: {
+          intake: true,
+          parties: {
+            include: {
+              employee: {
+                select: {
+                  id: true,
+                  company: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  person: {
+                    select: {
+                      first_name: true,
+                      middle_name: true,
+                      last_name: true,
+                    },
+                  },
+                  employee_id: true,
+                  department: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  position: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  division: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  vessel: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  user_location: {
+                    select: {
+                      id: true,
+                      location_name: true,
+                    },
+                  },
+                  salary_grade: {
+                    select: {
+                      id: true,
+                      grade: true,
+                      rate: true,
+                    },
+                  },
+                  hire_date: true,
+                  salary: true,
+                  pay_frequency: true,
+                  employment_status: {
+                    select: {
+                      id: true,
+                      code: true,
+                    },
+                  },
+                  employee_type: true,
+                  employment_type: true,
+                  monthly_equivalent_salary: true,
+                  other_employee_data: true,
+                },
+              },
+              stage_logs: true,
+              offenses: {
+                select: {
+                  id: true,
+                  party_id: true,
+                  offense: {
+                    select: {
+                      id: true,
+                      type_of_offense: true,
+                      description: true,
+                    },
+                  },
+                }
+              },
+              violations: {
+                select: {
+                  id: true,
+                  party_id: true,
+                  violation: {
+                    select: {
+                      id: true,
+                      section: true,
+                      behavior: true,
+                      category: true,
+                      article: {
+                        select: {
+                          id: true,
+                          title: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              actions: true,
+            },
+          },
+          attachments: true,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [safeSortBy]: order,
+        },
+      }),
+    ]);
 
     if (disciplinaryCases.length === 0) {
       throw new NotFoundException('No displicary cases found.');
@@ -190,7 +345,10 @@ export class DisciplinaryCaseService {
 
     return {
       status: 'success',
-      message: 'List of Disciplinary Cases',
+      message: 'Here is the list  of Disciplinary Cases',
+      count: total,
+      page,
+      perPage,
       disciplinaryCases,
     };
   }
