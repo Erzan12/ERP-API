@@ -142,7 +142,7 @@ export class DisciplinaryCaseService {
       data: {
         stage: rollupStage,
         // Left status open and closed_at not included so that in the case close api it will be status closed and closed_at in case close api
-        ...(allClosed ? { status: HrErCaseStatus.open, } : {}),
+        ...(allClosed ? { status: HrErCaseStatus.open } : {}),
         // ...(allClosed ? { status: HrErCaseStatus.closed, closed_at: new Date() } : {}),
       },
     });
@@ -764,9 +764,9 @@ export class DisciplinaryCaseService {
       await this.recomputeCaseRollup(tx, caseId);
       return {
         status: 'success',
-        message: 'Eligible parties advanced successfully.', 
-        advanced, 
-        skipped 
+        message: 'Eligible parties advanced successfully.',
+        advanced,
+        skipped,
       };
     });
   }
