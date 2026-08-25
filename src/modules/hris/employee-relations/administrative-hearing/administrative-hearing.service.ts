@@ -172,7 +172,7 @@ export class AdministrativeHearingService {
           party_id: partyId,
           scheduled_at: new Date(dto.scheduled_at),
           channel: dto.channel,
-          status: HrErHearingStatus.scheduled,
+          status: HrErHearingStatus.rescheduled,
           remarks: dto.remarks,
           created_by: user.id,
         },
