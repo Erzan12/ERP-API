@@ -8312,6 +8312,31 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/discplinary-case/{disciplinaryCaseId}/case-close": {
+      "put": {
+        "description": "Closes the disciplinary case and exits the case_cloased stage for all respondents.",
+        "operationId": "CaseCloseController_closeCase_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Close disciplinary case",
+        "tags": [
+          "Human Resources - Employee Relations(Case Close)"
+        ]
+      }
+    },
     "/v2/sms/employees/sms-notification-registration": {
       "post": {
         "operationId": "SmsController_smsNotificationRegistration_v2",
