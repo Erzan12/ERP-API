@@ -727,18 +727,31 @@ export class DisciplinaryCaseService {
           continue;
         }
 
-        const next = STAGE_ORDER[STAGE_ORDER.indexOf(party.stage) + 1];
+        const currentStage = party.stage;
+        const currentIndex = STAGE_ORDER.indexOf(currentStage);
+        const next = STAGE_ORDER[currentIndex + 1];
 
+        if (!next) {
+          skipped.push({
+            partyId: party.id,
+            reason: 'Party is already at the final stage.',
+          });
+          continue;
+        }
+
+        const now = new Date();
+
+        // Exit current stage
         await tx.hrErCaseStageLog.updateMany({
-          where: { party_id: party.id, stage: party.stage, exited_at: null },
-          data: { exited_at: new Date() },
+          where: { party_id: party.id, stage: currentStage, exited_at: null },
+          data: { exited_at: now },
         });
         await tx.hrErCaseStageLog.create({
           data: { party_id: party.id, stage: next, sla_days: SLA_DAYS[next] },
         });
         await tx.hrErCaseParty.update({
           where: { id: party.id },
-          data: { stage: next, stage_started_at: new Date() },
+          data: { stage: next, stage_started_at: now },
         });
         await tx.hrErCaseActivityLog.create({
           data: {
