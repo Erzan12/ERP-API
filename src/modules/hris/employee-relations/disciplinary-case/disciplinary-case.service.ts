@@ -690,7 +690,7 @@ export class DisciplinaryCaseService {
       if (hasFinalStageParty) {
         throw new BadRequestException(
           'This case cannot be advanced using the advance-stage API. ' +
-            'Use the appropriate Case Close action.',
+            'Use the appropriate Case Close action',
         );
       }
 
