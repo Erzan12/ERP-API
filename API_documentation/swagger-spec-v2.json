@@ -8287,6 +8287,31 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/notice-of-decision/parties": {
+      "post": {
+        "operationId": "NoticeOfDecisionController_submitDecision_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitDecisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Record and serve a the Notice of Decision for a respondent.",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Decision)"
+        ]
+      }
+    },
     "/v2/sms/employees/sms-notification-registration": {
       "post": {
         "operationId": "SmsController_smsNotificationRegistration_v2",
@@ -12570,6 +12595,55 @@
         "required": [
           "scheduled_at",
           "channel"
+        ]
+      },
+      "SubmitDecisionDto": {
+        "type": "object",
+        "properties": {
+          "disciplinary_case_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Disciplinary Case UUID"
+          },
+          "party_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Party UUID"
+          },
+          "decision_type": {
+            "type": "string",
+            "enum": [
+              "written_reprimand",
+              "stern_warning",
+              "suspension_7d",
+              "suspension_15d",
+              "dismissal",
+              "acquitted",
+              "rehabilitation"
+            ]
+          },
+          "effectivity_start": {
+            "type": "string",
+            "example": "2026-08-01",
+            "description": "Required for suspension/rehabilitation decisions"
+          },
+          "effectivity_end": {
+            "type": "string",
+            "example": "2026-08-03",
+            "description": "Required for suspension/rehabilitation decisions"
+          },
+          "signed_file_url": {
+            "type": "string",
+            "description": "URL of the signed Notice of Decision"
+          },
+          "remarks": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "disciplinary_case_id",
+          "party_id",
+          "decision_type"
         ]
       },
       "OtpVerificationDto": {
