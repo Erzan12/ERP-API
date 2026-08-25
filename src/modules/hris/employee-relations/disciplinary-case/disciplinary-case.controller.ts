@@ -88,7 +88,7 @@ export class DisciplinaryCaseController {
     return this.disciplinaryCaseService.createCase(dto, user);
   }
 
-  @Put('employee-relations/disciplinary-cases/:caseId/advance-stage')
+  @Put('employee-relations/disciplinary-cases/:disciplinaryCaseId/advance-stage')
   @ApiOperation({
     summary:
       'Advance every eligible respondent to their next stage; ineligible ones are left behind.',
