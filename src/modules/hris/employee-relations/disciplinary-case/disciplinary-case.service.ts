@@ -8,6 +8,7 @@ import {
   HrErCaseLevel,
   HrErCasePartyRole,
   HrErCaseStage,
+  HrErCaseStatus,
   HrErExplanationStatus,
   HrErHearingStatus,
   Prisma,
@@ -140,7 +141,9 @@ export class DisciplinaryCaseService {
       where: { id: caseId },
       data: {
         stage: rollupStage,
-        ...(allClosed ? { status: 'closed', closed_at: new Date() } : {}),
+        // Left status open and closed_at not included so that in the case close api it will be status closed and closed_at in case close api
+        ...(allClosed ? { status: HrErCaseStatus.open, } : {}),
+        // ...(allClosed ? { status: HrErCaseStatus.closed, closed_at: new Date() } : {}),
       },
     });
   }
@@ -566,36 +569,6 @@ export class DisciplinaryCaseService {
           report_date: new Date(dto.report_date),
           incident_narrative: dto.incident_narrative,
           created_by: user.id,
-          // parties: {
-          //     create: dto.parties.map(p => ({
-          //         employee: { connect: { id: p.employee_id } },
-          //         role: p.role,
-          //         remarks: p.remarks,
-          //         createdBy: { connect: { id: user.id } },
-          //         // stage tracking only applies to respondents — complainants/witnesses stay null
-          //         ...(p.role === HrErCasePartyRole.respondent && {
-          //             level: p.level,
-          //             stage: HrErCaseStage.notice_to_explain,
-          //             stage_started_at: new Date(),
-          //             stage_logs: {
-          //                 create: {
-          //                     stage: HrErCaseStage.notice_to_explain,
-          //                     sla_days: SLA_DAYS[HrErCaseStage.notice_to_explain],
-          //                 },
-          //             },
-          //             offenses: {
-          //                 create: p.offense_ids!.map((offense_id) => ({
-          //                     offense: { connect: { id: offense_id } },
-          //                 })),
-          //             },
-          //             violations: {
-          //                 create: p.violation_ids!.map((violation_id) => ({
-          //                     violation: { connect: { id: violation_id } },
-          //                 })),
-          //             },
-          //         }),
-          //     })),
-          // },
           parties: {
             create: dto.parties.map((p) => ({
               employee: { connect: { id: p.employee_id } },
@@ -688,7 +661,9 @@ export class DisciplinaryCaseService {
         where: {
           case_id: caseId,
           role: 'respondent',
-          stage: { not: null, notIn: ['case_closed'] },
+          // stage: { not: null, notIn: ['case_closed'] },
+          // Temp remove notIn: case_closed stage filter
+          stage: { not: null },
         },
         include: {
           nte: true,
@@ -697,6 +672,27 @@ export class DisciplinaryCaseService {
           decision: true,
         },
       });
+
+      if (parties.length === 0) {
+        throw new BadRequestException(
+          'No respondent found for this disciplinary case.',
+        );
+      }
+
+      // Do not allow advance-stage to be used from
+      // Notice of Decision or Case Closed.
+      const hasFinalStageParty = parties.some(
+        (party) =>
+          // party.stage === HrErCaseStage.notice_of_decision ||
+          party.stage === HrErCaseStage.case_closed,
+      );
+
+      if (hasFinalStageParty) {
+        throw new BadRequestException(
+          'This case cannot be advanced using the advance-stage API. ' +
+            'Use the appropriate Case Close action.',
+        );
+      }
 
       const advanced: string[] = [];
       const skipped: { partyId: string; reason: string }[] = [];
@@ -766,7 +762,12 @@ export class DisciplinaryCaseService {
       }
 
       await this.recomputeCaseRollup(tx, caseId);
-      return { advanced, skipped };
+      return {
+        status: 'success',
+        message: 'Eligible parties advanced successfully.', 
+        advanced, 
+        skipped 
+      };
     });
   }
 
