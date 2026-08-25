@@ -233,6 +233,7 @@ export class DisciplinaryCaseService {
                     select: {
                       id: true,
                       name: true,
+                      abbreviation: true,
                     },
                   },
                   person: {
@@ -372,6 +373,7 @@ export class DisciplinaryCaseService {
                   select: {
                     id: true,
                     name: true,
+                    abbreviation: true,
                   },
                 },
                 person: {
@@ -645,8 +647,6 @@ export class DisciplinaryCaseService {
       };
     });
   }
-
-  async noticeToExplain() {}
 
   async advanceAllEligible(caseId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
