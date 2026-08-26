@@ -344,9 +344,9 @@ export class DisciplinaryCaseService {
       }),
     ]);
 
-    if (disciplinaryCases.length === 0) {
-      throw new NotFoundException('No displicary cases found.');
-    }
+    // if (disciplinaryCases.length === 0) {
+    //   throw new NotFoundException('No displicary cases found.');
+    // }
 
     return {
       status: 'success',
