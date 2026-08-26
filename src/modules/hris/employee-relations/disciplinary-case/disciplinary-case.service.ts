@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -560,91 +561,116 @@ export class DisciplinaryCaseService {
             caseCode: 'null',
           };
 
-      const disciplinaryCaseReport = await tx.hrErCase.create({
-        data: {
-          company_id: dto.company_id ?? null,
-          control_number: controlNumber,
-          case_code: caseCode,
-          incident_location: dto.incident_location,
-          assigned_location: dto.assigned_location,
-          incident_date: new Date(dto.incident_date),
-          report_date: new Date(dto.report_date),
-          incident_narrative: dto.incident_narrative,
-          created_by: user.id,
-          parties: {
-            create: dto.parties.map((p) => ({
-              employee: { connect: { id: p.employee_id } },
-              role: p.role,
-              remarks: p.remarks,
-              createdBy: { connect: { id: user.id } },
+      if (dto.intake_id) {
+        const intake = await this.prisma.hrErCaseIntake.findUnique({
+          where: { id: dto.intake_id },
+          include: { case: true }, // the back-relation
+        });
 
-              // Stage tracking applies to all case parties
-              level: p.level,
-              stage: HrErCaseStage.notice_to_explain,
-              stage_started_at: new Date(),
+        if (!intake) {
+          throw new NotFoundException('Case intake not found.');
+        }
 
-              stage_logs: {
-                create: {
-                  stage: HrErCaseStage.notice_to_explain,
-                  sla_days: SLA_DAYS[HrErCaseStage.notice_to_explain],
-                },
-              },
+        if (intake.case) {
+          throw new ConflictException(
+            `This intake has already been converted to case ${intake.case.case_code ?? intake.case.id}.`,
+          );
+        }
+      }
 
-              offenses: {
-                create: (p.offense_ids ?? []).map((offense_id) => ({
-                  offense: {
-                    connect: {
-                      id: offense_id,
-                    },
-                  },
-                })),
-              },
+      try {
+        const disciplinaryCaseReport = await tx.hrErCase.create({
+          data: {
+            company_id: dto.company_id ?? null,
+            control_number: controlNumber,
+            case_code: caseCode,
+            incident_location: dto.incident_location,
+            assigned_location: dto.assigned_location,
+            incident_date: new Date(dto.incident_date),
+            report_date: new Date(dto.report_date),
+            incident_narrative: dto.incident_narrative,
+            intake_id: dto.intake_id,
+            created_by: user.id,
+            parties: {
+              create: dto.parties.map((p) => ({
+                employee: { connect: { id: p.employee_id } },
+                role: p.role,
+                remarks: p.remarks,
+                createdBy: { connect: { id: user.id } },
 
-              violations: {
-                create: (p.violation_ids ?? []).map((violation_id) => ({
-                  violation: {
-                    connect: {
-                      id: violation_id,
-                    },
-                  },
-                })),
-              },
+                // Stage tracking applies to all case parties
+                level: p.level,
+                stage: HrErCaseStage.notice_to_explain,
+                stage_started_at: new Date(),
 
-              ...(p.action && {
-                actions: {
+                stage_logs: {
                   create: {
-                    action_type: p.action.action_type,
-                    effectivity_start: new Date(p.action.effectivity_start),
-                    effectivity_end: new Date(p.action.effectivity_end),
-                    remarks: p.action.remarks,
-                    createdBy: {
+                    stage: HrErCaseStage.notice_to_explain,
+                    sla_days: SLA_DAYS[HrErCaseStage.notice_to_explain],
+                  },
+                },
+
+                offenses: {
+                  create: (p.offense_ids ?? []).map((offense_id) => ({
+                    offense: {
                       connect: {
-                        id: user.id,
+                        id: offense_id,
+                      },
+                    },
+                  })),
+                },
+
+                violations: {
+                  create: (p.violation_ids ?? []).map((violation_id) => ({
+                    violation: {
+                      connect: {
+                        id: violation_id,
+                      },
+                    },
+                  })),
+                },
+
+                ...(p.action && {
+                  actions: {
+                    create: {
+                      action_type: p.action.action_type,
+                      effectivity_start: new Date(p.action.effectivity_start),
+                      effectivity_end: new Date(p.action.effectivity_end),
+                      remarks: p.action.remarks,
+                      createdBy: {
+                        connect: {
+                          id: user.id,
+                        },
                       },
                     },
                   },
-                },
-              }),
-            })),
-          },
-        },
-        include: {
-          parties: {
-            include: {
-              stage_logs: true,
-              offenses: true,
-              violations: true,
-              actions: true,
+                }),
+              })),
             },
           },
-        },
-      });
+          include: {
+            parties: {
+              include: {
+                stage_logs: true,
+                offenses: true,
+                violations: true,
+                actions: true,
+              },
+            },
+          },
+        });
 
-      return {
-        status: 'success',
-        message: 'Disciplinary Case Report successfully created',
-        disciplinaryCaseReport,
-      };
+        return {
+          status: 'success',
+          message: 'Disciplinary Case Report successfully created',
+          disciplinaryCaseReport,
+        };
+      } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+          throw new ConflictException('This intake has already been converted to a case.');
+        }
+        throw err;
+      }
     });
   }
 
