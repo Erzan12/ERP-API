@@ -53,6 +53,8 @@ import { CaseCloseService } from './employee-relations/case-close/case-close.ser
 import { CaseCloseController } from './employee-relations/case-close/case-close.controller';
 import { CaseIntakeService } from './employee-relations/case-intake/case-intake.service';
 import { CaseIntakeController } from './employee-relations/case-intake/case-intake.controller';
+import { IncidentReportController } from './incident-report/incident-report.controller';
+import { IncidentReportService } from './incident-report/incident-report.service';
 
 @Module({
   imports: [AuthModule, AdministratorModule, SmsModule, ControlNumberModule],
@@ -79,6 +81,7 @@ import { CaseIntakeController } from './employee-relations/case-intake/case-inta
     AdministrativeHearingService,
     NoticeOfDecisionService,
     CaseCloseService,
+    IncidentReportService,
   ],
   controllers: [
     EmployeeMasterlistController,
@@ -102,6 +105,7 @@ import { CaseIntakeController } from './employee-relations/case-intake/case-inta
     AdministrativeHearingController,
     NoticeOfDecisionController,
     CaseCloseController,
+    IncidentReportController,
   ],
   exports: [HrisModule],
 })
