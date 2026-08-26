@@ -297,6 +297,10 @@ export class DisciplinaryCaseService {
                   other_employee_data: true,
                 },
               },
+              nte: true,
+              explanation: true,
+              hearings: true,
+              decision: true,
               stage_logs: true,
               offenses: {
                 select: {
@@ -437,6 +441,10 @@ export class DisciplinaryCaseService {
                 other_employee_data: true,
               },
             },
+            nte: true,
+            explanation: true,
+            hearings: true,
+            decision: true,
             stage_logs: true,
             offenses: {
               select: {
