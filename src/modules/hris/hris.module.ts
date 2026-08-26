@@ -51,6 +51,8 @@ import { NoticeOfDecisionService } from './employee-relations/notice-of-decision
 import { NoticeOfDecisionController } from './employee-relations/notice-of-decision/notice-of-decision.controller';
 import { CaseCloseService } from './employee-relations/case-close/case-close.service';
 import { CaseCloseController } from './employee-relations/case-close/case-close.controller';
+import { CaseIntakeService } from './employee-relations/case-intake/case-intake.service';
+import { CaseIntakeController } from './employee-relations/case-intake/case-intake.controller';
 
 @Module({
   imports: [AuthModule, AdministratorModule, SmsModule, ControlNumberModule],
@@ -71,6 +73,7 @@ import { CaseCloseController } from './employee-relations/case-close/case-close.
     SalaryGradeService,
     EmploymentHistoryService,
     DisciplinaryCaseService,
+    CaseIntakeService,
     NoticeOfExplainationService,
     WrittenExplainationService,
     AdministrativeHearingService,
@@ -93,6 +96,7 @@ import { CaseCloseController } from './employee-relations/case-close/case-close.
     OvertimeCasesController,
     SalaryGradeController,
     DisciplinaryCaseController,
+    CaseIntakeController,
     NoticeOfExplainationController,
     WrittenExplainationController,
     AdministrativeHearingController,
