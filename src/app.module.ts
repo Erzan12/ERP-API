@@ -10,7 +10,7 @@ import { HrisModule } from './modules/hris/hris.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { MastertableModule } from './modules/mastertable/mastertable.module';
 import { UserManagementModule } from './modules/manager/user_management/user_management.module';
-import { EmployeeDashboardModule } from './modules/employee_dashboard/employee_dashboard.module';
+import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
 import { CustomJwtAuthGuard } from './middleware/jwt/jwt.auth.guard';
