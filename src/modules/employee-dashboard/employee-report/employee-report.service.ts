@@ -1,258 +1,273 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { CreateEmployeeReportDto, UpdateEmployeeReportDto } from './dto/employee-report.dto';
+import {
+  CreateEmployeeReportDto,
+  UpdateEmployeeReportDto,
+} from './dto/employee-report.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { HrErIntakeStatus, HrErIntakeType, Prisma } from '@prisma/client';
 import { EmployeeReportPaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 
 @Injectable()
 export class EmployeeReportService {
-    constructor (private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-    // Helper for auth check
-    private async assertHrAccess(userId: string) {
-        const requestUser = await this.prisma.user.findUnique({
-            where: { id: userId },
-            include: {
-                employee: { include: { person: true, position: true } },
-                user_roles: true,
-            },
-        });
+  // Helper for auth check
+  private async assertHrAccess(userId: string) {
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        employee: { include: { person: true, position: true } },
+        user_roles: true,
+      },
+    });
 
-        if (!requestUser?.employee?.person) {
-            throw new BadRequestException('User does not exist.');
-        }
-
-        const allowedRoles = [
-            'Administrator',
-            'Super Administrator',
-            'HR Administrator',
-            'HR Manager',
-            'HR Clerk',
-            'HR Staff',
-        ];
-        const canView = requestUser.user_roles.some((role) =>
-            allowedRoles.includes(role.role_name),
-        );
-
-        if (!canView) {
-            throw new ForbiddenException(
-                'You are not authorized to perform this action',
-            );
-        }
-
-        return requestUser;
+    if (!requestUser?.employee?.person) {
+      throw new BadRequestException('User does not exist.');
     }
 
-    async getEmployeeReports(dto: EmployeeReportPaginationDto, user: RequestUser) {
-        const { search, sortBy, order, page, perPage } = dto;
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
-        await this.assertHrAccess(user.id);
-
-        const skip = (page - 1) * perPage;
-
-        const whereCondition: Prisma.HrErCaseIntakeWhereInput = {
-            type: HrErIntakeType.employee,
-        };
-
-        if (search?.trim()) {
-            whereCondition.OR = [
-
-            ];
-        }
-
-        const allowSortFields = ['id', 'created_at', 'updated_at'];
-
-        const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
-
-        const [total, employeeReports] = await this.prisma.$transaction([
-            this.prisma.hrErCaseIntake.count({
-                where: {
-                    ...whereCondition,
-                },
-            }),
-            this.prisma.hrErCaseIntake.findMany({
-                where: {
-                    ...whereCondition
-                },
-                include: {
-                    createdBy: {
-                        select: {
-                            employee: true,
-                            person: {
-                                select: {
-                                    first_name: true,
-                                    middle_name: true,
-                                    last_name: true,
-                                },
-                            },
-                        },
-                    },
-                    case: true,
-                    parties: true,
-                    violations: true,
-                    attachments: true,
-                    offenses: true,
-                },
-                skip,
-                take: perPage,
-                orderBy: {
-                    [safeSortBy]: order,
-                },
-            }),
-        ]);
-
-        // if (incidentReports.length === 0) {
-        //     throw new NotFoundException('No incident reports found.');
-        // }
-
-        return {
-            status: 'success',
-            message: 'Here is the list of Employee Reports.',
-            count: total,
-            page,
-            perPage,
-            employeeReports,
-        };
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
     }
 
-    async getEmployeeReport (employeeReportId: string, user: RequestUser) {
-        await this.assertHrAccess(user.id);
+    return requestUser;
+  }
 
-        const employeeReport =  await this.prisma.hrErCaseIntake.findUnique({
-            where: { id: employeeReportId },
-            include: {
-                createdBy: {
-                    select: {
-                        employee: true,
-                        person: {
-                            select: {
-                                first_name: true,
-                                middle_name: true,
-                                last_name: true,
-                            },
-                        },
-                    },
-                },
-                case: true,
-                parties: true,
-                violations: true,
-                attachments: true,
-                offenses: true,
-            },
-        })
+  async getEmployeeReports(
+    dto: EmployeeReportPaginationDto,
+    user: RequestUser,
+  ) {
+    const { search, sortBy, order, page, perPage } = dto;
 
-        if (!employeeReport) {
-            throw new NotFoundException('Employee Report does not exists.');
-        }
+    await this.assertHrAccess(user.id);
 
-        return {
-            status: 'success',
-            message: 'Here is the Employee Report',
-            employeeReport,
-        };
-    }
-    
-    async createEmployeeReport(dto: CreateEmployeeReportDto, user: RequestUser) {
-        await this.assertHrAccess(user.id);
+    const skip = (page - 1) * perPage;
 
-        const location = await this.prisma.workAssignment.findFirst({
-            where: {
-                id: dto.incident_location_id,
-            },
-        });
+    const whereCondition: Prisma.HrErCaseIntakeWhereInput = {
+      type: HrErIntakeType.employee,
+    };
 
-        if (!location) {
-            throw new BadRequestException(
-                'Invalid incident location',
-            );
-        }
-
-        const employeeReport = await this.prisma.hrErCaseIntake.create({
-            data: {
-                type: HrErIntakeType.employee,
-                incident_location_id: dto.incident_location_id,
-                incident_location_type: location.type,
-                incident_date: new Date(dto.incident_date),
-                incident_narrative: dto.incident_narrative,
-                status: HrErIntakeStatus.pending_review,
-                subject: dto.subject,
-                created_by: user.id,
-
-                parties: {
-                    create: dto.parties.map((p) => ({
-                        employee: {
-                            connect: {
-                                id: p.employee_id,
-                            },
-                        },
-                        role: p.role,
-                    })),
-                },
-            },
-            include: {
-                parties: {
-                    include: {
-                        employee: true,
-                    },
-                },
-            },
-        });
-
-        return {
-            status: 'success',
-            message: 'Employee Report filed successfully',
-            employeeReport,
-        };
+    if (search?.trim()) {
+      whereCondition.OR = [];
     }
 
-    async updateEmployeeReport(employeeReportId: string, dto: UpdateEmployeeReportDto, user: RequestUser) {
-        await this.assertHrAccess(user.id);
+    const allowSortFields = ['id', 'created_at', 'updated_at'];
 
-        const existingEmployeeReport = await this.prisma.hrErCaseIntake.findUnique({
-            where: { id: employeeReportId },
-        });
+    const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
-        if (!existingEmployeeReport) {
-            throw new NotFoundException('Employee Report does not exist');
-        }
-
-        const updateEmployeeReport = await this.prisma.hrErCaseIntake.update({
-            where: { id: employeeReportId, },
-            data: {
-                incident_location_id: dto.incident_location_id ?? existingEmployeeReport.incident_location_id,
-                incident_date: dto.incident_date ?? existingEmployeeReport.incident_date,
-                incident_narrative: dto.incident_narrative ?? existingEmployeeReport.incident_narrative,
-                subject: dto.subject ?? existingEmployeeReport.subject,
-                updated_by: user.id,
-
-                ...(dto.parties !== undefined && {
-                    parties: {
-                        deleteMany: {},
-                        create: dto.parties.map((p) => ({
-                            employee: { 
-                                connect: {
-                                    id: p.employee_id,
-                                },
-                            },
-                            role: p.role,
-                        })),
-                    },
-                }),
-            },
-            include: {
-                parties: {
-                    include: {
-                        employee: true,
-                    },
+    const [total, employeeReports] = await this.prisma.$transaction([
+      this.prisma.hrErCaseIntake.count({
+        where: {
+          ...whereCondition,
+        },
+      }),
+      this.prisma.hrErCaseIntake.findMany({
+        where: {
+          ...whereCondition,
+        },
+        include: {
+          createdBy: {
+            select: {
+              employee: true,
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
                 },
+              },
             },
-        });
+          },
+          case: true,
+          parties: true,
+          violations: true,
+          attachments: true,
+          offenses: true,
+        },
+        skip,
+        take: perPage,
+        orderBy: {
+          [safeSortBy]: order,
+        },
+      }),
+    ]);
 
-        return {
-            status: 'success',
-            message: 'Employee Report updated successfully',
-            updateEmployeeReport,
-        };
+    // if (incidentReports.length === 0) {
+    //     throw new NotFoundException('No incident reports found.');
+    // }
+
+    return {
+      status: 'success',
+      message: 'Here is the list of Employee Reports.',
+      count: total,
+      page,
+      perPage,
+      employeeReports,
+    };
+  }
+
+  async getEmployeeReport(employeeReportId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const employeeReport = await this.prisma.hrErCaseIntake.findUnique({
+      where: { id: employeeReportId },
+      include: {
+        createdBy: {
+          select: {
+            employee: true,
+            person: {
+              select: {
+                first_name: true,
+                middle_name: true,
+                last_name: true,
+              },
+            },
+          },
+        },
+        case: true,
+        parties: true,
+        violations: true,
+        attachments: true,
+        offenses: true,
+      },
+    });
+
+    if (!employeeReport) {
+      throw new NotFoundException('Employee Report does not exists.');
     }
+
+    return {
+      status: 'success',
+      message: 'Here is the Employee Report',
+      employeeReport,
+    };
+  }
+
+  async createEmployeeReport(dto: CreateEmployeeReportDto, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const location = await this.prisma.workAssignment.findFirst({
+      where: {
+        id: dto.incident_location_id,
+      },
+    });
+
+    if (!location) {
+      throw new BadRequestException('Invalid incident location');
+    }
+
+    const employeeReport = await this.prisma.hrErCaseIntake.create({
+      data: {
+        type: HrErIntakeType.employee,
+        incident_location_id: dto.incident_location_id,
+        incident_location_type: location.type,
+        incident_date: new Date(dto.incident_date),
+        incident_narrative: dto.incident_narrative,
+        status: HrErIntakeStatus.pending_review,
+        subject: dto.subject,
+        created_by: user.id,
+
+        parties: {
+          create: dto.parties.map((p) => ({
+            employee: {
+              connect: {
+                id: p.employee_id,
+              },
+            },
+            role: p.role,
+          })),
+        },
+      },
+      include: {
+        parties: {
+          include: {
+            employee: true,
+          },
+        },
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Employee Report filed successfully',
+      employeeReport,
+    };
+  }
+
+  async updateEmployeeReport(
+    employeeReportId: string,
+    dto: UpdateEmployeeReportDto,
+    user: RequestUser,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingEmployeeReport = await this.prisma.hrErCaseIntake.findUnique({
+      where: { id: employeeReportId },
+    });
+
+    if (!existingEmployeeReport) {
+      throw new NotFoundException('Employee Report does not exist');
+    }
+
+    const updateEmployeeReport = await this.prisma.hrErCaseIntake.update({
+      where: { id: employeeReportId },
+      data: {
+        incident_location_id:
+          dto.incident_location_id ??
+          existingEmployeeReport.incident_location_id,
+        incident_date:
+          dto.incident_date ?? existingEmployeeReport.incident_date,
+        incident_narrative:
+          dto.incident_narrative ?? existingEmployeeReport.incident_narrative,
+        subject: dto.subject ?? existingEmployeeReport.subject,
+        updated_by: user.id,
+
+        ...(dto.parties !== undefined && {
+          parties: {
+            deleteMany: {},
+            create: dto.parties.map((p) => ({
+              employee: {
+                connect: {
+                  id: p.employee_id,
+                },
+              },
+              role: p.role,
+            })),
+          },
+        }),
+      },
+      include: {
+        parties: {
+          include: {
+            employee: true,
+          },
+        },
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Employee Report updated successfully',
+      updateEmployeeReport,
+    };
+  }
 }

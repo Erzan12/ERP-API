@@ -9,25 +9,25 @@ import { CaseIntakePaginationDto } from 'src/utils/dtos/er-related-pagination.dt
 @ApiTags('Human Resources - Employee Relations(Case Intake)')
 @Controller({ path: 'hris', version: '2' })
 export class CaseIntakeController {
-    constructor (private readonly caseIntakeService: CaseIntakeService) {}
+  constructor(private readonly caseIntakeService: CaseIntakeService) {}
 
-    @Get('employee-relations/case-intake/incident-reports')
-    @ApiOperation({ summary: 'Get Incident Reports' })
-    @ApiGetResponse('Here is the list of Incident Reports')
-    getIncidentReports(
-        @Query() dto: CaseIntakePaginationDto,
-        @SessionUser() user: RequestUser,
-    ) {
-        return this.caseIntakeService.getIncidentReports(dto, user);
-    }
+  @Get('employee-relations/case-intake/incident-reports')
+  @ApiOperation({ summary: 'Get Incident Reports' })
+  @ApiGetResponse('Here is the list of Incident Reports')
+  getIncidentReports(
+    @Query() dto: CaseIntakePaginationDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.caseIntakeService.getIncidentReports(dto, user);
+  }
 
-    @Get('employee-relations/case-intake/employee-reports')
-    @ApiOperation({ summary: 'Get Employee Reports' })
-    @ApiGetResponse('Here is the list of Employee Reports')
-    getEmployeeReports(
-        @Query() dto: CaseIntakePaginationDto,
-        @SessionUser() user: RequestUser,
-    ) {
-        return this.caseIntakeService.getEmployeeReports(dto, user);
-    }
+  @Get('employee-relations/case-intake/employee-reports')
+  @ApiOperation({ summary: 'Get Employee Reports' })
+  @ApiGetResponse('Here is the list of Employee Reports')
+  getEmployeeReports(
+    @Query() dto: CaseIntakePaginationDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.caseIntakeService.getEmployeeReports(dto, user);
+  }
 }

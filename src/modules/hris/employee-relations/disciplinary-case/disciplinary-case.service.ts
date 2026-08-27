@@ -674,8 +674,13 @@ export class DisciplinaryCaseService {
           disciplinaryCaseReport,
         };
       } catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-          throw new ConflictException('This intake has already been converted to a case.');
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === 'P2002'
+        ) {
+          throw new ConflictException(
+            'This intake has already been converted to a case.',
+          );
         }
         throw err;
       }
