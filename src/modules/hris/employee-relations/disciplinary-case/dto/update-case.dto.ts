@@ -1,5 +1,5 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsDateString, IsOptional, IsString, IsUUID } from "class-validator";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsDateString, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class UpdateCaseDto {
   @IsUUID()
