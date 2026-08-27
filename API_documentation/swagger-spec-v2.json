@@ -7819,6 +7819,31 @@
         ]
       }
     },
+    "/v2/hris/incident-report": {
+      "post": {
+        "operationId": "IncidentReportController_createIncidentReport_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIncidentReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "File an incident report",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/disciplinary-cases/{disciplinaryCaseId}": {
       "get": {
         "operationId": "DisciplinaryCaseController_getDisciplinaryCase_v2",
@@ -12395,6 +12420,64 @@
           "rate",
           "level",
           "is_confidential"
+        ]
+      },
+      "SharedCreateCaseIntakePartydto": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "respondent",
+              "complainant",
+              "witness"
+            ],
+            "example": "respondent"
+          }
+        },
+        "required": [
+          "employee_id",
+          "role"
+        ]
+      },
+      "CreateIncidentReportDto": {
+        "type": "object",
+        "properties": {
+          "incident_location_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "2026-08-20T09:00:00.000Z"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "The personnel jump off the vessel"
+          },
+          "parties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SharedCreateCaseIntakePartydto"
+            }
+          },
+          "offense_ids": {
+            "description": "Committed offense IDs",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "incident_location_id",
+          "incident_date",
+          "parties",
+          "offense_ids"
         ]
       },
       "CreateCasePartyActionDto": {
