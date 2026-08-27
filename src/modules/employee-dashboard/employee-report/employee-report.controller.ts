@@ -1,14 +1,14 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { EmployeeReportService } from './employee-report.service';
-import { CreateEmployeeReportDto } from './dto/create-employee-report.dto';
+import { CreateEmployeeReportDto, UpdateEmployeeReportDto } from './dto/employee-report.dto';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 import { EmployeeReportPaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 
-@ApiTags('Human Resources - Employee Report')
-@Controller({ path: 'hris', version: '2' })
+@ApiTags('Employee Dashboard - Employee Report')
+@Controller({ path: 'employee-dashboard', version: '2' })
 export class EmployeeReportController {
     constructor (private readonly employeeReportService: EmployeeReportService) {}
 
@@ -41,5 +41,15 @@ export class EmployeeReportController {
         @SessionUser() user: RequestUser,
     ) {
         return this.employeeReportService.createEmployeeReport(dto, user);
+    }
+
+    @Put('employee-reports/:employeeReportId')
+    @ApiOperation({ summary: 'Update an existing Employee Report' })
+    updateEmployeeReport(
+        @Param('employeeReportId', new ParseUUIDPipe()) employeeReportId: string,
+        @Body() dto: UpdateEmployeeReportDto,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.employeeReportService.updateEmployeeReport(employeeReportId, dto, user);
     }
 }
