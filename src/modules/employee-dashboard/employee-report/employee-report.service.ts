@@ -2,7 +2,8 @@ import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/com
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { CreateEmployeeReportDto } from './dto/create-employee-report.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { HrErIntakeStatus, HrErIntakeType } from '@prisma/client';
+import { HrErIntakeStatus, HrErIntakeType, Prisma } from '@prisma/client';
+import { EmployeeReportPaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 
 @Injectable()
 export class EmployeeReportService {
@@ -43,6 +44,78 @@ export class EmployeeReportService {
         return requestUser;
     }
 
+    async getEmployeeReports(dto: EmployeeReportPaginationDto, user: RequestUser) {
+        const { search, sortBy, order, page, perPage } = dto;
+
+        await this.assertHrAccess(user.id);
+
+        const skip = (page - 1) * perPage;
+
+        const whereCondition: Prisma.HrErCaseIntakeWhereInput = {
+            type: HrErIntakeType.employee,
+        };
+
+        if (search?.trim()) {
+            whereCondition.OR = [
+
+            ];
+        }
+
+        const allowSortFields = ['id', 'created_at', 'updated_at'];
+
+        const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
+
+        const [total, employeeReports] = await this.prisma.$transaction([
+            this.prisma.hrErCaseIntake.count({
+                where: {
+                    ...whereCondition,
+                },
+            }),
+            this.prisma.hrErCaseIntake.findMany({
+                where: {
+                    ...whereCondition
+                },
+                include: {
+                    createdBy: {
+                        select: {
+                            employee: true,
+                            person: {
+                                select: {
+                                    first_name: true,
+                                    middle_name: true,
+                                    last_name: true,
+                                },
+                            },
+                        },
+                    },
+                    case: true,
+                    parties: true,
+                    violations: true,
+                    attachments: true,
+                    offenses: true,
+                },
+                skip,
+                take: perPage,
+                orderBy: {
+                    [safeSortBy]: order,
+                },
+            }),
+        ]);
+
+        // if (incidentReports.length === 0) {
+        //     throw new NotFoundException('No incident reports found.');
+        // }
+
+        return {
+            status: 'success',
+            message: 'Here is the list of Employee Reports.',
+            count: total,
+            page,
+            perPage,
+            employeeReports,
+        };
+    }
+    
     async createEmployeeReport(dto: CreateEmployeeReportDto, user: RequestUser) {
         await this.assertHrAccess(user.id);
 
