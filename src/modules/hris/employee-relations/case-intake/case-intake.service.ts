@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { HrErIntakeType, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { CaseIntakePaginationDto } from 'src/utils/dtos/case-intake-pagination.dto';
+import { CaseIntakePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @Injectable()

@@ -28,7 +28,7 @@ import {
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { ErCaseArticlePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
+import { ErCaseArticlePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 
 @ApiTags('Mastertable - Employee Relation Case(Article)')
 @Controller({ path: 'mastertable', version: '2' })

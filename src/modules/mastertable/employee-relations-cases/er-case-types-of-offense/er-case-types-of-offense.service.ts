@@ -11,7 +11,7 @@ import {
   UpdateErCaseTypesOfOffenseDto,
 } from './dto/types-of-offense.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { ErCaseTypesOfOffensePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
+import { ErCaseTypesOfOffensePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()

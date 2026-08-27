@@ -28,7 +28,7 @@ import {
 } from 'src/utils/constants/ability.constant';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { ErCaseTypesOfOffensePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
+import { ErCaseTypesOfOffensePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 
 @ApiTags('Mastertable - Employee Relation Case(Type of Offense)')
 @Controller({ path: 'mastertable', version: '2' })
