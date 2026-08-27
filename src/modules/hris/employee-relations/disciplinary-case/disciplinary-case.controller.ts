@@ -27,6 +27,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AdvanceStageResponseDto } from './dto/advance-stage-response.dto';
 import { ErCasePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
+import { UpdateCaseDto } from './dto/update-case.dto';
 
 @ApiTags('Human Resources - Employee Relations(Disciplinary Case)')
 @Controller({ path: 'hris', version: '2' })
@@ -86,6 +87,19 @@ export class DisciplinaryCaseController {
     @SessionUser() user: RequestUser,
   ) {
     return this.disciplinaryCaseService.createCase(dto, user);
+  }
+
+  @Put('employee-relations/disciplinary-cases/:disciplinaryCaseId')
+  @ApiOperation({
+    summary: 'Update an existing Disciplinary Case details',
+  })
+  @ApiPatchResponse('Disciplinary Case updated successfully')
+  updateDisciplinaryCase(
+    @Param('disciplinaryCaseId', new ParseUUIDPipe()) disciplinaryCaseId: string,
+    @Body() dto: UpdateCaseDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.disciplinaryCaseService.updateCase(disciplinaryCaseId, dto, user);
   }
 
   @Put(

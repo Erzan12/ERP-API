@@ -20,6 +20,7 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateCaseDto, getStageTiming } from './dto/create-case.dto';
 import { SLA_DAYS, STAGE_ORDER } from './constants/hr-er-constants';
 import { ErCasePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
+import { UpdateCaseDto } from './dto/update-case.dto';
 
 type Eligibility = { eligible: boolean; reason?: string };
 
@@ -670,7 +671,7 @@ export class DisciplinaryCaseService {
 
         return {
           status: 'success',
-          message: 'Disciplinary Case Report successfully created',
+          message: 'Disciplinary Case successfully created',
           disciplinaryCaseReport,
         };
       } catch (err) {
@@ -687,36 +688,57 @@ export class DisciplinaryCaseService {
     });
   }
 
-  // async updateCase(
-  //   disciplinaryCaseId: string,
-  //   dto: UpdateCaseDto,
-  //   user: RequestUser,
-  // ) {
-  //   await this.assertHrAccess(user.id);
+  async updateCase(
+    disciplinaryCaseId: string,
+    dto: UpdateCaseDto,
+    user: RequestUser,
+  ) {
+    await this.assertHrAccess(user.id);
 
-  //   return this.prisma.$transaction(async (tx) => {
-  //           const company = dto.company_id
-  //       ? await tx.company.findUniqueOrThrow({
-  //           where: { id: dto.company_id },
-  //         })
-  //       : null;
+    return this.prisma.$transaction(async (tx) => {
+      const company = dto.company_id
+        ? await tx.company.findUniqueOrThrow({
+            where: { id: dto.company_id },
+          })
+        : null;
 
-  //     const { controlNumber, caseCode } = company
-  //       ? await this.generate(dto.company_id!, company.abbreviation, tx)
-  //       : {
-  //           controlNumber: 0,
-  //           caseCode: 'null',
-  //         };
-  //     })
+      const { controlNumber, caseCode } = company
+        ? await this.generate(dto.company_id!, company.abbreviation, tx)
+        : {
+            controlNumber: 0,
+            caseCode: 'null',
+          };
 
-  //     const disciplinaryCaseReport = await text.hrErCase.update({
-  //       where: { id: disciplinaryCaseId },
-  //       data: {
+      const existingDisciplinaryCase = await tx.hrErCase.findUnique({
+        where: { id: disciplinaryCaseId },
+      });
 
-  //       }
-  //     })
-  //   })
-  // }
+      if (!existingDisciplinaryCase) {
+        throw new NotFoundException('Disciplinary Case does not exist.');
+      }
+
+      const updateDisciplinaryCaseReport = await tx.hrErCase.update({
+        where: { id: disciplinaryCaseId },
+        data: {
+          company_id: dto.company_id ?? existingDisciplinaryCase.company_id,
+          control_number: controlNumber ?? existingDisciplinaryCase.control_number,
+          case_code: caseCode ?? existingDisciplinaryCase.case_code,
+          incident_location: dto.incident_location ?? existingDisciplinaryCase.incident_location,
+          assigned_location: dto.assigned_location ?? existingDisciplinaryCase.assigned_location,
+          incident_date: dto.incident_date ?? existingDisciplinaryCase.incident_date,
+          report_date: dto.report_date ?? existingDisciplinaryCase.report_date,
+          incident_narrative: dto.incident_narrative ?? existingDisciplinaryCase.incident_narrative,
+          updated_by: user.id,
+        },
+      });
+
+      return {
+        status: 'success',
+        message: 'Disciplinary Case successfully updated.',
+        updateDisciplinaryCaseReport,
+      };
+    })
+  }
 
   async advanceAllEligible(caseId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);

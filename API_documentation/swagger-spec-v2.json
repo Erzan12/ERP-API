@@ -8030,6 +8030,53 @@
         "tags": [
           "Human Resources - Employee Relations(Disciplinary Case)"
         ]
+      },
+      "put": {
+        "operationId": "DisciplinaryCaseController_updateDisciplinaryCase_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCaseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Disciplinary Case updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update an existing Disciplinary Case details",
+        "tags": [
+          "Human Resources - Employee Relations(Disciplinary Case)"
+        ]
       }
     },
     "/v2/hris/employee-relations/disciplinary-cases/{disciplinaryCaseId}/status": {
@@ -13003,6 +13050,35 @@
           "incident_narrative",
           "parties"
         ]
+      },
+      "UpdateCaseDto": {
+        "type": "object",
+        "properties": {
+          "company_id": {
+            "type": "string",
+            "example": "Company UUID"
+          },
+          "incident_location": {
+            "type": "string",
+            "example": "Location of the incident"
+          },
+          "assigned_location": {
+            "type": "string",
+            "example": "The assigned location"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "The date of the incident"
+          },
+          "report_date": {
+            "type": "string",
+            "example": "The date of the report"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "Describe what happened, who was involved, where it happened and supporting circumstances"
+          }
+        }
       },
       "SkippedPartyDto": {
         "type": "object",
