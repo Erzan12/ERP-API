@@ -20,6 +20,7 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateCaseDto, getStageTiming } from './dto/create-case.dto';
 import { SLA_DAYS, STAGE_ORDER } from './constants/hr-er-constants';
 import { ErCasePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
+import { UpdateCaseDto } from './dto/update-case.dto';
 
 type Eligibility = { eligible: boolean; reason?: string };
 
@@ -685,6 +686,10 @@ export class DisciplinaryCaseService {
         throw err;
       }
     });
+  }
+
+  async updateCase(disciplinaryCaseId: string, dto: UpdateCaseDto, user: RequestUser) {
+
   }
 
   async advanceAllEligible(caseId: string, user: RequestUser) {
