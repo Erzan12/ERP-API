@@ -9350,6 +9350,31 @@
           "Performance Evaluation"
         ]
       }
+    },
+    "/v2/hris/employee-report": {
+      "post": {
+        "operationId": "EmployeeReportController_createEmployeeReport_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "File an employee report",
+        "tags": [
+          "Human Resources - Employee Report"
+        ]
+      }
     }
   },
   "info": {
@@ -13169,6 +13194,38 @@
         },
         "required": [
           "response"
+        ]
+      },
+      "CreateEmployeeReportDto": {
+        "type": "object",
+        "properties": {
+          "incident_location_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "2026-08-20T09:00:00.000Z"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "The personnel stole the crane"
+          },
+          "parties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SharedCreateCaseIntakePartydto"
+            }
+          },
+          "subject": {
+            "type": "string",
+            "example": "What kind of suspicious activity or accident happened"
+          }
+        },
+        "required": [
+          "incident_location_id",
+          "incident_date",
+          "parties"
         ]
       }
     }
