@@ -20,7 +20,6 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateCaseDto, getStageTiming } from './dto/create-case.dto';
 import { SLA_DAYS, STAGE_ORDER } from './constants/hr-er-constants';
 import { ErCasePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
-import { UpdateCaseDto } from './dto/update-case.dto';
 
 type Eligibility = { eligible: boolean; reason?: string };
 
@@ -688,9 +687,36 @@ export class DisciplinaryCaseService {
     });
   }
 
-  async updateCase(disciplinaryCaseId: string, dto: UpdateCaseDto, user: RequestUser) {
+  // async updateCase(
+  //   disciplinaryCaseId: string,
+  //   dto: UpdateCaseDto,
+  //   user: RequestUser,
+  // ) {
+  //   await this.assertHrAccess(user.id);
 
-  }
+  //   return this.prisma.$transaction(async (tx) => {
+  //           const company = dto.company_id
+  //       ? await tx.company.findUniqueOrThrow({
+  //           where: { id: dto.company_id },
+  //         })
+  //       : null;
+
+  //     const { controlNumber, caseCode } = company
+  //       ? await this.generate(dto.company_id!, company.abbreviation, tx)
+  //       : {
+  //           controlNumber: 0,
+  //           caseCode: 'null',
+  //         };
+  //     })
+
+  //     const disciplinaryCaseReport = await text.hrErCase.update({
+  //       where: { id: disciplinaryCaseId },
+  //       data: {
+
+  //       }
+  //     })
+  //   })
+  // }
 
   async advanceAllEligible(caseId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
