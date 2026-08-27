@@ -74,6 +74,7 @@ import { IncidentReportService } from './incident-report/incident-report.service
     OvertimeCasesService,
     SalaryGradeService,
     EmploymentHistoryService,
+    IncidentReportService,
     DisciplinaryCaseService,
     CaseIntakeService,
     NoticeOfExplainationService,
@@ -81,7 +82,6 @@ import { IncidentReportService } from './incident-report/incident-report.service
     AdministrativeHearingService,
     NoticeOfDecisionService,
     CaseCloseService,
-    IncidentReportService,
   ],
   controllers: [
     EmployeeMasterlistController,
@@ -98,6 +98,7 @@ import { IncidentReportService } from './incident-report/incident-report.service
     OvertimeRateController,
     OvertimeCasesController,
     SalaryGradeController,
+    IncidentReportController,
     DisciplinaryCaseController,
     CaseIntakeController,
     NoticeOfExplainationController,
@@ -105,7 +106,6 @@ import { IncidentReportService } from './incident-report/incident-report.service
     AdministrativeHearingController,
     NoticeOfDecisionController,
     CaseCloseController,
-    IncidentReportController,
   ],
   exports: [HrisModule],
 })
