@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { CreateEmployeeReportDto } from './dto/create-employee-report.dto';
+import { CreateEmployeeReportDto, UpdateEmployeeReportDto } from './dto/employee-report.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { HrErIntakeStatus, HrErIntakeType, Prisma } from '@prisma/client';
 import { EmployeeReportPaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
@@ -203,6 +203,56 @@ export class EmployeeReportService {
             status: 'success',
             message: 'Employee Report filed successfully',
             employeeReport,
+        };
+    }
+
+    async updateEmployeeReport(employeeReportId: string, dto: UpdateEmployeeReportDto, user: RequestUser) {
+        await this.assertHrAccess(user.id);
+
+        const existingEmployeeReport = await this.prisma.hrErCaseIntake.findUnique({
+            where: { id: employeeReportId },
+        });
+
+        if (!existingEmployeeReport) {
+            throw new NotFoundException('Employee Report does not exist');
+        }
+
+        const updateEmployeeReport = await this.prisma.hrErCaseIntake.update({
+            where: { id: employeeReportId, },
+            data: {
+                incident_location_id: dto.incident_location_id ?? existingEmployeeReport.incident_location_id,
+                incident_date: dto.incident_date ?? existingEmployeeReport.incident_date,
+                incident_narrative: dto.incident_narrative ?? existingEmployeeReport.incident_narrative,
+                subject: dto.subject ?? existingEmployeeReport.subject,
+                updated_by: user.id,
+
+                ...(dto.parties !== undefined && {
+                    parties: {
+                        deleteMany: {},
+                        create: dto.parties.map((p) => ({
+                            employee: { 
+                                connect: {
+                                    id: p.employee_id,
+                                },
+                            },
+                            role: p.role,
+                        })),
+                    },
+                }),
+            },
+            include: {
+                parties: {
+                    include: {
+                        employee: true,
+                    },
+                },
+            },
+        });
+
+        return {
+            status: 'success',
+            message: 'Employee Report updated successfully',
+            updateEmployeeReport,
         };
     }
 }

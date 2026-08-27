@@ -9189,7 +9189,7 @@
         },
         "summary": "List of current users personal evaluation",
         "tags": [
-          "Performance Evaluation"
+          "Employee Dashboard - Performance Evaluation"
         ]
       }
     },
@@ -9219,7 +9219,7 @@
         },
         "summary": "List of evaluations added to this employee/user",
         "tags": [
-          "Performance Evaluation"
+          "Employee Dashboard - Performance Evaluation"
         ]
       }
     },
@@ -9249,7 +9249,7 @@
         },
         "summary": "List of evaluations completed by this evaluator",
         "tags": [
-          "Performance Evaluation"
+          "Employee Dashboard - Performance Evaluation"
         ]
       }
     },
@@ -9298,7 +9298,7 @@
         },
         "summary": "Submit Employee Performance Evaluation",
         "tags": [
-          "Performance Evaluation"
+          "Employee Dashboard - Performance Evaluation"
         ]
       }
     },
@@ -9347,11 +9347,11 @@
         },
         "summary": "Employee to acknowledge evaluation",
         "tags": [
-          "Performance Evaluation"
+          "Employee Dashboard - Performance Evaluation"
         ]
       }
     },
-    "/v2/hris/employee-reports/{employeeReportId}": {
+    "/v2/employee-dashboard/employee-reports/{employeeReportId}": {
       "get": {
         "operationId": "EmployeeReportController_getEmployeeReport_v2",
         "parameters": [
@@ -9386,11 +9386,43 @@
         },
         "summary": "Get Employee Reports",
         "tags": [
-          "Human Resources - Employee Report"
+          "Employee Dashboard - Employee Report"
+        ]
+      },
+      "put": {
+        "operationId": "EmployeeReportController_updateEmployeeReport_v2",
+        "parameters": [
+          {
+            "name": "employeeReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployeeReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update an existing Employee Report",
+        "tags": [
+          "Employee Dashboard - Employee Report"
         ]
       }
     },
-    "/v2/hris/employee-reports": {
+    "/v2/employee-dashboard/employee-reports": {
       "get": {
         "operationId": "EmployeeReportController_getEmployeeReports_v2",
         "parameters": [
@@ -9466,7 +9498,7 @@
         },
         "summary": "Get Employee Reports",
         "tags": [
-          "Human Resources - Employee Report"
+          "Employee Dashboard - Employee Report"
         ]
       },
       "post": {
@@ -9489,7 +9521,7 @@
         },
         "summary": "File an employee report",
         "tags": [
-          "Human Resources - Employee Report"
+          "Employee Dashboard - Employee Report"
         ]
       }
     }
@@ -13342,8 +13374,36 @@
         "required": [
           "incident_location_id",
           "incident_date",
-          "parties"
+          "parties",
+          "subject"
         ]
+      },
+      "UpdateEmployeeReportDto": {
+        "type": "object",
+        "properties": {
+          "incident_location_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "2026-08-20T09:00:00.000Z"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "The personnel stole the crane"
+          },
+          "parties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SharedCreateCaseIntakePartydto"
+            }
+          },
+          "subject": {
+            "type": "string",
+            "example": "What kind of suspicious activity or accident happened"
+          }
+        }
       }
     }
   }
