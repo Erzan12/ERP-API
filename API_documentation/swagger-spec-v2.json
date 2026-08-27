@@ -1116,13 +1116,13 @@
         ]
       }
     },
-    "/v2/administrator/security_clearance/{id}": {
+    "/v2/administrator/security_clearance/{userId}": {
       "put": {
-        "description": "This endpoint requires a minimun security clearance of level 9.",
+        "description": "This endpoint requires a minimun security clearance of level 7.",
         "operationId": "SecurityClearanceController_updateClearance_v2",
         "parameters": [
           {
-            "name": "id",
+            "name": "userId",
             "required": true,
             "in": "path",
             "schema": {
@@ -3275,6 +3275,650 @@
         ]
       }
     },
+    "/v2/mastertable/er-case-articles/{erCaseArticleId}": {
+      "get": {
+        "operationId": "ErCaseArticlesController_getArticle_v2",
+        "parameters": [
+          {
+            "name": "erCaseArticleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the ER Case Article"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a ER Case Article",
+        "tags": [
+          "Mastertable - Employee Relation Case(Article)"
+        ]
+      },
+      "put": {
+        "operationId": "ErCaseArticlesController_updateErCaseArticle_v2",
+        "parameters": [
+          {
+            "name": "erCaseArticleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update ER Case Article",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateErCaseArticleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ER Case Article updated succesfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current ER Case Article",
+        "tags": [
+          "Mastertable - Employee Relation Case(Article)"
+        ]
+      }
+    },
+    "/v2/mastertable/er-case-articles": {
+      "get": {
+        "operationId": "ErCaseArticlesController_getArticles_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of ER Case Articles"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get all ER Case Articles",
+        "tags": [
+          "Mastertable - Employee Relation Case(Article)"
+        ]
+      },
+      "post": {
+        "operationId": "ErCaseArticlesController_createErCaseArticle_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create ER Case Articles",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateErCaseArticleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ER Case Article created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a new ER Case Article",
+        "tags": [
+          "Mastertable - Employee Relation Case(Article)"
+        ]
+      }
+    },
+    "/v2/mastertable/er-case-violations/{erCaseViolationId}": {
+      "get": {
+        "operationId": "ErCaseViolationsController_getViolation_v2",
+        "parameters": [
+          {
+            "name": "erCaseViolationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the ER Case Violation"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a ER Case Violation",
+        "tags": [
+          "Mastertable - Employee Relation Case(Violation)"
+        ]
+      },
+      "put": {
+        "operationId": "ErCaseViolationsController_updateErCaseViolation_v2",
+        "parameters": [
+          {
+            "name": "erCaseViolationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update ER Case Violation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateErCaseViolationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ER Case Violation updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current ER Case Violation",
+        "tags": [
+          "Mastertable - Employee Relation Case(Violation)"
+        ]
+      }
+    },
+    "/v2/mastertable/er-case-violations": {
+      "get": {
+        "operationId": "ErCaseViolationsController_getViolations_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "article_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "Article UUID",
+              "type": "string"
+            }
+          },
+          {
+            "name": "section",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of ER Case Violations"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get all ER Case Violations",
+        "tags": [
+          "Mastertable - Employee Relation Case(Violation)"
+        ]
+      },
+      "post": {
+        "operationId": "ErCaseViolationsController_createErCaseViolation_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create ER Case Violations",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateErCaseViolationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ER Case Violation created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a new ER Case Violation",
+        "tags": [
+          "Mastertable - Employee Relation Case(Violation)"
+        ]
+      }
+    },
+    "/v2/mastertable/er-case-type-of-offenses/{erCaseTypeOfOffenseId}": {
+      "get": {
+        "operationId": "ErCaseTypesOfOffenseController_getErTypeOfOffense_v2",
+        "parameters": [
+          {
+            "name": "erCaseTypeOfOffenseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": " Here is the ER Case Violation"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a ER Case Type of Offense",
+        "tags": [
+          "Mastertable - Employee Relation Case(Type of Offense)"
+        ]
+      },
+      "put": {
+        "operationId": "ErCaseTypesOfOffenseController_updateErCaseTypeOfOffense_v2",
+        "parameters": [
+          {
+            "name": "erCaseTypeOfOffenseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update ER Case Type of Offense",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateErCaseTypesOfOffenseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ER Case Type of Offense updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current ER Case Type of Offense",
+        "tags": [
+          "Mastertable - Employee Relation Case(Type of Offense)"
+        ]
+      }
+    },
+    "/v2/mastertable/er-case-type-of-offenses": {
+      "get": {
+        "operationId": "ErCaseTypesOfOffenseController_getErTypeOfOffenses_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of ER Case Violations"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get all ER Case Type of Offenses",
+        "tags": [
+          "Mastertable - Employee Relation Case(Type of Offense)"
+        ]
+      },
+      "post": {
+        "operationId": "ErCaseTypesOfOffenseController_createErCaseTypeOfOffense_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create ER Case Type of Offense",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateErCaseTypesOfOffenseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ER Case Type of Offense created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a new ER Case Type of Offense",
+        "tags": [
+          "Mastertable - Employee Relation Case(Type of Offense)"
+        ]
+      }
+    },
     "/v2/hris/employees": {
       "get": {
         "operationId": "EmployeeMasterlistController_getEmployees_v2",
@@ -3498,57 +4142,6 @@
           }
         },
         "summary": "Delete a employee",
-        "tags": [
-          "Human Resources - Employees (Employee Masterlist)"
-        ]
-      }
-    },
-    "/v2/hris/employees/sms-notification-registration": {
-      "post": {
-        "operationId": "EmployeeMasterlistController_smsNotificationRegistration_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to register employee to sms notifications",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SmsNotificationPreferenceDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "summary": "Employee SMS Registration",
-        "tags": [
-          "Human Resources - Employees (Employee Masterlist)"
-        ]
-      }
-    },
-    "/v2/hris/employees/sms-notification-registration/verify-otp": {
-      "post": {
-        "operationId": "EmployeeMasterlistController_verifyEmployeeSmsOtp_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OtpVerificationDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "summary": "Verify otp of employee",
         "tags": [
           "Human Resources - Employees (Employee Masterlist)"
         ]
@@ -6269,6 +6862,35 @@
             }
           },
           {
+            "name": "date_filed_from",
+            "required": false,
+            "in": "query",
+            "description": "Filter record from date filed",
+            "schema": {
+              "example": "2026-07-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_filed_to",
+            "required": false,
+            "in": "query",
+            "description": "Filter record up to",
+            "schema": {
+              "example": "2026-07-20",
+              "type": "string"
+            }
+          },
+          {
+            "name": "employee_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -6306,6 +6928,33 @@
               "default": 10,
               "example": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "show_by_status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": [
+                "for_verification",
+                "for_approval"
+              ],
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "submitted",
+                  "for_verification",
+                  "verified",
+                  "for_approval",
+                  "approved",
+                  "for_processing",
+                  "processed",
+                  "cancelled",
+                  "rejected"
+                ]
+              }
             }
           }
         ],
@@ -6484,6 +7133,35 @@
             }
           },
           {
+            "name": "date_filed_from",
+            "required": false,
+            "in": "query",
+            "description": "Filter record from date filed",
+            "schema": {
+              "example": "2026-07-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_filed_to",
+            "required": false,
+            "in": "query",
+            "description": "Filter record up to",
+            "schema": {
+              "example": "2026-07-20",
+              "type": "string"
+            }
+          },
+          {
+            "name": "employee_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -6521,6 +7199,31 @@
               "default": 10,
               "example": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "show_by_status",
+            "required": false,
+            "in": "query",
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "submitted",
+                  "for_verification",
+                  "verified",
+                  "for_approval",
+                  "approved",
+                  "for_processing",
+                  "processed",
+                  "cancelled",
+                  "rejected"
+                ]
+              }
             }
           }
         ],
@@ -6871,6 +7574,45 @@
         ]
       }
     },
+    "/v2/hris/time-and-attendance-cases/overtimes/{overtimeRequestId}/cancel": {
+      "put": {
+        "operationId": "OvertimeCasesController_cancelOvertimeRequest_v2",
+        "parameters": [
+          {
+            "name": "overtimeRequestId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overtime Request cancelled"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Cancel Overtime Request",
+        "tags": [
+          "Human Resources - Time and Attendance Cases (Overtime Request)"
+        ]
+      }
+    },
     "/v2/hris/salary-grades": {
       "get": {
         "operationId": "SalaryGradeController_getSalaryGrades_v2",
@@ -7074,6 +7816,760 @@
         "summary": "Update a current Salary Grade",
         "tags": [
           "Human Resources - Salary Grade"
+        ]
+      }
+    },
+    "/v2/hris/incident-report": {
+      "post": {
+        "operationId": "IncidentReportController_createIncidentReport_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIncidentReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "File an incident report",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/disciplinary-cases/{disciplinaryCaseId}": {
+      "get": {
+        "operationId": "DisciplinaryCaseController_getDisciplinaryCase_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the of Disciplinary Case"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a Disciplinary Case",
+        "tags": [
+          "Human Resources - Employee Relations(Disciplinary Case)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/disciplinary-cases/{disciplinaryCaseId}/status": {
+      "get": {
+        "operationId": "DisciplinaryCaseController_getDisciplinaryCaseStatus_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the Disciplinary Case Status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a Disciplinary Case Status",
+        "tags": [
+          "Human Resources - Employee Relations(Disciplinary Case)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/disciplinary-cases": {
+      "get": {
+        "operationId": "DisciplinaryCaseController_getDisciplinaryCases_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of Disciplinay Cases"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get all Disciplinary Cases",
+        "tags": [
+          "Human Resources - Employee Relations(Disciplinary Case)"
+        ]
+      },
+      "post": {
+        "operationId": "DisciplinaryCaseController_createDisciplinaryCase_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create Disciplinary Case Report",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCaseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Disciplinary Case Report created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a new Disciplinary Case Report",
+        "tags": [
+          "Human Resources - Employee Relations(Disciplinary Case)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/disciplinary-cases/{disciplinaryCaseId}/advance-stage": {
+      "put": {
+        "operationId": "DisciplinaryCaseController_advanceStage_v2",
+        "parameters": [
+          {
+            "name": "caseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdvanceStageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Advance every eligible respondent to their next stage; ineligible ones are left behind.",
+        "tags": [
+          "Human Resources - Employee Relations(Disciplinary Case)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/disciplinary-cases/party/{partyId}/no-response": {
+      "put": {
+        "operationId": "DisciplinaryCaseController_updateMarkNoResponse_v2",
+        "parameters": [
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Party or Employee involved mark as no show"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Party is no show will be mark as no response",
+        "tags": [
+          "Human Resources - Employee Relations(Disciplinary Case)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/case-intake/incident-reports": {
+      "get": {
+        "operationId": "CaseIntakeController_getIncidentReports_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the list of Incident Reports"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Incident Reports",
+        "tags": [
+          "Human Resources - Employee Relations(Case Intake)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/case-intake/employee-reports": {
+      "get": {
+        "operationId": "CaseIntakeController_getEmployeeReports_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the list of Employee Reports"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Employee Reports",
+        "tags": [
+          "Human Resources - Employee Relations(Case Intake)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/nte/parties": {
+      "post": {
+        "operationId": "NoticeOfExplainationController_IssueNte_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IssueNteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Issue an NTE to a respondent and assign reviewers",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/nte/{nteId}/approvals/{approvalId}": {
+      "put": {
+        "operationId": "NoticeOfExplainationController_reviewNteApproval_v2",
+        "parameters": [
+          {
+            "name": "nteId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "approvalId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewNteApprovalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Reviewer approves or request revision on an NTE.",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/written-explanation/parties": {
+      "post": {
+        "operationId": "WrittenExplainationController_submitExplanation_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitExplainationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Record a respondent's written explanation.",
+        "tags": [
+          "Human Resources - Employee Relations(Written Explationation)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/administrative-hearing/parties": {
+      "post": {
+        "operationId": "AdministrativeHearingController_scheduleHearing_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleHearingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Scheduled an administrative hearing for a respondent.",
+        "tags": [
+          "Human Resources - Employee Relations(Administrative Hearing)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/administrative-hearing/{disciplinaryCaseId}/parties/{partyId}/reschedule": {
+      "put": {
+        "operationId": "AdministrativeHearingController_rescheduleHearing_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleHearingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Reschedule a respondent's administrative hearing.",
+        "tags": [
+          "Human Resources - Employee Relations(Administrative Hearing)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/administrative-hearing/{disciplinaryCaseId}/parties/{partyId}/conduct": {
+      "put": {
+        "operationId": "AdministrativeHearingController_conductHearing_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RescheduleHearingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark a respondent's administrative hearing as conducted.",
+        "tags": [
+          "Human Resources - Employee Relations(Administrative Hearing)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/notice-of-decision/parties": {
+      "post": {
+        "operationId": "NoticeOfDecisionController_submitDecision_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitDecisionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Record and serve a the Notice of Decision for a respondent.",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Decision)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/discplinary-case/{disciplinaryCaseId}/case-close": {
+      "put": {
+        "description": "Closes the disciplinary case and exits the case_cloased stage for all respondents.",
+        "operationId": "CaseCloseController_closeCase_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Close disciplinary case",
+        "tags": [
+          "Human Resources - Employee Relations(Case Close)"
+        ]
+      }
+    },
+    "/v2/sms/employees/sms-notification-registration": {
+      "post": {
+        "operationId": "SmsController_smsNotificationRegistration_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to register employee to sms notifications",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SmsNotificationPreferenceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Employee SMS Registration",
+        "tags": [
+          "Sms Module - Employee Sms Registration"
+        ]
+      }
+    },
+    "/v2/sms/employees/sms-notification-registration/verify-otp": {
+      "post": {
+        "operationId": "SmsController_verifyEmployeeSmsOtp_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OtpVerificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Verify otp of employee",
+        "tags": [
+          "Sms Module - Employee Sms Registration"
         ]
       }
     },
@@ -9180,6 +10676,128 @@
           "update_vessel_details"
         ]
       },
+      "CreateErCaseArticleDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Article I. Use of Time Card & Attendance Sheet"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "UpdateErCaseArticleDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Article I. Use of Time Card & Attendance Sheet"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": "true or false"
+          }
+        },
+        "required": [
+          "title",
+          "is_active"
+        ]
+      },
+      "CreateErCaseViolationDto": {
+        "type": "object",
+        "properties": {
+          "article_id": {
+            "type": "string",
+            "example": "Article UUID"
+          },
+          "section": {
+            "type": "number",
+            "example": 3
+          },
+          "behavior": {
+            "type": "string",
+            "example": "Failure to punch time records or login or out"
+          },
+          "category": {
+            "type": "string",
+            "example": "A"
+          }
+        },
+        "required": [
+          "article_id",
+          "section",
+          "behavior",
+          "category"
+        ]
+      },
+      "UpdateErCaseViolationDto": {
+        "type": "object",
+        "properties": {
+          "article_id": {
+            "type": "string",
+            "example": "Article UUID"
+          },
+          "section": {
+            "type": "number",
+            "example": 3
+          },
+          "behavior": {
+            "type": "string",
+            "example": "Failure to punch time records or login or out"
+          },
+          "category": {
+            "type": "string",
+            "example": "A"
+          }
+        },
+        "required": [
+          "article_id",
+          "section",
+          "behavior",
+          "category"
+        ]
+      },
+      "CreateErCaseTypesOfOffenseDto": {
+        "type": "object",
+        "properties": {
+          "type_of_offense": {
+            "type": "string",
+            "example": "Tardiness"
+          },
+          "description": {
+            "type": "string",
+            "example": "This is for tardy employees"
+          }
+        },
+        "required": [
+          "type_of_offense",
+          "description"
+        ]
+      },
+      "UpdateErCaseTypesOfOffenseDto": {
+        "type": "object",
+        "properties": {
+          "type_of_offense": {
+            "type": "string",
+            "example": "Tardiness"
+          },
+          "description": {
+            "type": "string",
+            "example": "This is for tardy employees"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": "true or false"
+          }
+        },
+        "required": [
+          "type_of_offense",
+          "description",
+          "is_active"
+        ]
+      },
       "CreatePersonDto": {
         "type": "object",
         "properties": {
@@ -9378,23 +10996,6 @@
           "person",
           "employee",
           "sms"
-        ]
-      },
-      "OtpVerificationDto": {
-        "type": "object",
-        "properties": {
-          "otp_code": {
-            "type": "string",
-            "example": "Sms verification otp"
-          },
-          "employeeId": {
-            "type": "string",
-            "example": "Employee UUID PK"
-          }
-        },
-        "required": [
-          "otp_code",
-          "employeeId"
         ]
       },
       "UpdatePersonDto": {
@@ -10819,6 +12420,515 @@
           "rate",
           "level",
           "is_confidential"
+        ]
+      },
+      "SharedCreateCaseIntakePartydto": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "respondent",
+              "complainant",
+              "witness"
+            ],
+            "example": "respondent"
+          }
+        },
+        "required": [
+          "employee_id",
+          "role"
+        ]
+      },
+      "CreateIncidentReportDto": {
+        "type": "object",
+        "properties": {
+          "incident_location_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "2026-08-20T09:00:00.000Z"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "The personnel jump off the vessel"
+          },
+          "parties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SharedCreateCaseIntakePartydto"
+            }
+          },
+          "offense_ids": {
+            "description": "Committed offense IDs",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "incident_location_id",
+          "incident_date",
+          "parties",
+          "offense_ids"
+        ]
+      },
+      "CreateCasePartyActionDto": {
+        "type": "object",
+        "properties": {
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "preventive_suspension"
+            ],
+            "example": "preventive_suspension"
+          },
+          "effectivity_start": {
+            "type": "string",
+            "example": "2026-08-15T00:00:00.000Z",
+            "description": "Start date of the preventive suspension"
+          },
+          "effectivity_end": {
+            "type": "string",
+            "example": "2026-08-20T23:59:59:999Z",
+            "description": "End date of the preventive suspension"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Preventive suspension pending investigation"
+          }
+        },
+        "required": [
+          "action_type",
+          "effectivity_start",
+          "effectivity_end"
+        ]
+      },
+      "CreateCasePartyDto": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Employee UUID"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "respondent",
+              "complainant",
+              "witness"
+            ],
+            "example": "respondent"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "minor",
+              "major"
+            ],
+            "description": "Required when role is respondent"
+          },
+          "offense_ids": {
+            "description": "Committed offense IDs — required when role is respondent",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "violation_ids": {
+            "description": "Policy violated (violation) IDs — required when role is respondent",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "action": {
+            "description": "Preventive suspension action. Only available for respondents with major level.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CreateCasePartyActionDto"
+              }
+            ]
+          },
+          "remarks": {
+            "type": "string",
+            "example": "This employee is the respondent in the case."
+          }
+        },
+        "required": [
+          "employee_id",
+          "role",
+          "remarks"
+        ]
+      },
+      "CreateCaseDto": {
+        "type": "object",
+        "properties": {
+          "company_id": {
+            "type": "string",
+            "example": "Company UUID"
+          },
+          "incident_location": {
+            "type": "string",
+            "example": "Location of the incident"
+          },
+          "assigned_location": {
+            "type": "string",
+            "example": "The assigned location"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "The date of the incident"
+          },
+          "report_date": {
+            "type": "string",
+            "example": "The date of the report"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "Describe what happened, who was involved, where it happened and supporting circumstances"
+          },
+          "parties": {
+            "description": "Employees involved in the case. A respondent requires level, offense_ids, and violation_ids.",
+            "example": [
+              {
+                "employee_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                "role": "respondent",
+                "level": "major",
+                "offense_ids": [
+                  "11111111-1111-1111-1111-111111111111",
+                  "22222222-2222-2222-2222-222222222222"
+                ],
+                "violation_ids": [
+                  "33333333-3333-3333-3333-333333333333",
+                  "44444444-4444-4444-4444-444444444444"
+                ],
+                "action": {
+                  "action_type": "preventive_suspension",
+                  "effectivity_start": "2026-08-15T00:00:00.000Z",
+                  "effectivity_end": "2026-08-20T23:59:59.999Z",
+                  "remarks": "Preventive suspension pending investigation."
+                },
+                "remarks": "This employee is the respondent in the case."
+              },
+              {
+                "employee_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                "role": "complainant",
+                "remarks": "Employee who reported the incident."
+              },
+              {
+                "employee_id": "c3d4e5f6-a7b8-9012-cdef-234567890123",
+                "role": "witness",
+                "remarks": "Employee who witnessed the incident."
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateCasePartyDto"
+            }
+          },
+          "intake_id": {
+            "type": "string",
+            "example": "e5f6a7b8-c9d0-1234-ef56-789012345678",
+            "description": "If converting a Case Intake/Report into this Disciplinary Case, its UUID"
+          }
+        },
+        "required": [
+          "company_id",
+          "incident_location",
+          "assigned_location",
+          "incident_date",
+          "report_date",
+          "incident_narrative",
+          "parties"
+        ]
+      },
+      "SkippedPartyDto": {
+        "type": "object",
+        "properties": {
+          "partyId": {
+            "type": "string",
+            "example": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+          },
+          "reason": {
+            "type": "string",
+            "example": "Still awaiting written explanation."
+          }
+        },
+        "required": [
+          "partyId",
+          "reason"
+        ]
+      },
+      "AdvanceStageResponseDto": {
+        "type": "object",
+        "properties": {
+          "advanced": {
+            "example": [
+              "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "skipped": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SkippedPartyDto"
+            }
+          }
+        },
+        "required": [
+          "advanced",
+          "skipped"
+        ]
+      },
+      "IssueNteDto": {
+        "type": "object",
+        "properties": {
+          "disciplinary_case_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Disciplinary Case UUID"
+          },
+          "party_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Party UUID"
+          },
+          "due_date": {
+            "type": "string",
+            "example": "2026-08-20",
+            "description": "Deadline for the respondent to submit a written explanation"
+          },
+          "service_channel": {
+            "type": "string",
+            "enum": [
+              "nra_office",
+              "personal",
+              "postal_mail"
+            ]
+          },
+          "reference_number": {
+            "type": "string",
+            "example": "NTE-2026-00042"
+          },
+          "form_url": {
+            "type": "string",
+            "description": "URL of the NTE form/letter, if already uploaded"
+          },
+          "reviewer_ids": {
+            "description": "User IDs of reviewers who must sign off before this NTE is considered approved",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "disciplinary_case_id",
+          "party_id",
+          "reviewer_ids"
+        ]
+      },
+      "ReviewNteApprovalDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "revise",
+              "rejected"
+            ]
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Please clarify the effectivity dates before this goes out."
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "SubmitExplainationDto": {
+        "type": "object",
+        "properties": {
+          "disciplinary_case_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Disciplinary Case UUID"
+          },
+          "party_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Party UUID"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "viber",
+              "email",
+              "letter",
+              "did_not_proceed"
+            ]
+          },
+          "response_text": {
+            "type": "string",
+            "example": "I acknowledge receiving the instruction and have provided the circusmtances surrounding the incident."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "URL of the uploaded written explanation file"
+          }
+        },
+        "required": [
+          "disciplinary_case_id",
+          "party_id",
+          "channel"
+        ]
+      },
+      "ScheduleHearingDto": {
+        "type": "object",
+        "properties": {
+          "disciplinary_case_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Disciplinary Case UUID"
+          },
+          "party_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Party UUID"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "example": "2026-09-01T09:00:00.000Z"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "online",
+              "viber",
+              "postal_mail",
+              "call",
+              "text"
+            ]
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Respondent remarks for admin hearing"
+          }
+        },
+        "required": [
+          "disciplinary_case_id",
+          "party_id",
+          "scheduled_at",
+          "channel"
+        ]
+      },
+      "RescheduleHearingDto": {
+        "type": "object",
+        "properties": {
+          "scheduled_at": {
+            "type": "string",
+            "example": "2026-09-01T09:00:00.000Z"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "online",
+              "viber",
+              "postal_mail",
+              "call",
+              "text"
+            ]
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Respondent remarks for admin hearing"
+          }
+        },
+        "required": [
+          "scheduled_at",
+          "channel"
+        ]
+      },
+      "SubmitDecisionDto": {
+        "type": "object",
+        "properties": {
+          "disciplinary_case_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Disciplinary Case UUID"
+          },
+          "party_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Party UUID"
+          },
+          "decision_type": {
+            "type": "string",
+            "enum": [
+              "written_reprimand",
+              "stern_warning",
+              "suspension_7d",
+              "suspension_15d",
+              "dismissal",
+              "acquitted",
+              "rehabilitation"
+            ]
+          },
+          "effectivity_start": {
+            "type": "string",
+            "example": "2026-08-01",
+            "description": "Required for suspension/rehabilitation decisions"
+          },
+          "effectivity_end": {
+            "type": "string",
+            "example": "2026-08-03",
+            "description": "Required for suspension/rehabilitation decisions"
+          },
+          "signed_file_url": {
+            "type": "string",
+            "description": "URL of the signed Notice of Decision"
+          },
+          "remarks": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "disciplinary_case_id",
+          "party_id",
+          "decision_type"
+        ]
+      },
+      "OtpVerificationDto": {
+        "type": "object",
+        "properties": {
+          "otp_code": {
+            "type": "string",
+            "example": "Sms verification otp"
+          },
+          "employee_id": {
+            "type": "string",
+            "example": "Employee UUID PK"
+          }
+        },
+        "required": [
+          "otp_code",
+          "employee_id"
         ]
       },
       "CreatePermissionTemplateDto": {

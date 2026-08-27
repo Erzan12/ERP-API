@@ -3,8 +3,8 @@
 // export const SEC_LVL_3 = 3;
 // export const SEC_LVL_4 = 4;
 export const SEC_LVL_5 = 5;
-// export const SEC_LVL_6 = 6;
-// export const SEC_LVL_7 = 7;
+export const SEC_LVL_6 = 6;
+export const SEC_LVL_7 = 7;
 export const SEC_LVL_8 = 8;
 export const SEC_LVL_9 = 9;
 // export const SEC_LVL_10 = 10;
