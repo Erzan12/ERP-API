@@ -9351,6 +9351,45 @@
         ]
       }
     },
+    "/v2/hris/employee-reports/{employeeReportId}": {
+      "get": {
+        "operationId": "EmployeeReportController_getEmployeeReport_v2",
+        "parameters": [
+          {
+            "name": "employeeReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the list of Employee Reports"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Employee Reports",
+        "tags": [
+          "Human Resources - Employee Report"
+        ]
+      }
+    },
     "/v2/hris/employee-reports": {
       "get": {
         "operationId": "EmployeeReportController_getEmployeeReports_v2",

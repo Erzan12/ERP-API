@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { EmployeeReportService } from './employee-report.service';
 import { CreateEmployeeReportDto } from './dto/create-employee-report.dto';
@@ -11,6 +11,16 @@ import { EmployeeReportPaginationDto } from 'src/utils/dtos/er-related-paginatio
 @Controller({ path: 'hris', version: '2' })
 export class EmployeeReportController {
     constructor (private readonly employeeReportService: EmployeeReportService) {}
+
+    @Get('employee-reports/:employeeReportId')
+    @ApiOperation({ summary: 'Get Employee Reports' })
+    @ApiGetResponse('Here is the list of Employee Reports')
+    getEmployeeReport(
+        @Param('employeeReportId', new ParseUUIDPipe()) employeeReportId: string,
+        @SessionUser() user: RequestUser,
+    ) {
+        return this.employeeReportService.getEmployeeReport(employeeReportId, user);
+    }
 
     @Get('employee-reports')
     @ApiOperation({ summary: 'Get Employee Reports' })

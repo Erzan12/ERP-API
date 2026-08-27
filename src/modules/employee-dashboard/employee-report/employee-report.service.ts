@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { CreateEmployeeReportDto } from './dto/create-employee-report.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -113,6 +113,43 @@ export class EmployeeReportService {
             page,
             perPage,
             employeeReports,
+        };
+    }
+
+    async getEmployeeReport (employeeReportId: string, user: RequestUser) {
+        await this.assertHrAccess(user.id);
+
+        const employeeReport =  await this.prisma.hrErCaseIntake.findUnique({
+            where: { id: employeeReportId },
+            include: {
+                createdBy: {
+                    select: {
+                        employee: true,
+                        person: {
+                            select: {
+                                first_name: true,
+                                middle_name: true,
+                                last_name: true,
+                            },
+                        },
+                    },
+                },
+                case: true,
+                parties: true,
+                violations: true,
+                attachments: true,
+                offenses: true,
+            },
+        })
+
+        if (!employeeReport) {
+            throw new NotFoundException('Employee Report does not exists.');
+        }
+
+        return {
+            status: 'success',
+            message: 'Here is the Employee Report',
+            employeeReport,
         };
     }
     
