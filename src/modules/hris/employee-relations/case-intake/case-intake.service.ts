@@ -101,6 +101,38 @@ export class CaseIntakeService {
             }),
         ]);
 
+        const locationIds = incidentReports
+            .map((report) => report.incident_location_id)
+            .filter((id): id is string => !!id);
+
+        const workAssignments = await this.prisma.workAssignment.findMany({
+            where: {
+                id: {
+                    in: locationIds,
+                },
+            },
+        });
+
+        const workAssignmentMap = new Map(
+            workAssignments.map((assignment) => [
+                `${assignment.type}:${assignment.id}`,
+                assignment,
+            ]),
+        );
+
+        const incidentReportsWithLocation = incidentReports.map((report) => {
+            const assignment = report.incident_location_id
+                ? workAssignmentMap.get(
+                    `${report.incident_location_type}:${report.incident_location_id}`,
+                )
+                : null;
+
+            return {
+                ...report,
+                incidentLocation: assignment ?? null,
+            };
+        });
+
         // if (incidentReports.length === 0) {
         //     throw new NotFoundException('No incident reports found.');
         // }
@@ -111,7 +143,7 @@ export class CaseIntakeService {
             count: total,
             page,
             perPage,
-            incidentReports,
+            incidentReports: incidentReportsWithLocation,
         };
     }
 
