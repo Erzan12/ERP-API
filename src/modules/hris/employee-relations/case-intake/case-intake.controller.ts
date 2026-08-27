@@ -4,7 +4,7 @@ import { CaseIntakeService } from './case-intake.service';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CaseIntakePaginationDto } from 'src/utils/dtos/case-intake-pagination.dto';
+import { CaseIntakePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 
 @ApiTags('Human Resources - Employee Relations(Case Intake)')
 @Controller({ path: 'hris', version: '2' })

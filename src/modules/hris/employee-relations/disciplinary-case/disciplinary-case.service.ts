@@ -19,7 +19,7 @@ import { ControlNumberService } from 'src/jobs/control-number/control-number.ser
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateCaseDto, getStageTiming } from './dto/create-case.dto';
 import { SLA_DAYS, STAGE_ORDER } from './constants/hr-er-constants';
-import { ErCasePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
+import { ErCasePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 
 type Eligibility = { eligible: boolean; reason?: string };
 

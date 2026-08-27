@@ -11,7 +11,7 @@ import {
   UpdateErCaseArticleDto,
 } from './dto/er-case-articles.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { ErCaseArticlePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
+import { ErCaseArticlePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
