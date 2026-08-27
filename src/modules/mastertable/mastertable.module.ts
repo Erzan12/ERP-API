@@ -11,14 +11,20 @@ import { PositionController } from './position/position.controller';
 import { DepartmentController } from './department/department.controller';
 import { CompanyController } from './company/company.controller';
 import { DivisionController } from './division/division.controller';
-import { EmploymentStatusService } from './employment_status/employment_status.service';
-import { EmploymentStatusController } from './employment_status/employment_status.controller';
+import { EmploymentStatusService } from './employment-status/employment-status.service';
+import { EmploymentStatusController } from './employment-status/employment-status.controller';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { UserLocationService } from './user_location/user_location.service';
+import { UserLocationService } from './user-location/user-location.service';
 import { AuthModule } from 'src/auth/auth.module';
-import { UserLocationController } from './user_location/user_location.controller';
+import { UserLocationController } from './user-location/user-location.controller';
 import { VesselController } from './vessel/vessel.controller';
 import { VesselService } from './vessel/vessel.service';
+import { ErCaseArticlesService } from './employee-relations-cases/er-case-articles/er-case-articles.service';
+import { ErCaseArticlesController } from './employee-relations-cases/er-case-articles/er-case-articles.controller';
+import { ErCaseViolationsService } from './employee-relations-cases/er-case-violations/er-case-violations.service';
+import { ErCaseViolationsController } from './employee-relations-cases/er-case-violations/er-case-violations.controller';
+import { ErCaseTypesOfOffenseService } from './employee-relations-cases/er-case-types-of-offense/er-case-types-of-offense.service';
+import { ErCaseTypesOfOffenseController } from './employee-relations-cases/er-case-types-of-offense/er-case-types-of-offense.controller';
 
 @Module({
   imports: [AuthModule],
@@ -35,6 +41,9 @@ import { VesselService } from './vessel/vessel.service';
     CreateCompanyDto,
     UserLocationService,
     VesselService,
+    ErCaseArticlesService,
+    ErCaseViolationsService,
+    ErCaseTypesOfOffenseService,
   ],
   controllers: [
     PositionController,
@@ -44,6 +53,9 @@ import { VesselService } from './vessel/vessel.service';
     EmploymentStatusController,
     UserLocationController,
     VesselController,
+    ErCaseArticlesController,
+    ErCaseViolationsController,
+    ErCaseTypesOfOffenseController,
   ],
   exports: [],
 })

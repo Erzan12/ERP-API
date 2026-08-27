@@ -55,6 +55,13 @@ export class LandingController {
           status: 'Beta',
         },
         {
+          title: 'Sms Module',
+          slug: 'sms',
+          swaggerLink: '/docs/sms',
+          icon: '/public/icons/sms.png',
+          status: 'Beta',
+        },
+        {
           title: 'DB Query',
           slug: 'db-query',
           swaggerLink: '/docs/db-query',

@@ -117,6 +117,14 @@ export class OvertimeCasesService {
       const overtimeRequest = await this.prisma.hrOvertimeRequest.findUnique({
         where: { id: overtimeRequestId, is_active: true },
         include: {
+          overtimeRate: {
+            select: {
+              id: true,
+              type: true,
+              rate: true,
+              is_active: true,
+            },
+          },
           employee: {
             select: {
               id: true,
@@ -214,8 +222,18 @@ export class OvertimeCasesService {
   async getOvertimeRequests(
     user: RequestUser,
     dto: OvertimeRequestsPaginationDto,
+    // statusDto: OvertimeRequestStatusPaginationDto,
   ) {
-    const { search, sortBy, order, page, perPage } = dto;
+    const {
+      search,
+      date_filed_from,
+      date_filed_to,
+      employee_id,
+      sortBy,
+      order,
+      page,
+      perPage,
+    } = dto;
 
     // Auth check first
     const requestUser = await this.prisma.user.findUnique({
@@ -259,6 +277,14 @@ export class OvertimeCasesService {
       is_active: true,
     };
 
+    if (dto.show_by_status?.length) {
+      whereCondition.status = {
+        in: dto.show_by_status,
+      };
+    } else if (dto.status) {
+      whereCondition.status = dto.status as OvertimeStatus;
+    }
+
     const whereConditions: Prisma.HrOvertimeRequestWhereInput = {};
 
     if (search) {
@@ -282,6 +308,69 @@ export class OvertimeCasesService {
       ]);
     }
 
+    // if (time_from) {
+    //   whereConditions.time_from = {
+    //     gte: new Date(`1970-01-01T${time_from}`),
+    //   };
+    // }
+
+    // if (time_to) {
+    //   whereConditions.time_to = {
+    //     lte: new Date(`1970-01-01T${time_to}`),
+    //   };
+    // }
+
+    const today = new Date();
+
+    //  End of today
+    today.setHours(23, 59, 59, 999);
+
+    if (date_filed_from || date_filed_to) {
+      const dateFilter: Prisma.DateTimeFilter = {};
+
+      if (date_filed_from) {
+        dateFilter.gte = new Date(date_filed_from);
+      }
+
+      if (date_filed_to) {
+        const endDate = new Date(date_filed_to);
+
+        //  Dont allow dates beyond today
+        if (endDate > today) {
+          dateFilter.lte = today;
+        } else {
+          endDate.setHours(23, 59, 59, 999);
+          dateFilter.lte = endDate;
+        }
+      } else {
+        // If no "to" is supplied, default to today
+        dateFilter.lte = today;
+      }
+
+      whereConditions.date_filed = dateFilter;
+    }
+
+    await this.prisma.employee.findFirst({
+      where: { id: employee_id },
+      include: {
+        overtimes: true,
+      },
+    });
+
+    if (employee_id) {
+      const existingEmployee = await this.prisma.employee.findFirst({
+        where: {
+          id: employee_id,
+        },
+      });
+
+      if (!existingEmployee) {
+        throw new NotFoundException('Employee does not exist');
+      }
+
+      whereCondition.employee_id = employee_id;
+    }
+
     const allowSortFields = ['created_by'];
 
     const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
@@ -297,6 +386,30 @@ export class OvertimeCasesService {
         where: {
           ...whereCondition,
           ...whereConditions,
+        },
+        include: {
+          employee: {
+            select: {
+              person: {
+                select: {
+                  first_name: true,
+                  middle_name: true,
+                  last_name: true,
+                },
+              },
+              user_location: {
+                select: {
+                  location_name: true,
+                },
+              },
+              vessel: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+          overtimeRate: true,
         },
         skip,
         take: perPage,
@@ -361,6 +474,28 @@ export class OvertimeCasesService {
       overtimes: formattedOvertimes,
     };
   }
+
+  // async getOvertimeRequestWithStatuses(dto: OvertimeRequestStatusPaginationDto) {
+  // const whereCondition: Prisma.HrOvertimeRequestWhereInput = {
+  //   is_active: true,
+  // };
+
+  // if (dto.show_by_status?.length) {
+  //   whereCondition.status = {
+  //     in: dto.show_by_status,
+  //   };
+  // }
+
+  // const requests = await this.prisma.hrOvertimeRequest.findMany({
+  //   where: whereCondition,
+  // });
+
+  // return {
+  //   status: 'success',
+  //   message: 'List of Overtime Request based on status',
+  //   requests,
+  // }
+  // }
 
   async createOvertimeRequest(
     user: RequestUser,
@@ -1536,6 +1671,118 @@ export class OvertimeCasesService {
         message: 'Overtime Request Rejected',
         rejectOvertimeRequest,
         rejected_by: `${userName} - ${userPosition}`,
+      };
+    });
+  }
+
+  async cancelOvertimeRequest(overtimeRequestId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const existingOvertimeRequest = await tx.hrOvertimeRequest.findUnique({
+        where: { id: overtimeRequestId },
+      });
+
+      if (!existingOvertimeRequest || !existingOvertimeRequest.is_active) {
+        throw new BadRequestException(
+          'Overtime Request does not exist or is inactive.',
+        );
+      }
+
+      const allowedStatuses: OvertimeStatus[] = [
+        OvertimeStatus.draft,
+        OvertimeStatus.for_verification,
+        OvertimeStatus.verified,
+        OvertimeStatus.for_approval,
+        OvertimeStatus.approved,
+      ];
+
+      if (!allowedStatuses.includes(existingOvertimeRequest.status)) {
+        throw new BadRequestException(
+          'Invalid! Overtime Request cannot be cancelled anymore since status is now for_processing.',
+        );
+      }
+
+      const cancelOvertimeRequest = await tx.hrOvertimeRequest.updateMany({
+        where: {
+          id: overtimeRequestId,
+          status: {
+            in: [
+              OvertimeStatus.draft,
+              OvertimeStatus.for_verification,
+              OvertimeStatus.verified,
+              OvertimeStatus.for_approval,
+              OvertimeStatus.approved,
+            ],
+          },
+        },
+        data: {
+          status: OvertimeStatus.cancelled,
+          updated_by: requestUser.id,
+        },
+      });
+
+      if (cancelOvertimeRequest.count === 0) {
+        throw new BadRequestException('Update failed due to invalid status');
+      }
+
+      const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
+      const userPosition = requestUser.employee.position.name;
+
+      await tx.workflowAction.create({
+        data: {
+          actionable_type: WORKFLOW_ENTITY.OVERTIME_REQUEST,
+          actionable_id: overtimeRequestId,
+          action: WorkflowActionType.rejection,
+          acted_by: requestUser.id,
+          metadata: {
+            title: 'Overtime Request Cancelled',
+            message: 'You have cancelled this Overtime Request',
+            user: `${userName} - ${userPosition}`,
+            role: 'creator',
+          },
+        },
+      });
+
+      return {
+        status: 'success',
+        message: 'Overtime Request Cancelled',
+        cancelOvertimeRequest,
+        cancelled_by: `${userName} - ${userPosition}`,
       };
     });
   }
