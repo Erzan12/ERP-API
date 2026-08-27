@@ -8,7 +8,11 @@ import { EmployeeReportController } from './employee-report/employee-report.cont
 
 @Module({
   imports: [AuthModule],
-  providers: [PrismaService, PerformanceEvaluationService, EmployeeReportService],
+  providers: [
+    PrismaService,
+    PerformanceEvaluationService,
+    EmployeeReportService,
+  ],
   controllers: [PerformanceEvaluationController, EmployeeReportController],
 })
 export class EmployeeDashboardModule {}
