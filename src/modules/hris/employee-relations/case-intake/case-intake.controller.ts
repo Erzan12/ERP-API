@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CaseIntakeService } from './case-intake.service';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
@@ -32,13 +32,21 @@ export class CaseIntakeController {
     return this.caseIntakeService.getEmployeeReports(dto, user);
   }
 
-  @Post('employee-relations/case-intake/:caseIntakeId/convert')
+  @Post('employee-relations/case-intake/convert')
   @ApiOperation({ summary: 'Convert an IR or ER to Disciplinary Case' })
   convertIntake(
-    @Param('caseIntakeId', new ParseUUIDPipe()) caseIntakeId: string,
     @Body() dto: ConvertIntakeToCaseDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.caseIntakeService.convertIntake(caseIntakeId, dto, user);
+    return this.caseIntakeService.convertIntake(dto, user);
+  }
+
+  @Put('employee-relations/case-intake/:intakeId/ignore')
+  @ApiOperation({ summary: 'Ignore a Case Intake or Report' })
+  ignoreIntake(
+    @Param('intakeId', new ParseUUIDPipe()) intakeId: string,
+    @SessionUser() user: RequestUser
+  ) {
+    return this.caseIntakeService.ignoreIntake(intakeId,user);
   }
 }

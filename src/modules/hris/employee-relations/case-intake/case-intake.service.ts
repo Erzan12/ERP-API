@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { HrErActionType, HrErCaseLevel, HrErCasePartyRole, HrErCaseStage, HrErIntakeType, Prisma } from '@prisma/client';
+import { HrErActionType, HrErCaseLevel, HrErCasePartyRole, HrErCaseStage, HrErCaseStatus, HrErIntakeStatus, HrErIntakeType, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { CaseIntakePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -364,12 +364,12 @@ export class CaseIntakeService {
 
   async getAuthFlaggedCases() {}
 
-  async convertIntake(intakeId: string, dto: ConvertIntakeToCaseDto, user: RequestUser) {
+  async convertIntake(dto: ConvertIntakeToCaseDto, user: RequestUser) {
     await this.assertHrAccess(user.id);
   
     return this.prisma.$transaction(async (tx) => {
       const intake = await tx.hrErCaseIntake.findUnique({
-        where: { id: intakeId },
+        where: { id: dto.intake_id, },
         include: {
           case: true,
           parties: true,
@@ -429,7 +429,7 @@ export class CaseIntakeService {
         const disciplinaryCaseReport = await this.buildAndCreateCase(
           {
             company_id: dto.company_id ?? null,
-            intake_id: intake.id,
+            intake_id: dto.intake_id,
             incident_location_id: intake.incident_location_id,
             incident_location_type: intake.incident_location_type,
             assigned_location: dto.assigned_location,
@@ -462,5 +462,38 @@ export class CaseIntakeService {
         throw err;
       }
     });
+  }
+
+  async ignoreIntake(
+    intakeId: string,
+    user: RequestUser,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingIntake = await this.prisma.hrErCaseIntake.findUnique({
+      where: { id: intakeId, },
+    })
+
+    if (!existingIntake) {
+      throw new NotFoundException('Case Intake or Report does not exist');
+    }
+
+    if (existingIntake.status === HrErIntakeStatus.cancelled) {
+      throw new BadRequestException('Case Intake is already cancelled cannot be ignored.')
+    }
+
+    const ignoreIntake = await this.prisma.hrErCaseIntake.update({
+      where: { id: intakeId },
+      data: {
+        status: HrErIntakeStatus.ignored,
+        updated_by: user.id,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Case Intake successfully ignored.',
+      ignoreIntake,
+    };
   }
 }

@@ -11,9 +11,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { HrErActionType, HrErCaseLevel, HrErCasePartyRole, HrErIntakeType } from '@prisma/client';
+import { HrErActionType, HrErCaseLevel, HrErCasePartyRole } from '@prisma/client';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { CreateCasePartyDto, HasRespondent } from './case.dto';
 
 export class ConvertIntakePartyActionDto {
   @IsEnum(HrErActionType)
@@ -110,15 +109,15 @@ export class ConvertIntakePartyDto {
 }
 
 export class ConvertIntakeToCaseDto {
-  // @IsOptional()
-  // @IsUUID()
-  // @ApiProperty({
-  //   example: 'e5f6a7b8-c9d0-1234-ef56-789012345678',
-  //   description:
-  //     'If converting a Case Intake/Report into this Disciplinary Case, its UUID',
-  //   required: false,
-  // })
-  // intake_id?: string; // when converting
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({
+    example: 'e5f6a7b8-c9d0-1234-ef56-789012345678',
+    description:
+      'If converting a Case Intake/Report into this Disciplinary Case, its UUID',
+    required: false,
+  })
+  intake_id?: string; // when converting
 
   @IsOptional()
   @IsUUID()
