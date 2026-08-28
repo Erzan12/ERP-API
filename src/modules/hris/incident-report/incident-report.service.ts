@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -453,7 +454,7 @@ export class IncidentReportService {
         incident_location_type: location.type,
         incident_date: new Date(dto.incident_date),
         incident_narrative: dto.incident_narrative,
-        status: HrErIntakeStatus.pending_review,
+        status: HrErIntakeStatus.draft,
         created_by: user.id,
 
         parties: {
@@ -493,7 +494,7 @@ export class IncidentReportService {
 
     return {
       status: 'success',
-      message: 'Incident Report filed successfully',
+      message: 'Incident Report successfully created.',
       incidentReport,
     };
   }
@@ -568,8 +569,74 @@ export class IncidentReportService {
 
     return {
       status: 'success',
-      message: 'Incident Report updated successfully',
+      message: 'Incident Report successfully updated.',
       updateIncidentReport,
+    };
+  }
+
+  async submitIncidentReport(
+    incidentReportId: string,
+    user: RequestUser,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingIncidentReport = await this.prisma.hrErCaseIntake.findUnique({
+      where: { id: incidentReportId },
+    });
+    
+    if (!existingIncidentReport) {
+      throw new NotFoundException('Incident Report does not exist');
+    }
+
+    if (existingIncidentReport.status === HrErIntakeStatus.submitted) {
+      throw new ConflictException('Incident Report already submitted');
+    }
+
+    const submitIncidentReport = await this.prisma.hrErCaseIntake.update({
+      where: { id: incidentReportId },
+      data: {
+        status: HrErIntakeStatus.submitted,
+        updated_by: user.id,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Incident Report successfully submitted.',
+      submitIncidentReport,
+    };
+  }
+
+  async cancelIncidentReport(
+    incidentReportId: string,
+    user: RequestUser,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingIncidentReport = await this.prisma.hrErCaseIntake.findUnique({
+      where: { id: incidentReportId },
+    });
+    
+    if (!existingIncidentReport) {
+      throw new NotFoundException('Incident Report does not exist');
+    }
+
+    if (existingIncidentReport.status === HrErIntakeStatus.submitted || existingIncidentReport.status === HrErIntakeStatus.processed) {
+      throw new BadRequestException('Incident Report is already submitted or is now processed and cannot be cancelled anymore.');
+    }
+
+    const cancelIncidentReport = await this.prisma.hrErCaseIntake.update({
+      where: { id: incidentReportId },
+      data: {
+        status: HrErIntakeStatus.cancelled,
+        updated_by: user.id,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Incident Report cancelled',
+      cancelIncidentReport,
     };
   }
 }
