@@ -84,7 +84,18 @@ export class IncidentReportService {
         where: {
           ...whereCondition,
         },
-        include: {
+        select: {
+          id: true,
+          incident_narrative: true,
+          incident_location_id: true,
+          incident_location_type: true,
+          incident_date: true,
+          type: true,
+          status: true,
+          created_by: true,
+          updated_by: true,
+          created_at: true,
+          updated_at: true,
           createdBy: {
             select: {
               employee: {
@@ -254,7 +265,18 @@ export class IncidentReportService {
 
     const incidentReport = await this.prisma.hrErCaseIntake.findUnique({
       where: { id: incidentReportId },
-      include: {
+      select: {
+        id: true,
+        incident_narrative: true,
+        incident_location_id: true,
+        incident_location_type: true,
+        incident_date: true,
+        type: true,
+        status: true,
+        created_by: true,
+        updated_by: true,
+        created_at: true,
+        updated_at: true,
         createdBy: {
           select: {
             employee: {
@@ -375,9 +397,9 @@ export class IncidentReportService {
               },
             },
             role: true,
-          }
+          },
         },
-        violations: true,
+        // violations: true,
         attachments: true,
         offenses: {
           select: {
