@@ -87,7 +87,58 @@ export class IncidentReportService {
         include: {
           createdBy: {
             select: {
-              employee: true,
+              employee: {
+                select: {
+                  id: true,
+                  company: {
+                    select: {
+                      id: true,
+                      name: true,
+                      abbreviation: true,
+                    },
+                  },
+                  person: {
+                    select: {
+                      first_name: true,
+                      middle_name: true,
+                      last_name: true,
+                    },
+                  },
+                  employee_id: true,
+                  department: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  position: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  division: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  vessel: true,
+                  user_location: {
+                    select: {
+                      id: true,
+                      location_name: true,
+                    },
+                  },
+                  salary_grade: {
+                    select: {
+                      id: true,
+                      grade: true,
+                      rate: true,
+                    },
+                  },
+                },
+              },
               person: {
                 select: {
                   first_name: true,
@@ -98,10 +149,78 @@ export class IncidentReportService {
             },
           },
           case: true,
-          parties: true,
-          violations: true,
+          parties: {
+            select: {
+              id: true,
+              employee: {
+                select: {
+                  id: true,
+                  company: {
+                    select: {
+                      id: true,
+                      name: true,
+                      abbreviation: true,
+                    },
+                  },
+                  person: {
+                    select: {
+                      first_name: true,
+                      middle_name: true,
+                      last_name: true,
+                    },
+                  },
+                  employee_id: true,
+                  department: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  position: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  division: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  vessel: true,
+                  user_location: {
+                    select: {
+                      id: true,
+                      location_name: true,
+                    },
+                  },
+                  salary_grade: {
+                    select: {
+                      id: true,
+                      grade: true,
+                      rate: true,
+                    },
+                  },
+                },
+              },
+              role: true,
+            }
+          },
+          // violations: true,
           attachments: true,
-          offenses: true,
+          offenses: {
+            select: {
+              id: true,
+              offense: {
+                select: {
+                  id: true,
+                  type_of_offense: true,
+                  description: true,
+                },
+              },
+            },
+          },
         },
         skip,
         take: perPage,
@@ -115,13 +234,18 @@ export class IncidentReportService {
     //     throw new NotFoundException('No incident reports found.');
     // }
 
+    const formattedIncidentReports = incidentReports.map((incident) => ({
+      ...incident,
+      offenses: incident.offenses.map(({ offense }) => offense),
+    }));
+
     return {
       status: 'success',
       message: 'Here is the list of Incident Reports.',
       count: total,
       page,
       perPage,
-      incidentReports,
+      incidentReports: formattedIncidentReports,
     };
   }
 
@@ -133,7 +257,58 @@ export class IncidentReportService {
       include: {
         createdBy: {
           select: {
-            employee: true,
+            employee: {
+              select: {
+                id: true,
+                company: {
+                  select: {
+                    id: true,
+                    name: true,
+                    abbreviation: true,
+                  },
+                },
+                person: {
+                  select: {
+                    first_name: true,
+                    middle_name: true,
+                    last_name: true,
+                  },
+                },
+                employee_id: true,
+                department: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                position: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                division: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                vessel: true,
+                user_location: {
+                  select: {
+                    id: true,
+                    location_name: true,
+                  },
+                },
+                salary_grade: {
+                  select: {
+                    id: true,
+                    grade: true,
+                    rate: true,
+                  },
+                },
+              },
+            },
             person: {
               select: {
                 first_name: true,
@@ -144,10 +319,78 @@ export class IncidentReportService {
           },
         },
         case: true,
-        parties: true,
+        parties: {
+          select: {
+            id: true,
+            employee: {
+              select: {
+                id: true,
+                company: {
+                  select: {
+                    id: true,
+                    name: true,
+                    abbreviation: true,
+                  },
+                },
+                person: {
+                  select: {
+                    first_name: true,
+                    middle_name: true,
+                    last_name: true,
+                  },
+                },
+                employee_id: true,
+                department: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                position: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                division: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+                vessel: true,
+                user_location: {
+                  select: {
+                    id: true,
+                    location_name: true,
+                  },
+                },
+                salary_grade: {
+                  select: {
+                    id: true,
+                    grade: true,
+                    rate: true,
+                  },
+                },
+              },
+            },
+            role: true,
+          }
+        },
         violations: true,
         attachments: true,
-        offenses: true,
+        offenses: {
+          select: {
+            id: true,
+            offense: {
+              select: {
+                id: true,
+                type_of_offense: true,
+                description: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -155,10 +398,15 @@ export class IncidentReportService {
       throw new NotFoundException('Incident Report does not exists.');
     }
 
+    const formattedIncidentReport = {
+      ...incidentReport,
+      offenses: incidentReport.offenses.map(({ offense }) => offense),
+    };
+
     return {
       status: 'success',
       message: 'Here is the Incident Report',
-      incidentReport,
+      incidentReport: formattedIncidentReport,
     };
   }
 
