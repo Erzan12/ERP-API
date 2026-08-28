@@ -678,7 +678,7 @@ export class DisciplinaryCaseService {
           await this.prisma.hrErCaseIntake.update({
             where: { id: dto.intake_id },
             data: {
-              status: HrErIntakeStatus.converted,
+              status: HrErIntakeStatus.processed,
               updated_by: user.id,
             },
           });
