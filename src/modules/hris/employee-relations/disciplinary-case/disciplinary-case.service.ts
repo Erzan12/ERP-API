@@ -12,6 +12,7 @@ import {
   HrErCaseStatus,
   HrErExplanationStatus,
   HrErHearingStatus,
+  HrErIntakeStatus,
   Prisma,
 } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
@@ -672,6 +673,16 @@ export class DisciplinaryCaseService {
             },
           },
         });
+
+        if (dto.intake_id) {
+          await this.prisma.hrErCaseIntake.update({
+            where: { id: dto.intake_id },
+            data: {
+              status: HrErIntakeStatus.converted,
+              updated_by: user.id,
+            },
+          });
+        }
 
         return {
           status: 'success',
