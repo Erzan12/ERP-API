@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   HrErActionType,
   HrErCaseLevel,
@@ -59,6 +59,7 @@ export function getStageTiming(
 
 export class CreateCasePartyActionDto {
   @IsEnum(HrErActionType)
+  @IsNotEmpty()
   @ApiProperty({
     enum: HrErActionType,
     example: HrErActionType.preventive_suspension,
@@ -119,8 +120,11 @@ export class CreateCasePartyDto {
   level?: HrErCaseLevel;
 
   // Available for Respondent only
+  // @ValidateIf(
+  //   (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
+  // )
   @ValidateIf(
-    (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
+    (o) => o.role === HrErCasePartyRole.respondent && o.violation_ids !== undefined,
   )
   @IsArray()
   @ArrayMinSize(1)
@@ -133,8 +137,11 @@ export class CreateCasePartyDto {
   offense_ids?: string[];
 
   // Available for Respondent only
+  // @ValidateIf(
+  //   (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
+  // )
   @ValidateIf(
-    (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
+    (o) => o.role === HrErCasePartyRole.respondent && o.violation_ids !== undefined,
   )
   @IsArray()
   @ArrayMinSize(1)
@@ -171,6 +178,16 @@ export class CreateCasePartyDto {
 }
 
 export class CreateCaseDto {
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({
+    example: 'e5f6a7b8-c9d0-1234-ef56-789012345678',
+    description:
+      'If converting a Case Intake/Report into this Disciplinary Case, its UUID',
+    required: false,
+  })
+  intake_id?: string; // when converting
+
   @IsUUID()
   @IsOptional()
   @ApiProperty({
@@ -178,12 +195,10 @@ export class CreateCaseDto {
   })
   company_id?: string;
 
-  @IsString()
+  @IsUUID()
   @IsNotEmpty()
-  @ApiProperty({
-    example: 'Location of the incident',
-  })
-  incident_location: string;
+  @ApiProperty({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
+  incident_location_id: string;
 
   @IsOptional()
   @IsString()
@@ -257,13 +272,59 @@ export class CreateCaseDto {
   })
   parties: CreateCasePartyDto[];
 
-  @IsOptional()
-  @IsUUID()
-  @ApiProperty({
-    example: 'e5f6a7b8-c9d0-1234-ef56-789012345678',
-    description:
-      'If converting a Case Intake/Report into this Disciplinary Case, its UUID',
-    required: false,
-  })
-  intake_id?: string; // when converting
+  // @IsOptional()
+  // @IsUUID()
+  // @ApiProperty({
+  //   example: 'e5f6a7b8-c9d0-1234-ef56-789012345678',
+  //   description:
+  //     'If converting a Case Intake/Report into this Disciplinary Case, its UUID',
+  //   required: false,
+  // })
+  // intake_id?: string; // when converting
 }
+
+export class UpdateCaseDto {
+  @IsUUID()
+  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'Company UUID',
+  })
+  company_id?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'Location of the incident',
+  })
+  incident_location_id?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'The assigned location',
+  })
+  assigned_location?: string;
+
+  @IsDateString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'The date of the incident',
+  })
+  incident_date?: string;
+
+  @IsDateString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'The date of the report',
+  })
+  report_date?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    example:
+      'Describe what happened, who was involved, where it happened and supporting circumstances',
+  })
+  incident_narrative?: string;
+}
+

@@ -8467,6 +8467,40 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/case-intake/{caseIntakeId}/convert": {
+      "post": {
+        "operationId": "CaseIntakeController_convertIntake_v2",
+        "parameters": [
+          {
+            "name": "caseIntakeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConvertIntakeToCaseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Convert an IR or ER to Disciplinary Case",
+        "tags": [
+          "Human Resources - Employee Relations(Case Intake)"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/nte/parties": {
       "post": {
         "operationId": "NoticeOfExplainationController_IssueNte_v2",
@@ -12972,13 +13006,18 @@
       "CreateCaseDto": {
         "type": "object",
         "properties": {
+          "intake_id": {
+            "type": "string",
+            "example": "e5f6a7b8-c9d0-1234-ef56-789012345678",
+            "description": "If converting a Case Intake/Report into this Disciplinary Case, its UUID"
+          },
           "company_id": {
             "type": "string",
             "example": "Company UUID"
           },
-          "incident_location": {
+          "incident_location_id": {
             "type": "string",
-            "example": "Location of the incident"
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
           },
           "assigned_location": {
             "type": "string",
@@ -13034,16 +13073,11 @@
             "items": {
               "$ref": "#/components/schemas/CreateCasePartyDto"
             }
-          },
-          "intake_id": {
-            "type": "string",
-            "example": "e5f6a7b8-c9d0-1234-ef56-789012345678",
-            "description": "If converting a Case Intake/Report into this Disciplinary Case, its UUID"
           }
         },
         "required": [
           "company_id",
-          "incident_location",
+          "incident_location_id",
           "assigned_location",
           "incident_date",
           "report_date",
@@ -13058,7 +13092,7 @@
             "type": "string",
             "example": "Company UUID"
           },
-          "incident_location": {
+          "incident_location_id": {
             "type": "string",
             "example": "Location of the incident"
           },
@@ -13119,6 +13153,120 @@
         "required": [
           "advanced",
           "skipped"
+        ]
+      },
+      "ConvertIntakePartyDto": {
+        "type": "object",
+        "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Employee UUID"
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "minor",
+              "major"
+            ],
+            "description": "Required when role is respondent"
+          },
+          "offense_ids": {
+            "description": "Committed offense IDs — required when role is respondent",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "violation_ids": {
+            "description": "Policy violated (violation) IDs — required when role is respondent",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "remarks": {
+            "type": "string",
+            "example": "This employee is the respondent in the case."
+          }
+        },
+        "required": [
+          "employee_id",
+          "remarks"
+        ]
+      },
+      "ConvertIntakeToCaseDto": {
+        "type": "object",
+        "properties": {
+          "company_id": {
+            "type": "string",
+            "example": "Company UUID"
+          },
+          "incident_location_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "assigned_location": {
+            "type": "string",
+            "example": "The assigned location"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "The date of the incident"
+          },
+          "report_date": {
+            "type": "string",
+            "example": "The date of the report"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "Describe what happened, who was involved, where it happened and supporting circumstances"
+          },
+          "parties": {
+            "description": "Employees involved in the case. A respondent requires level, offense_ids, and violation_ids.",
+            "example": [
+              {
+                "employee_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                "level": "major",
+                "offense_ids": [
+                  "11111111-1111-1111-1111-111111111111",
+                  "22222222-2222-2222-2222-222222222222"
+                ],
+                "violation_ids": [
+                  "33333333-3333-3333-3333-333333333333",
+                  "44444444-4444-4444-4444-444444444444"
+                ],
+                "action": {
+                  "action_type": "preventive_suspension",
+                  "effectivity_start": "2026-08-15T00:00:00.000Z",
+                  "effectivity_end": "2026-08-20T23:59:59.999Z",
+                  "remarks": "Preventive suspension pending investigation."
+                },
+                "remarks": "This employee is the respondent in the case."
+              },
+              {
+                "employee_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                "remarks": "Employee who reported the incident."
+              },
+              {
+                "employee_id": "c3d4e5f6-a7b8-9012-cdef-234567890123",
+                "remarks": "Employee who witnessed the incident."
+              }
+            ],
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConvertIntakePartyDto"
+            }
+          }
+        },
+        "required": [
+          "company_id",
+          "incident_location_id",
+          "assigned_location",
+          "incident_date",
+          "report_date",
+          "incident_narrative",
+          "parties"
         ]
       },
       "IssueNteDto": {

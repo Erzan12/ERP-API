@@ -17,10 +17,9 @@ import {
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { ControlNumberService } from 'src/jobs/control-number/control-number.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { CreateCaseDto, getStageTiming } from './dto/create-case.dto';
+import { CreateCaseDto, getStageTiming, UpdateCaseDto } from './dto/case.dto';
 import { SLA_DAYS, STAGE_ORDER } from './constants/hr-er-constants';
 import { ErCasePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
-import { UpdateCaseDto } from './dto/update-case.dto';
 
 type Eligibility = { eligible: boolean; reason?: string };
 
@@ -189,12 +188,12 @@ export class DisciplinaryCaseService {
             mode: 'insensitive',
           },
         },
-        {
-          incident_location: {
-            contains: search.trim(),
-            mode: 'insensitive',
-          },
-        },
+        // {
+        //   incident_location: {
+        //     contains: search.trim(),
+        //     mode: 'insensitive',
+        //   },
+        // },
         {
           assigned_location: {
             contains: search.trim(),
@@ -566,39 +565,44 @@ export class DisciplinaryCaseService {
       const { controlNumber, caseCode } = company
         ? await this.generate(dto.company_id!, company.abbreviation, tx)
         : {
-            controlNumber: 0,
+            controlNumber: null,
             caseCode: 'null',
           };
 
-      if (dto.intake_id) {
-        const intake = await this.prisma.hrErCaseIntake.findUnique({
-          where: { id: dto.intake_id },
-          include: { case: true }, // the back-relation
-        });
+      const intake = await this.prisma.hrErCaseIntake.findUnique({
+        where: { id: dto.intake_id },
+        include: { case: true }, // the back-relation
+      });
 
-        if (!intake) {
-          throw new NotFoundException('Case intake not found.');
-        }
+      if (!intake) {
+        throw new NotFoundException('Case intake not found.');
+      }
 
-        if (intake.case) {
-          throw new ConflictException(
-            `This intake has already been converted to case ${intake.case.case_code ?? intake.case.id}.`,
-          );
-        }
+      if (intake.case) {
+        throw new ConflictException(
+          `This intake has already been converted to case`,
+        );
+      }
+
+      if (!intake.incident_location_type) {
+        throw new Error('Incident location type is required');
       }
 
       try {
         const disciplinaryCaseReport = await tx.hrErCase.create({
           data: {
+            intake_id: dto.intake_id,
             company_id: dto.company_id ?? null,
             control_number: controlNumber,
             case_code: caseCode,
-            incident_location: dto.incident_location,
+            incident_location_id: dto.incident_location_id,
+            incident_location_type: intake.incident_location_type,
             assigned_location: dto.assigned_location,
+            type: intake.type,
+            subject: intake.subject,
             incident_date: new Date(dto.incident_date),
             report_date: new Date(dto.report_date),
             incident_narrative: dto.incident_narrative,
-            intake_id: dto.intake_id,
             created_by: user.id,
             parties: {
               create: dto.parties.map((p) => ({
@@ -717,13 +721,24 @@ export class DisciplinaryCaseService {
         throw new NotFoundException('Disciplinary Case does not exist.');
       }
 
+      const location = await this.prisma.workAssignment.findFirst({
+        where: {
+          id: dto.incident_location_id,
+        },
+      });
+
+      if (!location) {
+        throw new BadRequestException('Invalid incident location');
+      }
+
       const updateDisciplinaryCaseReport = await tx.hrErCase.update({
         where: { id: disciplinaryCaseId },
         data: {
           company_id: dto.company_id ?? existingDisciplinaryCase.company_id,
           control_number: controlNumber ?? existingDisciplinaryCase.control_number,
           case_code: caseCode ?? existingDisciplinaryCase.case_code,
-          incident_location: dto.incident_location ?? existingDisciplinaryCase.incident_location,
+          incident_location_id: dto.incident_location_id ?? existingDisciplinaryCase.incident_location_id,
+          incident_location_type: location.type ?? existingDisciplinaryCase.incident_location_type,
           assigned_location: dto.assigned_location ?? existingDisciplinaryCase.assigned_location,
           incident_date: dto.incident_date ?? existingDisciplinaryCase.incident_date,
           report_date: dto.report_date ?? existingDisciplinaryCase.report_date,
