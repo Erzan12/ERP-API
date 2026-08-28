@@ -68,4 +68,28 @@ export class IncidentReportController {
       user,
     );
   }
+
+  @Put('incident-reports/:incidentReportId/submit')
+  @ApiOperation({ summary: 'Submit Incident Report' })
+  submitIncidentReport(
+    @Param('incidentReportId', new ParseUUIDPipe()) incidentReportId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.incidentReportService.submitIncidentReport(
+      incidentReportId,
+      user,
+    );
+  }
+
+  @Put('incident-reports/:incidentReportId/cancel')
+  @ApiOperation({ summary: 'Cancel Incident Report' })
+  cancelIncidentReport(
+    @Param('incidentReportId', new ParseUUIDPipe()) incidentReportId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.incidentReportService.cancelIncidentReport(
+      incidentReportId,
+      user,
+    );
+  }
 }

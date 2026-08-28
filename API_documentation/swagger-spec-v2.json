@@ -7993,6 +7993,54 @@
         ]
       }
     },
+    "/v2/hris/incident-reports/{incidentReportId}/submit": {
+      "put": {
+        "operationId": "IncidentReportController_submitIncidentReport_v2",
+        "parameters": [
+          {
+            "name": "incidentReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Submit Incident Report",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      }
+    },
+    "/v2/hris/incident-reports/{incidentReportId}/cancel": {
+      "put": {
+        "operationId": "IncidentReportController_cancelIncidentReport_v2",
+        "parameters": [
+          {
+            "name": "incidentReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Cancel Incident Report",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/disciplinary-cases/{disciplinaryCaseId}": {
       "get": {
         "operationId": "DisciplinaryCaseController_getDisciplinaryCase_v2",
