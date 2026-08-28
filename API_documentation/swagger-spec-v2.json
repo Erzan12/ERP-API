@@ -8515,19 +8515,10 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/case-intake/{caseIntakeId}/convert": {
+    "/v2/hris/employee-relations/case-intake/convert": {
       "post": {
         "operationId": "CaseIntakeController_convertIntake_v2",
-        "parameters": [
-          {
-            "name": "caseIntakeId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -8544,6 +8535,30 @@
           }
         },
         "summary": "Convert an IR or ER to Disciplinary Case",
+        "tags": [
+          "Human Resources - Employee Relations(Case Intake)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/case-intake/{intakeId}/ignore": {
+      "put": {
+        "operationId": "CaseIntakeController_ignoreIntake_v2",
+        "parameters": [
+          {
+            "name": "intakeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Ignore a Case Intake or Report",
         "tags": [
           "Human Resources - Employee Relations(Case Intake)"
         ]
@@ -13246,6 +13261,11 @@
       "ConvertIntakeToCaseDto": {
         "type": "object",
         "properties": {
+          "intake_id": {
+            "type": "string",
+            "example": "e5f6a7b8-c9d0-1234-ef56-789012345678",
+            "description": "If converting a Case Intake/Report into this Disciplinary Case, its UUID"
+          },
           "company_id": {
             "type": "string",
             "example": "Company UUID"
