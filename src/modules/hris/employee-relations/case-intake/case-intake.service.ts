@@ -1,15 +1,21 @@
 import {
   BadRequestException,
-  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { HrErActionType, HrErCaseLevel, HrErCasePartyRole, HrErCaseStage, HrErCaseStatus, HrErIntakeStatus, HrErIntakeType, Prisma } from '@prisma/client';
+import {
+  HrErActionType,
+  HrErCaseLevel,
+  HrErCasePartyRole,
+  HrErCaseStage,
+  HrErIntakeStatus,
+  HrErIntakeType,
+  Prisma,
+} from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { CaseIntakePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { ConvertIntakeToCaseDto } from '../disciplinary-case/dto/convert-intake-to-case.dto';
 import { DisciplinaryCaseService } from '../disciplinary-case/disciplinary-case.service';
 import { SLA_DAYS } from '../disciplinary-case/constants/hr-er-constants';
 
@@ -46,7 +52,7 @@ type NormalizedCaseInput = {
 export class CaseIntakeService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly disciplinaryCaseService: DisciplinaryCaseService, 
+    private readonly disciplinaryCaseService: DisciplinaryCaseService,
   ) {}
 
   // Helper for auth check
@@ -88,7 +94,10 @@ export class CaseIntakeService {
     for (const p of parties) {
       if (!p.action) continue;
 
-      if (p.role !== HrErCasePartyRole.respondent || p.level !== HrErCaseLevel.major) {
+      if (
+        p.role !== HrErCasePartyRole.respondent ||
+        p.level !== HrErCaseLevel.major
+      ) {
         throw new BadRequestException(
           'Preventive suspension is only available for major respondents.',
         );
@@ -115,7 +124,11 @@ export class CaseIntakeService {
       : null;
 
     const { controlNumber, caseCode } = company
-      ? await this.disciplinaryCaseService.generate(input.company_id!, company.abbreviation, tx)
+      ? await this.disciplinaryCaseService.generate(
+          input.company_id!,
+          company.abbreviation,
+          tx,
+        )
       : { controlNumber: 0, caseCode: 'null' };
 
     return tx.hrErCase.create({
@@ -364,122 +377,132 @@ export class CaseIntakeService {
 
   async getAuthFlaggedCases() {}
 
-  async convertIntake(dto: ConvertIntakeToCaseDto, user: RequestUser) {
-    await this.assertHrAccess(user.id);
-  
-    return this.prisma.$transaction(async (tx) => {
-      const intake = await tx.hrErCaseIntake.findUnique({
-        where: { id: dto.intake_id, },
-        include: {
-          case: true,
-          parties: true,
-          offenses: true,
-          violations: true,
-        },
-      });
+  // async convertIntake(dto: ConvertIntakeToCaseDto, user: RequestUser) {
+  //   await this.assertHrAccess(user.id);
 
-      if (!intake) {
-        throw new NotFoundException('Case intake not found.');
-      }
+  //   return this.prisma.$transaction(async (tx) => {
+  //     const intake = await tx.hrErCaseIntake.findUnique({
+  //       where: { id: dto.intake_id },
+  //       include: {
+  //         case: true,
+  //         parties: true,
+  //         offenses: true,
+  //         violations: true,
+  //       },
+  //     });
 
-      if (!intake.incident_location_id) {
-        throw new Error('Incident location is required');
-      }
+  //     if (!intake) {
+  //       throw new NotFoundException('Case intake not found.');
+  //     }
 
-      if (!intake.incident_location_type) {
-        throw new Error('Incident location type is required');
-      }
+  //     if (!intake.incident_location_id) {
+  //       throw new Error('Incident location is required');
+  //     }
 
-      if (intake.case) {
-        throw new ConflictException(
-          `This intake has already been converted to case ${intake.case.case_code ?? intake.case.id}.`,
-        );
-      }
+  //     if (!intake.incident_location_type) {
+  //       throw new Error('Incident location type is required');
+  //     }
 
-      // Every intake party must get a case-level decision (level, optional action)
-      const dtoPartyMap = new Map(dto.parties.map((p) => [p.employee_id, p]));
-      const missing = intake.parties.filter((ip) => !dtoPartyMap.has(ip.employee_id));
+  //     if (intake.case) {
+  //       throw new ConflictException(
+  //         `This intake has already been converted to case ${intake.case.case_code ?? intake.case.id}.`,
+  //       );
+  //     }
 
-      if (missing.length > 0) {
-        throw new BadRequestException(
-          `Missing level/decision for intake parties: ${missing
-            .map((m) => m.employee_id)
-            .join(', ')}`,
-        );
-      }
+  //     // Every intake party must get a case-level decision (level, optional action)
+  //     const dtoPartyMap = new Map(dto.parties.map((p) => [p.employee_id, p]));
+  //     const missing = intake.parties.filter(
+  //       (ip) => !dtoPartyMap.has(ip.employee_id),
+  //     );
 
-      const offenseIds = intake.offenses.map((o) => o.offense_id);
-      const violationIds = intake.violations.map((v) => v.violation_id);
+  //     if (missing.length > 0) {
+  //       throw new BadRequestException(
+  //         `Missing level/decision for intake parties: ${missing
+  //           .map((m) => m.employee_id)
+  //           .join(', ')}`,
+  //       );
+  //     }
 
-      const normalizedParties: NormalizedCasePartyInput[] = intake.parties.map((ip) => {
-        const decision = dtoPartyMap.get(ip.employee_id)!;
-        return {
-          employee_id: ip.employee_id,
-          role: ip.role,
-          level: decision.level,
-          offense_ids: ip.role === HrErCasePartyRole.respondent ? offenseIds : [],
-          violation_ids: ip.role === HrErCasePartyRole.respondent ? violationIds : [],
-          action: decision.action,
-        };
-      });
+  //     const offenseIds = intake.offenses.map((o) => o.offense_id);
+  //     const violationIds = intake.violations.map((v) => v.violation_id);
 
-      this.validatePartyActions(normalizedParties);
+  //     const normalizedParties: NormalizedCasePartyInput[] = intake.parties.map(
+  //       (ip) => {
+  //         const decision = dtoPartyMap.get(ip.employee_id)!;
+  //         return {
+  //           employee_id: ip.employee_id,
+  //           role: ip.role,
+  //           level: decision.level,
+  //           offense_ids:
+  //             ip.role === HrErCasePartyRole.respondent ? offenseIds : [],
+  //           violation_ids:
+  //             ip.role === HrErCasePartyRole.respondent ? violationIds : [],
+  //           action: decision.action,
+  //         };
+  //       },
+  //     );
 
-      try {
-        const disciplinaryCaseReport = await this.buildAndCreateCase(
-          {
-            company_id: dto.company_id ?? null,
-            intake_id: dto.intake_id,
-            incident_location_id: intake.incident_location_id,
-            incident_location_type: intake.incident_location_type,
-            assigned_location: dto.assigned_location,
-            type: intake.type,
-            subject: intake.subject,
-            incident_date: intake.incident_date.toISOString(),
-            report_date: dto.report_date,
-            incident_narrative: intake.incident_narrative,
-            parties: normalizedParties,
-          },
-          user,
-          tx,
-        );
+  //     this.validatePartyActions(normalizedParties);
 
-        // Re-link existing intake attachments to the new case instead of duplicating
-        await tx.hrErCaseAttachment.updateMany({
-          where: { intake_id: intake.id },
-          data: { case_id: disciplinaryCaseReport.id },
-        });
+  //     try {
+  //       const disciplinaryCaseReport = await this.buildAndCreateCase(
+  //         {
+  //           company_id: dto.company_id ?? null,
+  //           intake_id: dto.intake_id,
+  //           incident_location_id: intake.incident_location_id,
+  //           incident_location_type: intake.incident_location_type,
+  //           assigned_location: dto.assigned_location,
+  //           type: intake.type,
+  //           subject: intake.subject,
+  //           incident_date: intake.incident_date.toISOString(),
+  //           report_date: dto.report_date,
+  //           incident_narrative: intake.incident_narrative,
+  //           parties: normalizedParties,
+  //         },
+  //         user,
+  //         tx,
+  //       );
 
-        return {
-          status: 'success',
-          message: 'Case intake successfully converted to disciplinary case',
-          disciplinaryCaseReport,
-        };
-      } catch (err) {
-        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-          throw new ConflictException('This intake has already been converted to a case.');
-        }
-        throw err;
-      }
-    });
-  }
+  //       // Re-link existing intake attachments to the new case instead of duplicating
+  //       await tx.hrErCaseAttachment.updateMany({
+  //         where: { intake_id: intake.id },
+  //         data: { case_id: disciplinaryCaseReport.id },
+  //       });
 
-  async ignoreIntake(
-    intakeId: string,
-    user: RequestUser,
-  ) {
+  //       return {
+  //         status: 'success',
+  //         message: 'Case intake successfully converted to disciplinary case',
+  //         disciplinaryCaseReport,
+  //       };
+  //     } catch (err) {
+  //       if (
+  //         err instanceof Prisma.PrismaClientKnownRequestError &&
+  //         err.code === 'P2002'
+  //       ) {
+  //         throw new ConflictException(
+  //           'This intake has already been converted to a case.',
+  //         );
+  //       }
+  //       throw err;
+  //     }
+  //   });
+  // }
+
+  async ignoreIntake(intakeId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     const existingIntake = await this.prisma.hrErCaseIntake.findUnique({
-      where: { id: intakeId, },
-    })
+      where: { id: intakeId },
+    });
 
     if (!existingIntake) {
       throw new NotFoundException('Case Intake or Report does not exist');
     }
 
     if (existingIntake.status === HrErIntakeStatus.cancelled) {
-      throw new BadRequestException('Case Intake is already cancelled cannot be ignored.')
+      throw new BadRequestException(
+        'Case Intake is already cancelled cannot be ignored.',
+      );
     }
 
     const ignoreIntake = await this.prisma.hrErCaseIntake.update({
