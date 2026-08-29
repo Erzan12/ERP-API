@@ -746,14 +746,22 @@ export class DisciplinaryCaseService {
         where: { id: disciplinaryCaseId },
         data: {
           company_id: dto.company_id ?? existingDisciplinaryCase.company_id,
-          control_number: controlNumber ?? existingDisciplinaryCase.control_number,
+          control_number:
+            controlNumber ?? existingDisciplinaryCase.control_number,
           case_code: caseCode ?? existingDisciplinaryCase.case_code,
-          incident_location_id: dto.incident_location_id ?? existingDisciplinaryCase.incident_location_id,
-          incident_location_type: location.type ?? existingDisciplinaryCase.incident_location_type,
-          assigned_location: dto.assigned_location ?? existingDisciplinaryCase.assigned_location,
-          incident_date: dto.incident_date ?? existingDisciplinaryCase.incident_date,
+          incident_location_id:
+            dto.incident_location_id ??
+            existingDisciplinaryCase.incident_location_id,
+          incident_location_type:
+            location.type ?? existingDisciplinaryCase.incident_location_type,
+          assigned_location:
+            dto.assigned_location ?? existingDisciplinaryCase.assigned_location,
+          incident_date:
+            dto.incident_date ?? existingDisciplinaryCase.incident_date,
           report_date: dto.report_date ?? existingDisciplinaryCase.report_date,
-          incident_narrative: dto.incident_narrative ?? existingDisciplinaryCase.incident_narrative,
+          incident_narrative:
+            dto.incident_narrative ??
+            existingDisciplinaryCase.incident_narrative,
           updated_by: user.id,
         },
       });
@@ -763,7 +771,7 @@ export class DisciplinaryCaseService {
         message: 'Disciplinary Case successfully updated.',
         updateDisciplinaryCaseReport,
       };
-    })
+    });
   }
 
   async advanceAllEligible(caseId: string, user: RequestUser) {

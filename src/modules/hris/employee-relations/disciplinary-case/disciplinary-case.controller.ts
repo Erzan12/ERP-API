@@ -94,11 +94,16 @@ export class DisciplinaryCaseController {
   })
   @ApiPatchResponse('Disciplinary Case updated successfully')
   updateDisciplinaryCase(
-    @Param('disciplinaryCaseId', new ParseUUIDPipe()) disciplinaryCaseId: string,
+    @Param('disciplinaryCaseId', new ParseUUIDPipe())
+    disciplinaryCaseId: string,
     @Body() dto: UpdateCaseDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.disciplinaryCaseService.updateCase(disciplinaryCaseId, dto, user);
+    return this.disciplinaryCaseService.updateCase(
+      disciplinaryCaseId,
+      dto,
+      user,
+    );
   }
 
   @Put(
