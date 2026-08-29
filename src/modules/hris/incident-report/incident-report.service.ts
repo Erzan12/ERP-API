@@ -217,7 +217,7 @@ export class IncidentReportService {
                 },
               },
               role: true,
-            }
+            },
           },
           // violations: true,
           attachments: true,
@@ -574,16 +574,13 @@ export class IncidentReportService {
     };
   }
 
-  async submitIncidentReport(
-    incidentReportId: string,
-    user: RequestUser,
-  ) {
+  async submitIncidentReport(incidentReportId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     const existingIncidentReport = await this.prisma.hrErCaseIntake.findUnique({
       where: { id: incidentReportId },
     });
-    
+
     if (!existingIncidentReport) {
       throw new NotFoundException('Incident Report does not exist');
     }
@@ -607,22 +604,24 @@ export class IncidentReportService {
     };
   }
 
-  async cancelIncidentReport(
-    incidentReportId: string,
-    user: RequestUser,
-  ) {
+  async cancelIncidentReport(incidentReportId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     const existingIncidentReport = await this.prisma.hrErCaseIntake.findUnique({
       where: { id: incidentReportId },
     });
-    
+
     if (!existingIncidentReport) {
       throw new NotFoundException('Incident Report does not exist');
     }
 
-    if (existingIncidentReport.status === HrErIntakeStatus.submitted || existingIncidentReport.status === HrErIntakeStatus.processed) {
-      throw new BadRequestException('Incident Report is already submitted or is now processed and cannot be cancelled anymore.');
+    if (
+      existingIncidentReport.status === HrErIntakeStatus.submitted ||
+      existingIncidentReport.status === HrErIntakeStatus.processed
+    ) {
+      throw new BadRequestException(
+        'Incident Report is already submitted or is now processed and cannot be cancelled anymore.',
+      );
     }
 
     const cancelIncidentReport = await this.prisma.hrErCaseIntake.update({
