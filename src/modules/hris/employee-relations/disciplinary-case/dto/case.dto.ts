@@ -124,7 +124,7 @@ export class CreateCasePartyDto {
   //   (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
   // )
   @ValidateIf(
-    (o) => o.role === HrErCasePartyRole.respondent && o.violation_ids !== undefined,
+    (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
   )
   @IsArray()
   @ArrayMinSize(1)
@@ -141,7 +141,7 @@ export class CreateCasePartyDto {
   //   (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
   // )
   @ValidateIf(
-    (o) => o.role === HrErCasePartyRole.respondent && o.violation_ids !== undefined,
+    (o: CreateCasePartyDto) => o.role === HrErCasePartyRole.respondent,
   )
   @IsArray()
   @ArrayMinSize(1)
@@ -327,4 +327,3 @@ export class UpdateCaseDto {
   })
   incident_narrative?: string;
 }
-
