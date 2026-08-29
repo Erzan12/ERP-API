@@ -1,17 +1,15 @@
 import {
   ArrayMinSize,
-  IsArray,
   IsDateString,
   IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
-  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { HrErActionType, HrErCaseLevel, HrErCasePartyRole } from '@prisma/client';
+import { HrErActionType, HrErCaseLevel } from '@prisma/client';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ConvertIntakePartyActionDto {
@@ -66,34 +64,30 @@ export class ConvertIntakePartyDto {
   @IsOptional()
   level: HrErCaseLevel;
 
-  // Available for Respondent only
-  @ValidateIf(
-    (o) => o.role === HrErCasePartyRole.respondent,
-  )
-  @IsArray()
-  @ArrayMinSize(1)
-  @IsUUID(undefined, { each: true })
-  @ApiProperty({
-    type: [String],
-    required: false,
-    description: 'Committed offense IDs — required when role is respondent',
-  })
-  offense_ids?: string[];
+  // // Available for Respondent only
+  // @ValidateIf((o) => o.role === HrErCasePartyRole.respondent)
+  // @IsArray()
+  // @ArrayMinSize(1)
+  // @IsUUID(undefined, { each: true })
+  // @ApiProperty({
+  //   type: [String],
+  //   required: false,
+  //   description: 'Committed offense IDs — required when role is respondent',
+  // })
+  // offense_ids?: string[];
 
-  // Available for Respondent only
-  @ValidateIf(
-    (o) => o.role === HrErCasePartyRole.respondent,
-  )
-  @IsArray()
-  @ArrayMinSize(1)
-  @IsUUID(undefined, { each: true })
-  @ApiProperty({
-    type: [String],
-    required: false,
-    description:
-      'Policy violated (violation) IDs — required when role is respondent',
-  })
-  violation_ids?: string[];
+  // // Available for Respondent only
+  // @ValidateIf((o) => o.role === HrErCasePartyRole.respondent)
+  // @IsArray()
+  // @ArrayMinSize(1)
+  // @IsUUID(undefined, { each: true })
+  // @ApiProperty({
+  //   type: [String],
+  //   required: false,
+  //   description:
+  //     'Policy violated (violation) IDs — required when role is respondent',
+  // })
+  // violation_ids?: string[];
 
   @IsOptional()
   @ValidateNested()
@@ -174,7 +168,7 @@ export class ConvertIntakeToCaseDto {
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => ConvertIntakePartyDto)
-    @ApiProperty({
+  @ApiProperty({
     type: [ConvertIntakePartyDto],
     description:
       'Employees involved in the case. A respondent requires level, offense_ids, and violation_ids.',
