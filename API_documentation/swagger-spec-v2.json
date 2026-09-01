@@ -7819,77 +7819,6 @@
         ]
       }
     },
-    "/v2/hris/incident-reports/{incidentReportId}": {
-      "get": {
-        "operationId": "IncidentReportController_getIncidentReport_v2",
-        "parameters": [
-          {
-            "name": "incidentReportId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Here is the list of Incident Reports"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get Incident Reports",
-        "tags": [
-          "Human Resources - Incident Report"
-        ]
-      },
-      "put": {
-        "operationId": "IncidentReportController_updateIncidentReport_v2",
-        "parameters": [
-          {
-            "name": "incidentReportId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateIncidentReportDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Update an existing Incident Report",
-        "tags": [
-          "Human Resources - Incident Report"
-        ]
-      }
-    },
     "/v2/hris/incident-reports": {
       "get": {
         "operationId": "IncidentReportController_getIncidentReports_v2",
@@ -7988,6 +7917,107 @@
           }
         },
         "summary": "File an incident report",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      }
+    },
+    "/v2/hris/employee-reports/status-count": {
+      "get": {
+        "operationId": "IncidentReportController_getStatusCountActive_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all Incident Report status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Incident Report status",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      }
+    },
+    "/v2/hris/incident-reports/{incidentReportId}": {
+      "get": {
+        "operationId": "IncidentReportController_getIncidentReport_v2",
+        "parameters": [
+          {
+            "name": "incidentReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the list of Incident Reports"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Incident Reports",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      },
+      "put": {
+        "operationId": "IncidentReportController_updateIncidentReport_v2",
+        "parameters": [
+          {
+            "name": "incidentReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateIncidentReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update an existing Incident Report",
         "tags": [
           "Human Resources - Incident Report"
         ]

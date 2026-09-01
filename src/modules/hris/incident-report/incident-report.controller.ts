@@ -24,16 +24,6 @@ import { IncidentReportPaginationDto } from 'src/utils/dtos/er-related-paginatio
 export class IncidentReportController {
   constructor(private readonly incidentReportService: IncidentReportService) {}
 
-  @Get('incident-reports/:incidentReportId')
-  @ApiOperation({ summary: 'Get Incident Reports' })
-  @ApiGetResponse('Here is the list of Incident Reports')
-  getIncidentReport(
-    @Param('incidentReportId', new ParseUUIDPipe()) incidentReportId: string,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.incidentReportService.getIncidentReport(incidentReportId, user);
-  }
-
   @Get('incident-reports')
   @ApiOperation({ summary: 'Get Incident Reports' })
   @ApiGetResponse('Here is the list of Incident Reports')
@@ -42,6 +32,25 @@ export class IncidentReportController {
     @SessionUser() user: RequestUser,
   ) {
     return this.incidentReportService.getIncidentReports(dto, user);
+  }
+
+  @Get('employee-reports/status-count')
+  @ApiOperation({ summary: 'List of all Incident Report status' })
+  @ApiGetResponse('List of all Incident Report status')
+  getStatusCountActive(
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.incidentReportService.statusCount(user);
+  }
+
+  @Get('incident-reports/:incidentReportId')
+  @ApiOperation({ summary: 'Get Incident Reports' })
+  @ApiGetResponse('Here is the list of Incident Reports')
+  getIncidentReport(
+    @Param('incidentReportId', new ParseUUIDPipe()) incidentReportId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.incidentReportService.getIncidentReport(incidentReportId, user);
   }
 
   @Post('incident-reports')
