@@ -522,7 +522,9 @@ export class EmployeeReportService {
   async statusCount(user: RequestUser) {
     await this.assertHrAccess(user.id);
 
-    const whereCondition: Prisma.HrErCaseIntakeWhereInput = {};
+    const whereCondition: Prisma.HrErCaseIntakeWhereInput = {
+      type: HrErIntakeType.employee,
+    };
 
     // Execute queries 
     const [counts] = await Promise.all([
