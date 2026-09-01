@@ -638,4 +638,52 @@ export class IncidentReportService {
       cancelIncidentReport,
     };
   }
+
+  async statusCount(user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const whereCondition: Prisma.HrErCaseIntakeWhereInput = {
+      type: HrErIntakeType.incident,
+    };
+
+    // Execute queries
+    const [counts] = await Promise.all([
+      this.prisma.hrErCaseIntake.groupBy({
+        by: ['status'],
+        where: whereCondition,
+        _count: { _all: true },
+      }),
+      this.prisma.hrErCaseIntake.count(),
+    ]);
+
+    const result = {
+      all: 0,
+      ignored: 0,
+      cancelled: 0,
+      draft: 0,
+      submitted: 0,
+      processed: 0,
+    };
+
+    // Populate the result based on the DB response
+    counts.forEach((item) => {
+      const statusKey = item.status.toLocaleLowerCase();
+
+      // Check if the key exists in our object
+      if (Object.prototype.hasOwnProperty.call(result, statusKey)) {
+        // Cast the string to a valid key type
+        const key = statusKey as keyof typeof result;
+
+        const countValue = item._count._all;
+        result[key] = countValue;
+        result.all += countValue;
+      }
+    });
+
+    return {
+      status: 'success',
+      message: 'Here is the status count for Incident Reports',
+      result,
+    };
+  }
 }
