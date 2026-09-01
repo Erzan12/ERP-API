@@ -18,23 +18,18 @@ import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-paginati
 export class LeaveCasesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getLeaveCase(leaveRequestId: string, user: RequestUser) {
-    // Auth check first
+  // Helper for auth check
+  private async assertHrAccess(userId: string) {
     const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
+      where: { id: userId },
       include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
+        employee: { include: { person: true, position: true } },
         user_roles: true,
       },
     });
 
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
+    if (!requestUser?.employee?.person) {
+      throw new BadRequestException('User does not exist.');
     }
 
     const allowedRoles = [
@@ -45,7 +40,7 @@ export class LeaveCasesService {
       'HR Clerk',
       'HR Staff',
     ];
-    const canView = requestUser?.user_roles.some((role) =>
+    const canView = requestUser.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
 
@@ -54,6 +49,12 @@ export class LeaveCasesService {
         'You are not authorized to perform this action',
       );
     }
+
+    return requestUser;
+  }
+
+  async getLeaveCase(leaveRequestId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
 
     try {
       const leaveRequest = await this.prisma.hrLeaveRequest.findUnique({
@@ -156,41 +157,7 @@ export class LeaveCasesService {
   async getLeaveCases(user: RequestUser, dto: LeaveRequestPaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
 
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    await this.assertHrAccess(user.id);
 
     const skip = (page - 1) * perPage;
 
@@ -346,41 +313,7 @@ export class LeaveCasesService {
   ) {
     const { leave_request, leave_dates } = dto;
 
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    const requestUser = await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
       if (leave_dates.length === 0) {
@@ -530,7 +463,7 @@ export class LeaveCasesService {
 
         tx.user.findUnique({
           where: {
-            id: requestUser.id,
+            id: user.id,
           },
           select: {
             id: true,
@@ -587,7 +520,7 @@ export class LeaveCasesService {
             actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
             actionable_id: leaveRequest.id,
             action: WorkflowActionType.creation,
-            acted_by: requestUser.id,
+            acted_by: user.id,
             acted_at: new Date(),
             metadata: {
               title: 'Leave Request created',
@@ -644,42 +577,8 @@ export class LeaveCasesService {
   ) {
     const { update_leave_request, update_leave_dates } = dto;
 
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
-
+    const requestUser = await this.assertHrAccess(user.id);
+    
     return this.prisma.$transaction(async (tx) => {
       // 1. Verify the main leave request exists and can be edited
       const existingLeaveCase = await tx.hrLeaveRequest.findUnique({
@@ -913,7 +812,7 @@ export class LeaveCasesService {
           actionable_type: WORKFLOW_ENTITY.LEAVE_REQUEST,
           actionable_id: leaveCaseId,
           action: WorkflowActionType.update,
-          acted_by: requestUser.id, // The person performing the edit
+          acted_by: user.id, // The person performing the edit
           acted_at: new Date(),
           metadata: {
             title: 'Leave Request updated',
@@ -940,29 +839,7 @@ export class LeaveCasesService {
     //   ...(is_active !== undefined && { is_active }),
     // };
 
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: { user_roles: true },
-    });
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    await this.assertHrAccess(user.id);
 
     const whereCondition: Prisma.HrLeaveRequestWhereInput = {
       is_active: true,
@@ -1017,41 +894,7 @@ export class LeaveCasesService {
   }
 
   async submitLeave(hrLeaveRequestId: string, user: RequestUser) {
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    const requestUser = await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
       const submitLeave = await tx.hrLeaveRequest.update({
@@ -1084,41 +927,7 @@ export class LeaveCasesService {
   }
 
   async verifyLeave(hrLeaveRequestId: string, user: RequestUser) {
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    const requestUser = await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
       const leave = await tx.hrLeaveRequest.findUnique({
@@ -1169,41 +978,7 @@ export class LeaveCasesService {
   }
 
   async approveLeave(hrLeaveRequestId: string, user: RequestUser) {
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    const requestUser = await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
       const approveLeave = await tx.hrLeaveRequest.update({
@@ -1240,41 +1015,7 @@ export class LeaveCasesService {
   }
 
   async processLeave(hrLeaveRequestId: string, user: RequestUser) {
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    const requestUser = await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
       const processLeave = await tx.hrLeaveRequest.update({
@@ -1310,41 +1051,7 @@ export class LeaveCasesService {
   }
 
   async rejectLeave(hrLeaveRequestId: string, user: RequestUser) {
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    const requestUser = await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
       // update many approach if try and catch does not really fit
@@ -1426,41 +1133,7 @@ export class LeaveCasesService {
   }
 
   async cancelLeave(hrLeaveRequestId: string, user: RequestUser) {
-    // Auth check first
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-    const canView = requestUser?.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
+    const requestUser = await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
       const cancelLeave = await tx.hrLeaveRequest.update({
