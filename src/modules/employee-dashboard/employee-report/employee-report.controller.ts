@@ -18,22 +18,11 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 import { EmployeeReportPaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
-import { Can } from 'src/utils/decorators/can.decorator';
 
 @ApiTags('Employee Dashboard - Employee Report')
 @Controller({ path: 'employee-dashboard', version: '2' })
 export class EmployeeReportController {
   constructor(private readonly employeeReportService: EmployeeReportService) {}
-
-  @Get('employee-reports/:employeeReportId')
-  @ApiOperation({ summary: 'Get Employee Reports' })
-  @ApiGetResponse('Here is the list of Employee Reports')
-  getEmployeeReport(
-    @Param('employeeReportId', new ParseUUIDPipe()) employeeReportId: string,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.employeeReportService.getEmployeeReport(employeeReportId, user);
-  }
 
   @Get('employee-reports')
   @ApiOperation({ summary: 'Get Employee Reports' })
@@ -52,6 +41,16 @@ export class EmployeeReportController {
     @SessionUser() user: RequestUser,
   ) {
     return this.employeeReportService.statusCount(user);
+  }
+
+  @Get('employee-reports/:employeeReportId')
+  @ApiOperation({ summary: 'Get Employee Reports' })
+  @ApiGetResponse('Here is the list of Employee Reports')
+  getEmployeeReport(
+    @Param('employeeReportId', new ParseUUIDPipe()) employeeReportId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.employeeReportService.getEmployeeReport(employeeReportId, user);
   }
 
   @Post('employee-reports')
