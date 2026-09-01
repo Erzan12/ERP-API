@@ -18,6 +18,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ApiGetResponse } from 'src/utils/helpers/swagger-response.helper';
 import { EmployeeReportPaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
+import { Can } from 'src/utils/decorators/can.decorator';
 
 @ApiTags('Employee Dashboard - Employee Report')
 @Controller({ path: 'employee-dashboard', version: '2' })
@@ -42,6 +43,15 @@ export class EmployeeReportController {
     @SessionUser() user: RequestUser,
   ) {
     return this.employeeReportService.getEmployeeReports(dto, user);
+  }
+
+  @Get('employee-reports/status-count')
+  @ApiOperation({ summary: 'List of all Employee Report status' })
+  @ApiGetResponse('List of all Employee Report status')
+  getStatusCountActive(
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.employeeReportService.statusCount(user);
   }
 
   @Post('employee-reports')

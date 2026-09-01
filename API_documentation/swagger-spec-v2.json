@@ -5961,7 +5961,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of all Leave Request stats"
+            "description": "List of all Leave Request status"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -6839,7 +6839,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance/overtime-rates": {
+    "/v2/hris/time-and-attendance-cases/overtime-rates": {
       "get": {
         "operationId": "OvertimeRateController_getOvertimeRates_v2",
         "parameters": [
@@ -7023,7 +7023,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance/overtime-rates/{overtimeRateId}": {
+    "/v2/hris/time-and-attendance-cases/overtime-rates/{overtimeRateId}": {
       "get": {
         "operationId": "OvertimeRateController_getOvertimeRate_v2",
         "parameters": [
@@ -9788,6 +9788,36 @@
           }
         },
         "summary": "File an employee report",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      }
+    },
+    "/v2/employee-dashboard/employee-reports/status-count": {
+      "get": {
+        "operationId": "EmployeeReportController_getStatusCountActive_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all Employee Report status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Employee Report status",
         "tags": [
           "Employee Dashboard - Employee Report"
         ]
