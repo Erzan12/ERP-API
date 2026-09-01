@@ -9619,77 +9619,6 @@
         ]
       }
     },
-    "/v2/employee-dashboard/employee-reports/{employeeReportId}": {
-      "get": {
-        "operationId": "EmployeeReportController_getEmployeeReport_v2",
-        "parameters": [
-          {
-            "name": "employeeReportId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Here is the list of Employee Reports"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get Employee Reports",
-        "tags": [
-          "Employee Dashboard - Employee Report"
-        ]
-      },
-      "put": {
-        "operationId": "EmployeeReportController_updateEmployeeReport_v2",
-        "parameters": [
-          {
-            "name": "employeeReportId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEmployeeReportDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Update an existing Employee Report",
-        "tags": [
-          "Employee Dashboard - Employee Report"
-        ]
-      }
-    },
     "/v2/employee-dashboard/employee-reports": {
       "get": {
         "operationId": "EmployeeReportController_getEmployeeReports_v2",
@@ -9818,6 +9747,77 @@
           }
         },
         "summary": "List of all Employee Report status",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      }
+    },
+    "/v2/employee-dashboard/employee-reports/{employeeReportId}": {
+      "get": {
+        "operationId": "EmployeeReportController_getEmployeeReport_v2",
+        "parameters": [
+          {
+            "name": "employeeReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the list of Employee Reports"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Employee Reports",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      },
+      "put": {
+        "operationId": "EmployeeReportController_updateEmployeeReport_v2",
+        "parameters": [
+          {
+            "name": "employeeReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployeeReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update an existing Employee Report",
         "tags": [
           "Employee Dashboard - Employee Report"
         ]
