@@ -17,6 +17,7 @@ import { setupEmployeeDashboardSwagger } from './employee-dashboard/employee-das
 import { EmployeeDashboardModule } from 'src/modules/employee-dashboard/employee-dashboard.module';
 import { SmsModule } from 'src/jobs/sms/sms.module';
 import { setupSMSSwagger } from './sms/sms.swagger';
+import { setupAttachmentUploadSwagger } from './attachment-upload/attachment-upload.swagger';
 
 function setupAppSwagger(app: INestApplication): void {
   // All APIs docs
@@ -85,6 +86,7 @@ function setupAppSwagger(app: INestApplication): void {
   setupUserSwagger(app);
   setupEmployeeDashboardSwagger(app);
   setupSMSSwagger(app);
+  setupAttachmentUploadSwagger(app);
 }
 
 export { setupAppSwagger };
