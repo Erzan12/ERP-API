@@ -27,7 +27,7 @@ import {
   SubmitEvaluationDto,
 } from './dto/performance_evaluation.dto';
 
-@ApiTags('Performance Evaluation')
+@ApiTags('Employee Dashboard - Performance Evaluation')
 @Controller({ path: 'employee-dashboard', version: '2' })
 export class PerformanceEvaluationController {
   constructor(

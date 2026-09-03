@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateCaseDto } from './create-case.dto';
+import { CreateCaseDto } from './case.dto';
 import { ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 

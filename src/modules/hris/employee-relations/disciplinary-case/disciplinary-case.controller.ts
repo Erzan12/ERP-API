@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DisciplinaryCaseService } from './disciplinary-case.service';
-import { CreateCaseDto } from './dto/create-case.dto';
+import { CreateCaseDto, UpdateCaseDto } from './dto/case.dto';
 import {
   ApiGetResponse,
   ApiPatchResponse,
@@ -26,7 +26,7 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AdvanceStageResponseDto } from './dto/advance-stage-response.dto';
-import { ErCasePaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
+import { ErCasePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 
 @ApiTags('Human Resources - Employee Relations(Disciplinary Case)')
 @Controller({ path: 'hris', version: '2' })
@@ -86,6 +86,24 @@ export class DisciplinaryCaseController {
     @SessionUser() user: RequestUser,
   ) {
     return this.disciplinaryCaseService.createCase(dto, user);
+  }
+
+  @Put('employee-relations/disciplinary-cases/:disciplinaryCaseId')
+  @ApiOperation({
+    summary: 'Update an existing Disciplinary Case details',
+  })
+  @ApiPatchResponse('Disciplinary Case updated successfully')
+  updateDisciplinaryCase(
+    @Param('disciplinaryCaseId', new ParseUUIDPipe())
+    disciplinaryCaseId: string,
+    @Body() dto: UpdateCaseDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.disciplinaryCaseService.updateCase(
+      disciplinaryCaseId,
+      dto,
+      user,
+    );
   }
 
   @Put(

@@ -55,6 +55,13 @@ export class LandingController {
           status: 'Beta',
         },
         {
+          title: 'Attachment Upload',
+          slug: 'attachment-upload',
+          swaggerLink: '/docs/attachment-upload',
+          icon: '/public/icons/docs.png',
+          status: 'New',
+        },
+        {
           title: 'Sms Module',
           slug: 'sms',
           swaggerLink: '/docs/sms',

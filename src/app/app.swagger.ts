@@ -14,9 +14,10 @@ import { setupUserSwagger } from './user-management/user-management.swagger';
 
 import { AuthModule } from 'src/auth/auth.module';
 import { setupEmployeeDashboardSwagger } from './employee-dashboard/employee-dashboard.swagger';
-import { EmployeeDashboardModule } from 'src/modules/employee_dashboard/employee_dashboard.module';
+import { EmployeeDashboardModule } from 'src/modules/employee-dashboard/employee-dashboard.module';
 import { SmsModule } from 'src/jobs/sms/sms.module';
 import { setupSMSSwagger } from './sms/sms.swagger';
+import { setupAttachmentUploadSwagger } from './attachment-upload/attachment-upload.swagger';
 
 function setupAppSwagger(app: INestApplication): void {
   // All APIs docs
@@ -85,6 +86,7 @@ function setupAppSwagger(app: INestApplication): void {
   setupUserSwagger(app);
   setupEmployeeDashboardSwagger(app);
   setupSMSSwagger(app);
+  setupAttachmentUploadSwagger(app);
 }
 
 export { setupAppSwagger };

@@ -333,6 +333,15 @@ enum HrErIntakeStatus {
   pending_review
   converted
   ignored
+  cancelled
+  draft
+  submitted
+  processed
+}
+
+enum HrErIntakeType {
+  incident
+  employee
 }
 
 enum HrErApprovalStepType {
@@ -597,7 +606,6 @@ model User {
   HrErCaseViolationUpdatedBy               HrErCaseViolation[]                @relation("HrErCaseViolationUpdatedBy")
   HrErCaseTypeOfOffenseCreatedBy           HrErCaseTypeOfOffense[]            @relation("HrErCaseTypeOfOffenseCreatedBy")
   HrErCaseTypeOfOffenseUpdatedBy           HrErCaseTypeOfOffense[]            @relation("HrErCaseTypeOfOffenseUpdatedBy")
-  HrErCaseIntakeReportedBy                 HrErCaseIntake[]                   @relation("HrErCaseIntakeReportedBy")
   HrErCaseIntakeCreatedBy                  HrErCaseIntake[]                   @relation("HrErCaseIntakeCreatedBy")
   HrErCaseIntakeUpdatedBy                  HrErCaseIntake[]                   @relation("HrErCaseIntakeUpdatedBy")
   HrErCaseCreatedBy                        HrErCase[]                         @relation("HrErCaseCreatedBy")
@@ -1756,31 +1764,34 @@ model HrErCaseTypeOfOffense {
   updatedBy       User?       @relation("HrErCaseTypeOfOffenseUpdatedBy", fields: [updated_by], references: [id])
 
   hr_er_case_party_offenses   HrErCasePartyOffense[]
+  hr_er_case_intake_offenses  HrErCaseIntakeOffense[]
 }
 
 // ---------- CASE INTAKE (pre-formal reports) ----------
 
 model HrErCaseIntake {
-  id                 String           @id @default(uuid()) @db.Uuid
-  reported_by        String           @db.Uuid
-  incident_narrative String           @db.Text
-  incident_date      DateTime?
-  status             HrErIntakeStatus @default(pending_review)
-  case_id            String?          @unique @db.Uuid
+  id                     String           @id @default(uuid()) @db.Uuid
+  incident_narrative     String?          @db.Text
+  incident_location_id   String?          @db.Uuid
+  incident_location_type String?
+  incident_date          DateTime
+  type                   HrErIntakeType   
+  status                 HrErIntakeStatus @default(draft)
+  subject                String?
 
   created_by String?  @db.Uuid
   updated_by String?  @db.Uuid
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  reportedBy User      @relation("HrErCaseIntakeReportedBy", fields: [reported_by], references: [id])
   createdBy  User?     @relation("HrErCaseIntakeCreatedBy", fields: [created_by], references: [id])
   updatedBy  User?     @relation("HrErCaseIntakeUpdatedBy", fields: [updated_by], references: [id])
-  case       HrErCase? @relation(fields: [case_id], references: [id])
 
+  case        HrErCase? 
   parties     HrErCaseIntakeParty[]
   violations  HrErCaseIntakeViolation[]
   attachments HrErCaseAttachment[]
+  offenses    HrErCaseIntakeOffense[]
 
   @@index([status])
 }
@@ -1809,17 +1820,33 @@ model HrErCaseIntakeViolation {
   @@unique([intake_id, violation_id])
 }
 
+model HrErCaseIntakeOffense{
+  id          String @id @default(uuid()) @db.Uuid
+  intake_id   String @db.Uuid
+  offense_id  String @db.Uuid
+
+  intake      HrErCaseIntake        @relation(fields: [intake_id], references: [id], onDelete: Cascade)
+  offense     HrErCaseTypeOfOffense @relation(fields: [offense_id], references: [id])
+
+  @@unique([intake_id, offense_id])
+  @@index([intake_id])
+}
+
 // ---------- CASE ----------
 
 model HrErCase {
-  id                 String         @id @default(uuid()) @db.Uuid
-  company_id         String?        @db.Uuid
-  control_number     Int?
-  case_code          String?        @unique // ER-{ABBR}-{YYYY}-{0000}
-  incident_location  String
-  assigned_location  String?
-  incident_narrative String?        @db.Text
-  closing_remarks    String?        @db.Text
+  id                     String         @id @default(uuid()) @db.Uuid
+  company_id             String?        @db.Uuid
+  intake_id              String?        @unique @db.Uuid
+  control_number         Int?
+  case_code              String?        // ER-{ABBR}-{YYYY}-{0000}
+  incident_location_id   String         @db.Uuid
+  incident_location_type String
+  assigned_location      String?
+  incident_narrative     String?        @db.Text
+  closing_remarks        String?        @db.Text
+  type               HrErIntakeType?
+  subject            String?
   incident_date      DateTime
   report_date        DateTime
   stage              HrErCaseStage  @default(notice_to_explain) // cached: MIN(stage) across active respondents
@@ -1832,11 +1859,11 @@ model HrErCase {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  intake HrErCaseIntake? @relation(fields: [intake_id], references: [id])
   company   Company? @relation(fields: [company_id], references: [id])
   createdBy User?    @relation("HrErCaseCreatedBy", fields: [created_by], references: [id])
   updatedBy User?    @relation("HrErCaseUpdatedBy", fields: [updated_by], references: [id])
 
-  intake        HrErCaseIntake?
   parties       HrErCaseParty[]
   attachments   HrErCaseAttachment[]
   activity_logs HrErCaseActivityLog[]
@@ -2040,12 +2067,17 @@ model HrErCaseApproval {
 
 model HrErCaseAttachment {
   id        String  @id @default(uuid()) @db.Uuid
+
+  transaction_type String // "Applicant", "Order", "Invoice"
+
   intake_id String? @db.Uuid
   case_id   String? @db.Uuid
 
   file_name String
   file_url  String
   file_type String?
+  file_desc String?
+  file_size Int?
 
   uploaded_by String?  @db.Uuid
   created_at  DateTime @default(now())

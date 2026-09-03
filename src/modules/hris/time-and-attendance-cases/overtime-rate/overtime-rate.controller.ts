@@ -35,7 +35,7 @@ import { OvertimeRequestsPaginationDto } from 'src/utils/dtos/overtime-request-p
 export class OvertimeRateController {
   constructor(private readonly overtimeService: OvertimeRateService) {}
 
-  @Get('/time-and-attendance/overtime-rates')
+  @Get('/time-and-attendance-cases/overtime-rates')
   @ApiOperation({ summary: 'List of Overtime Rates' })
   @ApiGetResponse('List of Overtime Rates')
   @Can({ action: ACTION_UPDATE, subject: OVERTIME_RATE })
@@ -46,7 +46,7 @@ export class OvertimeRateController {
     return this.overtimeService.getOvertimeRates(user, dto);
   }
 
-  @Get('/time-and-attendance/overtime-rates/:overtimeRateId')
+  @Get('/time-and-attendance-cases/overtime-rates/:overtimeRateId')
   @ApiOperation({ summary: 'Get a single id Overtime Rate' })
   @ApiGetResponse('Get a single Overtime Rate')
   @Can({ action: ACTION_READ, subject: OVERTIME_RATE })
@@ -57,7 +57,7 @@ export class OvertimeRateController {
     return this.overtimeService.getOvertimeRate(user, overtimeRateId);
   }
 
-  @Post('/time-and-attendance/overtime-rates')
+  @Post('/time-and-attendance-cases/overtime-rates')
   @ApiBody({
     type: CreateOvertimeRateDto,
     description: 'Payload to create overtime rate',
@@ -72,7 +72,7 @@ export class OvertimeRateController {
     return this.overtimeService.createOvertimeRate(user, dto);
   }
 
-  @Put('/time-and-attendance/overtime-rates/:overtimeRateId')
+  @Put('/time-and-attendance-cases/overtime-rates/:overtimeRateId')
   @ApiBody({
     type: UpdateOvertimeRateDto,
     description: 'Payload to update overtime rate',
