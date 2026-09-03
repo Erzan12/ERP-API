@@ -333,6 +333,10 @@ enum HrErIntakeStatus {
   pending_review
   converted
   ignored
+  cancelled
+  draft
+  submitted
+  processed
 }
 
 enum HrErIntakeType {
@@ -1772,7 +1776,7 @@ model HrErCaseIntake {
   incident_location_type String?
   incident_date          DateTime
   type                   HrErIntakeType   
-  status                 HrErIntakeStatus @default(pending_review)
+  status                 HrErIntakeStatus @default(draft)
   subject                String?
 
   created_by String?  @db.Uuid
@@ -1831,15 +1835,18 @@ model HrErCaseIntakeOffense{
 // ---------- CASE ----------
 
 model HrErCase {
-  id                 String         @id @default(uuid()) @db.Uuid
-  company_id         String?        @db.Uuid
-  intake_id          String?        @unique @db.Uuid
-  control_number     Int?
-  case_code          String?        @unique // ER-{ABBR}-{YYYY}-{0000}
-  incident_location  String
-  assigned_location  String?
-  incident_narrative String?        @db.Text
-  closing_remarks    String?        @db.Text
+  id                     String         @id @default(uuid()) @db.Uuid
+  company_id             String?        @db.Uuid
+  intake_id              String?        @unique @db.Uuid
+  control_number         Int?
+  case_code              String?        // ER-{ABBR}-{YYYY}-{0000}
+  incident_location_id   String         @db.Uuid
+  incident_location_type String
+  assigned_location      String?
+  incident_narrative     String?        @db.Text
+  closing_remarks        String?        @db.Text
+  type               HrErIntakeType?
+  subject            String?
   incident_date      DateTime
   report_date        DateTime
   stage              HrErCaseStage  @default(notice_to_explain) // cached: MIN(stage) across active respondents
@@ -2060,12 +2067,17 @@ model HrErCaseApproval {
 
 model HrErCaseAttachment {
   id        String  @id @default(uuid()) @db.Uuid
+
+  transaction_type String // "Applicant", "Order", "Invoice"
+
   intake_id String? @db.Uuid
   case_id   String? @db.Uuid
 
   file_name String
   file_url  String
   file_type String?
+  file_desc String?
+  file_size Int?
 
   uploaded_by String?  @db.Uuid
   created_at  DateTime @default(now())
