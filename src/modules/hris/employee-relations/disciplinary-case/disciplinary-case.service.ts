@@ -528,7 +528,10 @@ export class DisciplinaryCaseService {
     return { ...kase, parties: partiesWithTiming };
   }
 
-  async createCase(dto: CreateCaseDto, user: RequestUser) {
+  async createCase(
+    dto: CreateCaseDto, 
+    user: RequestUser,
+  ) {
     await this.assertHrAccess(user.id);
 
     // Validate business rules before starting the transaction
@@ -570,22 +573,34 @@ export class DisciplinaryCaseService {
             caseCode: 'null',
           };
 
-      const intake = await this.prisma.hrErCaseIntake.findUnique({
-        where: { id: dto.intake_id },
-        include: { case: true }, // the back-relation
-      });
+      // Intake is optional
+      const intake = dto.intake_id
+        ? await tx.hrErCaseIntake.findUnique({
+            where: {
+              id: dto.intake_id,
+            },
+            include: {
+              case: true,
+            },
+          })
+        : null;
 
-      if (!intake) {
+      // Only validate intake if intake_id was provided
+      if (dto.intake_id && !intake) {
         throw new NotFoundException('Case intake not found.');
       }
 
-      if (intake.case) {
+      if (intake?.case) {
         throw new ConflictException(
           `This intake has already been converted to case`,
         );
       }
 
-      if (!intake.incident_location_type) {
+      const locationType = await this.prisma.workAssignment.findFirst({
+        where: { id: dto.incident_location_id },
+      })
+
+      if (!locationType?.type) {
         throw new Error('Incident location type is required');
       }
 
@@ -597,10 +612,10 @@ export class DisciplinaryCaseService {
             control_number: controlNumber,
             case_code: caseCode,
             incident_location_id: dto.incident_location_id,
-            incident_location_type: intake.incident_location_type,
+            incident_location_type: locationType.type,
             assigned_location: dto.assigned_location,
-            type: intake.type,
-            subject: intake.subject,
+            type: intake?.type,
+            subject: intake?.subject,
             incident_date: new Date(dto.incident_date),
             report_date: new Date(dto.report_date),
             incident_narrative: dto.incident_narrative,
@@ -674,7 +689,8 @@ export class DisciplinaryCaseService {
           },
         });
 
-        if (dto.intake_id) {
+        // Only update intake when this case came from an intake
+        if (intake) {
           await this.prisma.hrErCaseIntake.update({
             where: { id: dto.intake_id },
             data: {
@@ -687,7 +703,7 @@ export class DisciplinaryCaseService {
         return {
           status: 'success',
           message: 'Disciplinary Case successfully created',
-          disciplinaryCaseReport,
+          disciplinaryCaseReport
         };
       } catch (err) {
         if (
