@@ -38,6 +38,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { SmsModule } from './jobs/sms/sms.module';
 import { ControlNumberModule } from './jobs/control-number/control-number.module';
+import { AttachmentUploadModule } from './jobs/attachment-upload/attachment-upload.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { ControlNumberModule } from './jobs/control-number/control-number.module
     PrismaModule,
     SmsModule,
     ControlNumberModule,
+    AttachmentUploadModule,
     // HealthCheckModule,
     // HealthModule,
   ],
