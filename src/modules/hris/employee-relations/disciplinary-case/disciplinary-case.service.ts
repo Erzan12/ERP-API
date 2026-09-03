@@ -528,10 +528,7 @@ export class DisciplinaryCaseService {
     return { ...kase, parties: partiesWithTiming };
   }
 
-  async createCase(
-    dto: CreateCaseDto, 
-    user: RequestUser,
-  ) {
+  async createCase(dto: CreateCaseDto, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     // Validate business rules before starting the transaction
@@ -598,7 +595,7 @@ export class DisciplinaryCaseService {
 
       const locationType = await this.prisma.workAssignment.findFirst({
         where: { id: dto.incident_location_id },
-      })
+      });
 
       if (!locationType?.type) {
         throw new Error('Incident location type is required');
@@ -703,7 +700,7 @@ export class DisciplinaryCaseService {
         return {
           status: 'success',
           message: 'Disciplinary Case successfully created',
-          disciplinaryCaseReport
+          disciplinaryCaseReport,
         };
       } catch (err) {
         if (

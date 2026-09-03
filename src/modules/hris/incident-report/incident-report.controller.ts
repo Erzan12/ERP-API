@@ -37,9 +37,7 @@ export class IncidentReportController {
   @Get('employee-reports/status-count')
   @ApiOperation({ summary: 'List of all Incident Report status' })
   @ApiGetResponse('List of all Incident Report status')
-  getStatusCountActive(
-    @SessionUser() user: RequestUser,
-  ) {
+  getStatusCountActive(@SessionUser() user: RequestUser) {
     return this.incidentReportService.statusCount(user);
   }
 

@@ -578,7 +578,7 @@ export class LeaveCasesService {
     const { update_leave_request, update_leave_dates } = dto;
 
     const requestUser = await this.assertHrAccess(user.id);
-    
+
     return this.prisma.$transaction(async (tx) => {
       // 1. Verify the main leave request exists and can be edited
       const existingLeaveCase = await tx.hrLeaveRequest.findUnique({

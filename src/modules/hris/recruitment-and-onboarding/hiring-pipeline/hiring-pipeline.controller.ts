@@ -129,7 +129,7 @@ export class ApplicantsController {
         files: {
           type: 'array',
           items: { type: 'string', format: 'binary' },
-          nullable: true
+          nullable: true,
         },
 
         application_source: {
