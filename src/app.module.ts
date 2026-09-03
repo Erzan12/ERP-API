@@ -10,7 +10,7 @@ import { HrisModule } from './modules/hris/hris.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { MastertableModule } from './modules/mastertable/mastertable.module';
 import { UserManagementModule } from './modules/manager/user_management/user_management.module';
-import { EmployeeDashboardModule } from './modules/employee_dashboard/employee_dashboard.module';
+import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
 import { CustomJwtAuthGuard } from './middleware/jwt/jwt.auth.guard';
@@ -38,6 +38,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { SmsModule } from './jobs/sms/sms.module';
 import { ControlNumberModule } from './jobs/control-number/control-number.module';
+import { AttachmentUploadModule } from './jobs/attachment-upload/attachment-upload.module';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { ControlNumberModule } from './jobs/control-number/control-number.module
     PrismaModule,
     SmsModule,
     ControlNumberModule,
+    AttachmentUploadModule,
     // HealthCheckModule,
     // HealthModule,
   ],

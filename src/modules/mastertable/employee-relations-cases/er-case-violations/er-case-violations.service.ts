@@ -11,7 +11,7 @@ import {
   CreateErCaseViolationDto,
   UpdateErCaseViolationDto,
 } from './dto/er-case-violations.dto';
-import { ErCaseViolationPaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
+import { ErCaseViolationPaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()

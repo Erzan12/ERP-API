@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AuthModule } from 'src/auth/auth.module';
-import { EmployeeDashboardModule } from 'src/modules/employee_dashboard/employee_dashboard.module';
+import { EmployeeDashboardModule } from 'src/modules/employee-dashboard/employee-dashboard.module';
 
 export function setupEmployeeDashboardSwagger(app: INestApplication): void {
   // build document for v2

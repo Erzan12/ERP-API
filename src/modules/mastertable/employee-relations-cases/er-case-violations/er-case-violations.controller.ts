@@ -28,7 +28,7 @@ import {
   CreateErCaseViolationDto,
   UpdateErCaseViolationDto,
 } from './dto/er-case-violations.dto';
-import { ErCaseViolationPaginationDto } from 'src/utils/dtos/er-case-pagination.dto';
+import { ErCaseViolationPaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 
 @ApiTags('Mastertable - Employee Relation Case(Violation)')
 @Controller({ path: 'mastertable', version: '2' })

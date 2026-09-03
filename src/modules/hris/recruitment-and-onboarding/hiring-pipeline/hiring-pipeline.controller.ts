@@ -107,16 +107,6 @@ export class ApplicantsController {
   @Post('applicants')
   @UseInterceptors(
     FilesInterceptor('files', 5, {
-      // storage: diskStorage({
-      //   destination: './uploads',
-      //   filename: (req, file, cb) => {
-      //     const timestamp = Date.now();
-      //     const ext = extname(file.originalname);
-      //     const name = file.originalname.replace(ext, '').replace(/\s+/g, '-');
-
-      //     cb(null, `${name}-${timestamp}${ext}`);
-      //   },
-      // }),
       storage: memoryStorage(),
     }),
   )
@@ -128,6 +118,7 @@ export class ApplicantsController {
         career_id: { type: 'string' },
 
         first_name: { type: 'string' },
+        middle_name: { type: 'string', nullable: true },
         last_name: { type: 'string' },
         email: { type: 'string' },
 
@@ -138,6 +129,7 @@ export class ApplicantsController {
         files: {
           type: 'array',
           items: { type: 'string', format: 'binary' },
+          nullable: true,
         },
 
         application_source: {

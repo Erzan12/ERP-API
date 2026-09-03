@@ -14,7 +14,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AttachmentUploadService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async attachFiles(
     params: {

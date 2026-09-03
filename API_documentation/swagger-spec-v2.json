@@ -4738,6 +4738,10 @@
                   "first_name": {
                     "type": "string"
                   },
+                  "middle_name": {
+                    "type": "string",
+                    "nullable": true
+                  },
                   "last_name": {
                     "type": "string"
                   },
@@ -4755,7 +4759,8 @@
                     "items": {
                       "type": "string",
                       "format": "binary"
-                    }
+                    },
+                    "nullable": true
                   },
                   "application_source": {
                     "type": "string",
@@ -5961,7 +5966,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "List of all Leave Request stats"
+            "description": "List of all Leave Request status"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -6839,7 +6844,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance/overtime-rates": {
+    "/v2/hris/time-and-attendance-cases/overtime-rates": {
       "get": {
         "operationId": "OvertimeRateController_getOvertimeRates_v2",
         "parameters": [
@@ -7023,7 +7028,7 @@
         ]
       }
     },
-    "/v2/hris/time-and-attendance/overtime-rates/{overtimeRateId}": {
+    "/v2/hris/time-and-attendance-cases/overtime-rates/{overtimeRateId}": {
       "get": {
         "operationId": "OvertimeRateController_getOvertimeRate_v2",
         "parameters": [
@@ -7819,7 +7824,85 @@
         ]
       }
     },
-    "/v2/hris/incident-report": {
+    "/v2/hris/incident-reports": {
+      "get": {
+        "operationId": "IncidentReportController_getIncidentReports_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the list of Incident Reports"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Incident Reports",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      },
       "post": {
         "operationId": "IncidentReportController_createIncidentReport_v2",
         "parameters": [],
@@ -7839,6 +7922,155 @@
           }
         },
         "summary": "File an incident report",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      }
+    },
+    "/v2/hris/employee-reports/status-count": {
+      "get": {
+        "operationId": "IncidentReportController_getStatusCountActive_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all Incident Report status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Incident Report status",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      }
+    },
+    "/v2/hris/incident-reports/{incidentReportId}": {
+      "get": {
+        "operationId": "IncidentReportController_getIncidentReport_v2",
+        "parameters": [
+          {
+            "name": "incidentReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the list of Incident Reports"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Incident Reports",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      },
+      "put": {
+        "operationId": "IncidentReportController_updateIncidentReport_v2",
+        "parameters": [
+          {
+            "name": "incidentReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateIncidentReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update an existing Incident Report",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      }
+    },
+    "/v2/hris/incident-reports/{incidentReportId}/submit": {
+      "put": {
+        "operationId": "IncidentReportController_submitIncidentReport_v2",
+        "parameters": [
+          {
+            "name": "incidentReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Submit Incident Report",
+        "tags": [
+          "Human Resources - Incident Report"
+        ]
+      }
+    },
+    "/v2/hris/incident-reports/{incidentReportId}/cancel": {
+      "put": {
+        "operationId": "IncidentReportController_cancelIncidentReport_v2",
+        "parameters": [
+          {
+            "name": "incidentReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Cancel Incident Report",
         "tags": [
           "Human Resources - Incident Report"
         ]
@@ -7878,6 +8110,53 @@
           }
         },
         "summary": "Get a Disciplinary Case",
+        "tags": [
+          "Human Resources - Employee Relations(Disciplinary Case)"
+        ]
+      },
+      "put": {
+        "operationId": "DisciplinaryCaseController_updateDisciplinaryCase_v2",
+        "parameters": [
+          {
+            "name": "disciplinaryCaseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCaseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Disciplinary Case updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update an existing Disciplinary Case details",
         "tags": [
           "Human Resources - Employee Relations(Disciplinary Case)"
         ]
@@ -8266,6 +8545,30 @@
           }
         },
         "summary": "Get Employee Reports",
+        "tags": [
+          "Human Resources - Employee Relations(Case Intake)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/case-intake/{intakeId}/ignore": {
+      "put": {
+        "operationId": "CaseIntakeController_ignoreIntake_v2",
+        "parameters": [
+          {
+            "name": "intakeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Ignore a Case Intake or Report",
         "tags": [
           "Human Resources - Employee Relations(Case Intake)"
         ]
@@ -9189,7 +9492,7 @@
         },
         "summary": "List of current users personal evaluation",
         "tags": [
-          "Performance Evaluation"
+          "Employee Dashboard - Performance Evaluation"
         ]
       }
     },
@@ -9219,7 +9522,7 @@
         },
         "summary": "List of evaluations added to this employee/user",
         "tags": [
-          "Performance Evaluation"
+          "Employee Dashboard - Performance Evaluation"
         ]
       }
     },
@@ -9249,7 +9552,7 @@
         },
         "summary": "List of evaluations completed by this evaluator",
         "tags": [
-          "Performance Evaluation"
+          "Employee Dashboard - Performance Evaluation"
         ]
       }
     },
@@ -9298,7 +9601,7 @@
         },
         "summary": "Submit Employee Performance Evaluation",
         "tags": [
-          "Performance Evaluation"
+          "Employee Dashboard - Performance Evaluation"
         ]
       }
     },
@@ -9347,7 +9650,211 @@
         },
         "summary": "Employee to acknowledge evaluation",
         "tags": [
-          "Performance Evaluation"
+          "Employee Dashboard - Performance Evaluation"
+        ]
+      }
+    },
+    "/v2/employee-dashboard/employee-reports": {
+      "get": {
+        "operationId": "EmployeeReportController_getEmployeeReports_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the list of Employee Reports"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Employee Reports",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      },
+      "post": {
+        "operationId": "EmployeeReportController_createEmployeeReport_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "File an employee report",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      }
+    },
+    "/v2/employee-dashboard/employee-reports/status-count": {
+      "get": {
+        "operationId": "EmployeeReportController_getStatusCountActive_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all Employee Report status"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "List of all Employee Report status",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      }
+    },
+    "/v2/employee-dashboard/employee-reports/{employeeReportId}": {
+      "get": {
+        "operationId": "EmployeeReportController_getEmployeeReport_v2",
+        "parameters": [
+          {
+            "name": "employeeReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here is the list of Employee Reports"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get Employee Reports",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      },
+      "put": {
+        "operationId": "EmployeeReportController_updateEmployeeReport_v2",
+        "parameters": [
+          {
+            "name": "employeeReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployeeReportDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update an existing Employee Report",
+        "tags": [
+          "Employee Dashboard - Employee Report"
         ]
       }
     }
@@ -12480,6 +12987,36 @@
           "offense_ids"
         ]
       },
+      "UpdateIncidentReportDto": {
+        "type": "object",
+        "properties": {
+          "incident_location_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "2026-08-20T09:00:00.000Z"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "The personnel jump off the vessel"
+          },
+          "parties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SharedCreateCaseIntakePartydto"
+            }
+          },
+          "offense_ids": {
+            "description": "Committed offense IDs",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "CreateCasePartyActionDto": {
         "type": "object",
         "properties": {
@@ -12572,13 +13109,18 @@
       "CreateCaseDto": {
         "type": "object",
         "properties": {
+          "intake_id": {
+            "type": "string",
+            "example": "e5f6a7b8-c9d0-1234-ef56-789012345678",
+            "description": "If converting a Case Intake/Report into this Disciplinary Case, its UUID"
+          },
           "company_id": {
             "type": "string",
             "example": "Company UUID"
           },
-          "incident_location": {
+          "incident_location_id": {
             "type": "string",
-            "example": "Location of the incident"
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
           },
           "assigned_location": {
             "type": "string",
@@ -12634,22 +13176,46 @@
             "items": {
               "$ref": "#/components/schemas/CreateCasePartyDto"
             }
-          },
-          "intake_id": {
-            "type": "string",
-            "example": "e5f6a7b8-c9d0-1234-ef56-789012345678",
-            "description": "If converting a Case Intake/Report into this Disciplinary Case, its UUID"
           }
         },
         "required": [
           "company_id",
-          "incident_location",
+          "incident_location_id",
           "assigned_location",
           "incident_date",
           "report_date",
           "incident_narrative",
           "parties"
         ]
+      },
+      "UpdateCaseDto": {
+        "type": "object",
+        "properties": {
+          "company_id": {
+            "type": "string",
+            "example": "Company UUID"
+          },
+          "incident_location_id": {
+            "type": "string",
+            "example": "Location of the incident"
+          },
+          "assigned_location": {
+            "type": "string",
+            "example": "The assigned location"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "The date of the incident"
+          },
+          "report_date": {
+            "type": "string",
+            "example": "The date of the report"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "Describe what happened, who was involved, where it happened and supporting circumstances"
+          }
+        }
       },
       "SkippedPartyDto": {
         "type": "object",
@@ -13170,6 +13736,66 @@
         "required": [
           "response"
         ]
+      },
+      "CreateEmployeeReportDto": {
+        "type": "object",
+        "properties": {
+          "incident_location_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "2026-08-20T09:00:00.000Z"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "The personnel stole the crane"
+          },
+          "parties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SharedCreateCaseIntakePartydto"
+            }
+          },
+          "subject": {
+            "type": "string",
+            "example": "What kind of suspicious activity or accident happened"
+          }
+        },
+        "required": [
+          "incident_location_id",
+          "incident_date",
+          "parties",
+          "subject"
+        ]
+      },
+      "UpdateEmployeeReportDto": {
+        "type": "object",
+        "properties": {
+          "incident_location_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "incident_date": {
+            "type": "string",
+            "example": "2026-08-20T09:00:00.000Z"
+          },
+          "incident_narrative": {
+            "type": "string",
+            "example": "The personnel stole the crane"
+          },
+          "parties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SharedCreateCaseIntakePartydto"
+            }
+          },
+          "subject": {
+            "type": "string",
+            "example": "What kind of suspicious activity or accident happened"
+          }
+        }
       }
     }
   }
