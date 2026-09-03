@@ -526,7 +526,7 @@ export class EmployeeReportService {
       type: HrErIntakeType.employee,
     };
 
-    // Execute queries 
+    // Execute queries
     const [counts] = await Promise.all([
       this.prisma.hrErCaseIntake.groupBy({
         by: ['status'],

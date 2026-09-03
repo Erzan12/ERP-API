@@ -37,9 +37,7 @@ export class EmployeeReportController {
   @Get('employee-reports/status-count')
   @ApiOperation({ summary: 'List of all Employee Report status' })
   @ApiGetResponse('List of all Employee Report status')
-  getStatusCountActive(
-    @SessionUser() user: RequestUser,
-  ) {
+  getStatusCountActive(@SessionUser() user: RequestUser) {
     return this.employeeReportService.statusCount(user);
   }
 

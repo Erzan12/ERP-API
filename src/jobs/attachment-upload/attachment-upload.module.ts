@@ -6,14 +6,8 @@ import { ErCaseAttachmentController } from './module/er-case-attachment/er-case-
 import { ErCaseAttachmentService } from './module/er-case-attachment/er-case-attachment.service';
 
 @Module({
-    imports: [AuthModule],
-    providers: [
-        PrismaService,
-        AttachmentUploadService,
-        ErCaseAttachmentService,
-    ],
-    controllers: [
-        ErCaseAttachmentController,
-    ]
+  imports: [AuthModule],
+  providers: [PrismaService, AttachmentUploadService, ErCaseAttachmentService],
+  controllers: [ErCaseAttachmentController],
 })
 export class AttachmentUploadModule {}
