@@ -105,6 +105,65 @@ export class ErCaseAttachmentService {
         return prisma.hrErCaseAttachment.createMany({ data });
     }
 
+    private async attachFilesForIrErReport(
+        params: {
+            files: Express.Multer.File[];
+            transaction_type: string;
+            intake_id?: string;
+            document_types?: string[];
+            user_id?: string;
+        },
+        tx?: Prisma.TransactionClient,
+    ) {
+        const prisma = tx || this.prisma;
+        const { files, transaction_type, intake_id, document_types, user_id } =
+            params;
+
+        if (document_types && files.length !== document_types.length) {
+            throw new BadRequestException(
+            'Files and document types count must match',
+            );
+        }
+
+        const bucket = MINIO_BUCKETS.DOCUMENTS;
+
+        // Upload each file to MinIO and build attachment records
+        const data = await Promise.all(
+            files.map(async (file) => {
+            // Guard: catch missing buffer early
+            if (!file.buffer) {
+                throw new BadRequestException(
+                `File "${file.originalname}" has no buffer. Ensure multer is using memoryStorage.`,
+                );
+            }
+
+            const extension =
+                file.originalname.split('.').pop()?.toLowerCase() || 'bin';
+            const fileName = `ir-er-documents/${randomUUID()}.${extension}`;
+
+            await minioClient.putObject(bucket, fileName, file.buffer, file.size, {
+                'Content-Type': file.mimetype,
+            });
+
+            const fileUrl = buildFileUrl(bucket, fileName);
+
+            return {
+                transaction_type,
+                // transaction_id,
+                intake_id,
+                file_name: file.originalname,
+                file_url: fileUrl,
+                file_type: file.mimetype,
+                file_size: file.size,
+                // document_type: document_types?.[i] ?? null,
+                uploaded_by: user_id,
+            };
+            }),
+        );
+
+        return prisma.hrErCaseAttachment.createMany({ data });
+    }
+
     async uploadErCaseDocs(
         disciplinaryCaseId: string,
         user: RequestUser,
@@ -130,6 +189,35 @@ export class ErCaseAttachmentService {
         return {
             status: 'success',
             message: 'Attachments for this Disciplinary Case uploaded.',
+            attachments,
+        };
+    }
+
+    async uploadIrErDocs(
+        reportId: string,
+        user: RequestUser,
+        files: Express.Multer.File[],
+    ) {
+        await this.assertHrAccess(user.id);
+
+        const existingReport = await this.prisma.hrErCaseIntake.findUnique({
+            where: { id: reportId },
+        });
+
+        if (!existingReport) {
+            throw new NotFoundException('Incident or Employee report does not exists.');
+        }
+
+        const attachments = await this.attachFilesForIrErReport({
+            files,
+            transaction_type: TRANSACTION_TYPE.IR_ER_DOC,
+            intake_id: existingReport.id,
+            user_id: user.id,
+        });
+
+        return {
+            status: 'success',
+            message: 'Attachments for this ER/IR uploaded.',
             attachments,
         };
     }
