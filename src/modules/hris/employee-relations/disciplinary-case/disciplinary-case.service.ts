@@ -151,20 +151,21 @@ export class DisciplinaryCaseService {
   }
 
   async generate(
-    companyId: string,
-    companyAbbreviation: string,
+    // companyId: string,
+    // companyAbbreviation: string,
     db?: Prisma.TransactionClient,
   ) {
     const year = new Date().getFullYear();
 
     const controlNumber = await this.controlNumberService.getNextNumber(
-      companyId,
+      // companyId,
       'HR_ER_CASE',
       year,
       db,
     );
 
-    const caseCode = `ER-${companyAbbreviation}-${year}-${String(controlNumber).padStart(4, '0')}`;
+    // const caseCode = `ER-${companyAbbreviation}-${year}-${String(controlNumber).padStart(4, '0')}`;
+    const caseCode = `ER-${year}-${String(controlNumber).padStart(4, '0')}`;
 
     return {
       controlNumber,
@@ -557,18 +558,13 @@ export class DisciplinaryCaseService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      const company = dto.company_id
-        ? await tx.company.findUniqueOrThrow({
-            where: { id: dto.company_id },
-          })
-        : null;
+      // const company = dto.company_id
+      //   ? await tx.company.findUniqueOrThrow({
+      //       where: { id: dto.company_id },
+      //     })
+      //   : null;
 
-      const { controlNumber, caseCode } = company
-        ? await this.generate(dto.company_id!, company.abbreviation, tx)
-        : {
-            controlNumber: null,
-            caseCode: 'null',
-          };
+      const { controlNumber, caseCode } = await this.generate(tx);
 
       // Intake is optional
       const intake = dto.intake_id
@@ -731,7 +727,7 @@ export class DisciplinaryCaseService {
         : null;
 
       const { controlNumber, caseCode } = company
-        ? await this.generate(dto.company_id!, company.abbreviation, tx)
+        ? await this.generate(tx)
         : {
             controlNumber: 0,
             caseCode: 'null',

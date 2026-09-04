@@ -125,8 +125,8 @@ export class CaseIntakeService {
 
     const { controlNumber, caseCode } = company
       ? await this.disciplinaryCaseService.generate(
-          input.company_id!,
-          company.abbreviation,
+          // input.company_id!,
+          // company.abbreviation,
           tx,
         )
       : { controlNumber: 0, caseCode: 'null' };
