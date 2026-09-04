@@ -773,7 +773,7 @@ model Company {
 
   hr_er_case HrErCase[]
 
-  sequence_counter SequenceCounter[]
+  //sequence_counter SequenceCounter[]
 
   @@index([name])
   @@index([abbreviation])
@@ -2129,15 +2129,16 @@ model HrErCaseStageLog {
 ////////////////////////////////////////
 model SequenceCounter {
   id           String @id @default(uuid()) @db.Uuid
-  company_id   String @db.Uuid
+  //company_id   String @db.Uuid
   sequence_key String
   year         Int
   last_number  Int    @default(0)
 
-  company Company @relation(fields: [company_id], references: [id])
+  //company Company @relation(fields: [company_id], references: [id])
 
-  @@unique([company_id, sequence_key, year])
-  @@index([company_id])
+  //@@unique([company_id, sequence_key, year])
+  @@unique([sequence_key, year])
+  //@@index([company_id])
 }
 
 ////////////////////////////////////////
