@@ -9857,6 +9857,54 @@
           "Employee Dashboard - Employee Report"
         ]
       }
+    },
+    "/v2/employee-dashboard/employee-reports/{employeeReportId}/submit": {
+      "put": {
+        "operationId": "EmployeeReportController_submitEmployeeReport_v2",
+        "parameters": [
+          {
+            "name": "employeeReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Submit Employee Report",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      }
+    },
+    "/v2/employee-dashboard/employee-reports/{employeeReportId}/cancel": {
+      "put": {
+        "operationId": "EmployeeReportController_cancelEmployeeReport_v2",
+        "parameters": [
+          {
+            "name": "employeeReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Cancel Employee Report",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      }
     }
   },
   "info": {
