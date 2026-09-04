@@ -481,7 +481,9 @@ export class EmployeeReportService {
       existingEmployeeReport.status === HrErIntakeStatus.cancelled ||
       existingEmployeeReport.status === HrErIntakeStatus.processed
     ) {
-      throw new BadRequestException('Updating Employee Report is not allowed if status is now proccessed.');
+      throw new BadRequestException(
+        'Updating Employee Report is not allowed if status is now proccessed.',
+      );
     }
 
     const updateEmployeeReport = await this.prisma.hrErCaseIntake.update({
@@ -527,17 +529,17 @@ export class EmployeeReportService {
     };
   }
 
-  async submitEmployeeReport(
-    employeeReportId: string,
-    user: RequestUser
-  ) {
+  async submitEmployeeReport(employeeReportId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     const existingEmployeeReport = await this.prisma.hrErCaseIntake.findUnique({
       where: { id: employeeReportId },
     });
 
-    if (!existingEmployeeReport || existingEmployeeReport.type !== HrErIntakeType.employee) {
+    if (
+      !existingEmployeeReport ||
+      existingEmployeeReport.type !== HrErIntakeType.employee
+    ) {
       throw new NotFoundException('Employee Report does not exist');
     }
 
@@ -560,10 +562,7 @@ export class EmployeeReportService {
     };
   }
 
-  async cancelEmployeeReport(
-    employeeReportId: string,
-    user: RequestUser
-  ) {
+  async cancelEmployeeReport(employeeReportId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     const existingEmployeeReport = await this.prisma.hrErCaseIntake.findUnique({
