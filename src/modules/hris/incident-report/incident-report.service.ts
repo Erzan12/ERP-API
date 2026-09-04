@@ -515,7 +515,9 @@ export class IncidentReportService {
     }
 
     if (existingIncidentReport.status === HrErIntakeStatus.processed) {
-      throw new BadRequestException('Updating Incident Report is not allowed if status is proccessed.');
+      throw new BadRequestException(
+        'Updating Incident Report is not allowed if status is proccessed.',
+      );
     }
 
     const updateIncidentReport = await this.prisma.hrErCaseIntake.update({
@@ -585,7 +587,10 @@ export class IncidentReportService {
       where: { id: incidentReportId },
     });
 
-    if (!existingIncidentReport || existingIncidentReport.type !== HrErIntakeType.incident) {
+    if (
+      !existingIncidentReport ||
+      existingIncidentReport.type !== HrErIntakeType.incident
+    ) {
       throw new NotFoundException('Incident Report does not exist');
     }
 
