@@ -64,7 +64,7 @@ export class IncidentReportService {
     const skip = (page - 1) * perPage;
 
     const whereCondition: Prisma.HrErCaseIntakeWhereInput = {
-      type: HrErIntakeType.incident
+      type: HrErIntakeType.incident,
     };
 
     if (search?.trim()) {
