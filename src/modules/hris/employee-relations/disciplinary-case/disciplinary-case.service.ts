@@ -350,6 +350,38 @@ export class DisciplinaryCaseService {
       }),
     ]);
 
+    const locationIds = [
+      ...new Set(
+        disciplinaryCases
+          .map((item) => item.incident_location_id)
+          .filter(Boolean),
+      ),
+    ];
+
+    const locations = await this.prisma.workAssignment.findMany({
+      where: {
+        id: {
+          in: locationIds,
+        },
+      },
+    });
+
+    const locationMap = new Map(
+      locations.map((location) => [
+        `${location.type}:${location.id}`,
+        location,
+      ]),
+    );
+
+    const casesWithLocation = disciplinaryCases.map((item) => ({
+      ...item,
+      incident_location: item.incident_location_id
+        ? locationMap.get(
+            `${item.incident_location_type}:${item.incident_location_id}`,
+          ) ?? null
+        : null,
+    }));
+
     // if (disciplinaryCases.length === 0) {
     //   throw new NotFoundException('No displicary cases found.');
     // }
@@ -360,7 +392,7 @@ export class DisciplinaryCaseService {
       count: total,
       page,
       perPage,
-      disciplinaryCases,
+      disciplinaryCases: casesWithLocation,
     };
   }
 
@@ -601,7 +633,7 @@ export class DisciplinaryCaseService {
         const disciplinaryCaseReport = await tx.hrErCase.create({
           data: {
             intake_id: dto.intake_id,
-            company_id: dto.company_id ?? null,
+            // company_id: dto.company_id ?? null,
             control_number: controlNumber,
             case_code: caseCode,
             incident_location_id: dto.incident_location_id,
@@ -720,18 +752,13 @@ export class DisciplinaryCaseService {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
-      const company = dto.company_id
-        ? await tx.company.findUniqueOrThrow({
-            where: { id: dto.company_id },
-          })
-        : null;
+      // const company = dto.company_id
+      //   ? await tx.company.findUniqueOrThrow({
+      //       where: { id: dto.company_id },
+      //     })
+      //   : null;
 
-      const { controlNumber, caseCode } = company
-        ? await this.generate(tx)
-        : {
-            controlNumber: 0,
-            caseCode: 'null',
-          };
+      const { controlNumber, caseCode } = await this.generate(tx);
 
       const existingDisciplinaryCase = await tx.hrErCase.findUnique({
         where: { id: disciplinaryCaseId },
@@ -754,7 +781,7 @@ export class DisciplinaryCaseService {
       const updateDisciplinaryCaseReport = await tx.hrErCase.update({
         where: { id: disciplinaryCaseId },
         data: {
-          company_id: dto.company_id ?? existingDisciplinaryCase.company_id,
+          // company_id: dto.company_id ?? existingDisciplinaryCase.company_id,
           control_number:
             controlNumber ?? existingDisciplinaryCase.control_number,
           case_code: caseCode ?? existingDisciplinaryCase.case_code,
@@ -766,8 +793,13 @@ export class DisciplinaryCaseService {
           assigned_location:
             dto.assigned_location ?? existingDisciplinaryCase.assigned_location,
           incident_date:
-            dto.incident_date ?? existingDisciplinaryCase.incident_date,
-          report_date: dto.report_date ?? existingDisciplinaryCase.report_date,
+            dto.incident_date
+              ? new Date(dto.incident_date)
+              : existingDisciplinaryCase.incident_date,
+          report_date: 
+            dto.report_date 
+              ? new Date(dto.report_date) 
+              : existingDisciplinaryCase.report_date,
           incident_narrative:
             dto.incident_narrative ??
             existingDisciplinaryCase.incident_narrative,
