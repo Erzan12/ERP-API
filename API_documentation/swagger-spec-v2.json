@@ -13162,10 +13162,6 @@
             "example": "e5f6a7b8-c9d0-1234-ef56-789012345678",
             "description": "If converting a Case Intake/Report into this Disciplinary Case, its UUID"
           },
-          "company_id": {
-            "type": "string",
-            "example": "Company UUID"
-          },
           "incident_location_id": {
             "type": "string",
             "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
@@ -13227,7 +13223,6 @@
           }
         },
         "required": [
-          "company_id",
           "incident_location_id",
           "assigned_location",
           "incident_date",
@@ -13239,10 +13234,6 @@
       "UpdateCaseDto": {
         "type": "object",
         "properties": {
-          "company_id": {
-            "type": "string",
-            "example": "Company UUID"
-          },
           "incident_location_id": {
             "type": "string",
             "example": "Location of the incident"

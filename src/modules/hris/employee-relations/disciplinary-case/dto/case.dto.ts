@@ -188,12 +188,12 @@ export class CreateCaseDto {
   })
   intake_id?: string; // when converting
 
-  @IsUUID()
-  @IsOptional()
-  @ApiProperty({
-    example: 'Company UUID',
-  })
-  company_id?: string;
+  // @IsUUID()
+  // @IsOptional()
+  // @ApiProperty({
+  //   example: 'Company UUID',
+  // })
+  // company_id?: string;
 
   @IsUUID()
   @IsNotEmpty()
@@ -284,12 +284,12 @@ export class CreateCaseDto {
 }
 
 export class UpdateCaseDto {
-  @IsUUID()
-  @IsOptional()
-  @ApiPropertyOptional({
-    example: 'Company UUID',
-  })
-  company_id?: string;
+  // @IsUUID()
+  // @IsOptional()
+  // @ApiPropertyOptional({
+  //   example: 'Company UUID',
+  // })
+  // company_id?: string;
 
   @IsString()
   @IsOptional()
