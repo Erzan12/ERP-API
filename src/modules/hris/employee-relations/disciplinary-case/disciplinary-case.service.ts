@@ -376,9 +376,9 @@ export class DisciplinaryCaseService {
     const casesWithLocation = disciplinaryCases.map((item) => ({
       ...item,
       incident_location: item.incident_location_id
-        ? locationMap.get(
+        ? (locationMap.get(
             `${item.incident_location_type}:${item.incident_location_id}`,
-          ) ?? null
+          ) ?? null)
         : null,
     }));
 
@@ -792,14 +792,12 @@ export class DisciplinaryCaseService {
             location.type ?? existingDisciplinaryCase.incident_location_type,
           assigned_location:
             dto.assigned_location ?? existingDisciplinaryCase.assigned_location,
-          incident_date:
-            dto.incident_date
-              ? new Date(dto.incident_date)
-              : existingDisciplinaryCase.incident_date,
-          report_date: 
-            dto.report_date 
-              ? new Date(dto.report_date) 
-              : existingDisciplinaryCase.report_date,
+          incident_date: dto.incident_date
+            ? new Date(dto.incident_date)
+            : existingDisciplinaryCase.incident_date,
+          report_date: dto.report_date
+            ? new Date(dto.report_date)
+            : existingDisciplinaryCase.report_date,
           incident_narrative:
             dto.incident_narrative ??
             existingDisciplinaryCase.incident_narrative,
