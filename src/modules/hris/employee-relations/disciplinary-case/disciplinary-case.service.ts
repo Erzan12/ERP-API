@@ -524,10 +524,21 @@ export class DisciplinaryCaseService {
       throw new NotFoundException('Disciplinary Case not found.');
     }
 
+    const location = disciplinaryCase.incident_location_id
+      ? await this.prisma.workAssignment.findFirst({
+          where: {
+            id: disciplinaryCase.incident_location_id,
+          },
+        })
+      : null;
+
     return {
       status: 'success',
       message: 'Here is the Disciplinary Case',
-      disciplinaryCase,
+      disciplinaryCase: {
+        ...disciplinaryCase,
+        incident_location: location,
+      },
     };
   }
 
