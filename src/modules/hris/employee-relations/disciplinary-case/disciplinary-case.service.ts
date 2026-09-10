@@ -21,6 +21,7 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateCaseDto, getStageTiming, UpdateCaseDto } from './dto/case.dto';
 import { SLA_DAYS, STAGE_ORDER } from './constants/hr-er-constants';
 import { ErCasePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
+import { UpdateCasePartyDto } from './dto/update-party-details.dto';
 
 type Eligibility = { eligible: boolean; reason?: string };
 
@@ -475,7 +476,32 @@ export class DisciplinaryCaseService {
                 other_employee_data: true,
               },
             },
-            nte: true,
+            nte: {
+              include: {
+                approvals: {
+                  include: {
+                    reviewer: {
+                      select: {
+                        employee: {
+                          select: {
+                            id: true,
+                            employee_id: true,
+                            person: {
+                              select: {
+                                first_name: true,
+                                middle_name: true,
+                                last_name: true,
+                                contact_no: true,
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
             explanation: true,
             hearings: true,
             decision: true,
@@ -821,6 +847,375 @@ export class DisciplinaryCaseService {
         message: 'Disciplinary Case successfully updated.',
         updateDisciplinaryCaseReport,
       };
+    });
+  }
+
+  // async updateCasePartyDetails(partyId: string, user: RequestUser, dto: UpdateCasePartyDto) {
+  //   await this.assertHrAccess(user.id);
+
+  //   const existingParty = await this.prisma.hrErCaseParty.findUnique({
+  //     where: { id: partyId },
+  //     include: {
+  //       actions: true,
+  //     },
+  //   });
+
+  //   if (!existingParty) {
+  //     throw new NotFoundException('Party does not exists.');
+  //   }
+
+  //   if (existingParty.role !== HrErCasePartyRole.respondent) {
+  //     if (
+  //       dto.level !== undefined ||
+  //       dto.offense_ids !== undefined ||
+  //       dto.violation_ids !== undefined ||
+  //       dto.action !== undefined
+  //     ) {
+  //       throw new BadRequestException(
+  //         'Level, offenses, violations, and actions are only available for respondents.',
+  //       );
+  //     }
+  //   }
+
+  //   if (dto.action) {
+  //     if (existingParty.role !== HrErCasePartyRole.respondent) {
+  //       throw new BadRequestException(
+  //         'Preventive suspension is only available for respondents.',
+  //       );
+  //     }
+
+  //     const level = dto.level ?? existingParty.level;
+
+  //     if (level !== HrErCaseLevel.major) {
+  //       throw new BadRequestException(
+  //         'Preventive suspension is only available for major respondents.',
+  //       );
+  //     }
+
+  //     const start = new Date(dto.action.effectivity_start);
+  //     const end = new Date(dto.action.effectivity_end);
+
+  //     if (start >= end) {
+  //       throw new BadRequestException(
+  //         'Preventive suspension effectivity end must be later than the start date.',
+  //       );
+  //     }
+  //   }
+
+  //   const partyData: Prisma.HrErCasePartyUpdateInput = {
+  //     updatedBy: {
+  //       connect: {
+  //         id: user.id,
+  //       },
+  //     },
+  //   };
+
+  //   if (dto.level !== undefined) {
+  //     partyData.level = dto.level;
+  //   }
+
+  //   if (dto.remarks !== undefined) {
+  //     partyData.remarks = dto.remarks;
+  //   }
+
+  //   return this.prisma.$transaction(async(tx)  => {
+  //     if (dto.offense_ids !== undefined) {
+  //       await tx.hrErCasePartyOffense.deleteMany({
+  //         where: {
+  //           party_id: partyId,
+  //         },
+  //       });
+
+  //       if (dto.offense_ids.length > 0) {
+  //         await tx.hrErCasePartyOffense.createMany({
+  //           data: dto.offense_ids.map((offense_id) => ({
+  //             party_id: partyId,
+  //             offense_id,
+  //           })),
+  //           skipDuplicates: true,
+  //         });
+  //       }
+  //     }
+
+  //     if (dto.violation_ids !== undefined) {
+  //       await tx.hrErCasePartyViolation.deleteMany({
+  //         where: {
+  //           party_id: partyId,
+  //         },
+  //       });
+
+  //       if (dto.violation_ids.length > 0) {
+  //         await tx.hrErCasePartyViolation.createMany({
+  //           data: dto.violation_ids.map((violation_id) => ({
+  //             party_id: partyId,
+  //             violation_id,
+  //           })),
+  //           skipDuplicates: true,
+  //         });
+  //       }
+  //     }
+
+  //     if (dto.action) {
+  //       await tx.hrErCasePartyAction.upsert({
+  //         where: {
+  //           party_id: partyId,
+  //         },
+  //         create: {
+  //           party: {
+  //             connect: {
+  //               id: partyId,
+  //             },
+  //           },
+  //           action_type: dto.action.action_type,
+  //           effectivity_start: new Date(
+  //             dto.action.effectivity_start,
+  //           ),
+  //           effectivity_end: new Date(
+  //             dto.action.effectivity_end,
+  //           ),
+  //           remarks: dto.action.remarks,
+  //           createdBy: {
+  //             connect: {
+  //               id: user.id,
+  //             },
+  //           },
+  //         },
+  //         update: {
+  //           action_type: dto.action.action_type,
+  //           effectivity_start: new Date(
+  //             dto.action.effectivity_start,
+  //           ),
+  //           effectivity_end: new Date(
+  //             dto.action.effectivity_end,
+  //           ),
+  //           remarks: dto.action.remarks,
+  //           updatedBy: {
+  //             connect: {
+  //               id: user.id,
+  //             },
+  //           },
+  //         },
+  //       });
+  //     }
+  //   })
+  // }
+
+  async updateCasePartyDetails(
+    partyId: string,
+    user: RequestUser,
+    dto: UpdateCasePartyDto,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingParty = await this.prisma.hrErCaseParty.findUnique({
+      where: { id: partyId },
+      include: {
+        actions: true,
+        offenses: true,
+        violations: true,
+      },
+    });
+
+    if (!existingParty) {
+      throw new NotFoundException('Party does not exist.');
+    }
+
+    // Respondent-only validation
+    if (existingParty.role !== HrErCasePartyRole.respondent) {
+      if (
+        dto.level !== undefined ||
+        dto.offense_ids !== undefined ||
+        dto.violation_ids !== undefined ||
+        dto.action !== undefined
+      ) {
+        throw new BadRequestException(
+          'Level, offenses, violations, and actions are only available for respondents.',
+        );
+      }
+    }
+
+    // Validate action only if action is included in the payload
+    if (dto.action !== undefined) {
+      if (existingParty.role !== HrErCasePartyRole.respondent) {
+        throw new BadRequestException(
+          'Preventive suspension is only available for respondents.',
+        );
+      }
+
+      const level = dto.level ?? existingParty.level;
+
+      if (level !== HrErCaseLevel.major) {
+        throw new BadRequestException(
+          'Preventive suspension is only available for major respondents.',
+        );
+      }
+
+      // Since action fields can now be optional,
+      // use the existing values when omitted.
+      const existingAction = existingParty.actions[0];
+
+      const start = dto.action.effectivity_start
+        ? new Date(dto.action.effectivity_start)
+        : existingAction?.effectivity_start;
+
+      const end = dto.action.effectivity_end
+        ? new Date(dto.action.effectivity_end)
+        : existingAction?.effectivity_end;
+
+      if (start && end && start >= end) {
+        throw new BadRequestException(
+          'Preventive suspension effectivity end must be later than the start date.',
+        );
+      }
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      // Update party fields
+      const partyData: Prisma.HrErCasePartyUpdateInput = {
+        updatedBy: {
+          connect: {
+            id: user.id,
+          },
+        },
+      };
+
+      // Only update if included in request
+      if (dto.level !== undefined) {
+        partyData.level = dto.level;
+      }
+
+      // Allows:
+      // omitted -> keep existing
+      // string -> update
+      // null -> clear
+      if (dto.remarks !== undefined) {
+        partyData.remarks = dto.remarks;
+      }
+
+      const updatedParty = await tx.hrErCaseParty.update({
+        where: {
+          id: partyId,
+        },
+        data: partyData,
+      });
+
+      // Update offenses only if included
+
+      if (dto.offense_ids !== undefined) {
+        await tx.hrErCasePartyOffense.deleteMany({
+          where: {
+            party_id: partyId,
+          },
+        });
+
+        if (dto.offense_ids.length > 0) {
+          await tx.hrErCasePartyOffense.createMany({
+            data: dto.offense_ids.map((offense_id) => ({
+              party_id: partyId,
+              offense_id,
+            })),
+            skipDuplicates: true,
+          });
+        }
+      }
+
+      // Update violations only if included
+
+      if (dto.violation_ids !== undefined) {
+        await tx.hrErCasePartyViolation.deleteMany({
+          where: {
+            party_id: partyId,
+          },
+        });
+
+        if (dto.violation_ids.length > 0) {
+          await tx.hrErCasePartyViolation.createMany({
+            data: dto.violation_ids.map((violation_id) => ({
+              party_id: partyId,
+              violation_id,
+            })),
+            skipDuplicates: true,
+          });
+        }
+      }
+
+      // Update action only if included
+
+      if (dto.action !== undefined) {
+        const existingAction = existingParty.actions[0];
+
+        const actionType =
+          dto.action.action_type ?? existingAction?.action_type;
+
+        const effectivityStart = dto.action.effectivity_start
+          ? new Date(dto.action.effectivity_start)
+          : existingAction?.effectivity_start;
+
+        const effectivityEnd = dto.action.effectivity_end
+          ? new Date(dto.action.effectivity_end)
+          : existingAction?.effectivity_end;
+
+        if (!actionType || !effectivityStart || !effectivityEnd) {
+          throw new BadRequestException(
+            'Action type, effectivity start, and effectivity end are required when creating an action.',
+          );
+        }
+
+        await tx.hrErCasePartyAction.upsert({
+          where: {
+            party_id: partyId,
+          },
+
+          create: {
+            party: {
+              connect: {
+                id: partyId,
+              },
+            },
+            action_type: actionType,
+            effectivity_start: effectivityStart,
+            effectivity_end: effectivityEnd,
+            remarks: dto.action.remarks,
+
+            createdBy: {
+              connect: {
+                id: user.id,
+              },
+            },
+          },
+
+          update: {
+            action_type: actionType,
+            effectivity_start: effectivityStart,
+            effectivity_end: effectivityEnd,
+
+            // Only update remarks if it was included
+            ...(dto.action.remarks !== undefined && {
+              remarks: dto.action.remarks,
+            }),
+
+            updatedBy: {
+              connect: {
+                id: user.id,
+              },
+            },
+          },
+        });
+      }
+
+      return updatedParty;
+
+      // Return updated party
+      // return tx.hrErCaseParty.findUnique({
+      //   where: {
+      //     id: partyId,
+      //   },
+      //   include: {
+      //     offenses: true,
+      //     violations: true,
+      //     actions: true,
+      //   },
+      // });
     });
   }
 
