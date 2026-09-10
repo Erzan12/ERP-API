@@ -8648,20 +8648,19 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/nte/parties/issue-nte": {
+    "/v2/hris/employee-relations/nte/parties/{partyId}/issue-nte": {
       "post": {
         "operationId": "NoticeOfExplainationController_issueNte_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateNteDto"
-              }
+        "parameters": [
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
           "201": {
             "description": ""
