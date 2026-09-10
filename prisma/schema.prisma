@@ -613,6 +613,7 @@ model User {
   HrErCasePartyCreatedBy                   HrErCaseParty[]                    @relation("HrErCasePartyCreatedBy")
   HrErCasePartyUpdatedBy                   HrErCaseParty[]                    @relation("HrErCasePartyUpdatedBy")
   HrErCasePartyActionCreatedBy             HrErCasePartyAction[]              @relation("HrErCasePartyActionCreatedBy")
+  HrErCasePartyActionUpdatedBy             HrErCasePartyAction[]              @relation("HrErCasePartyActionUpdatedBy")
   HrErCaseApprovalReviewer                 HrErCaseApproval[]                 @relation("HrErCaseApprovalReviewer")
   HrErCaseNteCreatedBy                     HrErCaseNte[]                      @relation("HrErCaseNteCreatedBy")
   HrErCaseNteUpdatedBy                     HrErCaseNte[]                      @relation("HrErCaseNteUpdatedBy")
@@ -1938,7 +1939,7 @@ model HrErCasePartyOffense {
 
 model HrErCasePartyAction {
   id                String         @id @default(uuid()) @db.Uuid
-  party_id          String         @db.Uuid
+  party_id          String         @db.Uuid @unique
   action_type       HrErActionType
   effectivity_start DateTime
   effectivity_end   DateTime
@@ -1946,9 +1947,12 @@ model HrErCasePartyAction {
 
   created_by String?  @db.Uuid
   created_at DateTime @default(now())
+  updated_by String?  @db.Uuid
+  updated_at DateTime @updatedAt
 
   party     HrErCaseParty @relation(fields: [party_id], references: [id], onDelete: Cascade)
   createdBy User?         @relation("HrErCasePartyActionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User?         @relation("HrErCasePartyActionUpdatedBy", fields: [updated_by], references: [id])
 
   @@index([party_id])
 }
@@ -1961,7 +1965,7 @@ model HrErCaseNte {
   issued_at        DateTime?
   due_date         DateTime?
   form_url         String?
-  status           HrErApprovalStatus     @default(pending)
+  status           HrErApprovalStatus     @default(revise)
   service_channel  HrErNteServiceChannel?
   reference_number String?
 
