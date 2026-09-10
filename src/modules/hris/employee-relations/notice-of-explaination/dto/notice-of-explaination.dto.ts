@@ -12,7 +12,7 @@ import {
   IsUUID,
 } from 'class-validator';
 
-export class IssueNteDto {
+export class CreateNteDto {
   @IsUUID()
   @IsNotEmpty()
   @ApiProperty({
