@@ -8625,14 +8625,39 @@
     },
     "/v2/hris/employee-relations/nte/parties": {
       "post": {
-        "operationId": "NoticeOfExplainationController_IssueNte_v2",
+        "operationId": "NoticeOfExplainationController_createNte_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/IssueNteDto"
+                "$ref": "#/components/schemas/CreateNteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Create an NTE",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/nte/parties/issue-nte": {
+      "post": {
+        "operationId": "NoticeOfExplainationController_issueNte_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateNteDto"
               }
             }
           }
@@ -13419,7 +13444,7 @@
           "skipped"
         ]
       },
-      "IssueNteDto": {
+      "CreateNteDto": {
         "type": "object",
         "properties": {
           "disciplinary_case_id": {

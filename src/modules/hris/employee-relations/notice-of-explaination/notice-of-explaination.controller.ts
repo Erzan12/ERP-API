@@ -9,7 +9,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { NoticeOfExplainationService } from './notice-of-explaination.service';
 import {
-  IssueNteDto,
+  CreateNteDto,
   ReviewNteApprovalDto,
 } from './dto/notice-of-explaination.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -24,9 +24,17 @@ export class NoticeOfExplainationController {
 
   @Post('employee-relations/nte/parties')
   @ApiOperation({
+    summary: 'Create an NTE',
+  })
+  createNte(@Body() dto: CreateNteDto, @SessionUser() user: RequestUser) {
+    return this.noticeOfExplainationService.createNte(dto,user);
+  }
+
+  @Post('employee-relations/nte/parties/issue-nte')
+  @ApiOperation({
     summary: 'Issue an NTE to a respondent and assign reviewers',
   })
-  IssueNte(@Body() dto: IssueNteDto, @SessionUser() user: RequestUser) {
+  issueNte(@Body() dto: CreateNteDto, @SessionUser() user: RequestUser) {
     return this.noticeOfExplainationService.issueNte(dto, user);
   }
 
