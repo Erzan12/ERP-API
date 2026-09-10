@@ -30,12 +30,12 @@ export class NoticeOfExplainationController {
     return this.noticeOfExplainationService.createNte(dto,user);
   }
 
-  @Post('employee-relations/nte/parties/issue-nte')
+  @Post('employee-relations/nte/parties/:partyId/issue-nte')
   @ApiOperation({
     summary: 'Issue an NTE to a respondent and assign reviewers',
   })
-  issueNte(@Body() dto: CreateNteDto, @SessionUser() user: RequestUser) {
-    return this.noticeOfExplainationService.issueNte(dto, user);
+  issueNte(@Param('partyId', new ParseUUIDPipe()) partyId: string, @SessionUser() user: RequestUser) {
+    return this.noticeOfExplainationService.issueNte(partyId, user);
   }
 
   @Put('employee-relations/nte/:nteId/approvals/:approvalId')

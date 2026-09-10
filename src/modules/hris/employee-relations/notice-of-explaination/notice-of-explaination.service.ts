@@ -144,17 +144,13 @@ export class NoticeOfExplainationService {
     })
   }
 
-  async issueNte(dto: CreateNteDto, user: RequestUser) {
+  async issueNte(partyId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
       const party = await tx.hrErCaseParty.findUniqueOrThrow({
-        where: { id: dto.party_id },
+        where: { id: partyId },
       });
-
-      if (party.case_id !== dto.disciplinary_case_id) {
-        throw new BadRequestException('Party does not belong to this case.');
-      }
 
       if (party.role !== HrErCasePartyRole.respondent) {
         throw new BadRequestException('Only respondents can be issued an NTE.');
@@ -167,7 +163,7 @@ export class NoticeOfExplainationService {
       }
 
       const existing = await tx.hrErCaseNte.findUnique({
-        where: { party_id: dto.party_id },
+        where: { party_id: party.id },
       });
 
       if (existing?.issued_at) {
@@ -176,56 +172,52 @@ export class NoticeOfExplainationService {
         );
       }
 
-      // Reviewers must be real users - fail loudly rather than creating orphaned approval row
-      const reviewers = await tx.user.findMany({
-        where: {
-          id: { in: dto.reviewer_ids },
-        },
-        select: {
-          id: true,
-        },
-      });
+      // const nte = await tx.hrErCaseNte.upsert({
+      //   where: { party_id: dto.party_id },
+      //   create: {
+      //     party_id: dto.party_id,
+      //     issued_at: new Date(),
+      //     due_date: dto.due_date ? new Date(dto.due_date) : null,
+      //     service_channel: dto.service_channel,
+      //     reference_number: dto.reference_number,
+      //     form_url: dto.form_url,
+      //     status: HrErApprovalStatus.pending,
+      //     created_by: user.id,
+      //     approvals: {
+      //       create: dto.reviewer_ids.map((reviewerId, index) => ({
+      //         step_type: HrErApprovalStepType.nte_review,
+      //         reviewer_id: reviewerId,
+      //         sequence: index,
+      //       })),
+      //     },
+      //   },
+      //   update: {
+      //     issued_at: new Date(),
+      //     due_date: dto.due_date ? new Date(dto.due_date) : null,
+      //     service_channel: dto.service_channel,
+      //     reference_number: dto.reference_number,
+      //     form_url: dto.form_url,
+      //     status: HrErApprovalStatus.pending,
+      //     updated_by: user.id,
+      //     approvals: {
+      //       create: dto.reviewer_ids.map((reviewerId, index) => ({
+      //         step_type: HrErApprovalStepType.nte_review,
+      //         reviewer_id: reviewerId,
+      //         sequence: index,
+      //       })),
+      //     },
+      //   },
+      //   include: {
+      //     approvals: true,
+      //   },
+      // });
 
-      if (reviewers.length !== dto.reviewer_ids.length) {
-        throw new BadRequestException(
-          'One or more reviewer_ids do not match an existing user.',
-        );
-      }
-
-      const nte = await tx.hrErCaseNte.upsert({
-        where: { party_id: dto.party_id },
-        create: {
-          party_id: dto.party_id,
+      const nte = await tx.hrErCaseNte.update({
+        where: { party_id: partyId },
+        data: {
           issued_at: new Date(),
-          due_date: dto.due_date ? new Date(dto.due_date) : null,
-          service_channel: dto.service_channel,
-          reference_number: dto.reference_number,
-          form_url: dto.form_url,
-          status: HrErApprovalStatus.pending,
-          created_by: user.id,
-          approvals: {
-            create: dto.reviewer_ids.map((reviewerId, index) => ({
-              step_type: HrErApprovalStepType.nte_review,
-              reviewer_id: reviewerId,
-              sequence: index,
-            })),
-          },
-        },
-        update: {
-          issued_at: new Date(),
-          due_date: dto.due_date ? new Date(dto.due_date) : null,
-          service_channel: dto.service_channel,
-          reference_number: dto.reference_number,
-          form_url: dto.form_url,
-          status: HrErApprovalStatus.pending,
+          status: HrErApprovalStatus.verified,
           updated_by: user.id,
-          approvals: {
-            create: dto.reviewer_ids.map((reviewerId, index) => ({
-              step_type: HrErApprovalStepType.nte_review,
-              reviewer_id: reviewerId,
-              sequence: index,
-            })),
-          },
         },
         include: {
           approvals: true,
@@ -234,8 +226,8 @@ export class NoticeOfExplainationService {
 
       await tx.hrErCaseActivityLog.create({
         data: {
-          case_id: dto.disciplinary_case_id,
-          party_id: dto.party_id,
+          case_id: party.case_id,
+          party_id: party.id,
           actor_id: user.id,
           action: 'nte_issued',
         },
@@ -243,7 +235,7 @@ export class NoticeOfExplainationService {
 
       return {
         status: 'success',
-        message: 'NTE issued and reviewers assigned',
+        message: 'NTE has been issued.',
         nte,
       };
     });
@@ -285,7 +277,7 @@ export class NoticeOfExplainationService {
       //     throw new ForbiddenException('Only the assigned reviewer can act on this approval.');
       // }
 
-      if (approval.status !== HrErApprovalStatus.pending) {
+      if (approval.status !== HrErApprovalStatus.revise) {
         throw new ConflictException(
           `This approval was already marked "${approval.status}.`,
         );
