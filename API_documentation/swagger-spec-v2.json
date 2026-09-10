@@ -8320,6 +8320,55 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/disciplinary-cases/case-parties/{partyId}/details": {
+      "put": {
+        "operationId": "DisciplinaryCaseController_updateCasePartyDetails_v2",
+        "parameters": [
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCasePartyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Party Details updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update an existing Party Details",
+        "tags": [
+          "Human Resources - Employee Relations(Disciplinary Case)"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/disciplinary-cases/{disciplinaryCaseId}/advance-stage": {
       "put": {
         "operationId": "DisciplinaryCaseController_advanceStage_v2",
@@ -13255,6 +13304,79 @@
             "example": "Describe what happened, who was involved, where it happened and supporting circumstances"
           }
         }
+      },
+      "UpdateCasePartyActionDto": {
+        "type": "object",
+        "properties": {
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "preventive_suspension"
+            ],
+            "example": "preventive_suspension"
+          },
+          "effectivity_start": {
+            "type": "string",
+            "example": "2026-08-15T00:00:00.000Z",
+            "description": "Start date of the preventive suspension"
+          },
+          "effectivity_end": {
+            "type": "string",
+            "example": "2026-08-20T23:59:59.999Z",
+            "description": "End date of the preventive suspension"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Preventive suspension pending investigation"
+          }
+        },
+        "required": [
+          "action_type",
+          "effectivity_start",
+          "effectivity_end"
+        ]
+      },
+      "UpdateCasePartyDto": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "minor",
+              "major"
+            ],
+            "description": "Required when role is respondent"
+          },
+          "offense_ids": {
+            "description": "Committed offense IDs — required when role is respondent",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "violation_ids": {
+            "description": "Policy violated (violation) IDs — required when role is respondent",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "action": {
+            "description": "Preventive suspension action. Only available for respondents with major level.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UpdateCasePartyActionDto"
+              }
+            ]
+          },
+          "remarks": {
+            "type": "string",
+            "example": "This employee is the respondent in the case."
+          }
+        },
+        "required": [
+          "remarks"
+        ]
       },
       "SkippedPartyDto": {
         "type": "object",
