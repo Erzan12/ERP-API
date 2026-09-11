@@ -8645,6 +8645,38 @@
         "tags": [
           "Human Resources - Employee Relations(Notice of Explanation)"
         ]
+      },
+      "put": {
+        "operationId": "NoticeOfExplainationController_updateNte_v2",
+        "parameters": [
+          {
+            "name": "nteId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update NTE Details",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
       }
     },
     "/v2/hris/employee-relations/nte/parties": {
@@ -13538,6 +13570,41 @@
           "party_id",
           "reviewer_ids"
         ]
+      },
+      "UpdateNteDto": {
+        "type": "object",
+        "properties": {
+          "disciplinary_case_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Disciplinary Case UUID"
+          },
+          "party_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Party UUID"
+          },
+          "due_date": {
+            "type": "string",
+            "example": "2026-08-20",
+            "description": "Deadline for the respondent to submit a written explanation"
+          },
+          "service_channel": {
+            "type": "string",
+            "enum": [
+              "nra_office",
+              "personal",
+              "postal_mail"
+            ]
+          },
+          "reviewer_ids": {
+            "description": "User IDs of reviewers who must sign off before this NTE is considered approved",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       },
       "ReviewNteApprovalDto": {
         "type": "object",

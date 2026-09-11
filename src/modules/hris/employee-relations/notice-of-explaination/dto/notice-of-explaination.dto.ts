@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { HrErApprovalStatus, HrErNteServiceChannel } from '@prisma/client';
 import {
   ArrayMinSize,
@@ -65,6 +65,63 @@ export class CreateNteDto {
       'User IDs of reviewers who must sign off before this NTE is considered approved',
   })
   reviewer_ids: string[];
+}
+
+export class UpdateNteDto {
+  @IsUUID()
+  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    description: 'Disciplinary Case UUID',
+    required: false,
+  })
+  disciplinary_case_id: string;
+
+  @IsUUID()
+  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    description: 'Party UUID',
+    required: false,
+  })
+  party_id: string;
+
+  @IsOptional()
+  @IsDateString()
+  @ApiPropertyOptional({
+    example: '2026-08-20',
+    required: false,
+    description: 'Deadline for the respondent to submit a written explanation',
+  })
+  due_date?: string;
+
+  @IsOptional()
+  @IsEnum(HrErNteServiceChannel)
+  @ApiPropertyOptional({ enum: HrErNteServiceChannel, required: false })
+  service_channel?: HrErNteServiceChannel;
+
+  // @IsOptional()
+  // @IsString()
+  // @ApiPropertyOptional({ example: 'NTE-2026-00042', required: false })
+  // reference_number?: string;
+
+  // @IsOptional()
+  // @IsString()
+  // @ApiPropertyOptional({
+  //   required: false,
+  //   description: 'URL of the NTE form/letter, if already uploaded',
+  // })
+  // form_url?: string;
+
+  @IsArray()
+  @IsUUID(undefined, { each: true })
+  @IsOptional()
+  @ApiPropertyOptional({
+    type: [String],
+    description:
+      'User IDs of reviewers who must sign off before this NTE is considered approved',
+  })
+  reviewer_ids?: string[];
 }
 
 export class ReviewNteApprovalDto {
