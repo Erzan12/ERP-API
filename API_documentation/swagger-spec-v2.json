@@ -13549,10 +13549,6 @@
               "postal_mail"
             ]
           },
-          "reference_number": {
-            "type": "string",
-            "example": "NTE-2026-00042"
-          },
           "form_url": {
             "type": "string",
             "description": "URL of the NTE form/letter, if already uploaded"
