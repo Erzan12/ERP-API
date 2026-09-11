@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseUUIDPipe,
   Post,
@@ -22,6 +23,14 @@ export class NoticeOfExplainationController {
     private readonly noticeOfExplainationService: NoticeOfExplainationService,
   ) {}
 
+  @Get('employee-relations/nte/:nteId')
+  @ApiOperation({
+    summary: 'Get single NTE',
+  })
+  getNteList(@Param('nteId', new ParseUUIDPipe()) nteId: string, @SessionUser() user: RequestUser) {
+    return this.noticeOfExplainationService.getNte(nteId, user);
+  }
+
   @Post('employee-relations/nte/parties')
   @ApiOperation({
     summary: 'Create an NTE',
@@ -30,7 +39,15 @@ export class NoticeOfExplainationController {
     return this.noticeOfExplainationService.createNte(dto,user);
   }
 
-  @Post('employee-relations/nte/parties/:partyId/issue-nte')
+  @Put('employee-relations/nte/parties/:nteId/submit-nte')
+  @ApiOperation({
+    summary: 'Submit NTE',
+  })
+  submitNte(@Param('nteId', new ParseUUIDPipe()) nteId: string, @SessionUser() user: RequestUser) {
+    return this.noticeOfExplainationService.submitNte(nteId, user);
+  }
+
+  @Put('employee-relations/nte/parties/:partyId/issue-nte')
   @ApiOperation({
     summary: 'Issue an NTE to a respondent and assign reviewers',
   })

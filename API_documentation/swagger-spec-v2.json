@@ -8623,6 +8623,30 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/nte/{nteId}": {
+      "get": {
+        "operationId": "NoticeOfExplainationController_getNteList_v2",
+        "parameters": [
+          {
+            "name": "nteId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get single NTE",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/nte/parties": {
       "post": {
         "operationId": "NoticeOfExplainationController_createNte_v2",
@@ -8648,8 +8672,32 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/nte/parties/{nteId}/submit-nte": {
+      "put": {
+        "operationId": "NoticeOfExplainationController_submitNte_v2",
+        "parameters": [
+          {
+            "name": "nteId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Submit NTE",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/nte/parties/{partyId}/issue-nte": {
-      "post": {
+      "put": {
         "operationId": "NoticeOfExplainationController_issueNte_v2",
         "parameters": [
           {
@@ -8662,7 +8710,7 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
             "description": ""
           }
         },
