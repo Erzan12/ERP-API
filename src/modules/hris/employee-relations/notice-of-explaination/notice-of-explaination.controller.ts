@@ -12,6 +12,7 @@ import { NoticeOfExplainationService } from './notice-of-explaination.service';
 import {
   CreateNteDto,
   ReviewNteApprovalDto,
+  UpdateNteDto,
 } from './dto/notice-of-explaination.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
@@ -40,6 +41,18 @@ export class NoticeOfExplainationController {
   })
   createNte(@Body() dto: CreateNteDto, @SessionUser() user: RequestUser) {
     return this.noticeOfExplainationService.createNte(dto, user);
+  }
+
+  @Put('employee-relations/nte/:nteId')
+  @ApiOperation({
+    summary: 'Update NTE Details',
+  })
+  updateNte(
+    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @SessionUser() user: RequestUser,
+    @Body() dto: UpdateNteDto,
+  ) {
+    return this.noticeOfExplainationService.updateNte(nteId, user, dto);
   }
 
   @Put('employee-relations/nte/parties/:nteId/submit-nte')

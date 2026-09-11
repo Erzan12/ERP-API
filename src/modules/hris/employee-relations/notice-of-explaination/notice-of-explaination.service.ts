@@ -9,6 +9,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import {
   CreateNteDto,
   ReviewNteApprovalDto,
+  UpdateNteDto,
 } from './dto/notice-of-explaination.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
@@ -184,6 +185,293 @@ export class NoticeOfExplainationService {
         status: 'success',
         message: 'NTE has been created successfully.',
         nte,
+      };
+    });
+  }
+
+  async updateNte(
+    nteId: string,
+    user: RequestUser,
+    dto: UpdateNteDto,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingNte = await this.prisma.hrErCaseNte.findUnique({
+      where: { id: nteId },
+    });
+
+    if (!existingNte) {
+      throw new NotFoundException('NTE does not exist.');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      /**
+       * Use the existing party_id when party_id is not
+       * provided in the update DTO.
+       */
+      const partyId = dto.party_id ?? existingNte.party_id;
+
+      const party = await tx.hrErCaseParty.findUniqueOrThrow({
+        where: {
+          id: partyId,
+        },
+      });
+
+      /**
+       * Only validate the case when disciplinary_case_id
+       * was supplied.
+       */
+      if (
+        dto.disciplinary_case_id &&
+        party.case_id !== dto.disciplinary_case_id
+      ) {
+        throw new BadRequestException(
+          'Party does not belong to this case.',
+        );
+      }
+
+      /**
+       * Only respondents can have an NTE.
+       */
+      if (party.role !== HrErCasePartyRole.respondent) {
+        throw new BadRequestException(
+          'Only respondents can be issued an NTE.',
+        );
+      }
+
+      /**
+       * Validate party stage.
+       */
+      if (party.stage !== HrErCaseStage.notice_to_explain) {
+        throw new BadRequestException(
+          `Party is at stage "${party.stage}", not notice_to_explain`,
+        );
+      }
+
+      /**
+       * Prevent updating an NTE if another NTE already exists
+       * for the selected party.
+       *
+       * Ignore the current NTE itself.
+       */
+      const existing = await tx.hrErCaseNte.findFirst({
+        where: {
+          party_id: partyId,
+          NOT: {
+            id: existingNte.id,
+          },
+        },
+      });
+
+      if (existing?.issued_at) {
+        throw new ConflictException(
+          'An NTE has already been issued for this respondent.',
+        );
+      }
+      
+      if (existing?.status === HrErApprovalStatus.verified || HrErApprovalStatus.approved || HrErApprovalStatus.rejected) {
+        throw new BadRequestException('NTE cannot be updated anymore it is either already verified, approved or rejected already');
+      } 
+
+      /**
+       * =========================================================
+       * APPROVAL / REVIEWER UPDATE
+       * =========================================================
+       *
+       * reviewer_ids has three possible behaviors:
+       *
+       * 1. reviewer_ids is undefined
+       *    -> Don't modify existing approvals.
+       *
+       * 2. reviewer_ids is []
+       *    -> Delete all approvals.
+       *
+       * 3. reviewer_ids contains IDs
+       *    -> The array becomes the source of truth.
+       *       Reviewers not included are deleted.
+       *       New reviewers are created.
+       */
+      if (dto.reviewer_ids !== undefined) {
+        /**
+         * Validate reviewer IDs.
+         *
+         * An empty array is allowed because it means
+         * "remove all reviewers."
+         */
+        if (dto.reviewer_ids.length > 0) {
+          const reviewers = await tx.user.findMany({
+            where: {
+              id: {
+                in: dto.reviewer_ids,
+              },
+            },
+            select: {
+              id: true,
+            },
+          });
+
+          if (reviewers.length !== dto.reviewer_ids.length) {
+            throw new BadRequestException(
+              'One or more reviewer_ids do not match an existing user.',
+            );
+          }
+        }
+
+        /**
+         * Delete approvals whose reviewer is no longer
+         * included in the submitted reviewer_ids.
+         *
+         * If reviewer_ids is [] then notIn: [] causes
+         * all existing approvals to be deleted.
+         */
+        await tx.hrErCaseApproval.deleteMany({
+          where: {
+            nte_id: existingNte.id,
+            reviewer_id: {
+              notIn: dto.reviewer_ids,
+            },
+          },
+        });
+
+        /**
+         * Get the remaining approvals.
+         */
+        const existingApprovals =
+          await tx.hrErCaseApproval.findMany({
+            where: {
+              nte_id: existingNte.id,
+            },
+            select: {
+              reviewer_id: true,
+            },
+          });
+
+        const existingReviewerIds = new Set(
+          existingApprovals.map(
+            (approval) => approval.reviewer_id,
+          ),
+        );
+
+        /**
+         * Find reviewers that were newly added.
+         */
+        const newReviewerIds = dto.reviewer_ids.filter(
+          (reviewerId) =>
+            !existingReviewerIds.has(reviewerId),
+        );
+
+        /**
+         * Create newly-added reviewers.
+         */
+        if (newReviewerIds.length > 0) {
+          await tx.hrErCaseApproval.createMany({
+            data: newReviewerIds.map((reviewerId) => ({
+              nte_id: existingNte.id,
+              step_type: HrErApprovalStepType.nte_review,
+              reviewer_id: reviewerId,
+              sequence:
+                dto.reviewer_ids!.indexOf(reviewerId),
+              created_by: user.id,
+            })),
+          });
+        }
+
+        /**
+         * Recalculate sequence based on the order
+         * supplied in reviewer_ids.
+         *
+         * Example:
+         *
+         * reviewer_ids: [A, C, B]
+         *
+         * A -> sequence 0
+         * C -> sequence 1
+         * B -> sequence 2
+         */
+        for (const [
+          index,
+          reviewerId,
+        ] of dto.reviewer_ids.entries()) {
+          await tx.hrErCaseApproval.updateMany({
+            where: {
+              nte_id: existingNte.id,
+              reviewer_id: reviewerId,
+            },
+            data: {
+              sequence: index,
+              updated_by: user.id,
+            },
+          });
+        }
+      }
+
+      /**
+       * =========================================================
+       * UPDATE NTE
+       * =========================================================
+       */
+      const updatedNte = await tx.hrErCaseNte.update({
+        where: {
+          id: existingNte.id,
+        },
+        data: {
+          party_id: dto.party_id ?? existingNte.party_id,
+
+          due_date: dto.due_date
+            ? new Date(dto.due_date)
+            : existingNte.due_date,
+
+          service_channel:
+            dto.service_channel ??
+            existingNte.service_channel,
+
+          // reference_number:
+          //   dto.reference_number ??
+          //   existingNte.reference_number,
+
+          // form_url:
+          //   dto.form_url ??
+          //   existingNte.form_url,
+
+          updated_by: user.id,
+        },
+        include: {
+          approvals: {
+            include: {
+              reviewer: {
+                select: {
+                  id: true,
+                  employee: {
+                    select: {
+                      id: true,
+                      person: {
+                        select: {
+                          first_name: true,
+                          middle_name: true,
+                          last_name: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            orderBy: {
+              sequence: 'asc',
+            },
+          },
+        },
+      });
+
+      /**
+       * =========================================================
+       * RESPONSE
+       * =========================================================
+       */
+      return {
+        status: 'success',
+        message: 'NTE has been updated successfully.',
+        nte: updatedNte,
       };
     });
   }
