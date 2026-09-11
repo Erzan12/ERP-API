@@ -43,10 +43,10 @@ export class CreateNteDto {
   @ApiProperty({ enum: HrErNteServiceChannel, required: false })
   service_channel?: HrErNteServiceChannel;
 
-  @IsOptional()
-  @IsString()
-  @ApiProperty({ example: 'NTE-2026-00042', required: false })
-  reference_number?: string;
+  // @IsOptional()
+  // @IsString()
+  // @ApiProperty({ example: 'NTE-2026-00042', required: false })
+  // reference_number?: string;
 
   @IsOptional()
   @IsString()

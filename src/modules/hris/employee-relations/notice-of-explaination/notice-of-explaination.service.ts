@@ -17,11 +17,16 @@ import {
   HrErApprovalStepType,
   HrErCasePartyRole,
   HrErCaseStage,
+  Prisma,
 } from '@prisma/client';
+import { ControlNumberService } from 'src/jobs/control-number/control-number.service';
 
 @Injectable()
 export class NoticeOfExplainationService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly controlNumberService: ControlNumberService,
+  ) {}
 
   // Helper for auth check
   private async assertHrAccess(userId: string) {
@@ -56,6 +61,25 @@ export class NoticeOfExplainationService {
     }
 
     return requestUser;
+  }
+
+  private async generate(
+    db?: Prisma.TransactionClient,
+  ) {
+    const year = new Date().getFullYear();
+
+    const controlNumber = await this.controlNumberService.getNextNumber(
+      'HR_NTE',
+      year,
+      db,
+    );
+
+    const nteCode = `NTE-${year}-${String(controlNumber).padStart(4, '0')}`;
+
+    return {
+      controlNumber,
+      nteCode,
+    };
   }
 
   async getNte(nteId: string, user: RequestUser) {
@@ -105,6 +129,8 @@ export class NoticeOfExplainationService {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
+      const { nteCode } = await this.generate(tx);
+
       const party = await tx.hrErCaseParty.findUniqueOrThrow({
         where: { id: dto.party_id },
       });
@@ -155,7 +181,7 @@ export class NoticeOfExplainationService {
           // issued_at: new Date(),
           due_date: dto.due_date ? new Date(dto.due_date) : null,
           service_channel: dto.service_channel,
-          reference_number: dto.reference_number,
+          reference_number: nteCode,
           form_url: dto.form_url,
           status: HrErApprovalStatus.revise,
           created_by: user.id,
@@ -206,6 +232,7 @@ export class NoticeOfExplainationService {
     }
 
     return this.prisma.$transaction(async (tx) => {
+
       /**
        * Use the existing party_id when party_id is not
        * provided in the update DTO.
