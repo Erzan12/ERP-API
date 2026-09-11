@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import {
@@ -54,6 +55,48 @@ export class NoticeOfExplainationService {
     }
 
     return requestUser;
+  }
+
+  async getNte(nteId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const nte = await this.prisma.hrErCaseNte.findUnique({
+      where: { id: nteId },
+      include: {
+        approvals: {
+          include:{
+            reviewer: {
+              select: {
+                id: true,
+                employee: {
+                  select: {
+                    id: true,
+                    employee_id: true,
+                    person: {
+                      select: {
+                        first_name: true,
+                        middle_name: true,
+                        last_name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!nte) {
+      throw new NotFoundException('No available NTEs found.');
+    }
+
+    return {
+      status: 'success',
+      message: 'Here is the NTE',
+      nte,
+    };
   }
 
   async createNte(dto: CreateNteDto, user: RequestUser) {
@@ -119,6 +162,7 @@ export class NoticeOfExplainationService {
               step_type: HrErApprovalStepType.nte_review,
               reviewer_id: reviewerId,
               sequence: index,
+              created_by: user.id
             })),
           },
         },
@@ -144,7 +188,186 @@ export class NoticeOfExplainationService {
     })
   }
 
+  async submitNte(nteId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    return this.prisma.$transaction(async (tx) => {
+      const nte = await tx.hrErCaseNte.findUniqueOrThrow({
+        where: { id: nteId },
+        include: {
+          party: true,
+          approvals: true,
+        }
+      });
+
+      if (!nte) {
+        throw new NotFoundException('NTE does not exists.');
+      }
+
+      if (nte.party.role !== HrErCasePartyRole.respondent) {
+        throw new BadRequestException('Only respondents can be issued an NTE.');
+      }
+
+      if (nte.party.stage !== HrErCaseStage.notice_to_explain) {
+        throw new BadRequestException(
+          `Party is at stage "${nte.party.stage}", not notice_to_explain`,
+        );
+      }
+
+      const existing = await tx.hrErCaseNte.findUnique({
+        where: { party_id: nte.party.id },
+      });
+
+      // if (existing?.issued_at) {
+      //   throw new ConflictException(
+      //     'An NTE has already been issued for this respondent.',
+      //   );
+      // }
+
+      if (existing?.status === HrErApprovalStatus.verified) {
+        throw new BadRequestException('NTE has been submitted already.')
+      }
+
+      return this.prisma.$transaction(async (tx) => {
+        await tx.hrErCaseApproval.updateMany({
+          where: { nte_id: nteId },
+          data: {
+            status: HrErApprovalStatus.pending,
+            updated_by: user.id,
+          },
+        });
+
+        const updateNteStatus = await tx.hrErCaseNte.update({
+          where: { id: nteId },
+          data: {
+            status: HrErApprovalStatus.pending,
+            updated_by: user.id
+          },
+          include: {
+            approvals: true,
+          },
+        });
+        
+        return {
+          status: 'success',
+          message: 'NTE has been submitted.',
+          updateNteStatus,
+        };
+      });
+    })
+  }
+
+  async reviewNteApproval(
+    nteId: string,
+    approvalId: string,
+    dto: ReviewNteApprovalDto,
+    user: RequestUser,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    return this.prisma.$transaction(async (tx) => {
+      const approval = await tx.hrErCaseApproval.findUniqueOrThrow({
+        where: { id: approvalId },
+        include: {
+          nte: {
+            include: {
+              party: true,
+              approvals: true,
+            },
+          },
+        },
+      });
+
+      console.log('Approval id', approval.id);
+
+      if (
+        approval.step_type !== HrErApprovalStepType.nte_review ||
+        !approval.nte
+      ) {
+        throw new BadRequestException(
+          'This approval is not an NTE review step.',
+        );
+      }
+
+      // if (approval.reviewer_id !== user.id) {
+      //     throw new ForbiddenException('Only the assigned reviewer can act on this approval.');
+      // }
+
+      // if (approval.status !== HrErApprovalStatus.revise) {
+      //   throw new BadRequestException('NTE Status must be revise before it can be reviewed and must be submitted first.')
+      // }
+
+      if (approval.status !== HrErApprovalStatus.pending ) {
+        throw new ConflictException(
+          `NTE must be submitted first since status is still revise.`,
+        );
+      }
+
+      const reviewNTEApproval = await tx.hrErCaseApproval.update({
+        where: { id: approvalId, status: HrErApprovalStatus.pending },
+        data: {
+          status: dto.status,
+          remarks: dto.remarks,
+          reviewed_at: new Date(),
+          updated_by: user.id
+        },
+      });
+
+      // // Get the latest approval statuses
+      // const approvals = await tx.hrErCaseApproval.findMany({
+      //   where: {
+      //     nte_id: nteId,
+      //     step_type: HrErApprovalStepType.nte_review,
+      //   },
+      // });
+
+      // // Determine the NTE status
+      // let nteStatus: HrErApprovalStatus;
+
+      // if (approvals.some((a) => a.status === HrErApprovalStatus.revise)) {
+      //   nteStatus = HrErApprovalStatus.revise;
+      // } else if (
+      //   approvals.some((a) => a.status === HrErApprovalStatus.rejected)
+      // ) {
+      //   nteStatus = HrErApprovalStatus.rejected;
+      // } else if (
+      //   approvals.length > 0 &&
+      //   approvals.every((a) => a.status === HrErApprovalStatus.approved)
+      // ) {
+      //   nteStatus = HrErApprovalStatus.verified;
+      // } else {
+      //   nteStatus = HrErApprovalStatus.pending;
+      // }
+
+      // const erCaseNte = await tx.hrErCaseNte.update({
+      //   where: { id: nteId },
+      //   data: {
+      //     status: nteStatus,
+      //     updated_by: user.id,
+      //   },
+      // });
+
+      // console.log('CaseNteId', erCaseNte.id);
+
+      await tx.hrErCaseActivityLog.create({
+        data: {
+          case_id: approval.nte.party.case_id,
+          party_id: approval.nte.party_id,
+          actor_id: user.id,
+          action: `nte_review_${dto.status}`,
+        },
+      });
+
+      return {
+        status: 'success',
+        message: `NTE review marked as ${dto.status}`,
+        reviewNTEApproval,
+      };
+    });
+  }
+
   async issueNte(partyId: string, user: RequestUser) {
+
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
@@ -237,100 +460,6 @@ export class NoticeOfExplainationService {
         status: 'success',
         message: 'NTE has been issued.',
         nte,
-      };
-    });
-  }
-
-  async reviewNteApproval(
-    nteId: string,
-    approvalId: string,
-    dto: ReviewNteApprovalDto,
-    user: RequestUser,
-  ) {
-    await this.assertHrAccess(user.id);
-
-    return this.prisma.$transaction(async (tx) => {
-      const approval = await tx.hrErCaseApproval.findUniqueOrThrow({
-        where: { id: approvalId },
-        include: {
-          nte: {
-            include: {
-              party: true,
-              approvals: true,
-            },
-          },
-        },
-      });
-
-      console.log('Approval id', approval.id);
-
-      if (
-        approval.step_type !== HrErApprovalStepType.nte_review ||
-        !approval.nte
-      ) {
-        throw new BadRequestException(
-          'This approval is not an NTE review step.',
-        );
-      }
-
-      // if (approval.reviewer_id !== user.id) {
-      //     throw new ForbiddenException('Only the assigned reviewer can act on this approval.');
-      // }
-
-      if (approval.status !== HrErApprovalStatus.revise) {
-        throw new ConflictException(
-          `This approval was already marked "${approval.status}.`,
-        );
-      }
-
-      await tx.hrErCaseApproval.update({
-        where: { id: approvalId },
-        data: {
-          status: dto.status,
-          remarks: dto.remarks,
-          reviewed_at: new Date(),
-        },
-      });
-
-      // Role update the overall NTE status from all reviewers on this NTE
-      const siblingApprovals = await tx.hrErCaseApproval.findMany({
-        where: { nte_id: approval.nte.id },
-      });
-      const updated = siblingApprovals.map((a) =>
-        a.id === approvalId ? { ...a, status: dto.status } : a,
-      );
-
-      const nteStatus = updated.some((a) => a.status === 'revise')
-        ? HrErApprovalStatus.revise
-        : updated.some((a) => a.status === 'rejected')
-          ? HrErApprovalStatus.rejected
-          : updated.every((a) => a.status === 'approved')
-            ? HrErApprovalStatus.approved
-            : HrErApprovalStatus.pending;
-
-      const erCaseNte = await tx.hrErCaseNte.update({
-        where: { id: nteId },
-        data: {
-          status: nteStatus,
-          updated_by: user.id,
-        },
-      });
-
-      console.log('CaseNteId', erCaseNte.id);
-
-      await tx.hrErCaseActivityLog.create({
-        data: {
-          case_id: approval.nte.party.case_id,
-          party_id: approval.nte.party_id,
-          actor_id: user.id,
-          action: `nte_review_${dto.status}`,
-        },
-      });
-
-      return {
-        status: 'success',
-        message: `NTE review marked as ${dto.status}`,
-        nteStatus,
       };
     });
   }
