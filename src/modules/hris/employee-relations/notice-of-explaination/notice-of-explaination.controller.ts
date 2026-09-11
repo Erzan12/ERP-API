@@ -27,7 +27,10 @@ export class NoticeOfExplainationController {
   @ApiOperation({
     summary: 'Get single NTE',
   })
-  getNteList(@Param('nteId', new ParseUUIDPipe()) nteId: string, @SessionUser() user: RequestUser) {
+  getNteList(
+    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @SessionUser() user: RequestUser,
+  ) {
     return this.noticeOfExplainationService.getNte(nteId, user);
   }
 
@@ -36,14 +39,17 @@ export class NoticeOfExplainationController {
     summary: 'Create an NTE',
   })
   createNte(@Body() dto: CreateNteDto, @SessionUser() user: RequestUser) {
-    return this.noticeOfExplainationService.createNte(dto,user);
+    return this.noticeOfExplainationService.createNte(dto, user);
   }
 
   @Put('employee-relations/nte/parties/:nteId/submit-nte')
   @ApiOperation({
     summary: 'Submit NTE',
   })
-  submitNte(@Param('nteId', new ParseUUIDPipe()) nteId: string, @SessionUser() user: RequestUser) {
+  submitNte(
+    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @SessionUser() user: RequestUser,
+  ) {
     return this.noticeOfExplainationService.submitNte(nteId, user);
   }
 
@@ -51,7 +57,10 @@ export class NoticeOfExplainationController {
   @ApiOperation({
     summary: 'Issue an NTE to a respondent and assign reviewers',
   })
-  issueNte(@Param('partyId', new ParseUUIDPipe()) partyId: string, @SessionUser() user: RequestUser) {
+  issueNte(
+    @Param('partyId', new ParseUUIDPipe()) partyId: string,
+    @SessionUser() user: RequestUser,
+  ) {
     return this.noticeOfExplainationService.issueNte(partyId, user);
   }
 
