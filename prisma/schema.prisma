@@ -354,6 +354,7 @@ enum HrErApprovalStatus {
   approved
   revise
   rejected
+  verified
 }
 
 enum HrErActionType {
@@ -614,11 +615,13 @@ model User {
   HrErCasePartyUpdatedBy                   HrErCaseParty[]                    @relation("HrErCasePartyUpdatedBy")
   HrErCasePartyActionCreatedBy             HrErCasePartyAction[]              @relation("HrErCasePartyActionCreatedBy")
   HrErCasePartyActionUpdatedBy             HrErCasePartyAction[]              @relation("HrErCasePartyActionUpdatedBy")
+  HrErCaseApprovalCreatedBy                HrErCaseApproval[]                 @relation("HrErCaseApprovalCreatedBy")
+  HrErCaseApprovalUpdatedBy                HrErCaseApproval[]                 @relation("HrErCaseApprovalUpdatedBy")
   HrErCaseApprovalReviewer                 HrErCaseApproval[]                 @relation("HrErCaseApprovalReviewer")
   HrErCaseNteCreatedBy                     HrErCaseNte[]                      @relation("HrErCaseNteCreatedBy")
   HrErCaseNteUpdatedBy                     HrErCaseNte[]                      @relation("HrErCaseNteUpdatedBy")
   HrErCaseDecisionCreatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionCreatedBy")
-  HrErCaseDecisionUpdatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionUpdatedBy")
+  HrErCaseDecisionUpdatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionUpdatedBy")             
   HrErCaseAttachmentUploadedBy             HrErCaseAttachment[]               @relation("HrErCaseAttachmentUploadedBy")
   HrErCaseActivityLogActor                 HrErCaseActivityLog[]              @relation("HrErCaseActivityLogActor")
 
@@ -2051,13 +2054,18 @@ model HrErCaseApproval {
   nte_id      String?              @db.Uuid
   decision_id String?              @db.Uuid
   reviewer_id String               @db.Uuid
-  status      HrErApprovalStatus   @default(pending)
+  status      HrErApprovalStatus   @default(revise)
   remarks     String?              @db.Text
   reviewed_at DateTime?
   sequence    Int                  @default(0)
 
+  created_by String?  @db.Uuid
+  updated_by String?  @db.Uuid
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  createdBy User? @relation("HrErCaseApprovalCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrErCaseApprovalUpdatedBy", fields: [updated_by], references: [id])
 
   nte      HrErCaseNte?      @relation(fields: [nte_id], references: [id], onDelete: Cascade)
   decision HrErCaseDecision? @relation(fields: [decision_id], references: [id], onDelete: Cascade)
