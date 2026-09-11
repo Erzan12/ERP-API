@@ -64,7 +64,7 @@ export class NoticeOfExplainationService {
       where: { id: nteId },
       include: {
         approvals: {
-          include:{
+          include: {
             reviewer: {
               select: {
                 id: true,
@@ -162,7 +162,7 @@ export class NoticeOfExplainationService {
               step_type: HrErApprovalStepType.nte_review,
               reviewer_id: reviewerId,
               sequence: index,
-              created_by: user.id
+              created_by: user.id,
             })),
           },
         },
@@ -185,7 +185,7 @@ export class NoticeOfExplainationService {
         message: 'NTE has been created successfully.',
         nte,
       };
-    })
+    });
   }
 
   async submitNte(nteId: string, user: RequestUser) {
@@ -197,7 +197,7 @@ export class NoticeOfExplainationService {
         include: {
           party: true,
           approvals: true,
-        }
+        },
       });
 
       if (!nte) {
@@ -225,7 +225,7 @@ export class NoticeOfExplainationService {
       // }
 
       if (existing?.status === HrErApprovalStatus.verified) {
-        throw new BadRequestException('NTE has been submitted already.')
+        throw new BadRequestException('NTE has been submitted already.');
       }
 
       return this.prisma.$transaction(async (tx) => {
@@ -241,20 +241,20 @@ export class NoticeOfExplainationService {
           where: { id: nteId },
           data: {
             status: HrErApprovalStatus.pending,
-            updated_by: user.id
+            updated_by: user.id,
           },
           include: {
             approvals: true,
           },
         });
-        
+
         return {
           status: 'success',
           message: 'NTE has been submitted.',
           updateNteStatus,
         };
       });
-    })
+    });
   }
 
   async reviewNteApproval(
@@ -297,7 +297,7 @@ export class NoticeOfExplainationService {
       //   throw new BadRequestException('NTE Status must be revise before it can be reviewed and must be submitted first.')
       // }
 
-      if (approval.status !== HrErApprovalStatus.pending ) {
+      if (approval.status !== HrErApprovalStatus.pending) {
         throw new ConflictException(
           `NTE must be submitted first since status is still revise.`,
         );
@@ -309,7 +309,7 @@ export class NoticeOfExplainationService {
           status: dto.status,
           remarks: dto.remarks,
           reviewed_at: new Date(),
-          updated_by: user.id
+          updated_by: user.id,
         },
       });
 
@@ -367,7 +367,6 @@ export class NoticeOfExplainationService {
   }
 
   async issueNte(partyId: string, user: RequestUser) {
-
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
