@@ -1982,6 +1982,7 @@ model HrErCaseNte {
 
   party     HrErCaseParty      @relation(fields: [party_id], references: [id], onDelete: Cascade)
   approvals HrErCaseApproval[]
+  attachment HrErCaseAttachment?
 }
 
 // ---------- WRITTEN EXPLANATION ----------
@@ -2084,6 +2085,7 @@ model HrErCaseAttachment {
 
   intake_id String? @db.Uuid
   case_id   String? @db.Uuid
+  nte_id    String? @unique @db.Uuid
 
   file_name String
   file_url  String
@@ -2096,6 +2098,7 @@ model HrErCaseAttachment {
 
   intake     HrErCaseIntake? @relation(fields: [intake_id], references: [id], onDelete: Cascade)
   case       HrErCase?       @relation(fields: [case_id], references: [id], onDelete: Cascade)
+  nte        HrErCaseNte?    @relation(fields: [nte_id], references: [id], onDelete: Cascade)
   uploadedBy User?           @relation("HrErCaseAttachmentUploadedBy", fields: [uploaded_by], references: [id])
 
   @@index([intake_id])
