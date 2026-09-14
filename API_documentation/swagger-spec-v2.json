@@ -8320,6 +8320,55 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/disciplinary-cases/case-parties/{partyId}/details": {
+      "put": {
+        "operationId": "DisciplinaryCaseController_updateCasePartyDetails_v2",
+        "parameters": [
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCasePartyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Party Details updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update an existing Party Details",
+        "tags": [
+          "Human Resources - Employee Relations(Disciplinary Case)"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/disciplinary-cases/{disciplinaryCaseId}/advance-stage": {
       "put": {
         "operationId": "DisciplinaryCaseController_advanceStage_v2",
@@ -8574,22 +8623,126 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/nte/{nteId}": {
+      "get": {
+        "operationId": "NoticeOfExplainationController_getNteList_v2",
+        "parameters": [
+          {
+            "name": "nteId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get single NTE",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
+      },
+      "put": {
+        "operationId": "NoticeOfExplainationController_updateNte_v2",
+        "parameters": [
+          {
+            "name": "nteId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Update NTE Details",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/nte/parties": {
       "post": {
-        "operationId": "NoticeOfExplainationController_IssueNte_v2",
+        "operationId": "NoticeOfExplainationController_createNte_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/IssueNteDto"
+                "$ref": "#/components/schemas/CreateNteDto"
               }
             }
           }
         },
         "responses": {
           "201": {
+            "description": ""
+          }
+        },
+        "summary": "Create an NTE",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/nte/parties/{nteId}/submit-nte": {
+      "put": {
+        "operationId": "NoticeOfExplainationController_submitNte_v2",
+        "parameters": [
+          {
+            "name": "nteId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Submit NTE",
+        "tags": [
+          "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/nte/parties/{partyId}/issue-nte": {
+      "put": {
+        "operationId": "NoticeOfExplainationController_issueNte_v2",
+        "parameters": [
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
             "description": ""
           }
         },
@@ -9853,6 +10006,54 @@
           }
         },
         "summary": "Update an existing Employee Report",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      }
+    },
+    "/v2/employee-dashboard/employee-reports/{employeeReportId}/submit": {
+      "put": {
+        "operationId": "EmployeeReportController_submitEmployeeReport_v2",
+        "parameters": [
+          {
+            "name": "employeeReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Submit Employee Report",
+        "tags": [
+          "Employee Dashboard - Employee Report"
+        ]
+      }
+    },
+    "/v2/employee-dashboard/employee-reports/{employeeReportId}/cancel": {
+      "put": {
+        "operationId": "EmployeeReportController_cancelEmployeeReport_v2",
+        "parameters": [
+          {
+            "name": "employeeReportId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Cancel Employee Report",
         "tags": [
           "Employee Dashboard - Employee Report"
         ]
@@ -13112,11 +13313,7 @@
           "intake_id": {
             "type": "string",
             "example": "e5f6a7b8-c9d0-1234-ef56-789012345678",
-            "description": "If converting a Case Intake/Report into this Disciplinary Case, its UUID"
-          },
-          "company_id": {
-            "type": "string",
-            "example": "Company UUID"
+            "description": "If converting a Case Intake/Report into this Disciplinary Case, its UUID."
           },
           "incident_location_id": {
             "type": "string",
@@ -13179,7 +13376,6 @@
           }
         },
         "required": [
-          "company_id",
           "incident_location_id",
           "assigned_location",
           "incident_date",
@@ -13191,10 +13387,6 @@
       "UpdateCaseDto": {
         "type": "object",
         "properties": {
-          "company_id": {
-            "type": "string",
-            "example": "Company UUID"
-          },
           "incident_location_id": {
             "type": "string",
             "example": "Location of the incident"
@@ -13216,6 +13408,79 @@
             "example": "Describe what happened, who was involved, where it happened and supporting circumstances"
           }
         }
+      },
+      "UpdateCasePartyActionDto": {
+        "type": "object",
+        "properties": {
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "preventive_suspension"
+            ],
+            "example": "preventive_suspension"
+          },
+          "effectivity_start": {
+            "type": "string",
+            "example": "2026-08-15T00:00:00.000Z",
+            "description": "Start date of the preventive suspension"
+          },
+          "effectivity_end": {
+            "type": "string",
+            "example": "2026-08-20T23:59:59.999Z",
+            "description": "End date of the preventive suspension"
+          },
+          "remarks": {
+            "type": "string",
+            "example": "Preventive suspension pending investigation"
+          }
+        },
+        "required": [
+          "action_type",
+          "effectivity_start",
+          "effectivity_end"
+        ]
+      },
+      "UpdateCasePartyDto": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "enum": [
+              "minor",
+              "major"
+            ],
+            "description": "Required when role is respondent"
+          },
+          "offense_ids": {
+            "description": "Committed offense IDs — required when role is respondent",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "violation_ids": {
+            "description": "Policy violated (violation) IDs — required when role is respondent",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "action": {
+            "description": "Preventive suspension action. Only available for respondents with major level.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UpdateCasePartyActionDto"
+              }
+            ]
+          },
+          "remarks": {
+            "type": "string",
+            "example": "This employee is the respondent in the case."
+          }
+        },
+        "required": [
+          "remarks"
+        ]
       },
       "SkippedPartyDto": {
         "type": "object",
@@ -13258,7 +13523,7 @@
           "skipped"
         ]
       },
-      "IssueNteDto": {
+      "CreateNteDto": {
         "type": "object",
         "properties": {
           "disciplinary_case_id": {
@@ -13284,10 +13549,6 @@
               "postal_mail"
             ]
           },
-          "reference_number": {
-            "type": "string",
-            "example": "NTE-2026-00042"
-          },
           "form_url": {
             "type": "string",
             "description": "URL of the NTE form/letter, if already uploaded"
@@ -13305,6 +13566,41 @@
           "party_id",
           "reviewer_ids"
         ]
+      },
+      "UpdateNteDto": {
+        "type": "object",
+        "properties": {
+          "disciplinary_case_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Disciplinary Case UUID"
+          },
+          "party_id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "description": "Party UUID"
+          },
+          "due_date": {
+            "type": "string",
+            "example": "2026-08-20",
+            "description": "Deadline for the respondent to submit a written explanation"
+          },
+          "service_channel": {
+            "type": "string",
+            "enum": [
+              "nra_office",
+              "personal",
+              "postal_mail"
+            ]
+          },
+          "reviewer_ids": {
+            "description": "User IDs of reviewers who must sign off before this NTE is considered approved",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       },
       "ReviewNteApprovalDto": {
         "type": "object",

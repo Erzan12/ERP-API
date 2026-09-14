@@ -3,12 +3,13 @@ import {
   Param,
   ParseUUIDPipe,
   Put,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { ErCaseAttachmentService } from './er-case-attachment.service';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { ApiPostResponse } from 'src/utils/helpers/swagger-response.helper';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
@@ -84,5 +85,36 @@ export class ErCaseAttachmentController {
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     return this.erCaseAttachmentService.uploadIrErDocs(reportId, user, files);
+  }
+
+  @Put('nte/:nteId/uploads')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          nullable: true,
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Upload Attachment for NTE',
+  })
+  @ApiPostResponse('Attachment uploaded successfully')
+  uploadNteDoc(
+    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @SessionUser() user: RequestUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.erCaseAttachmentService.uploadNteDocs(nteId, user, file);
   }
 }

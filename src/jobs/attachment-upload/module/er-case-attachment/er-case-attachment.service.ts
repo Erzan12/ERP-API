@@ -172,6 +172,58 @@ export class ErCaseAttachmentService {
     return prisma.hrErCaseAttachment.createMany({ data });
   }
 
+  private async attachFilesForNTE(
+    params: {
+      file: Express.Multer.File;
+      transaction_type: string;
+      nte_id?: string;
+      // document_types?: string;
+      user_id?: string;
+    },
+    tx?: Prisma.TransactionClient,
+  ) {
+    const prisma = tx || this.prisma;
+    const { file, transaction_type, nte_id, user_id } = params;
+
+    // Guard: make sure a file was provided
+    if (!file) {
+      throw new BadRequestException('File is required.');
+    }
+
+    // Guard: catch missing buffer early
+    if (!file.buffer) {
+      throw new BadRequestException(
+        `File "${file.originalname}" has no buffer. Ensure multer is using memoryStorage.`,
+      );
+    }
+
+    const bucket = MINIO_BUCKETS.DOCUMENTS;
+
+    const extension =
+      file.originalname.split('.').pop()?.toLowerCase() || 'bin';
+    const fileName = `nte-documents/${randomUUID()}.${extension}`;
+
+    await minioClient.putObject(bucket, fileName, file.buffer, file.size, {
+      'Content-Type': file.mimetype,
+    });
+
+    const fileUrl = buildFileUrl(bucket, fileName);
+
+    const data = {
+      transaction_type,
+      // transaction_id,
+      nte_id,
+      file_name: file.originalname,
+      file_url: fileUrl,
+      file_type: file.mimetype,
+      file_size: file.size,
+      // document_type: document_types?.[i] ?? null,
+      uploaded_by: user_id,
+    };
+
+    return prisma.hrErCaseAttachment.createMany({ data });
+  }
+
   async uploadErCaseDocs(
     disciplinaryCaseId: string,
     user: RequestUser,
@@ -229,6 +281,35 @@ export class ErCaseAttachmentService {
       status: 'success',
       message: 'Attachments for this ER/IR uploaded.',
       attachments,
+    };
+  }
+
+  async uploadNteDocs(
+    nteId: string,
+    user: RequestUser,
+    file: Express.Multer.File,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingNte = await this.prisma.hrErCaseNte.findUnique({
+      where: { id: nteId },
+    });
+
+    if (!existingNte) {
+      throw new NotFoundException('NTE does not exists.');
+    }
+
+    const attachment = await this.attachFilesForNTE({
+      file,
+      transaction_type: TRANSACTION_TYPE.NTE_DOC,
+      nte_id: existingNte.id,
+      user_id: user.id,
+    });
+
+    return {
+      status: 'success',
+      message: 'Attachments for this NTE uploaded.',
+      attachment,
     };
   }
 }

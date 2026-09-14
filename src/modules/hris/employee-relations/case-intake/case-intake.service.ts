@@ -125,8 +125,8 @@ export class CaseIntakeService {
 
     const { controlNumber, caseCode } = company
       ? await this.disciplinaryCaseService.generate(
-          input.company_id!,
-          company.abbreviation,
+          // input.company_id!,
+          // company.abbreviation,
           tx,
         )
       : { controlNumber: 0, caseCode: 'null' };
@@ -232,10 +232,72 @@ export class CaseIntakeService {
         where: {
           ...whereCondition,
         },
-        include: {
+        select: {
+          id: true,
+          incident_narrative: true,
+          incident_location_id: true,
+          incident_location_type: true,
+          incident_date: true,
+          type: true,
+          status: true,
+          created_by: true,
+          updated_by: true,
+          created_at: true,
+          updated_at: true,
           createdBy: {
             select: {
-              employee: true,
+              employee: {
+                select: {
+                  id: true,
+                  company: {
+                    select: {
+                      id: true,
+                      name: true,
+                      abbreviation: true,
+                    },
+                  },
+                  person: {
+                    select: {
+                      first_name: true,
+                      middle_name: true,
+                      last_name: true,
+                    },
+                  },
+                  employee_id: true,
+                  department: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  position: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  division: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  vessel: true,
+                  user_location: {
+                    select: {
+                      id: true,
+                      location_name: true,
+                    },
+                  },
+                  salary_grade: {
+                    select: {
+                      id: true,
+                      grade: true,
+                      rate: true,
+                    },
+                  },
+                },
+              },
               person: {
                 select: {
                   first_name: true,
@@ -246,10 +308,78 @@ export class CaseIntakeService {
             },
           },
           case: true,
-          parties: true,
-          violations: true,
+          parties: {
+            select: {
+              id: true,
+              employee: {
+                select: {
+                  id: true,
+                  company: {
+                    select: {
+                      id: true,
+                      name: true,
+                      abbreviation: true,
+                    },
+                  },
+                  person: {
+                    select: {
+                      first_name: true,
+                      middle_name: true,
+                      last_name: true,
+                    },
+                  },
+                  employee_id: true,
+                  department: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  position: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  division: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  vessel: true,
+                  user_location: {
+                    select: {
+                      id: true,
+                      location_name: true,
+                    },
+                  },
+                  salary_grade: {
+                    select: {
+                      id: true,
+                      grade: true,
+                      rate: true,
+                    },
+                  },
+                },
+              },
+              role: true,
+            },
+          },
+          // violations: true,
           attachments: true,
-          offenses: true,
+          offenses: {
+            select: {
+              id: true,
+              offense: {
+                select: {
+                  id: true,
+                  type_of_offense: true,
+                  description: true,
+                },
+              },
+            },
+          },
         },
         skip,
         take: perPage,
@@ -337,7 +467,58 @@ export class CaseIntakeService {
         include: {
           createdBy: {
             select: {
-              employee: true,
+              employee: {
+                select: {
+                  id: true,
+                  company: {
+                    select: {
+                      id: true,
+                      name: true,
+                      abbreviation: true,
+                    },
+                  },
+                  person: {
+                    select: {
+                      first_name: true,
+                      middle_name: true,
+                      last_name: true,
+                    },
+                  },
+                  employee_id: true,
+                  department: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  position: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  division: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  vessel: true,
+                  user_location: {
+                    select: {
+                      id: true,
+                      location_name: true,
+                    },
+                  },
+                  salary_grade: {
+                    select: {
+                      id: true,
+                      grade: true,
+                      rate: true,
+                    },
+                  },
+                },
+              },
               person: {
                 select: {
                   first_name: true,
@@ -348,10 +529,78 @@ export class CaseIntakeService {
             },
           },
           case: true,
-          parties: true,
-          violations: true,
+          parties: {
+            select: {
+              id: true,
+              employee: {
+                select: {
+                  id: true,
+                  company: {
+                    select: {
+                      id: true,
+                      name: true,
+                      abbreviation: true,
+                    },
+                  },
+                  person: {
+                    select: {
+                      first_name: true,
+                      middle_name: true,
+                      last_name: true,
+                    },
+                  },
+                  employee_id: true,
+                  department: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  position: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  division: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                  vessel: true,
+                  user_location: {
+                    select: {
+                      id: true,
+                      location_name: true,
+                    },
+                  },
+                  salary_grade: {
+                    select: {
+                      id: true,
+                      grade: true,
+                      rate: true,
+                    },
+                  },
+                },
+              },
+              role: true,
+            },
+          },
+          // violations: true,
           attachments: true,
-          offenses: true,
+          // offenses: {
+          //   select: {
+          //     id: true,
+          //     offense: {
+          //       select: {
+          //         id: true,
+          //         type_of_offense: true,
+          //         description: true,
+          //       },
+          //     },
+          //   },
+          // },
         },
         skip,
         take: perPage,
