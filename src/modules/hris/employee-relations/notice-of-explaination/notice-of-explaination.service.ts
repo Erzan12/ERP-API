@@ -63,9 +63,7 @@ export class NoticeOfExplainationService {
     return requestUser;
   }
 
-  private async generate(
-    db?: Prisma.TransactionClient,
-  ) {
+  private async generate(db?: Prisma.TransactionClient) {
     const year = new Date().getFullYear();
 
     const controlNumber = await this.controlNumberService.getNextNumber(
@@ -216,11 +214,7 @@ export class NoticeOfExplainationService {
     });
   }
 
-  async updateNte(
-    nteId: string,
-    user: RequestUser,
-    dto: UpdateNteDto,
-  ) {
+  async updateNte(nteId: string, user: RequestUser, dto: UpdateNteDto) {
     await this.assertHrAccess(user.id);
 
     const existingNte = await this.prisma.hrErCaseNte.findUnique({
@@ -232,7 +226,6 @@ export class NoticeOfExplainationService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-
       /**
        * Use the existing party_id when party_id is not
        * provided in the update DTO.
@@ -253,18 +246,14 @@ export class NoticeOfExplainationService {
         dto.disciplinary_case_id &&
         party.case_id !== dto.disciplinary_case_id
       ) {
-        throw new BadRequestException(
-          'Party does not belong to this case.',
-        );
+        throw new BadRequestException('Party does not belong to this case.');
       }
 
       /**
        * Only respondents can have an NTE.
        */
       if (party.role !== HrErCasePartyRole.respondent) {
-        throw new BadRequestException(
-          'Only respondents can be issued an NTE.',
-        );
+        throw new BadRequestException('Only respondents can be issued an NTE.');
       }
 
       /**
@@ -296,10 +285,16 @@ export class NoticeOfExplainationService {
           'An NTE has already been issued for this respondent.',
         );
       }
-      
-      if (existing?.status === HrErApprovalStatus.verified || HrErApprovalStatus.approved || HrErApprovalStatus.rejected) {
-        throw new BadRequestException('NTE cannot be updated anymore it is either already verified, approved or rejected already');
-      } 
+
+      if (
+        existing?.status === HrErApprovalStatus.verified ||
+        HrErApprovalStatus.approved ||
+        HrErApprovalStatus.rejected
+      ) {
+        throw new BadRequestException(
+          'NTE cannot be updated anymore it is either already verified, approved or rejected already',
+        );
+      }
 
       /**
        * =========================================================
@@ -364,28 +359,24 @@ export class NoticeOfExplainationService {
         /**
          * Get the remaining approvals.
          */
-        const existingApprovals =
-          await tx.hrErCaseApproval.findMany({
-            where: {
-              nte_id: existingNte.id,
-            },
-            select: {
-              reviewer_id: true,
-            },
-          });
+        const existingApprovals = await tx.hrErCaseApproval.findMany({
+          where: {
+            nte_id: existingNte.id,
+          },
+          select: {
+            reviewer_id: true,
+          },
+        });
 
         const existingReviewerIds = new Set(
-          existingApprovals.map(
-            (approval) => approval.reviewer_id,
-          ),
+          existingApprovals.map((approval) => approval.reviewer_id),
         );
 
         /**
          * Find reviewers that were newly added.
          */
         const newReviewerIds = dto.reviewer_ids.filter(
-          (reviewerId) =>
-            !existingReviewerIds.has(reviewerId),
+          (reviewerId) => !existingReviewerIds.has(reviewerId),
         );
 
         /**
@@ -397,8 +388,7 @@ export class NoticeOfExplainationService {
               nte_id: existingNte.id,
               step_type: HrErApprovalStepType.nte_review,
               reviewer_id: reviewerId,
-              sequence:
-                dto.reviewer_ids!.indexOf(reviewerId),
+              sequence: dto.reviewer_ids!.indexOf(reviewerId),
               created_by: user.id,
             })),
           });
@@ -416,10 +406,7 @@ export class NoticeOfExplainationService {
          * C -> sequence 1
          * B -> sequence 2
          */
-        for (const [
-          index,
-          reviewerId,
-        ] of dto.reviewer_ids.entries()) {
+        for (const [index, reviewerId] of dto.reviewer_ids.entries()) {
           await tx.hrErCaseApproval.updateMany({
             where: {
               nte_id: existingNte.id,
@@ -449,9 +436,7 @@ export class NoticeOfExplainationService {
             ? new Date(dto.due_date)
             : existingNte.due_date,
 
-          service_channel:
-            dto.service_channel ??
-            existingNte.service_channel,
+          service_channel: dto.service_channel ?? existingNte.service_channel,
 
           // reference_number:
           //   dto.reference_number ??

@@ -177,14 +177,13 @@ export class ErCaseAttachmentService {
       file: Express.Multer.File;
       transaction_type: string;
       nte_id?: string;
-      document_types?: string;
+      // document_types?: string;
       user_id?: string;
     },
     tx?: Prisma.TransactionClient,
   ) {
     const prisma = tx || this.prisma;
-    const { file, transaction_type, nte_id, document_types, user_id } =
-      params;
+    const { file, transaction_type, nte_id, user_id } = params;
 
     // Guard: make sure a file was provided
     if (!file) {
@@ -297,9 +296,7 @@ export class ErCaseAttachmentService {
     });
 
     if (!existingNte) {
-      throw new NotFoundException(
-        'NTE does not exists.',
-      );
+      throw new NotFoundException('NTE does not exists.');
     }
 
     const attachment = await this.attachFilesForNTE({
@@ -312,7 +309,7 @@ export class ErCaseAttachmentService {
     return {
       status: 'success',
       message: 'Attachments for this NTE uploaded.',
-      attachment
-    }
+      attachment,
+    };
   }
 }
