@@ -90,8 +90,8 @@ export class ErCaseAttachmentController {
   @Put('nte/:nteId/uploads')
   @UseInterceptors(
     FileInterceptor('file', {
-    storage: memoryStorage(),
-  }),
+      storage: memoryStorage(),
+    }),
   )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
