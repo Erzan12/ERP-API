@@ -183,17 +183,17 @@ export class CreateCaseDto {
   @ApiProperty({
     example: 'e5f6a7b8-c9d0-1234-ef56-789012345678',
     description:
-      'If converting a Case Intake/Report into this Disciplinary Case, its UUID',
+      'If converting a Case Intake/Report into this Disciplinary Case, its UUID.',
     required: false,
   })
   intake_id?: string; // when converting
 
-  @IsUUID()
-  @IsOptional()
-  @ApiProperty({
-    example: 'Company UUID',
-  })
-  company_id?: string;
+  // @IsUUID()
+  // @IsOptional()
+  // @ApiProperty({
+  //   example: 'Company UUID',
+  // })
+  // company_id?: string;
 
   @IsUUID()
   @IsNotEmpty()
@@ -284,12 +284,12 @@ export class CreateCaseDto {
 }
 
 export class UpdateCaseDto {
-  @IsUUID()
-  @IsOptional()
-  @ApiPropertyOptional({
-    example: 'Company UUID',
-  })
-  company_id?: string;
+  // @IsUUID()
+  // @IsOptional()
+  // @ApiPropertyOptional({
+  //   example: 'Company UUID',
+  // })
+  // company_id?: string;
 
   @IsString()
   @IsOptional()

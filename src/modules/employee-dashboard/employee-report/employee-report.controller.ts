@@ -75,4 +75,28 @@ export class EmployeeReportController {
       user,
     );
   }
+
+  @Put('employee-reports/:employeeReportId/submit')
+  @ApiOperation({ summary: 'Submit Employee Report' })
+  submitEmployeeReport(
+    @Param('employeeReportId', new ParseUUIDPipe()) employeeReportId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.employeeReportService.submitEmployeeReport(
+      employeeReportId,
+      user,
+    );
+  }
+
+  @Put('employee-reports/:employeeReportId/cancel')
+  @ApiOperation({ summary: 'Cancel Employee Report' })
+  cancelEmployeeReport(
+    @Param('employeeReportId', new ParseUUIDPipe()) employeeReportId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.employeeReportService.cancelEmployeeReport(
+      employeeReportId,
+      user,
+    );
+  }
 }

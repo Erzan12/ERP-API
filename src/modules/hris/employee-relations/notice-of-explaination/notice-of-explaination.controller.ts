@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   ParseUUIDPipe,
   Post,
@@ -9,8 +10,9 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { NoticeOfExplainationService } from './notice-of-explaination.service';
 import {
-  IssueNteDto,
+  CreateNteDto,
   ReviewNteApprovalDto,
+  UpdateNteDto,
 } from './dto/notice-of-explaination.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
@@ -22,12 +24,57 @@ export class NoticeOfExplainationController {
     private readonly noticeOfExplainationService: NoticeOfExplainationService,
   ) {}
 
+  @Get('employee-relations/nte/:nteId')
+  @ApiOperation({
+    summary: 'Get single NTE',
+  })
+  getNteList(
+    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.noticeOfExplainationService.getNte(nteId, user);
+  }
+
   @Post('employee-relations/nte/parties')
+  @ApiOperation({
+    summary: 'Create an NTE',
+  })
+  createNte(@Body() dto: CreateNteDto, @SessionUser() user: RequestUser) {
+    return this.noticeOfExplainationService.createNte(dto, user);
+  }
+
+  @Put('employee-relations/nte/:nteId')
+  @ApiOperation({
+    summary: 'Update NTE Details',
+  })
+  updateNte(
+    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @SessionUser() user: RequestUser,
+    @Body() dto: UpdateNteDto,
+  ) {
+    return this.noticeOfExplainationService.updateNte(nteId, user, dto);
+  }
+
+  @Put('employee-relations/nte/parties/:nteId/submit-nte')
+  @ApiOperation({
+    summary: 'Submit NTE',
+  })
+  submitNte(
+    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.noticeOfExplainationService.submitNte(nteId, user);
+  }
+
+  @Put('employee-relations/nte/parties/:partyId/issue-nte')
   @ApiOperation({
     summary: 'Issue an NTE to a respondent and assign reviewers',
   })
-  IssueNte(@Body() dto: IssueNteDto, @SessionUser() user: RequestUser) {
-    return this.noticeOfExplainationService.issueNte(dto, user);
+  issueNte(
+    @Param('partyId', new ParseUUIDPipe()) partyId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.noticeOfExplainationService.issueNte(partyId, user);
   }
 
   @Put('employee-relations/nte/:nteId/approvals/:approvalId')

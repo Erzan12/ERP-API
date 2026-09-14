@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -430,7 +431,7 @@ export class EmployeeReportService {
         incident_location_type: location.type,
         incident_date: new Date(dto.incident_date),
         incident_narrative: dto.incident_narrative,
-        status: HrErIntakeStatus.pending_review,
+        status: HrErIntakeStatus.draft,
         subject: dto.subject,
         created_by: user.id,
 
@@ -476,6 +477,15 @@ export class EmployeeReportService {
       throw new NotFoundException('Employee Report does not exist');
     }
 
+    if (
+      existingEmployeeReport.status === HrErIntakeStatus.cancelled ||
+      existingEmployeeReport.status === HrErIntakeStatus.processed
+    ) {
+      throw new BadRequestException(
+        'Updating Employee Report is not allowed if status is now proccessed.',
+      );
+    }
+
     const updateEmployeeReport = await this.prisma.hrErCaseIntake.update({
       where: { id: employeeReportId },
       data: {
@@ -516,6 +526,74 @@ export class EmployeeReportService {
       status: 'success',
       message: 'Employee Report updated successfully',
       updateEmployeeReport,
+    };
+  }
+
+  async submitEmployeeReport(employeeReportId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const existingEmployeeReport = await this.prisma.hrErCaseIntake.findUnique({
+      where: { id: employeeReportId },
+    });
+
+    if (
+      !existingEmployeeReport ||
+      existingEmployeeReport.type !== HrErIntakeType.employee
+    ) {
+      throw new NotFoundException('Employee Report does not exist');
+    }
+
+    if (existingEmployeeReport.status === HrErIntakeStatus.submitted) {
+      throw new ConflictException('Incident Report already submitted');
+    }
+
+    const submitEmployeeReport = await this.prisma.hrErCaseIntake.update({
+      where: { id: employeeReportId },
+      data: {
+        status: HrErIntakeStatus.submitted,
+        updated_by: user.id,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Employee Report successfully submitted.',
+      submitEmployeeReport,
+    };
+  }
+
+  async cancelEmployeeReport(employeeReportId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const existingEmployeeReport = await this.prisma.hrErCaseIntake.findUnique({
+      where: { id: employeeReportId },
+    });
+
+    if (!existingEmployeeReport) {
+      throw new NotFoundException('Employee Report does not exist.');
+    }
+
+    if (
+      // existingEmployeeReport.status === HrErIntakeStatus.submitted ||
+      existingEmployeeReport.status === HrErIntakeStatus.processed
+    ) {
+      throw new BadRequestException(
+        'Employee Report is already submitted or is now proccessed and cannot be cancelled anymore.',
+      );
+    }
+
+    const cancelEmployeeReport = await this.prisma.hrErCaseIntake.update({
+      where: { id: employeeReportId },
+      data: {
+        status: HrErIntakeStatus.cancelled,
+        updated_by: user.id,
+      },
+    });
+
+    return {
+      status: 'success',
+      message: 'Employee Report cancelled',
+      cancelEmployeeReport,
     };
   }
 

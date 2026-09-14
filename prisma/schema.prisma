@@ -354,6 +354,7 @@ enum HrErApprovalStatus {
   approved
   revise
   rejected
+  verified
 }
 
 enum HrErActionType {
@@ -613,11 +614,14 @@ model User {
   HrErCasePartyCreatedBy                   HrErCaseParty[]                    @relation("HrErCasePartyCreatedBy")
   HrErCasePartyUpdatedBy                   HrErCaseParty[]                    @relation("HrErCasePartyUpdatedBy")
   HrErCasePartyActionCreatedBy             HrErCasePartyAction[]              @relation("HrErCasePartyActionCreatedBy")
+  HrErCasePartyActionUpdatedBy             HrErCasePartyAction[]              @relation("HrErCasePartyActionUpdatedBy")
+  HrErCaseApprovalCreatedBy                HrErCaseApproval[]                 @relation("HrErCaseApprovalCreatedBy")
+  HrErCaseApprovalUpdatedBy                HrErCaseApproval[]                 @relation("HrErCaseApprovalUpdatedBy")
   HrErCaseApprovalReviewer                 HrErCaseApproval[]                 @relation("HrErCaseApprovalReviewer")
   HrErCaseNteCreatedBy                     HrErCaseNte[]                      @relation("HrErCaseNteCreatedBy")
   HrErCaseNteUpdatedBy                     HrErCaseNte[]                      @relation("HrErCaseNteUpdatedBy")
   HrErCaseDecisionCreatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionCreatedBy")
-  HrErCaseDecisionUpdatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionUpdatedBy")
+  HrErCaseDecisionUpdatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionUpdatedBy")             
   HrErCaseAttachmentUploadedBy             HrErCaseAttachment[]               @relation("HrErCaseAttachmentUploadedBy")
   HrErCaseActivityLogActor                 HrErCaseActivityLog[]              @relation("HrErCaseActivityLogActor")
 
@@ -773,7 +777,7 @@ model Company {
 
   hr_er_case HrErCase[]
 
-  sequence_counter SequenceCounter[]
+  //sequence_counter SequenceCounter[]
 
   @@index([name])
   @@index([abbreviation])
@@ -1938,7 +1942,7 @@ model HrErCasePartyOffense {
 
 model HrErCasePartyAction {
   id                String         @id @default(uuid()) @db.Uuid
-  party_id          String         @db.Uuid
+  party_id          String         @db.Uuid @unique
   action_type       HrErActionType
   effectivity_start DateTime
   effectivity_end   DateTime
@@ -1946,9 +1950,12 @@ model HrErCasePartyAction {
 
   created_by String?  @db.Uuid
   created_at DateTime @default(now())
+  updated_by String?  @db.Uuid
+  updated_at DateTime @updatedAt
 
   party     HrErCaseParty @relation(fields: [party_id], references: [id], onDelete: Cascade)
   createdBy User?         @relation("HrErCasePartyActionCreatedBy", fields: [created_by], references: [id])
+  updatedBy User?         @relation("HrErCasePartyActionUpdatedBy", fields: [updated_by], references: [id])
 
   @@index([party_id])
 }
@@ -1961,7 +1968,7 @@ model HrErCaseNte {
   issued_at        DateTime?
   due_date         DateTime?
   form_url         String?
-  status           HrErApprovalStatus     @default(pending)
+  status           HrErApprovalStatus     @default(revise)
   service_channel  HrErNteServiceChannel?
   reference_number String?
 
@@ -1975,6 +1982,7 @@ model HrErCaseNte {
 
   party     HrErCaseParty      @relation(fields: [party_id], references: [id], onDelete: Cascade)
   approvals HrErCaseApproval[]
+  attachment HrErCaseAttachment?
 }
 
 // ---------- WRITTEN EXPLANATION ----------
@@ -2047,13 +2055,18 @@ model HrErCaseApproval {
   nte_id      String?              @db.Uuid
   decision_id String?              @db.Uuid
   reviewer_id String               @db.Uuid
-  status      HrErApprovalStatus   @default(pending)
+  status      HrErApprovalStatus   @default(revise)
   remarks     String?              @db.Text
   reviewed_at DateTime?
   sequence    Int                  @default(0)
 
+  created_by String?  @db.Uuid
+  updated_by String?  @db.Uuid
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  createdBy User? @relation("HrErCaseApprovalCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrErCaseApprovalUpdatedBy", fields: [updated_by], references: [id])
 
   nte      HrErCaseNte?      @relation(fields: [nte_id], references: [id], onDelete: Cascade)
   decision HrErCaseDecision? @relation(fields: [decision_id], references: [id], onDelete: Cascade)
@@ -2072,6 +2085,7 @@ model HrErCaseAttachment {
 
   intake_id String? @db.Uuid
   case_id   String? @db.Uuid
+  nte_id    String? @unique @db.Uuid
 
   file_name String
   file_url  String
@@ -2084,6 +2098,7 @@ model HrErCaseAttachment {
 
   intake     HrErCaseIntake? @relation(fields: [intake_id], references: [id], onDelete: Cascade)
   case       HrErCase?       @relation(fields: [case_id], references: [id], onDelete: Cascade)
+  nte        HrErCaseNte?    @relation(fields: [nte_id], references: [id], onDelete: Cascade)
   uploadedBy User?           @relation("HrErCaseAttachmentUploadedBy", fields: [uploaded_by], references: [id])
 
   @@index([intake_id])
@@ -2129,15 +2144,16 @@ model HrErCaseStageLog {
 ////////////////////////////////////////
 model SequenceCounter {
   id           String @id @default(uuid()) @db.Uuid
-  company_id   String @db.Uuid
+  //company_id   String @db.Uuid
   sequence_key String
   year         Int
   last_number  Int    @default(0)
 
-  company Company @relation(fields: [company_id], references: [id])
+  //company Company @relation(fields: [company_id], references: [id])
 
-  @@unique([company_id, sequence_key, year])
-  @@index([company_id])
+  //@@unique([company_id, sequence_key, year])
+  @@unique([sequence_key, year])
+  //@@index([company_id])
 }
 
 ////////////////////////////////////////
