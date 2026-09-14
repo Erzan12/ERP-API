@@ -108,7 +108,7 @@ export class NoticeOfExplainationService {
             },
           },
         },
-        attachments: true,
+        attachment: true,
       },
     });
 
