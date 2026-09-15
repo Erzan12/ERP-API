@@ -12,7 +12,7 @@ export class WrittenExplainationController {
     private readonly writtenExplanationService: WrittenExplainationService,
   ) {}
 
-  @Get('employee-realtions/written-explanation/:explanationId')
+  @Get('employee-relations/written-explanation/:explanationId')
   @ApiOperation({
     summary: "Get a Written Explanation",
   })

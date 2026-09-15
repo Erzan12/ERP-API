@@ -68,23 +68,6 @@ export class WrittenExplainationService {
     const writtenExplanation = await this.prisma.hrErCaseExplanation.findUnique({
       where: { id: explanationId },
       include: {
-        party: {
-          include: {
-            employee: {
-              select: {
-                id: true,
-                employee_id: true,
-                person: {
-                  select: {
-                    first_name: true,
-                    middle_name: true,
-                    last_name: true,
-                  },
-                },
-              },
-            },
-          },
-        },
         attachment: true,
       },
     });
