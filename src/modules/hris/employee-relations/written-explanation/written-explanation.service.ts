@@ -99,8 +99,9 @@ export class WrittenExplainationService {
 
       if (
         dto.channel !== HrErExplanationChannel.did_not_proceed &&
-        !dto.response_text &&
-        !dto.file_url
+        !dto.response_text 
+        // &&
+        // !dto.file_url
       ) {
         throw new BadRequestException(
           'Provide response_text or file_url, or select "did not proceed".',
@@ -114,7 +115,7 @@ export class WrittenExplainationService {
           status: HrErExplanationStatus.received,
           channel: dto.channel,
           response_text: dto.response_text,
-          file_url: dto.file_url,
+          file_url: "string",
           received_at: new Date(),
           created_by: user.id,
         },
@@ -122,7 +123,7 @@ export class WrittenExplainationService {
           status: HrErExplanationStatus.received,
           channel: dto.channel,
           response_text: dto.response_text,
-          file_url: dto.file_url,
+          file_url: "string",
           received_at: new Date(),
           updated_by: user.id,
         },

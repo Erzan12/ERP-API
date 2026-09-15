@@ -117,4 +117,35 @@ export class ErCaseAttachmentController {
   ) {
     return this.erCaseAttachmentService.uploadNteDocs(nteId, user, file);
   }
+
+  @Put('written-explaination/:explanationId/uploads')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          nullable: true,
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Upload Attachment for Written Explaination',
+  })
+  @ApiPostResponse('Attachment uploaded successfully')
+  uploadExplainationDoc(
+    @Param('explanationId', new ParseUUIDPipe()) explanationId: string,
+    @SessionUser() user: RequestUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.erCaseAttachmentService.uploadExplanationDocs(explanationId, user, file);
+  }
 }

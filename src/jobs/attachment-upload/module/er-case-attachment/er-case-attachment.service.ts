@@ -224,6 +224,54 @@ export class ErCaseAttachmentService {
     return prisma.hrErCaseAttachment.createMany({ data });
   }
 
+  private async attachFilesForExplanation(
+    params: {
+      file: Express.Multer.File;
+      transaction_type: string;
+      explanation_id: string;
+      user_id?: string;
+    },
+    tx?: Prisma.TransactionClient,
+  ) {
+    const prisma = tx || this.prisma;
+    const { file, transaction_type, explanation_id, user_id } = params;
+
+    // Guard: make sure a file was provided
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+
+    // Guard: catch missing buffer early
+    if (!file.buffer) {
+      throw new BadRequestException(
+        `File "${file.originalname}" has no buffer. Ensure multer is using memoryStorage.`,
+      );
+    }
+
+    const bucket = MINIO_BUCKETS.DOCUMENTS
+
+    const extension = file.originalname.split('.').pop()?.toLowerCase() || 'bin';
+    const fileName = `written-explaination-documents/${randomUUID()}.${extension}`;
+
+    await minioClient.putObject(bucket, fileName, file.buffer, file.size, {
+      'Content-Type': file.mimetype,
+    });
+
+    const fileUrl = buildFileUrl(bucket, fileName);
+
+    const data = {
+      transaction_type,
+      explanation_id,
+      file_name: file.originalname,
+      file_url: fileUrl,
+      file_type: file.mimetype,
+      file_size: file.size,
+      uploaded_by: user_id,
+    };
+
+    return prisma.hrErCaseAttachment.create({ data });
+  }
+
   async uploadErCaseDocs(
     disciplinaryCaseId: string,
     user: RequestUser,
@@ -309,6 +357,35 @@ export class ErCaseAttachmentService {
     return {
       status: 'success',
       message: 'Attachments for this NTE uploaded.',
+      attachment,
+    };
+  }
+
+  async uploadExplanationDocs(
+    explanationId: string,
+    user: RequestUser,
+    file: Express.Multer.File,
+  ) { 
+    await this.assertHrAccess(user.id);
+
+    const existingExplanation = await this.prisma.hrErCaseExplanation.findUnique({
+      where: { id: explanationId },
+    });
+
+    if (!existingExplanation) {
+      throw new NotFoundException('Written Explaination does not exists.');
+    }
+
+    const attachment = await this.attachFilesForExplanation({
+      file,
+      transaction_type: TRANSACTION_TYPE.WRITTEN_EXPLANATION_DOC,
+      explanation_id: existingExplanation.id,
+      user_id: user.id,
+    });
+
+    return {
+      status: 'success',
+      message: 'Attachments for this Written Explanation uploaded.',
       attachment,
     };
   }
