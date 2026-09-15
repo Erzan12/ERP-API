@@ -8794,7 +8794,7 @@
         ]
       }
     },
-    "/v2/hris/employee-realtions/written-explanation/{explanationId}": {
+    "/v2/hris/employee-relations/written-explanation/{explanationId}": {
       "get": {
         "operationId": "WrittenExplainationController_getWrittenExplanation_v2",
         "parameters": [
