@@ -8794,6 +8794,30 @@
         ]
       }
     },
+    "/v2/hris/employee-realtions/written-explanation/{explanationId}": {
+      "get": {
+        "operationId": "WrittenExplainationController_getWrittenExplanation_v2",
+        "parameters": [
+          {
+            "name": "explanationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get a Written Explanation",
+        "tags": [
+          "Human Resources - Employee Relations(Written Explationation)"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/written-explanation/parties": {
       "post": {
         "operationId": "WrittenExplainationController_submitExplanation_v2",

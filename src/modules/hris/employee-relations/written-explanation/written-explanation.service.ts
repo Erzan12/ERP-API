@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { SubmitExplainationDto } from './dto/submit-explanation.dto';
@@ -56,6 +57,47 @@ export class WrittenExplainationService {
     }
 
     return requestUser;
+  }
+
+  async getWrittenExplanation(
+    explanationId: string,
+    user: RequestUser,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const writtenExplanation = await this.prisma.hrErCaseExplanation.findUnique({
+      where: { id: explanationId },
+      include: {
+        party: {
+          include: {
+            employee: {
+              select: {
+                id: true,
+                employee_id: true,
+                person: {
+                  select: {
+                    first_name: true,
+                    middle_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        attachment: true,
+      },
+    });
+
+    if (!writtenExplanation) {
+      throw new NotFoundException('No available Written Explanation found.');
+    }
+
+    return {
+      status: 'success',
+      message: 'Here is the Written Explanation',
+      writtenExplanation,
+    };
   }
 
   async submitWrittenExplanation(
