@@ -288,8 +288,8 @@ export class NoticeOfExplainationService {
 
       if (
         existing?.status === HrErApprovalStatus.verified ||
-        HrErApprovalStatus.approved ||
-        HrErApprovalStatus.rejected
+        existing?.status === HrErApprovalStatus.approved ||
+        existing?.status === HrErApprovalStatus.rejected
       ) {
         throw new BadRequestException(
           'NTE cannot be updated anymore it is either already verified, approved or rejected already',
