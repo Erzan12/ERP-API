@@ -125,7 +125,7 @@ export class DisciplinaryCaseController {
   }
 
   @Put(
-    'employee-relations/disciplinary-cases/:disciplinaryCaseId/advance-stage',
+    'employee-relations/disciplinary-cases/:caseId/advance-stage',
   )
   @ApiOperation({
     summary:
@@ -133,7 +133,7 @@ export class DisciplinaryCaseController {
   })
   @ApiOkResponse({ type: AdvanceStageResponseDto })
   advanceStage(
-    @Param('caseId', ParseUUIDPipe) caseId: string,
+    @Param('caseId', new ParseUUIDPipe()) caseId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.disciplinaryCaseService.advanceAllEligible(caseId, user);
