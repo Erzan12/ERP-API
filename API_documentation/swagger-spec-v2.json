@@ -8369,7 +8369,7 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/disciplinary-cases/{disciplinaryCaseId}/advance-stage": {
+    "/v2/hris/employee-relations/disciplinary-cases/{caseId}/advance-stage": {
       "put": {
         "operationId": "DisciplinaryCaseController_advanceStage_v2",
         "parameters": [
