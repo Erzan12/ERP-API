@@ -109,11 +109,23 @@ export class AdministrativeHearingService {
         data: {
           party_id: dto.party_id,
           scheduled_at: new Date(dto.scheduled_at),
+          // scheduled_start_at: new Date(dto.scheduled_start_at),
+          // scheduled_end_at: new Date(dto.scheduled_end_at),
           channel: dto.channel,
           status: HrErHearingStatus.scheduled,
           remarks: dto.remarks,
           created_by: user.id,
+          committee: {
+            create:  dto.committee_ids.map((employeeId) => ({
+              employee: { connect: { id: employeeId } },
+              notified_at: new Date(),
+              createdBy: { connect: { id: user.id } },
+            }))
+          }
         },
+        include: {
+          committee: true,
+        }
       });
 
       await tx.hrErCaseActivityLog.create({
@@ -127,7 +139,7 @@ export class AdministrativeHearingService {
 
       return {
         status: 'success',
-        message: 'Hearing scheduled',
+        message: 'Hearing scheduled with Hearing committee added',
         hearing,
       };
     });
