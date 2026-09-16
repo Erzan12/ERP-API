@@ -5,4 +5,5 @@ export const TRANSACTION_TYPE = {
   IR_ER_DOC: 'IR or ER Document',
   NTE_DOC: 'NTE Document',
   WRITTEN_EXPLANATION_DOC: 'Written Explanation Document',
+  ADMIN_HEARING: 'Administrative Hearing',
 };
