@@ -59,18 +59,17 @@ export class WrittenExplainationService {
     return requestUser;
   }
 
-  async getWrittenExplanation(
-    explanationId: string,
-    user: RequestUser,
-  ) {
+  async getWrittenExplanation(explanationId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
-    const writtenExplanation = await this.prisma.hrErCaseExplanation.findUnique({
-      where: { id: explanationId },
-      include: {
-        attachment: true,
+    const writtenExplanation = await this.prisma.hrErCaseExplanation.findUnique(
+      {
+        where: { id: explanationId },
+        include: {
+          attachment: true,
+        },
       },
-    });
+    );
 
     if (!writtenExplanation) {
       throw new NotFoundException('No available Written Explanation found.');
@@ -124,7 +123,7 @@ export class WrittenExplainationService {
 
       if (
         dto.channel !== HrErExplanationChannel.did_not_proceed &&
-        !dto.response_text 
+        !dto.response_text
         // &&
         // !dto.file_url
       ) {
@@ -140,7 +139,7 @@ export class WrittenExplainationService {
           status: HrErExplanationStatus.received,
           channel: dto.channel,
           response_text: dto.response_text,
-          file_url: "string",
+          file_url: 'string',
           received_at: new Date(),
           created_by: user.id,
         },
@@ -148,7 +147,7 @@ export class WrittenExplainationService {
           status: HrErExplanationStatus.received,
           channel: dto.channel,
           response_text: dto.response_text,
-          file_url: "string",
+          file_url: 'string',
           received_at: new Date(),
           updated_by: user.id,
         },

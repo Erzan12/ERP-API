@@ -248,9 +248,10 @@ export class ErCaseAttachmentService {
       );
     }
 
-    const bucket = MINIO_BUCKETS.DOCUMENTS
+    const bucket = MINIO_BUCKETS.DOCUMENTS;
 
-    const extension = file.originalname.split('.').pop()?.toLowerCase() || 'bin';
+    const extension =
+      file.originalname.split('.').pop()?.toLowerCase() || 'bin';
     const fileName = `written-explaination-documents/${randomUUID()}.${extension}`;
 
     await minioClient.putObject(bucket, fileName, file.buffer, file.size, {
@@ -365,12 +366,13 @@ export class ErCaseAttachmentService {
     explanationId: string,
     user: RequestUser,
     file: Express.Multer.File,
-  ) { 
+  ) {
     await this.assertHrAccess(user.id);
 
-    const existingExplanation = await this.prisma.hrErCaseExplanation.findUnique({
-      where: { id: explanationId },
-    });
+    const existingExplanation =
+      await this.prisma.hrErCaseExplanation.findUnique({
+        where: { id: explanationId },
+      });
 
     if (!existingExplanation) {
       throw new NotFoundException('Written Explaination does not exists.');

@@ -8936,7 +8936,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RescheduleHearingDto"
+                "$ref": "#/components/schemas/ConductHearingDto"
               }
             }
           }
@@ -13752,6 +13752,26 @@
         },
         "required": [
           "scheduled_at",
+          "channel"
+        ]
+      },
+      "ConductHearingDto": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "online",
+              "viber",
+              "postal_mail",
+              "call",
+              "text"
+            ],
+            "description": "Channel the hearing was actually conducted through"
+          }
+        },
+        "required": [
           "channel"
         ]
       },

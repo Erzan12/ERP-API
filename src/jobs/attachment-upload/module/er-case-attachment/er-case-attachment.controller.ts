@@ -146,6 +146,10 @@ export class ErCaseAttachmentController {
     @SessionUser() user: RequestUser,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.erCaseAttachmentService.uploadExplanationDocs(explanationId, user, file);
+    return this.erCaseAttachmentService.uploadExplanationDocs(
+      explanationId,
+      user,
+      file,
+    );
   }
 }

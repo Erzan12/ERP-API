@@ -124,9 +124,7 @@ export class DisciplinaryCaseController {
     );
   }
 
-  @Put(
-    'employee-relations/disciplinary-cases/:caseId/advance-stage',
-  )
+  @Put('employee-relations/disciplinary-cases/:caseId/advance-stage')
   @ApiOperation({
     summary:
       'Advance every eligible respondent to their next stage; ineligible ones are left behind.',
