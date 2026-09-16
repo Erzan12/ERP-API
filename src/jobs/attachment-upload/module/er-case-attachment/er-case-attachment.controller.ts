@@ -152,4 +152,35 @@ export class ErCaseAttachmentController {
       file,
     );
   }
+
+  @Put('hearing/:hearingId/uploads')
+  @UseInterceptors(
+    FilesInterceptor('files', 5, {
+      storage: memoryStorage(),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
+          nullable: true,
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Upload Attachments for Incident or Employee Report',
+  })
+  @ApiPostResponse('Attachment uploaded successfully')
+  uploadHearingDocs(
+    @Param('hearingId', new ParseUUIDPipe()) hearingId: string,
+    @SessionUser() user: RequestUser,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.erCaseAttachmentService.uploadHearingDocs(hearingId, user, files);
+  }
 }
