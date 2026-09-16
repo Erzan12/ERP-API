@@ -371,6 +371,14 @@ enum HrErDecisionType {
   rehabilitation
 }
 
+enum HrErRecommendedPenalty {
+  acquitted
+  written_reprimand
+  stern_warning
+  suspension
+  dismissal
+}
+
 enum HrErNteServiceChannel {
   nra_office
   personal
@@ -620,6 +628,14 @@ model User {
   HrErCaseApprovalReviewer                 HrErCaseApproval[]                 @relation("HrErCaseApprovalReviewer")
   HrErCaseNteCreatedBy                     HrErCaseNte[]                      @relation("HrErCaseNteCreatedBy")
   HrErCaseNteUpdatedBy                     HrErCaseNte[]                      @relation("HrErCaseNteUpdatedBy")
+  HrErCaseHearingCreatedBy                 HrErCaseHearing[]                  @relation("HrErCaseHearingCreatedBy")
+  HrErCaseHearingUpdatedBy                 HrErCaseHearing[]                  @relation("HrErCaseHearingUpdatedBy")
+  HrErCaseHearingCommitteeCreatedBy        HrErCaseHearingCommittee[]         @relation("HrErCaseHearingCommitteeCreatedBy")
+  HrErCaseHearingCommitteeUpdatedBy        HrErCaseHearingCommittee[]         @relation("HrErCaseHearingCommitteeUpdatedBy")
+  HrErCaseHearingDeliberationCreatedBy     HrErCaseHearingDeliberation[]      @relation("HrErCaseHearingDeliberationCreatedBy")
+  HrErCaseHearingDeliberationUpdatedBy     HrErCaseHearingDeliberation[]      @relation("HrErCaseHearingDeliberationUpdatedBy")
+  HrErCaseHearingAttendeeCreatedBy         HrErCaseHearingAttendee[]          @relation("HrErCaseHearingAttendeeCreatedBy")
+  HrErCaseHearingAttendeeUpdatedBy         HrErCaseHearingAttendee[]          @relation("HrErCaseHearingAttendeeUpdatedBy")
   HrErCaseDecisionCreatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionCreatedBy")
   HrErCaseDecisionUpdatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionUpdatedBy")             
   HrErCaseAttachmentUploadedBy             HrErCaseAttachment[]               @relation("HrErCaseAttachmentUploadedBy")
@@ -929,6 +945,7 @@ model Employee {
   // Employee Relations
   hr_er_case_intake_party HrErCaseIntakeParty[]
   hr_er_case_party        HrErCaseParty[]
+  hr_er_case_hearing_committee HrErCaseHearingCommittee[]
 
   // Additional details or Sms Push Notifs
   notification_preference EmployeeNotificationPreference?
@@ -2001,6 +2018,7 @@ model HrErCaseExplanation {
   updated_at DateTime @updatedAt
 
   party HrErCaseParty @relation(fields: [party_id], references: [id], onDelete: Cascade)
+  attachment HrErCaseAttachment?
 }
 
 // ---------- ADMINISTRATIVE HEARING ----------
@@ -2010,17 +2028,93 @@ model HrErCaseHearing {
   scheduled_at     DateTime?
   channel          HrErHearingChannel?
   status           HrErHearingStatus   @default(scheduled)
-  minutes_file_url String?
-  remarks          String?             @db.Text
+
+  scheduled_start_at   DateTime?
+  scheduled_end_at     DateTime?
+
+  // Minutes
+  minutes_file_url     String?
+  minutes_started_at   DateTime?
+  minutes_ended_at     DateTime?
+  respondent_statement String?
+  remarks              String?             @db.Text
 
   created_by String?  @db.Uuid
   updated_by String?  @db.Uuid
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  createdBy User? @relation("HrErCaseHearingCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrErCaseHearingUpdatedBy", fields: [updated_by], references: [id])
+
   party HrErCaseParty @relation(fields: [party_id], references: [id], onDelete: Cascade)
+  committee HrErCaseHearingCommittee[]
+  attendees HrErCaseHearingAttendee[]
+  attachment HrErCaseAttachment[]
 
   @@index([party_id])
+}
+
+model HrErCaseHearingCommittee {
+  id          String    @id @default(uuid()) @db.Uuid
+  hearing_id  String    @db.Uuid
+  employee_id String    @db.Uuid
+  notified_at DateTime? // set when the auto-notification fires
+
+  created_by  String?  @db.Uuid
+  updated_by  String?  @db.Uuid
+  created_at  DateTime @default(now())
+  updated_at DateTime  @updatedAt
+
+  createdBy User? @relation("HrErCaseHearingCommitteeCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrErCaseHearingCommitteeUpdatedBy", fields: [updated_by], references: [id])
+
+  hearing HrErCaseHearing @relation(fields: [hearing_id], references: [id], onDelete: Cascade)
+  employee Employee       @relation(fields: [employee_id], references: [id])
+
+  deliberation HrErCaseHearingDeliberation?
+
+  @@unique([hearing_id, employee_id])
+  @@index([hearing_id])
+}
+
+model HrErCaseHearingDeliberation {
+  id           String            @id @default(uuid()) @db.Uuid
+  committee_id String            @unique @db.Uuid
+  recommended_penalty HrErRecommendedPenalty
+  remarks      String?           @db.Text
+  submitted_at DateTime?
+
+  created_by  String?   @db.Uuid
+  updated_by  String?   @db.Uuid
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  createdBy   User?   @relation("HrErCaseHearingDeliberationCreatedBy", fields: [created_by], references: [id])
+  updatedBy   User?   @relation("HrErCaseHearingDeliberationUpdatedBy", fields: [updated_by], references: [id])
+
+  committee   HrErCaseHearingCommittee  @relation(fields: [committee_id], references: [id], onDelete: Cascade)
+}
+
+model HrErCaseHearingAttendee {
+  id         String       @id @default(uuid()) @db.Uuid
+  hearing_id String       @db.Uuid
+  name       String
+  position      String?
+  signature_url String?
+  signed_at     DateTime?
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  createdBy User?   @relation("HrErCaseHearingAttendeeCreatedBy", fields: [created_by], references: [id])
+  updatedBy User?   @relation("HrErCaseHearingAttendeeUpdatedBy", fields: [updated_by], references: [id])
+
+  hearing HrErCaseHearing @relation(fields: [hearing_id], references: [id], onDelete: Cascade)
+
+  @@index([hearing_id])
 }
 
 // ---------- NOTICE OF DECISION ----------
@@ -2086,6 +2180,8 @@ model HrErCaseAttachment {
   intake_id String? @db.Uuid
   case_id   String? @db.Uuid
   nte_id    String? @unique @db.Uuid
+  explanation_id String? @unique @db.Uuid
+  hearing_id     String? @db.Uuid
 
   file_name String
   file_url  String
@@ -2099,6 +2195,8 @@ model HrErCaseAttachment {
   intake     HrErCaseIntake? @relation(fields: [intake_id], references: [id], onDelete: Cascade)
   case       HrErCase?       @relation(fields: [case_id], references: [id], onDelete: Cascade)
   nte        HrErCaseNte?    @relation(fields: [nte_id], references: [id], onDelete: Cascade)
+  explanation HrErCaseExplanation? @relation(fields: [explanation_id], references: [id], onDelete: Cascade)
+  hearing     HrErCaseHearing? @relation(fields: [hearing_id], references: [id], onDelete: Cascade)
   uploadedBy User?           @relation("HrErCaseAttachmentUploadedBy", fields: [uploaded_by], references: [id])
 
   @@index([intake_id])
