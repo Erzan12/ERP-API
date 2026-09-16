@@ -116,16 +116,16 @@ export class AdministrativeHearingService {
           remarks: dto.remarks,
           created_by: user.id,
           committee: {
-            create:  dto.committee_ids.map((employeeId) => ({
+            create: dto.committee_ids.map((employeeId) => ({
               employee: { connect: { id: employeeId } },
               notified_at: new Date(),
               createdBy: { connect: { id: user.id } },
-            }))
-          }
+            })),
+          },
         },
         include: {
           committee: true,
-        }
+        },
       });
 
       await tx.hrErCaseActivityLog.create({
@@ -171,24 +171,26 @@ export class AdministrativeHearingService {
         );
       }
 
-      await tx.hrErCaseHearing.update({
+      const rescheduleHearing = await tx.hrErCaseHearing.update({
         where: { id: activeScheduled.id },
         data: {
+          scheduled_at: new Date(dto.scheduled_at),
+          channel: dto.channel,
           status: HrErHearingStatus.rescheduled,
           updated_by: user.id,
         },
       });
 
-      const hearing = await tx.hrErCaseHearing.create({
-        data: {
-          party_id: partyId,
-          scheduled_at: new Date(dto.scheduled_at),
-          channel: dto.channel,
-          status: HrErHearingStatus.rescheduled,
-          remarks: dto.remarks,
-          created_by: user.id,
-        },
-      });
+      // const hearing = await tx.hrErCaseHearing.create({
+      //   data: {
+      //     party_id: partyId,
+      //     scheduled_at: new Date(dto.scheduled_at),
+      //     channel: dto.channel,
+      //     status: HrErHearingStatus.rescheduled,
+      //     remarks: dto.remarks,
+      //     created_by: user.id,
+      //   },
+      // });
 
       await tx.hrErCaseActivityLog.create({
         data: {
@@ -202,7 +204,7 @@ export class AdministrativeHearingService {
       return {
         status: 'success',
         message: 'Hearing rescheduled',
-        hearing,
+        rescheduleHearing,
       };
     });
   }
@@ -226,7 +228,7 @@ export class AdministrativeHearingService {
       const activeScheduled = await tx.hrErCaseHearing.findFirst({
         where: {
           party_id: partyId,
-          status: HrErHearingStatus.scheduled,
+          status: { not: HrErHearingStatus.conducted },
         },
       });
 
@@ -236,8 +238,8 @@ export class AdministrativeHearingService {
             data: {
               status: HrErHearingStatus.conducted,
               channel: dto.channel,
-              minutes_file_url: dto.minutes_file_url,
-              remarks: dto.remarks ?? activeScheduled.remarks,
+              // minutes_file_url: dto.minutes_file_url,
+              // remarks: dto.remarks ?? activeScheduled.remarks,
               updated_by: user.id,
             },
           })
@@ -247,8 +249,8 @@ export class AdministrativeHearingService {
               scheduled_at: new Date(), // walk-in - no prior schedule
               channel: dto.channel,
               status: HrErHearingStatus.conducted,
-              minutes_file_url: dto.minutes_file_url,
-              remarks: dto.remarks,
+              // minutes_file_url: dto.minutes_file_url,
+              // remarks: dto.remarks,
               created_by: user.id,
             },
           });
@@ -264,9 +266,65 @@ export class AdministrativeHearingService {
 
       return {
         status: 'success',
-        message: 'Hearing marked as conducted',
+        message: 'Hearing marked as complete and is conducted',
         hearing,
       };
     });
   }
+
+  // async hearingAttendance(dto: AttendeeHearingDto, user: RequestUser) {
+  //   await this.assertHrAccess(user.id);
+
+  //   const existingHearing = await this.prisma.hrErCaseHearing.findUnique({
+  //     where: { id: dto.hearing_id }
+  //   });
+
+  //   if (!existingHearing) {
+  //     throw new NotFoundException('Hearing does not exists.');
+  //   }
+
+  //   const hearingAttendance = await this.prisma.hrErCaseHearingAttendee.create({
+  //     data: {
+  //       hearing_id: dto.hearing_id,
+  //       name: dto.name,
+  //       position: dto.position,
+  //       created_by: user.id,
+  //     },
+  //   });
+
+  //   return {
+  //     status: 'success',
+  //     message: 'Hearing Attendee added successfully',
+  //     hearingAttendance,
+  //   }
+  // }
+
+  // async hearingMinutes(hearingId: string, dto: MinutesHearingDto, user: RequestUser) {
+  //   await this.assertHrAccess(user.id);
+
+  //   const existingHearing = await this.prisma.hrErCaseHearing.findUnique({
+  //     where: { id: hearingId },
+  //   });
+
+  //   if (!existingHearing) {
+  //     throw new NotFoundException('Hearing does not exists.');
+  //   }
+
+  //   const hearingMinutes = await this.prisma.hrErCaseHearing.update({
+  //     where: { id: existingHearing.id },
+  //     data: {
+  //       minutes_started_at: new Date(dto.minutes_start_at),
+  //       minutes_ended_at: new Date(dto.minutes_end_at),
+  //       respondent_statement: dto.respondent_statement,
+  //       remarks: dto.remarks,
+  //       updated_by: user.id
+  //     },
+  //   });
+
+  //   return {
+  //     status: 'success',
+  //     message: 'Hearing minutes successfully added.',
+  //     hearingMinutes,
+  //   };
+  // }
 }

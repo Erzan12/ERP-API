@@ -32,14 +32,6 @@ export class ScheduleHearingDto {
   @ApiProperty({ example: '2026-09-0109:00:00.000Z' })
   scheduled_at: string;
 
-  // @IsDateString()
-  // @ApiProperty({ example: '2026-09-01T09:00:00.000Z'})
-  // scheduled_start_at: string;
-
-  // @IsDateString()
-  // @ApiProperty({ example: '2026-09-01T09:00:00.000Z'})
-  // scheduled_end_at: string;
-
   @IsEnum(HrErHearingChannel)
   @ApiProperty({ enum: HrErHearingChannel })
   channel: HrErHearingChannel;
@@ -49,8 +41,8 @@ export class ScheduleHearingDto {
   @IsUUID(undefined, { each: true })
   @ApiProperty({
     type: [String],
-    description: 
-      'Employee IDs of Hearing committee who are included in the Case Hearing'
+    description:
+      'Employee IDs of Hearing committee who are included in the Case Hearing',
   })
   committee_ids: string[];
 
@@ -69,6 +61,7 @@ export class RescheduleHearingDto {
   scheduled_at: string;
 
   @IsEnum(HrErHearingChannel)
+  @IsOptional()
   @ApiProperty({ enum: HrErHearingChannel })
   channel: HrErHearingChannel;
 
