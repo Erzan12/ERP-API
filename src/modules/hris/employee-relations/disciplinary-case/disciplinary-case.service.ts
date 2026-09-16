@@ -542,6 +542,7 @@ export class DisciplinaryCaseService {
             actions: true,
           },
         },
+        activity_logs: true,
         attachments: true,
       },
     });
