@@ -13694,7 +13694,7 @@
           },
           "scheduled_at": {
             "type": "string",
-            "example": "2026-09-01T09:00:00.000Z"
+            "example": "2026-09-0109:00:00.000Z"
           },
           "channel": {
             "type": "string",
@@ -13707,6 +13707,13 @@
               "text"
             ]
           },
+          "committee_ids": {
+            "description": "Employee IDs of Hearing committee who are included in the Case Hearing",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "remarks": {
             "type": "string",
             "example": "Respondent remarks for admin hearing"
@@ -13716,7 +13723,8 @@
           "disciplinary_case_id",
           "party_id",
           "scheduled_at",
-          "channel"
+          "channel",
+          "committee_ids"
         ]
       },
       "RescheduleHearingDto": {
