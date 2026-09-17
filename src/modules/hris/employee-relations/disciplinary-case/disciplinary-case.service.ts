@@ -22,6 +22,7 @@ import { CreateCaseDto, getStageTiming, UpdateCaseDto } from './dto/case.dto';
 import { SLA_DAYS, STAGE_ORDER } from './constants/hr-er-constants';
 import { ErCasePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 import { UpdateCasePartyDto } from './dto/update-party-details.dto';
+import { buildActivityTrail } from '../activity-grouping-helper/activity-trail.builder';
 
 type Eligibility = { eligible: boolean; reason?: string };
 
@@ -559,12 +560,15 @@ export class DisciplinaryCaseService {
         })
       : null;
 
+    const { activity_logs, ...rest } = disciplinaryCase;
+
     return {
       status: 'success',
       message: 'Here is the Disciplinary Case',
       disciplinaryCase: {
-        ...disciplinaryCase,
+        ...rest,
         incident_location: location,
+        activity_trail: buildActivityTrail(disciplinaryCase),
       },
     };
   }
