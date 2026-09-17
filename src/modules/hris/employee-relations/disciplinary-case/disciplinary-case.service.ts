@@ -524,7 +524,7 @@ export class DisciplinaryCaseService {
                     },
                   },
                 },
-                attachment: true
+                attachment: true,
               },
             },
             decision: true,
