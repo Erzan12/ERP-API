@@ -1923,7 +1923,7 @@ model HrErCaseParty {
   actions       HrErCasePartyAction[]
   nte           HrErCaseNte?
   explanation   HrErCaseExplanation?
-  hearings      HrErCaseHearing[]
+  hearings      HrErCaseHearing?
   decision      HrErCaseDecision?
   stage_logs    HrErCaseStageLog[]
   activity_logs HrErCaseActivityLog[]
@@ -2024,7 +2024,7 @@ model HrErCaseExplanation {
 // ---------- ADMINISTRATIVE HEARING ----------
 model HrErCaseHearing {
   id               String              @id @default(uuid()) @db.Uuid
-  party_id         String              @db.Uuid
+  party_id         String              @unique @db.Uuid
   scheduled_at     DateTime?
   channel          HrErHearingChannel?
   status           HrErHearingStatus   @default(scheduled)
@@ -2209,6 +2209,7 @@ model HrErCaseActivityLog {
   case_id     String   @db.Uuid
   party_id    String?  @db.Uuid // null for case-level events like "Case closed"
   actor_id    String   @db.Uuid
+  stage       HrErCaseStage? // <- new, null for case-level events
   action      String // e.g. "nte_issued", "explanation_received", "hearing_conducted"
   metadata    Json?
   occurred_at DateTime @default(now())
@@ -2217,7 +2218,7 @@ model HrErCaseActivityLog {
   party HrErCaseParty? @relation(fields: [party_id], references: [id], onDelete: SetNull)
   actor User           @relation("HrErCaseActivityLogActor", fields: [actor_id], references: [id])
 
-  @@index([case_id])
+  @@index([case_id, stage])
 }
 
 model HrErCaseStageLog {
