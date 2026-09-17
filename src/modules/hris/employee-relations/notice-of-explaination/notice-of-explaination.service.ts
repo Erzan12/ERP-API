@@ -198,7 +198,14 @@ export class NoticeOfExplainationService {
         },
       });
 
-      await tx.hrErCaseActivityLog.create
+      await logActivity(tx, {
+        case_id: dto.disciplinary_case_id,
+        party_id: dto.party_id,
+        actor_id: user.id,
+        stage: HrErCaseStage.notice_to_explain,
+        action: 'nte_created',
+        metadata: { nte_id: nte.id },
+      });
 
       return {
         status: 'success',
@@ -634,7 +641,9 @@ export class NoticeOfExplainationService {
       }
 
       if (approval.reviewer_id !== user.id) {
-          throw new ForbiddenException('Only the assigned reviewer can act on this approval.');
+        throw new ForbiddenException(
+          'Only the assigned reviewer can act on this approval.',
+        );
       }
 
       // if (approval.status !== HrErApprovalStatus.revise) {
@@ -642,7 +651,9 @@ export class NoticeOfExplainationService {
       // }
 
       if (approval.status !== HrErApprovalStatus.pending) {
-        throw new ConflictException(`This step was already ${approval.status}.`);
+        throw new ConflictException(
+          `This step was already ${approval.status}.`,
+        );
       }
 
       // if (approval.status !== HrErApprovalStatus.pending) {
@@ -653,9 +664,14 @@ export class NoticeOfExplainationService {
 
       // optional but worth it: enforce sequence
       const earlier = await tx.hrErCaseApproval.findFirst({
-        where: { nte_id: approval.nte_id, sequence: { lt: approval.sequence }, status: { not: HrErApprovalStatus.approved } },
+        where: {
+          nte_id: approval.nte_id,
+          sequence: { lt: approval.sequence },
+          status: { not: HrErApprovalStatus.approved },
+        },
       });
-      if (earlier) throw new BadRequestException('A prior review step is still pending.');
+      if (earlier)
+        throw new BadRequestException('A prior review step is still pending.');
 
       const reviewNTEApproval = await tx.hrErCaseApproval.update({
         where: { id: approvalId, status: HrErApprovalStatus.pending },
@@ -749,7 +765,9 @@ export class NoticeOfExplainationService {
       }
 
       if (existing.status !== HrErApprovalStatus.approved) {
-        throw new BadRequestException('NTE must be fully approved before issuance.');
+        throw new BadRequestException(
+          'NTE must be fully approved before issuance.',
+        );
       }
 
       // const nte = await tx.hrErCaseNte.upsert({

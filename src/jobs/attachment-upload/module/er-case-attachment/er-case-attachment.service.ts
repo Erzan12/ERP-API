@@ -284,7 +284,8 @@ export class ErCaseAttachmentService {
     tx?: Prisma.TransactionClient,
   ) {
     const prisma = tx || this.prisma;
-    const { files, transaction_type, hearing_id, document_types, user_id } = params;
+    const { files, transaction_type, hearing_id, document_types, user_id } =
+      params;
 
     if (document_types && files.length !== document_types.length) {
       throw new BadRequestException(
@@ -308,9 +309,15 @@ export class ErCaseAttachmentService {
           files.originalname.split('.').pop()?.toLowerCase() || 'bin';
         const fileName = `hearing-documents/${randomUUID()}.${extension}`;
 
-        await minioClient.putObject(bucket, fileName, files.buffer, files.size, {
-          'Content-Type': files.mimetype,
-        });
+        await minioClient.putObject(
+          bucket,
+          fileName,
+          files.buffer,
+          files.size,
+          {
+            'Content-Type': files.mimetype,
+          },
+        );
 
         const fileUrl = buildFileUrl(bucket, fileName);
 
@@ -457,10 +464,9 @@ export class ErCaseAttachmentService {
   ) {
     await this.assertHrAccess(user.id);
 
-    const existingHearing =
-      await this.prisma.hrErCaseHearing.findUnique({
-        where: { id: hearingId },
-      });
+    const existingHearing = await this.prisma.hrErCaseHearing.findUnique({
+      where: { id: hearingId },
+    });
 
     if (!existingHearing) {
       throw new NotFoundException('Written Explaination does not exists.');

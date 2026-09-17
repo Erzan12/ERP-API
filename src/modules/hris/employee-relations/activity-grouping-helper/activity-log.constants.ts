@@ -1,4 +1,4 @@
-import { HrErCaseStage } from "@prisma/client";
+import { HrErCaseStage } from '@prisma/client';
 
 export const ACTION_STAGE_MAP: Record<string, HrErCaseStage> = {
   nte_created: HrErCaseStage.notice_to_explain,

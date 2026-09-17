@@ -10,7 +10,10 @@ export type LogInput = {
   metadata?: Prisma.InputJsonValue;
 };
 
-export async function logActivity(tx: Prisma.TransactionClient, input: LogInput) {
+export async function logActivity(
+  tx: Prisma.TransactionClient,
+  input: LogInput,
+) {
   return tx.hrErCaseActivityLog.create({
     data: {
       case_id: input.case_id,

@@ -560,7 +560,7 @@ export class DisciplinaryCaseService {
         })
       : null;
 
-    const { activity_logs, ...rest } = disciplinaryCase;
+    const { ...rest } = disciplinaryCase;
 
     return {
       status: 'success',
