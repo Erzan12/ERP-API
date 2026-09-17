@@ -92,7 +92,7 @@ export class DisciplinaryCaseService {
           : { eligible: false, reason: 'Still awaiting written explanation.' };
       }
       case HrErCaseStage.administrative_hearing: {
-        const latest = party.hearings.at(-1); // most recent by created_at
+        const latest = party.hearings; // most recent by created_at
         return latest && ['conducted', 'no_show'].includes(latest.status)
           ? { eligible: true }
           : { eligible: false, reason: 'Hearing not yet conducted.' };
@@ -504,7 +504,29 @@ export class DisciplinaryCaseService {
               },
             },
             explanation: true,
-            hearings: true,
+            hearings: {
+              include: {
+                committee: {
+                  select: {
+                    employee: {
+                      select: {
+                        id: true,
+                        employee_id: true,
+                        person: {
+                          select: {
+                            first_name: true,
+                            middle_name: true,
+                            last_name: true,
+                            contact_no: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                attachment: true
+              },
+            },
             decision: true,
             stage_logs: true,
             offenses: {
