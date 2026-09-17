@@ -732,7 +732,7 @@ export class NoticeOfExplainationService {
         actor_id: user.id,
         stage: HrErCaseStage.notice_to_explain,
         action: `nte_review_${dto.status}`,
-        metadata: { nte_id: approval.nte_id }
+        metadata: { nte_id: approval.nte_id },
       });
 
       return {
@@ -830,13 +830,13 @@ export class NoticeOfExplainationService {
       });
 
       await logActivity(tx, {
-          case_id: party.case_id,
-          party_id: party.id,
-          actor_id: user.id,
-          stage: HrErCaseStage.notice_to_explain,
-          action: 'nte_issued',
-          metadata: { nte_id: nte.id }
-        });
+        case_id: party.case_id,
+        party_id: party.id,
+        actor_id: user.id,
+        stage: HrErCaseStage.notice_to_explain,
+        action: 'nte_issued',
+        metadata: { nte_id: nte.id },
+      });
 
       return {
         status: 'success',
