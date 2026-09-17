@@ -181,6 +181,10 @@ export class ErCaseAttachmentController {
     @SessionUser() user: RequestUser,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    return this.erCaseAttachmentService.uploadHearingDocs(hearingId, user, files);
+    return this.erCaseAttachmentService.uploadHearingDocs(
+      hearingId,
+      user,
+      files,
+    );
   }
 }
