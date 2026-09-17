@@ -601,6 +601,15 @@ export class NoticeOfExplainationService {
           },
         });
 
+        await logActivity(tx, {
+          case_id: nte.party.case_id,
+          party_id: nte.party_id,
+          actor_id: user.id,
+          stage: HrErCaseStage.notice_to_explain,
+          action: 'nte_submitted',
+          metadata: { nte_id: nte.id },
+        });
+
         return {
           status: 'success',
           message: 'NTE has been submitted.',
@@ -620,7 +629,7 @@ export class NoticeOfExplainationService {
 
     return this.prisma.$transaction(async (tx) => {
       const approval = await tx.hrErCaseApproval.findUniqueOrThrow({
-        where: { id: approvalId },
+        where: { id: approvalId, nte_id: nteId },
         include: {
           nte: {
             include: {
@@ -717,15 +726,13 @@ export class NoticeOfExplainationService {
       //   },
       // });
 
-      // console.log('CaseNteId', erCaseNte.id);
-
-      await tx.hrErCaseActivityLog.create({
-        data: {
-          case_id: approval.nte.party.case_id,
-          party_id: approval.nte.party_id,
-          actor_id: user.id,
-          action: `nte_review_${dto.status}`,
-        },
+      await logActivity(tx, {
+        case_id: approval.nte.party.case_id,
+        party_id: approval.nte.party_id,
+        actor_id: user.id,
+        stage: HrErCaseStage.notice_to_explain,
+        action: `nte_review_${dto.status}`,
+        metadata: { nte_id: approval.nte_id }
       });
 
       return {
@@ -822,14 +829,14 @@ export class NoticeOfExplainationService {
         },
       });
 
-      await tx.hrErCaseActivityLog.create({
-        data: {
+      await logActivity(tx, {
           case_id: party.case_id,
           party_id: party.id,
           actor_id: user.id,
+          stage: HrErCaseStage.notice_to_explain,
           action: 'nte_issued',
-        },
-      });
+          metadata: { nte_id: nte.id }
+        });
 
       return {
         status: 'success',
