@@ -763,6 +763,9 @@ export class NoticeOfExplainationService {
 
       const existing = await tx.hrErCaseNte.findUniqueOrThrow({
         where: { party_id: party.id },
+        include: { 
+          approvals: true,
+        }
       });
 
       if (existing.issued_at) {
@@ -771,11 +774,11 @@ export class NoticeOfExplainationService {
         );
       }
 
-      if (existing.status !== HrErApprovalStatus.approved) {
-        throw new BadRequestException(
-          'NTE must be fully approved before issuance.',
-        );
-      }
+      // if (existing.approvals. !==  ) {
+      //   throw new BadRequestException(
+      //     'NTE must be fully approved before issuance.',
+      //   );
+      // }
 
       // const nte = await tx.hrErCaseNte.upsert({
       //   where: { party_id: dto.party_id },

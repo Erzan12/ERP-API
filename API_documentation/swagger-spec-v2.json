@@ -8868,12 +8868,12 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/administrative-hearing/{disciplinaryCaseId}/parties/{partyId}/reschedule": {
+    "/v2/hris/employee-relations/administrative-hearing/{hearingId}/parties/{partyId}/reschedule": {
       "put": {
         "operationId": "AdministrativeHearingController_rescheduleHearing_v2",
         "parameters": [
           {
-            "name": "disciplinaryCaseId",
+            "name": "hearingId",
             "required": true,
             "in": "path",
             "schema": {
@@ -8910,12 +8910,12 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/administrative-hearing/{disciplinaryCaseId}/parties/{partyId}/conduct": {
+    "/v2/hris/employee-relations/administrative-hearing/{hearingId}/parties/{partyId}/conduct": {
       "put": {
         "operationId": "AdministrativeHearingController_conductHearing_v2",
         "parameters": [
           {
-            "name": "disciplinaryCaseId",
+            "name": "hearingId",
             "required": true,
             "in": "path",
             "schema": {
