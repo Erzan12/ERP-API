@@ -2139,6 +2139,7 @@ model HrErCaseDecision {
 
   party     HrErCaseParty      @relation(fields: [party_id], references: [id], onDelete: Cascade)
   approvals HrErCaseApproval[]
+  attachment HrErCaseAttachment[]
 }
 
 // ---------- SHARED APPROVAL / REVIEWER STEP (reused by NTE + Decision) ----------
@@ -2182,6 +2183,7 @@ model HrErCaseAttachment {
   nte_id    String? @unique @db.Uuid
   explanation_id String? @unique @db.Uuid
   hearing_id     String? @db.Uuid
+  decision_id String? @db.Uuid
 
   file_name String
   file_url  String
@@ -2197,6 +2199,7 @@ model HrErCaseAttachment {
   nte        HrErCaseNte?    @relation(fields: [nte_id], references: [id], onDelete: Cascade)
   explanation HrErCaseExplanation? @relation(fields: [explanation_id], references: [id], onDelete: Cascade)
   hearing     HrErCaseHearing? @relation(fields: [hearing_id], references: [id], onDelete: Cascade)
+  decision    HrErCaseDecision? @relation(fields: [decision_id], references: [id], onDelete: Cascade)
   uploadedBy User?           @relation("HrErCaseAttachmentUploadedBy", fields: [uploaded_by], references: [id])
 
   @@index([intake_id])
