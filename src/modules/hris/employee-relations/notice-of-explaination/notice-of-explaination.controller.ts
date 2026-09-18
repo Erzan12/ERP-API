@@ -66,15 +66,15 @@ export class NoticeOfExplainationController {
     return this.noticeOfExplainationService.submitNte(nteId, user);
   }
 
-  @Put('employee-relations/nte/parties/:partyId/issue-nte')
+  @Put('employee-relations/nte/parties/:nteId/issue-nte')
   @ApiOperation({
-    summary: 'Issue an NTE to a respondent and assign reviewers',
+    summary: 'Issue an NTE to a respondent',
   })
   issueNte(
-    @Param('partyId', new ParseUUIDPipe()) partyId: string,
+    @Param('nteId', new ParseUUIDPipe()) nteId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.noticeOfExplainationService.issueNte(partyId, user);
+    return this.noticeOfExplainationService.issueNte(nteId, user);
   }
 
   @Put('employee-relations/nte/:nteId/approvals/:approvalId')

@@ -14,6 +14,7 @@ import {
   HrErExplanationChannel,
   HrErExplanationStatus,
 } from '@prisma/client';
+import { logActivity } from '../activity-grouping-helper/activity-log.helper';
 
 @Injectable()
 export class WrittenExplainationService {
@@ -111,11 +112,15 @@ export class WrittenExplainationService {
         );
       }
 
-      const existing = await tx.hrErCaseExplanation.findUnique({
+      const existingExplanation = await tx.hrErCaseExplanation.findUnique({
         where: { party_id: dto.party_id },
       });
 
-      if (existing?.status === HrErExplanationStatus.received) {
+      if (!existingExplanation) {
+        throw new NotFoundException('Written Explantion does not exist.');
+      }
+
+      if (existingExplanation?.status === HrErExplanationStatus.received) {
         throw new ConflictException(
           'An explanation has already been recorded for this respondent.',
         );
@@ -153,13 +158,13 @@ export class WrittenExplainationService {
         },
       });
 
-      await tx.hrErCaseActivityLog.create({
-        data: {
-          case_id: dto.disciplinary_case_id,
-          party_id: dto.party_id,
+      await logActivity(tx, {
+          case_id: party.case_id,
+          party_id: party.id,
           actor_id: user.id,
+          stage: HrErCaseStage.written_explanation,
           action: 'written_explanation_received',
-        },
+          metadata: { written_explanation_id: existingExplanation.id},
       });
 
       return {

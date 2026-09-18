@@ -17,6 +17,7 @@ import {
 } from './dto/schedule-hearing.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ConductHearingDto } from './dto/conduct-hearing.dto';
+import { logActivity } from '../activity-grouping-helper/activity-log.helper';
 
 @Injectable()
 export class AdministrativeHearingService {
@@ -146,7 +147,7 @@ export class AdministrativeHearingService {
   }
 
   async rescheduleHearing(
-    disciplinaryCaseId: string,
+    hearingId: string,
     partyId: string,
     dto: RescheduleHearingDto,
     user: RequestUser,
@@ -156,13 +157,16 @@ export class AdministrativeHearingService {
     return this.prisma.$transaction(async (tx) => {
       await this.assertRespondentAtStage(
         tx,
-        disciplinaryCaseId,
+        hearingId,
         partyId,
         HrErCaseStage.administrative_hearing,
       );
 
       const activeScheduled = await tx.hrErCaseHearing.findFirst({
-        where: { party_id: partyId, status: HrErHearingStatus.scheduled },
+        where: { id: hearingId, status: HrErHearingStatus.scheduled },
+        include: {
+          party: true,
+        },
       });
 
       if (!activeScheduled) {
@@ -192,14 +196,14 @@ export class AdministrativeHearingService {
       //   },
       // });
 
-      await tx.hrErCaseActivityLog.create({
-        data: {
-          case_id: disciplinaryCaseId,
+      await logActivity(tx, {
+          case_id: activeScheduled.party.case_id,
           party_id: partyId,
           actor_id: user.id,
+          stage: HrErCaseStage.administrative_hearing,
           action: 'hearing_rescheduled',
-        },
-      });
+          metadata: { hearing_id: activeScheduled.id },
+        });
 
       return {
         status: 'success',
@@ -210,7 +214,7 @@ export class AdministrativeHearingService {
   }
 
   async conductHearing(
-    disciplinaryCaseId: string,
+    hearingId: string,
     partyId: string,
     dto: ConductHearingDto,
     user: RequestUser,
@@ -220,17 +224,26 @@ export class AdministrativeHearingService {
     return this.prisma.$transaction(async (tx) => {
       await this.assertRespondentAtStage(
         tx,
-        disciplinaryCaseId,
+        hearingId,
         partyId,
         HrErCaseStage.administrative_hearing,
       );
 
       const activeScheduled = await tx.hrErCaseHearing.findFirst({
         where: {
-          party_id: partyId,
+          id: hearingId,
           status: { not: HrErHearingStatus.conducted },
         },
+        include: {
+          party: true,
+        },
       });
+
+      if (!activeScheduled) {
+        throw new BadRequestException(
+          'No active scheduled hearing to conduct - please confirm if hearing is scheduled.',
+        );
+      }
 
       const hearing = activeScheduled
         ? await tx.hrErCaseHearing.update({
@@ -255,14 +268,14 @@ export class AdministrativeHearingService {
             },
           });
 
-      await tx.hrErCaseActivityLog.create({
-        data: {
-          case_id: disciplinaryCaseId,
+      await logActivity(tx, {
+          case_id: activeScheduled.party.case_id,
           party_id: partyId,
           actor_id: user.id,
+          stage: HrErCaseStage.administrative_hearing,
           action: 'hearing_conducted',
-        },
-      });
+          metadata: { hearing_id: activeScheduled.id },
+        });
 
       return {
         status: 'success',

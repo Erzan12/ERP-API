@@ -46,20 +46,20 @@ export class AdministrativeHearingController {
   // }
 
   @Put(
-    'employee-relations/administrative-hearing/:disciplinaryCaseId/parties/:partyId/reschedule',
+    'employee-relations/administrative-hearing/:hearingId/parties/:partyId/reschedule',
   )
   @ApiOperation({
     summary: "Reschedule a respondent's administrative hearing.",
   })
   rescheduleHearing(
-    @Param('disciplinaryCaseId', new ParseUUIDPipe())
-    disciplinaryCaseId: string,
+    @Param('hearingId', new ParseUUIDPipe())
+    hearingId: string,
     @Param('partyId', new ParseUUIDPipe()) partyId: string,
     @Body() dto: RescheduleHearingDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.administrativeHearingService.rescheduleHearing(
-      disciplinaryCaseId,
+      hearingId,
       partyId,
       dto,
       user,
@@ -67,20 +67,20 @@ export class AdministrativeHearingController {
   }
 
   @Put(
-    'employee-relations/administrative-hearing/:disciplinaryCaseId/parties/:partyId/conduct',
+    'employee-relations/administrative-hearing/:hearingId/parties/:partyId/conduct',
   )
   @ApiOperation({
     summary: "Mark a respondent's administrative hearing as conducted.",
   })
   conductHearing(
-    @Param('disciplinaryCaseId', new ParseUUIDPipe())
-    disciplinaryCaseId: string,
+    @Param('hearingId', new ParseUUIDPipe())
+    hearingId: string,
     @Param('partyId', new ParseUUIDPipe()) partyId: string,
     @Body() dto: ConductHearingDto,
     @SessionUser() user: RequestUser,
   ) {
     return this.administrativeHearingService.conductHearing(
-      disciplinaryCaseId,
+      hearingId,
       partyId,
       dto,
       user,
