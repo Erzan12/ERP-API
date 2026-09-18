@@ -8728,12 +8728,12 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/nte/parties/{partyId}/issue-nte": {
+    "/v2/hris/employee-relations/nte/parties/{nteId}/issue-nte": {
       "put": {
         "operationId": "NoticeOfExplainationController_issueNte_v2",
         "parameters": [
           {
-            "name": "partyId",
+            "name": "nteId",
             "required": true,
             "in": "path",
             "schema": {
@@ -8746,7 +8746,7 @@
             "description": ""
           }
         },
-        "summary": "Issue an NTE to a respondent and assign reviewers",
+        "summary": "Issue an NTE to a respondent",
         "tags": [
           "Human Resources - Employee Relations(Notice of Explanation)"
         ]

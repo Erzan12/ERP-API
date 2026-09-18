@@ -18,6 +18,7 @@ import {
   HrErCasePartyRole,
   HrErCaseStage,
   Prisma,
+  PrismaClient,
 } from '@prisma/client';
 import { ControlNumberService } from 'src/jobs/control-number/control-number.service';
 import { logActivity } from '../activity-grouping-helper/activity-log.helper';
@@ -81,10 +82,11 @@ export class NoticeOfExplainationService {
     };
   }
 
-  async getNte(nteId: string, user: RequestUser) {
-    await this.assertHrAccess(user.id);
-
-    const nte = await this.prisma.hrErCaseNte.findUnique({
+  private async findNteById(
+    nteId: string,
+    client: Prisma.TransactionClient | PrismaClient = this.prisma,
+  ) {
+    const nte = await client.hrErCaseNte.findUnique({
       where: { id: nteId },
       include: {
         approvals: {
@@ -97,11 +99,7 @@ export class NoticeOfExplainationService {
                     id: true,
                     employee_id: true,
                     person: {
-                      select: {
-                        first_name: true,
-                        middle_name: true,
-                        last_name: true,
-                      },
+                      select: { first_name: true, middle_name: true, last_name: true },
                     },
                   },
                 },
@@ -116,6 +114,14 @@ export class NoticeOfExplainationService {
     if (!nte) {
       throw new NotFoundException('No available NTEs found.');
     }
+
+    return nte;
+  }
+
+  async getNte(nteId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const nte = await this.findNteById(nteId);
 
     return {
       status: 'success',
@@ -743,12 +749,14 @@ export class NoticeOfExplainationService {
     });
   }
 
-  async issueNte(partyId: string, user: RequestUser) {
+  async issueNte(nteId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
+      const existing = await this.findNteById(nteId, tx);
+
       const party = await tx.hrErCaseParty.findUniqueOrThrow({
-        where: { id: partyId },
+        where: { id: existing.party_id, },
       });
 
       if (party.role !== HrErCasePartyRole.respondent) {
@@ -761,12 +769,18 @@ export class NoticeOfExplainationService {
         );
       }
 
-      const existing = await tx.hrErCaseNte.findUniqueOrThrow({
-        where: { party_id: party.id },
-        include: { 
-          approvals: true,
-        }
-      });
+      // const existing = await tx.hrErCaseNte.findUniqueOrThrow({
+      //   where: { party_id: party.id },
+      //   include: { 
+      //     approvals: true,
+      //   }
+      // });
+
+      // const partyNte = await tx.hrErCaseNte.findUniqueOrThrow({
+      //   where: { party_id: existing.party_id },
+      //   select: { id: true },
+      // });
+
 
       if (existing.issued_at) {
         throw new ConflictException(
@@ -821,7 +835,7 @@ export class NoticeOfExplainationService {
       // });
 
       const nte = await tx.hrErCaseNte.update({
-        where: { party_id: partyId },
+        where: { id: nteId },
         data: {
           issued_at: new Date(),
           status: HrErApprovalStatus.verified,
