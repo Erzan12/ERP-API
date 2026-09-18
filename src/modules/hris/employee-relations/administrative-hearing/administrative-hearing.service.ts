@@ -193,7 +193,7 @@ export class AdministrativeHearingService {
         where: {
           id: hearingId,
           party_id: partyId,
-          status: HrErHearingStatus.scheduled,
+          status: { notIn: [HrErHearingStatus.no_show, HrErHearingStatus.conducted] },
         },
         include: {
           party: true,
