@@ -54,4 +54,5 @@ export const ACTION_LABEL: Record<string, string> = {
   hearing_scheduled: 'Hearing scheduled',
   hearing_rescheduled: 'Hearing rescheduled',
   hearing_conducted: 'Hearing conducted',
+  case_close: 'Case closed',
 };
