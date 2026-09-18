@@ -187,4 +187,39 @@ export class ErCaseAttachmentController {
       files,
     );
   }
+
+  @Put('notice-of-decision/:decisionId/uploads')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          nullable: true,
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Upload Attachment for Notice of Decision',
+  })
+  @ApiPostResponse('Attachment uploaded successfully')
+  uploadDecisionDoc(
+    @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
+    @SessionUser() user: RequestUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.erCaseAttachmentService.uploadDecisionDocs(
+      decisionId,
+      user,
+      file,
+    );
+  }
 }
