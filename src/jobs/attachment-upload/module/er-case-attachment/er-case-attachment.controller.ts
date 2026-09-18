@@ -173,7 +173,7 @@ export class ErCaseAttachmentController {
     },
   })
   @ApiOperation({
-    summary: 'Upload Attachments for Incident or Employee Report',
+    summary: 'Upload Attachments for Hearing Minutes or Attendee documents',
   })
   @ApiPostResponse('Attachment uploaded successfully')
   uploadHearingDocs(
