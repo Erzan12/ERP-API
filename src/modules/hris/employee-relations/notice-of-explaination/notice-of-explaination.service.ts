@@ -99,7 +99,11 @@ export class NoticeOfExplainationService {
                     id: true,
                     employee_id: true,
                     person: {
-                      select: { first_name: true, middle_name: true, last_name: true },
+                      select: {
+                        first_name: true,
+                        middle_name: true,
+                        last_name: true,
+                      },
                     },
                   },
                 },
@@ -756,7 +760,7 @@ export class NoticeOfExplainationService {
       const existing = await this.findNteById(nteId, tx);
 
       const party = await tx.hrErCaseParty.findUniqueOrThrow({
-        where: { id: existing.party_id, },
+        where: { id: existing.party_id },
       });
 
       if (party.role !== HrErCasePartyRole.respondent) {
@@ -771,7 +775,7 @@ export class NoticeOfExplainationService {
 
       // const existing = await tx.hrErCaseNte.findUniqueOrThrow({
       //   where: { party_id: party.id },
-      //   include: { 
+      //   include: {
       //     approvals: true,
       //   }
       // });
@@ -780,7 +784,6 @@ export class NoticeOfExplainationService {
       //   where: { party_id: existing.party_id },
       //   select: { id: true },
       // });
-
 
       if (existing.issued_at) {
         throw new ConflictException(
