@@ -58,14 +58,14 @@ export class AdministrativeHearingService {
     return requestUser;
   }
 
-  private async assertRespondentAtStage(
+  private async assertExistingHearing(
     tx: Prisma.TransactionClient,
     hearingId: string,
     partyId: string,
     expectedStage: HrErCaseStage,
   ) {
     const hearing = await tx.hrErCaseHearing.findUniqueOrThrow({
-      where: { id: hearingId },
+      where: { id: hearingId, party_id: partyId },
       include: {
         party: true,
       },
@@ -88,11 +88,35 @@ export class AdministrativeHearingService {
     return hearing;
   }
 
+  private async assertRespondentStage(
+    tx: Prisma.TransactionClient,
+    disciplinaryCaseId: string,
+    partyId: string,
+    expectedStage: HrErCaseStage,
+  ) {
+    const party = await tx.hrErCaseParty.findUniqueOrThrow({
+      where: { id: partyId, case_id: disciplinaryCaseId},
+    });
+
+    if (party.role !== HrErCasePartyRole.respondent) {
+      throw new BadRequestException('Only respondents apply here.');
+    }
+
+    if (party.stage !== expectedStage) {
+      throw new BadRequestException(
+        `Party is at stage "${party.stage}", not ${expectedStage}.`,
+      );
+    }
+
+    return party;
+  }
+
   async scheduleHearing(dto: ScheduleHearingDto, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
-      await this.assertRespondentAtStage(
+      
+      await this.assertRespondentStage(
         tx,
         dto.disciplinary_case_id,
         dto.party_id,
@@ -158,7 +182,7 @@ export class AdministrativeHearingService {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
-      await this.assertRespondentAtStage(
+      await this.assertExistingHearing(
         tx,
         hearingId,
         partyId,
@@ -229,7 +253,7 @@ export class AdministrativeHearingService {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
-      await this.assertRespondentAtStage(
+      await this.assertExistingHearing(
         tx,
         hearingId,
         partyId,
