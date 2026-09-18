@@ -116,9 +116,9 @@ export class WrittenExplainationService {
         where: { party_id: dto.party_id },
       });
 
-      if (!existingExplanation) {
-        throw new NotFoundException('Written Explantion does not exist.');
-      }
+      // if (!existingExplanation) {
+      //   throw new NotFoundException('Written Explantion does not exist.');
+      // }
 
       if (existingExplanation?.status === HrErExplanationStatus.received) {
         throw new ConflictException(
@@ -159,12 +159,12 @@ export class WrittenExplainationService {
       });
 
       await logActivity(tx, {
-          case_id: party.case_id,
-          party_id: party.id,
-          actor_id: user.id,
-          stage: HrErCaseStage.written_explanation,
-          action: 'written_explanation_received',
-          metadata: { written_explanation_id: existingExplanation.id},
+        case_id: party.case_id,
+        party_id: party.id,
+        actor_id: user.id,
+        stage: HrErCaseStage.written_explanation,
+        action: 'written_explanation_received',
+        metadata: { written_explanation_id: existingExplanation?.id },
       });
 
       return {

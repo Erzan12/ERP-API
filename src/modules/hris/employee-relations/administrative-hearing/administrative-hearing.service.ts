@@ -60,29 +60,32 @@ export class AdministrativeHearingService {
 
   private async assertRespondentAtStage(
     tx: Prisma.TransactionClient,
-    caseId: string,
+    hearingId: string,
     partyId: string,
     expectedStage: HrErCaseStage,
   ) {
-    const party = await tx.hrErCaseParty.findUniqueOrThrow({
-      where: { id: partyId },
+    const hearing = await tx.hrErCaseHearing.findUniqueOrThrow({
+      where: { id: hearingId },
+      include: {
+        party: true,
+      },
     });
 
-    if (party.case_id !== caseId) {
+    if (hearing.id !== hearingId) {
       throw new BadRequestException('Party does not belong to this case.');
     }
 
-    if (party.role !== HrErCasePartyRole.respondent) {
+    if (hearing.party.role !== HrErCasePartyRole.respondent) {
       throw new BadRequestException('Only respondents apply here.');
     }
 
-    if (party.stage !== expectedStage) {
+    if (hearing.party.stage !== expectedStage) {
       throw new BadRequestException(
-        `Party is at stage "${party.stage}", not ${expectedStage}.`,
+        `Party is at stage "${hearing.party.stage}", not ${expectedStage}.`,
       );
     }
 
-    return party;
+    return hearing;
   }
 
   async scheduleHearing(dto: ScheduleHearingDto, user: RequestUser) {
@@ -163,7 +166,11 @@ export class AdministrativeHearingService {
       );
 
       const activeScheduled = await tx.hrErCaseHearing.findFirst({
-        where: { id: hearingId, status: HrErHearingStatus.scheduled },
+        where: {
+          id: hearingId,
+          party_id: partyId,
+          status: HrErHearingStatus.scheduled,
+        },
         include: {
           party: true,
         },
@@ -197,13 +204,13 @@ export class AdministrativeHearingService {
       // });
 
       await logActivity(tx, {
-          case_id: activeScheduled.party.case_id,
-          party_id: partyId,
-          actor_id: user.id,
-          stage: HrErCaseStage.administrative_hearing,
-          action: 'hearing_rescheduled',
-          metadata: { hearing_id: activeScheduled.id },
-        });
+        case_id: activeScheduled.party.case_id,
+        party_id: partyId,
+        actor_id: user.id,
+        stage: HrErCaseStage.administrative_hearing,
+        action: 'hearing_rescheduled',
+        metadata: { hearing_id: activeScheduled.id },
+      });
 
       return {
         status: 'success',
@@ -269,13 +276,13 @@ export class AdministrativeHearingService {
           });
 
       await logActivity(tx, {
-          case_id: activeScheduled.party.case_id,
-          party_id: partyId,
-          actor_id: user.id,
-          stage: HrErCaseStage.administrative_hearing,
-          action: 'hearing_conducted',
-          metadata: { hearing_id: activeScheduled.id },
-        });
+        case_id: activeScheduled.party.case_id,
+        party_id: partyId,
+        actor_id: user.id,
+        stage: HrErCaseStage.administrative_hearing,
+        action: 'hearing_conducted',
+        metadata: { hearing_id: activeScheduled.id },
+      });
 
       return {
         status: 'success',

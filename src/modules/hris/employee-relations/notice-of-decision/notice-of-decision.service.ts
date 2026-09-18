@@ -88,6 +88,9 @@ export class NoticeOfDecisionService {
 
       const existing = await tx.hrErCaseDecision.findUnique({
         where: { party_id: dto.party_id },
+        include: {
+          party: true,
+        },
       });
 
       if (existing?.issued_at) {
