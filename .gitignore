@@ -64,3 +64,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 pgdata
 pgadmin_data
 dist/tsconfig.tsbuildinfo
+docker-compose.yml
