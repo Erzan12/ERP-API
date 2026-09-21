@@ -8369,7 +8369,7 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/disciplinary-cases/{disciplinaryCaseId}/advance-stage": {
+    "/v2/hris/employee-relations/disciplinary-cases/{caseId}/advance-stage": {
       "put": {
         "operationId": "DisciplinaryCaseController_advanceStage_v2",
         "parameters": [
@@ -8728,12 +8728,12 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/nte/parties/{partyId}/issue-nte": {
+    "/v2/hris/employee-relations/nte/parties/{nteId}/issue-nte": {
       "put": {
         "operationId": "NoticeOfExplainationController_issueNte_v2",
         "parameters": [
           {
-            "name": "partyId",
+            "name": "nteId",
             "required": true,
             "in": "path",
             "schema": {
@@ -8746,7 +8746,7 @@
             "description": ""
           }
         },
-        "summary": "Issue an NTE to a respondent and assign reviewers",
+        "summary": "Issue an NTE to a respondent",
         "tags": [
           "Human Resources - Employee Relations(Notice of Explanation)"
         ]
@@ -8791,6 +8791,30 @@
         "summary": "Reviewer approves or request revision on an NTE.",
         "tags": [
           "Human Resources - Employee Relations(Notice of Explanation)"
+        ]
+      }
+    },
+    "/v2/hris/employee-relations/written-explanation/{explanationId}": {
+      "get": {
+        "operationId": "WrittenExplainationController_getWrittenExplanation_v2",
+        "parameters": [
+          {
+            "name": "explanationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get a Written Explanation",
+        "tags": [
+          "Human Resources - Employee Relations(Written Explationation)"
         ]
       }
     },
@@ -8844,12 +8868,12 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/administrative-hearing/{disciplinaryCaseId}/parties/{partyId}/reschedule": {
+    "/v2/hris/employee-relations/administrative-hearing/{hearingId}/parties/{partyId}/reschedule": {
       "put": {
         "operationId": "AdministrativeHearingController_rescheduleHearing_v2",
         "parameters": [
           {
-            "name": "disciplinaryCaseId",
+            "name": "hearingId",
             "required": true,
             "in": "path",
             "schema": {
@@ -8886,12 +8910,12 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/administrative-hearing/{disciplinaryCaseId}/parties/{partyId}/conduct": {
+    "/v2/hris/employee-relations/administrative-hearing/{hearingId}/parties/{partyId}/conduct": {
       "put": {
         "operationId": "AdministrativeHearingController_conductHearing_v2",
         "parameters": [
           {
-            "name": "disciplinaryCaseId",
+            "name": "hearingId",
             "required": true,
             "in": "path",
             "schema": {
@@ -8912,7 +8936,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RescheduleHearingDto"
+                "$ref": "#/components/schemas/ConductHearingDto"
               }
             }
           }
@@ -13647,10 +13671,6 @@
           "response_text": {
             "type": "string",
             "example": "I acknowledge receiving the instruction and have provided the circusmtances surrounding the incident."
-          },
-          "file_url": {
-            "type": "string",
-            "description": "URL of the uploaded written explanation file"
           }
         },
         "required": [
@@ -13674,7 +13694,7 @@
           },
           "scheduled_at": {
             "type": "string",
-            "example": "2026-09-01T09:00:00.000Z"
+            "example": "2026-09-0109:00:00.000Z"
           },
           "channel": {
             "type": "string",
@@ -13687,6 +13707,13 @@
               "text"
             ]
           },
+          "committee_ids": {
+            "description": "Employee IDs of Hearing committee who are included in the Case Hearing",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "remarks": {
             "type": "string",
             "example": "Respondent remarks for admin hearing"
@@ -13696,7 +13723,8 @@
           "disciplinary_case_id",
           "party_id",
           "scheduled_at",
-          "channel"
+          "channel",
+          "committee_ids"
         ]
       },
       "RescheduleHearingDto": {
@@ -13724,6 +13752,26 @@
         },
         "required": [
           "scheduled_at",
+          "channel"
+        ]
+      },
+      "ConductHearingDto": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "enum": [
+              "in_person",
+              "online",
+              "viber",
+              "postal_mail",
+              "call",
+              "text"
+            ],
+            "description": "Channel the hearing was actually conducted through"
+          }
+        },
+        "required": [
           "channel"
         ]
       },

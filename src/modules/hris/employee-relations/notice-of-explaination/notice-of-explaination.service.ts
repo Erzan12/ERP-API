@@ -18,8 +18,10 @@ import {
   HrErCasePartyRole,
   HrErCaseStage,
   Prisma,
+  PrismaClient,
 } from '@prisma/client';
 import { ControlNumberService } from 'src/jobs/control-number/control-number.service';
+import { logActivity } from '../activity-grouping-helper/activity-log.helper';
 
 @Injectable()
 export class NoticeOfExplainationService {
@@ -80,10 +82,11 @@ export class NoticeOfExplainationService {
     };
   }
 
-  async getNte(nteId: string, user: RequestUser) {
-    await this.assertHrAccess(user.id);
-
-    const nte = await this.prisma.hrErCaseNte.findUnique({
+  private async findNteById(
+    nteId: string,
+    client: Prisma.TransactionClient | PrismaClient = this.prisma,
+  ) {
+    const nte = await client.hrErCaseNte.findUnique({
       where: { id: nteId },
       include: {
         approvals: {
@@ -115,6 +118,14 @@ export class NoticeOfExplainationService {
     if (!nte) {
       throw new NotFoundException('No available NTEs found.');
     }
+
+    return nte;
+  }
+
+  async getNte(nteId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const nte = await this.findNteById(nteId);
 
     return {
       status: 'success',
@@ -197,13 +208,13 @@ export class NoticeOfExplainationService {
         },
       });
 
-      await tx.hrErCaseActivityLog.create({
-        data: {
-          case_id: dto.disciplinary_case_id,
-          party_id: dto.party_id,
-          actor_id: user.id,
-          action: 'nte_created',
-        },
+      await logActivity(tx, {
+        case_id: dto.disciplinary_case_id,
+        party_id: dto.party_id,
+        actor_id: user.id,
+        stage: HrErCaseStage.notice_to_explain,
+        action: 'nte_created',
+        metadata: { nte_id: nte.id },
       });
 
       return {
@@ -217,15 +228,19 @@ export class NoticeOfExplainationService {
   async updateNte(nteId: string, user: RequestUser, dto: UpdateNteDto) {
     await this.assertHrAccess(user.id);
 
-    const existingNte = await this.prisma.hrErCaseNte.findUnique({
-      where: { id: nteId },
-    });
-
-    if (!existingNte) {
-      throw new NotFoundException('NTE does not exist.');
-    }
-
     return this.prisma.$transaction(async (tx) => {
+      const existingNte = await tx.hrErCaseNte.findUnique({
+        where: { id: nteId },
+      });
+
+      if (!existingNte) {
+        throw new NotFoundException('NTE does not exist.');
+      }
+
+      if (existingNte.issued_at) {
+        throw new ConflictException('An issued NTE can no longer be edited.');
+      }
+
       /**
        * Use the existing party_id when party_id is not
        * provided in the update DTO.
@@ -288,13 +303,17 @@ export class NoticeOfExplainationService {
 
       if (
         existing?.status === HrErApprovalStatus.verified ||
-        HrErApprovalStatus.approved ||
-        HrErApprovalStatus.rejected
+        existing?.status === HrErApprovalStatus.approved ||
+        existing?.status === HrErApprovalStatus.rejected
       ) {
         throw new BadRequestException(
           'NTE cannot be updated anymore it is either already verified, approved or rejected already',
         );
       }
+
+      const revisionCount = await tx.hrErCaseActivityLog.count({
+        where: { party_id: partyId, action: 'nte_revised' },
+      });
 
       /**
        * =========================================================
@@ -422,6 +441,30 @@ export class NoticeOfExplainationService {
 
       /**
        * =========================================================
+       * RESET APPROVALS — any content change invalidates
+       * prior review decisions on this NTE.
+       * =========================================================
+       */
+      const contentChanged =
+        dto.due_date !== undefined || dto.service_channel !== undefined;
+
+      if (contentChanged) {
+        await tx.hrErCaseApproval.updateMany({
+          where: {
+            nte_id: existingNte.id,
+            status: { not: HrErApprovalStatus.revise },
+          },
+          data: {
+            status: HrErApprovalStatus.revise,
+            reviewed_at: null,
+            remarks: null,
+            updated_by: user.id,
+          },
+        });
+      }
+
+      /**
+       * =========================================================
        * UPDATE NTE
        * =========================================================
        */
@@ -435,6 +478,8 @@ export class NoticeOfExplainationService {
           due_date: dto.due_date
             ? new Date(dto.due_date)
             : existingNte.due_date,
+
+          status: HrErApprovalStatus.revise,
 
           service_channel: dto.service_channel ?? existingNte.service_channel,
 
@@ -473,6 +518,23 @@ export class NoticeOfExplainationService {
               sequence: 'asc',
             },
           },
+        },
+      });
+
+      const changedFields = Object.keys(dto).filter(
+        (k) => dto[k as keyof UpdateNteDto] !== undefined,
+      );
+
+      await logActivity(tx, {
+        case_id: party.case_id,
+        party_id: partyId,
+        actor_id: user.id,
+        stage: HrErCaseStage.notice_to_explain,
+        action: 'nte_revised',
+        metadata: {
+          nte_id: existingNte.id,
+          revision: revisionCount + 1,
+          fields: changedFields,
         },
       });
 
@@ -549,6 +611,15 @@ export class NoticeOfExplainationService {
           },
         });
 
+        await logActivity(tx, {
+          case_id: nte.party.case_id,
+          party_id: nte.party_id,
+          actor_id: user.id,
+          stage: HrErCaseStage.notice_to_explain,
+          action: 'nte_submitted',
+          metadata: { nte_id: nte.id },
+        });
+
         return {
           status: 'success',
           message: 'NTE has been submitted.',
@@ -568,7 +639,7 @@ export class NoticeOfExplainationService {
 
     return this.prisma.$transaction(async (tx) => {
       const approval = await tx.hrErCaseApproval.findUniqueOrThrow({
-        where: { id: approvalId },
+        where: { id: approvalId, nte_id: nteId },
         include: {
           nte: {
             include: {
@@ -579,8 +650,6 @@ export class NoticeOfExplainationService {
         },
       });
 
-      console.log('Approval id', approval.id);
-
       if (
         approval.step_type !== HrErApprovalStepType.nte_review ||
         !approval.nte
@@ -590,9 +659,11 @@ export class NoticeOfExplainationService {
         );
       }
 
-      // if (approval.reviewer_id !== user.id) {
-      //     throw new ForbiddenException('Only the assigned reviewer can act on this approval.');
-      // }
+      if (approval.reviewer_id !== user.id) {
+        throw new ForbiddenException(
+          'Only the assigned reviewer can act on this approval.',
+        );
+      }
 
       // if (approval.status !== HrErApprovalStatus.revise) {
       //   throw new BadRequestException('NTE Status must be revise before it can be reviewed and must be submitted first.')
@@ -600,9 +671,26 @@ export class NoticeOfExplainationService {
 
       if (approval.status !== HrErApprovalStatus.pending) {
         throw new ConflictException(
-          `NTE must be submitted first since status is still revise.`,
+          `This step was already ${approval.status}.`,
         );
       }
+
+      // if (approval.status !== HrErApprovalStatus.pending) {
+      //   throw new ConflictException(
+      //     `NTE must be submitted first since status is still revise.`,
+      //   );
+      // }
+
+      // optional but worth it: enforce sequence
+      const earlier = await tx.hrErCaseApproval.findFirst({
+        where: {
+          nte_id: approval.nte_id,
+          sequence: { lt: approval.sequence },
+          status: { not: HrErApprovalStatus.approved },
+        },
+      });
+      if (earlier)
+        throw new BadRequestException('A prior review step is still pending.');
 
       const reviewNTEApproval = await tx.hrErCaseApproval.update({
         where: { id: approvalId, status: HrErApprovalStatus.pending },
@@ -648,15 +736,13 @@ export class NoticeOfExplainationService {
       //   },
       // });
 
-      // console.log('CaseNteId', erCaseNte.id);
-
-      await tx.hrErCaseActivityLog.create({
-        data: {
-          case_id: approval.nte.party.case_id,
-          party_id: approval.nte.party_id,
-          actor_id: user.id,
-          action: `nte_review_${dto.status}`,
-        },
+      await logActivity(tx, {
+        case_id: approval.nte.party.case_id,
+        party_id: approval.nte.party_id,
+        actor_id: user.id,
+        stage: HrErCaseStage.notice_to_explain,
+        action: `nte_review_${dto.status}`,
+        metadata: { nte_id: approval.nte_id },
       });
 
       return {
@@ -667,12 +753,14 @@ export class NoticeOfExplainationService {
     });
   }
 
-  async issueNte(partyId: string, user: RequestUser) {
+  async issueNte(nteId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
+      const existing = await this.findNteById(nteId, tx);
+
       const party = await tx.hrErCaseParty.findUniqueOrThrow({
-        where: { id: partyId },
+        where: { id: existing.party_id },
       });
 
       if (party.role !== HrErCasePartyRole.respondent) {
@@ -685,15 +773,29 @@ export class NoticeOfExplainationService {
         );
       }
 
-      const existing = await tx.hrErCaseNte.findUnique({
-        where: { party_id: party.id },
-      });
+      // const existing = await tx.hrErCaseNte.findUniqueOrThrow({
+      //   where: { party_id: party.id },
+      //   include: {
+      //     approvals: true,
+      //   }
+      // });
 
-      if (existing?.issued_at) {
+      // const partyNte = await tx.hrErCaseNte.findUniqueOrThrow({
+      //   where: { party_id: existing.party_id },
+      //   select: { id: true },
+      // });
+
+      if (existing.issued_at) {
         throw new ConflictException(
           'An NTE has already been issued for this respondent.',
         );
       }
+
+      // if (existing.approvals. !==  ) {
+      //   throw new BadRequestException(
+      //     'NTE must be fully approved before issuance.',
+      //   );
+      // }
 
       // const nte = await tx.hrErCaseNte.upsert({
       //   where: { party_id: dto.party_id },
@@ -736,7 +838,7 @@ export class NoticeOfExplainationService {
       // });
 
       const nte = await tx.hrErCaseNte.update({
-        where: { party_id: partyId },
+        where: { id: nteId },
         data: {
           issued_at: new Date(),
           status: HrErApprovalStatus.verified,
@@ -747,13 +849,13 @@ export class NoticeOfExplainationService {
         },
       });
 
-      await tx.hrErCaseActivityLog.create({
-        data: {
-          case_id: party.case_id,
-          party_id: party.id,
-          actor_id: user.id,
-          action: 'nte_issued',
-        },
+      await logActivity(tx, {
+        case_id: party.case_id,
+        party_id: party.id,
+        actor_id: user.id,
+        stage: HrErCaseStage.notice_to_explain,
+        action: 'nte_issued',
+        metadata: { nte_id: nte.id },
       });
 
       return {

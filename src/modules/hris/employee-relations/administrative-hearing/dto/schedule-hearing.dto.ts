@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { HrErHearingChannel } from '@prisma/client';
 import {
+  ArrayMinSize,
+  IsArray,
   IsDateString,
   IsEnum,
   IsNotEmpty,
@@ -27,12 +29,22 @@ export class ScheduleHearingDto {
   party_id: string;
 
   @IsDateString()
-  @ApiProperty({ example: '2026-09-01T09:00:00.000Z' })
+  @ApiProperty({ example: '2026-09-0109:00:00.000Z' })
   scheduled_at: string;
 
   @IsEnum(HrErHearingChannel)
   @ApiProperty({ enum: HrErHearingChannel })
   channel: HrErHearingChannel;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsUUID(undefined, { each: true })
+  @ApiProperty({
+    type: [String],
+    description:
+      'Employee IDs of Hearing committee who are included in the Case Hearing',
+  })
+  committee_ids: string[];
 
   @IsOptional()
   @IsString()
@@ -49,6 +61,7 @@ export class RescheduleHearingDto {
   scheduled_at: string;
 
   @IsEnum(HrErHearingChannel)
+  @IsOptional()
   @ApiProperty({ enum: HrErHearingChannel })
   channel: HrErHearingChannel;
 

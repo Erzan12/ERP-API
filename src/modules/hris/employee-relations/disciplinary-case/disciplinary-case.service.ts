@@ -22,6 +22,7 @@ import { CreateCaseDto, getStageTiming, UpdateCaseDto } from './dto/case.dto';
 import { SLA_DAYS, STAGE_ORDER } from './constants/hr-er-constants';
 import { ErCasePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';
 import { UpdateCasePartyDto } from './dto/update-party-details.dto';
+import { buildActivityTrail } from '../activity-grouping-helper/activity-trail.builder';
 
 type Eligibility = { eligible: boolean; reason?: string };
 
@@ -91,7 +92,7 @@ export class DisciplinaryCaseService {
           : { eligible: false, reason: 'Still awaiting written explanation.' };
       }
       case HrErCaseStage.administrative_hearing: {
-        const latest = party.hearings.at(-1); // most recent by created_at
+        const latest = party.hearings; // most recent by created_at
         return latest && ['conducted', 'no_show'].includes(latest.status)
           ? { eligible: true }
           : { eligible: false, reason: 'Hearing not yet conducted.' };
@@ -503,7 +504,29 @@ export class DisciplinaryCaseService {
               },
             },
             explanation: true,
-            hearings: true,
+            hearings: {
+              include: {
+                committee: {
+                  select: {
+                    employee: {
+                      select: {
+                        id: true,
+                        employee_id: true,
+                        person: {
+                          select: {
+                            first_name: true,
+                            middle_name: true,
+                            last_name: true,
+                            contact_no: true,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                attachment: true,
+              },
+            },
             decision: true,
             stage_logs: true,
             offenses: {
@@ -542,6 +565,7 @@ export class DisciplinaryCaseService {
             actions: true,
           },
         },
+        activity_logs: true,
         attachments: true,
       },
     });
@@ -558,12 +582,15 @@ export class DisciplinaryCaseService {
         })
       : null;
 
+    const { activity_logs: _activity_logs, ...rest } = disciplinaryCase;
+
     return {
       status: 'success',
       message: 'Here is the Disciplinary Case',
       disciplinaryCase: {
-        ...disciplinaryCase,
+        ...rest,
         incident_location: location,
+        activity_trail: buildActivityTrail(disciplinaryCase),
       },
     };
   }

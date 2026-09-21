@@ -16,13 +16,13 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @ApiTags('Attachment/Documents Upload - Employee Relations')
-@Controller('er-attachment')
+@Controller({ path: 'er-attachment', version: '2' })
 export class ErCaseAttachmentController {
   constructor(
     private readonly erCaseAttachmentService: ErCaseAttachmentService,
   ) {}
 
-  @Put(':disciplinaryCaseId/uploads')
+  @Put('er-case/:disciplinaryCaseId/uploads')
   @UseInterceptors(
     FilesInterceptor('files', 5, {
       storage: memoryStorage(),
@@ -116,5 +116,110 @@ export class ErCaseAttachmentController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.erCaseAttachmentService.uploadNteDocs(nteId, user, file);
+  }
+
+  @Put('written-explaination/:explanationId/uploads')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          nullable: true,
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Upload Attachment for Written Explaination',
+  })
+  @ApiPostResponse('Attachment uploaded successfully')
+  uploadExplainationDoc(
+    @Param('explanationId', new ParseUUIDPipe()) explanationId: string,
+    @SessionUser() user: RequestUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.erCaseAttachmentService.uploadExplanationDocs(
+      explanationId,
+      user,
+      file,
+    );
+  }
+
+  @Put('hearing/:hearingId/uploads')
+  @UseInterceptors(
+    FilesInterceptor('files', 5, {
+      storage: memoryStorage(),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        files: {
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
+          nullable: true,
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Upload Attachments for Hearing Minutes or Attendee documents',
+  })
+  @ApiPostResponse('Attachment uploaded successfully')
+  uploadHearingDocs(
+    @Param('hearingId', new ParseUUIDPipe()) hearingId: string,
+    @SessionUser() user: RequestUser,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    return this.erCaseAttachmentService.uploadHearingDocs(
+      hearingId,
+      user,
+      files,
+    );
+  }
+
+  @Put('notice-of-decision/:decisionId/uploads')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          nullable: true,
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Upload Attachment for Notice of Decision',
+  })
+  @ApiPostResponse('Attachment uploaded successfully')
+  uploadDecisionDoc(
+    @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
+    @SessionUser() user: RequestUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.erCaseAttachmentService.uploadDecisionDocs(
+      decisionId,
+      user,
+      file,
+    );
   }
 }
