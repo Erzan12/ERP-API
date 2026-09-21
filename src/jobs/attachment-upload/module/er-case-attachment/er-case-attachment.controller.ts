@@ -22,7 +22,7 @@ export class ErCaseAttachmentController {
     private readonly erCaseAttachmentService: ErCaseAttachmentService,
   ) {}
 
-  @Put(':disciplinaryCaseId/uploads')
+  @Put('er-case/:disciplinaryCaseId/uploads')
   @UseInterceptors(
     FilesInterceptor('files', 5, {
       storage: memoryStorage(),
