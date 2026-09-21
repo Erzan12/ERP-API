@@ -6,12 +6,18 @@ import { setupAdminSwagger } from './admin/admin.swagger';
 import { setupHRISSwagger } from './hris/hris.swagger';
 import { setupManagerSwagger } from './manager/manager.swagger';
 import { setupMasterSwagger } from './mastertable/mastertable.swagger';
-import { AdministratorV2Module } from 'src/modules/administrator/administratorV2.module';
-import { HrV2Module } from 'src/modules/hris/hrV2.module';
-import { ManagerV2Module } from 'src/modules/manager/managerV2.module';
-import { MasterV2Module } from 'src/modules/master/masterV2.module';
+import { AdministratorModule } from 'src/modules/administrator/administrator.module';
+import { HrisModule } from 'src/modules/hris/hris.module';
+import { ManagerModule } from 'src/modules/manager/manager.module';
+import { MastertableModule } from 'src/modules/mastertable/mastertable.module';
 import { setupUserSwagger } from './user-management/user-management.swagger';
-import { setupPerformanceEvaluationSwagger } from './employee-dashboard/employee-dashboard.swagger';
+
+import { AuthModule } from 'src/auth/auth.module';
+import { setupEmployeeDashboardSwagger } from './employee-dashboard/employee-dashboard.swagger';
+import { EmployeeDashboardModule } from 'src/modules/employee-dashboard/employee-dashboard.module';
+import { SmsModule } from 'src/jobs/sms/sms.module';
+import { setupSMSSwagger } from './sms/sms.swagger';
+import { setupAttachmentUploadSwagger } from './attachment-upload/attachment-upload.swagger';
 
 function setupAppSwagger(app: INestApplication): void {
   // All APIs docs
@@ -38,10 +44,13 @@ function setupAppSwagger(app: INestApplication): void {
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
     include: [
-      AdministratorV2Module,
-      HrV2Module,
-      ManagerV2Module,
-      MasterV2Module,
+      AuthModule,
+      AdministratorModule,
+      HrisModule,
+      ManagerModule,
+      MastertableModule,
+      EmployeeDashboardModule,
+      SmsModule,
     ],
   });
 
@@ -53,7 +62,7 @@ function setupAppSwagger(app: INestApplication): void {
     swaggerOptions: {
       urls: [
         { name: 'v2', url: '/docs/v2-json' },
-        { name: 'v1', url: '/docs/v1-json' },
+        // { name: 'v1', url: '/docs/v1-json' },
       ],
       persistAuthorization: true,
       filter: true,
@@ -75,7 +84,9 @@ function setupAppSwagger(app: INestApplication): void {
   setupManagerSwagger(app);
   setupMasterSwagger(app);
   setupUserSwagger(app);
-  setupPerformanceEvaluationSwagger(app);
+  setupEmployeeDashboardSwagger(app);
+  setupSMSSwagger(app);
+  setupAttachmentUploadSwagger(app);
 }
 
 export { setupAppSwagger };

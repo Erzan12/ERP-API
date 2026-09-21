@@ -1,0 +1,112 @@
+import { Module } from '@nestjs/common';
+import { PrismaService } from 'src/config/prisma/prisma.service';
+
+import { EmployeeMasterlistService } from './employee-masterlist/employee-masterlist.service';
+import { EmployeeMasterlistController } from './employee-masterlist/employee-masterlist.controller';
+
+import { DashboardService } from './dashboard/dashboard.service';
+import { DashboardController } from './dashboard/dashboard.controller';
+
+import { AuthModule } from 'src/auth/auth.module';
+import { AdministratorModule } from '../administrator/administrator.module';
+
+import { CareerPostingService } from './recruitment-and-onboarding/career-posting/career-posting.service';
+import { CareerPostingController } from './recruitment-and-onboarding/career-posting/career-posting.controller';
+
+import { HiringPipelineService } from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.service';
+import {
+  ApplicantsController,
+  InterviewApplicantController,
+} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.controller';
+import { RegularizationReviewsService } from './performance-management/regularization-reviews/regularization-reviews.service';
+import { RegularizationReviewsController } from './performance-management/regularization-reviews/regularization-reviews.controller';
+import { PerformanceCompetencyController } from './performance-management/performance-competency/performance-competency.controller';
+import { PerformanceCompetencyService } from './performance-management/performance-competency/performance-competency.service';
+import { LeaveCategoryController } from './time-and-attendance-cases/leave-category/leave-category.controller';
+import { LeaveCategoryService } from './time-and-attendance-cases/leave-category/leave-category.service';
+import { LeaveCasesService } from './time-and-attendance-cases/leave-cases/leave-cases.service';
+import { LeaveCasesController } from './time-and-attendance-cases/leave-cases/leave-cases.controller';
+import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
+import { ExtendedLeaveCasesService } from './time-and-attendance-cases/extended-leave-cases/extended-leave-cases.service';
+import { ExtendedLeaveCasesController } from './time-and-attendance-cases/extended-leave-cases/extended-leave-cases.controller';
+import { OvertimeRateService } from './time-and-attendance-cases/overtime-rate/overtime-rate.service';
+import { OvertimeRateController } from './time-and-attendance-cases/overtime-rate/overtime-rate.controller';
+import { OvertimeCasesService } from './time-and-attendance-cases/overtime-cases/overtime-cases.service';
+import { OvertimeCasesController } from './time-and-attendance-cases/overtime-cases/overtime-cases.controller';
+import { SalaryGradeService } from './salary-grade/salary-grade.service';
+import { SalaryGradeController } from './salary-grade/salary-grade.controller';
+import { EmploymentHistoryController } from './employment-history/employment-history.controller';
+import { EmploymentHistoryService } from './employment-history/employment-history.service';
+import { SmsModule } from 'src/jobs/sms/sms.module';
+import { DisciplinaryCaseService } from './employee-relations/disciplinary-case/disciplinary-case.service';
+import { DisciplinaryCaseController } from './employee-relations/disciplinary-case/disciplinary-case.controller';
+import { ControlNumberModule } from 'src/jobs/control-number/control-number.module';
+import { NoticeOfExplainationService } from './employee-relations/notice-of-explaination/notice-of-explaination.service';
+import { NoticeOfExplainationController } from './employee-relations/notice-of-explaination/notice-of-explaination.controller';
+import { WrittenExplainationService } from './employee-relations/written-explanation/written-explanation.service';
+import { WrittenExplainationController } from './employee-relations/written-explanation/written-explanation.controller';
+import { AdministrativeHearingService } from './employee-relations/administrative-hearing/administrative-hearing.service';
+import { AdministrativeHearingController } from './employee-relations/administrative-hearing/administrative-hearing.controller';
+import { NoticeOfDecisionService } from './employee-relations/notice-of-decision/notice-of-decision.service';
+import { NoticeOfDecisionController } from './employee-relations/notice-of-decision/notice-of-decision.controller';
+import { CaseCloseService } from './employee-relations/case-close/case-close.service';
+import { CaseCloseController } from './employee-relations/case-close/case-close.controller';
+import { CaseIntakeService } from './employee-relations/case-intake/case-intake.service';
+import { CaseIntakeController } from './employee-relations/case-intake/case-intake.controller';
+import { IncidentReportController } from './incident-report/incident-report.controller';
+import { IncidentReportService } from './incident-report/incident-report.service';
+
+@Module({
+  imports: [AuthModule, AdministratorModule, SmsModule, ControlNumberModule],
+  providers: [
+    EmployeeMasterlistService,
+    PrismaService,
+    DashboardService,
+    CareerPostingService,
+    HiringPipelineService,
+    RegularizationReviewsService,
+    PerformanceCompetencyService,
+    LeaveCategoryService,
+    LeaveCasesService,
+    AttachmentUploadService,
+    ExtendedLeaveCasesService,
+    OvertimeRateService,
+    OvertimeCasesService,
+    SalaryGradeService,
+    EmploymentHistoryService,
+    IncidentReportService,
+    DisciplinaryCaseService,
+    CaseIntakeService,
+    NoticeOfExplainationService,
+    WrittenExplainationService,
+    AdministrativeHearingService,
+    NoticeOfDecisionService,
+    CaseCloseService,
+  ],
+  controllers: [
+    EmployeeMasterlistController,
+    EmploymentHistoryController,
+    DashboardController,
+    CareerPostingController,
+    ApplicantsController,
+    InterviewApplicantController,
+    RegularizationReviewsController,
+    PerformanceCompetencyController,
+    LeaveCategoryController,
+    LeaveCasesController,
+    ExtendedLeaveCasesController,
+    OvertimeRateController,
+    OvertimeCasesController,
+    SalaryGradeController,
+    IncidentReportController,
+    DisciplinaryCaseController,
+    CaseIntakeController,
+    NoticeOfExplainationController,
+    WrittenExplainationController,
+    AdministrativeHearingController,
+    NoticeOfDecisionController,
+    CaseCloseController,
+  ],
+  exports: [HrisModule],
+})
+export class HrisModule {}

@@ -6,11 +6,14 @@ import {
   PrismaHealthIndicator,
 } from '@nestjs/terminus';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Public } from 'src/utils/decorators/public.decorator';
+import {
+  ACTION_READ,
+  EMPLOYEE_MASTERLIST,
+} from 'src/utils/constants/ability.constant';
+import { Can } from 'src/utils/decorators/can.decorator';
 
-@Public()
 @ApiTags('Administrator - Health Check')
-@Controller({ path: 'health', version: '2' })
+@Controller({ path: 'administrator', version: '2' })
 export class HealthController {
   constructor(
     private health: HealthCheckService,
@@ -18,13 +21,15 @@ export class HealthController {
     private prisma: PrismaService,
   ) {}
 
-  @Get('live')
+  @Get('health/live')
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   live() {
     return { status: 'ok' };
   }
 
-  @Get('ready')
+  @Get('health/ready')
   @HealthCheck()
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   async ready() {
     try {
       return await this.health.check([
@@ -36,7 +41,8 @@ export class HealthController {
     }
   }
 
-  @Get('env')
+  @Get('health/env')
+  @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   envCheck() {
     const databaseUrl = process.env.DATABASE_URL;
 

@@ -2,7 +2,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { UserManagementV2Module } from 'src/modules/manager/user_management/user_managementV2.module';
+import { UserManagementModule } from 'src/modules/manager/user_management/user_management.module';
 
 export function setupUserSwagger(app: INestApplication): void {
   // build document for V1
@@ -34,13 +34,13 @@ export function setupUserSwagger(app: INestApplication): void {
     .setDescription(
       'API for Companies organization structure. CURRENTLY VIEWING API VERSION 2',
     )
-    .setVersion('2.0')
+    .setVersion('2.0.1')
     .addTag('Authentication')
     .addTag('User Management')
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
-    include: [UserManagementV2Module, AuthModule],
+    include: [UserManagementModule, AuthModule],
   });
 
   // mount individual endpoints (This automatically exposes /docs/admin/v1-json and v2-json)

@@ -14,7 +14,7 @@ import {
 import { VALID_ACTIONS } from 'src/utils/constants/action-map';
 import { IS_PUBLIC_KEY } from 'src/utils/decorators/public.decorator';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
-import { AuthenticatedRequest } from 'src/utils/types/interface';
+import { AuthenticatedRequest } from 'src/utils/types/authentication.interface';
 
 //revamped version clean up and simplified
 @Injectable()
@@ -65,9 +65,9 @@ export class PermissionsGuard implements CanActivate {
       user.roles,
     );
 
-    this.logger.debug(
-      'User roles structure: ' + JSON.stringify(user.roles, null, 2),
-    );
+    // this.logger.debug(
+    //   'User roles structure: ' + JSON.stringify(user.roles, null, 2),
+    // );
 
     // // Debug all granted permissions
     // this.logger.debug(

@@ -1,12 +1,11 @@
-import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsString,
-  IsInt,
-  IsDefined,
   IsOptional,
+  IsUUID,
+  IsBoolean,
+  IsArray,
 } from 'class-validator';
 
 export class CreateRoleDto {
@@ -17,10 +16,18 @@ export class CreateRoleDto {
 
   @IsString()
   @ApiProperty({
-    example: 'Office staff for IT department',
+    example: 'Office staff for IT dept.',
     description: 'Description of the role',
   })
   description: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'PK UUID',
+    description: 'Department the role belongs to',
+  })
+  department_id: string;
 }
 
 export class UpdateRoleDto {
@@ -39,22 +46,41 @@ export class UpdateRoleDto {
   description?: string;
 
   @IsOptional()
-  @IsInt()
-  @IsDefined()
-  @Expose({ name: 'status' }) // maps " status" input field to this property
+  @IsUUID()
   @ApiProperty({
-    name: 'status',
-    example: 'active or inactive',
-    description: 'active, inactive',
+    example: 'PK UUID',
+    description: 'Department the role belongs to',
   })
-  @Transform(({ value }) => {
-    console.log('Transforming status:', value);
-    if (value === undefined || value === null) return undefined;
-    if (value === 'active') return 1;
-    if (value === 'inactive') return 0;
-    throw new BadRequestException(
-      `Invalid status value ${value}. Allowed values are "active" or "inactive"`,
-    );
+  department_id: string;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({
+    example: true,
+    description: 'If you want to update the status of the role',
   })
-  stat?: number;
+  is_active?: boolean;
+}
+
+export class UpdateRolePermissionDto {
+  @IsUUID()
+  @IsNotEmpty()
+  @ApiProperty({ example: 1, description: 'Primary Key ID of the Role' })
+  role_id: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  @ApiProperty({ example: 1, description: 'Primary Key ID of the Sub Module' })
+  sub_module_id: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @IsUUID('4', { each: true })
+  @ApiProperty({
+    example: '["Array of PK UUID of sub module permission id"]',
+    description:
+      'Assign/Update permissions to role, also can add multiple permissions at once',
+  })
+  sub_module_permission_id?: string[];
 }

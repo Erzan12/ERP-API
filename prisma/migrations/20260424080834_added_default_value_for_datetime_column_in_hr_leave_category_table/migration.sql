@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "HrLeaveCategory" ALTER COLUMN "created_at" SET DEFAULT CURRENT_TIMESTAMP;

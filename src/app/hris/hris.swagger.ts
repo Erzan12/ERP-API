@@ -2,7 +2,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { HrV2Module } from 'src/modules/hris/hrV2.module';
+import { HrisModule } from 'src/modules/hris/hris.module';
 
 export function setupHRISSwagger(app: INestApplication): void {
   // build document for V1
@@ -38,14 +38,13 @@ export function setupHRISSwagger(app: INestApplication): void {
     .setDescription(
       'API for HRIS employee lifecycle. CURRENTLY VIEWING API VERSION 2',
     )
-    .setVersion('2.0')
+    .setVersion('2.4.1')
     .addTag('Authentication')
     .addTag('Human Resources - Dashboard')
-    .addTag('Human Resources - Employees')
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
-    include: [HrV2Module, AuthModule],
+    include: [HrisModule, AuthModule],
   });
 
   // mount individual endpoints (This automatically exposes /docs/admin/v1-json and v2-json)

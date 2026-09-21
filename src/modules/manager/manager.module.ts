@@ -1,0 +1,32 @@
+import { Module } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from 'src/auth/auth.service';
+import { MailService } from 'src/jobs/mail/mail.service';
+import { PrismaService } from 'src/config/prisma/prisma.service';
+import { PermissionTemplateController } from './permission_template/permission_template.controller';
+import { PermissionTemplateService } from './permission_template/permission_template.service';
+import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
+import { AuditService } from '../administrator/audit/audit.service';
+import { RoleManagementController } from './role-management/role-management.controller';
+import { RoleManagementService } from './role-management/role-management.service';
+import { UserManagementModule } from './user_management/user_management.module';
+
+@Module({
+  imports: [
+    // AuthModule,
+    UserManagementModule,
+  ],
+  controllers: [PermissionTemplateController, RoleManagementController],
+  providers: [
+    PrismaService,
+    AuthService,
+    JwtStrategy,
+    JwtService,
+    MailService,
+    PermissionTemplateService,
+    AuditService,
+    RoleManagementService,
+  ],
+  exports: [AuthService, RoleManagementService],
+})
+export class ManagerModule {}
