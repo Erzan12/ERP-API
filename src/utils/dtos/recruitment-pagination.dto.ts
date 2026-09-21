@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class RecruitmentPaginationDto {
   @IsOptional()
@@ -13,16 +13,16 @@ export class RecruitmentPaginationDto {
   @ApiPropertyOptional({ default: '' })
   status?: string;
 
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true')
-  @ApiPropertyOptional({ default: '' })
-  is_active?: boolean;
+  // @IsOptional()
+  // @IsBoolean()
+  // @Transform(({ value }) => value === 'true')
+  // @ApiPropertyOptional({ default: '' })
+  // is_active?: boolean;
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'id', default: 'id' })
-  sortBy: string = 'id';
+  @ApiPropertyOptional({ example: 'created_at', default: 'created_at' })
+  sortBy: string = 'created_at';
 
   @IsOptional()
   @IsString()
@@ -42,11 +42,10 @@ export class RecruitmentPaginationDto {
   perPage: number = 10;
 }
 
-export class StatusCountDto {
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true')
-  @ApiPropertyOptional({ default: '' })
-  is_active?: boolean;
-}
-
+// export class StatusCountDto {
+//   @IsOptional()
+//   @IsBoolean()
+//   @Transform(({ value }) => value === 'true')
+//   @ApiPropertyOptional({ default: '' })
+//   is_active?: boolean;
+// }

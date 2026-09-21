@@ -7,13 +7,13 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   CareerPostingStatus,
   EmployeeType,
   EmploymentType,
-} from 'src/utils/decorators/global.enums.decorator';
-import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+} from '@prisma/client';
 
 export class CreateCareerPostingDto {
   @IsUUID()
@@ -56,7 +56,7 @@ export class CreateCareerPostingDto {
   @Type(() => String)
   @ApiProperty({
     enum: EmployeeType,
-    example: EmployeeType.LAND_BASED,
+    example: EmployeeType.land_based,
     description: 'The employee type of this career posting',
   })
   employee_type: EmployeeType;
@@ -68,7 +68,7 @@ export class CreateCareerPostingDto {
   @Type(() => String)
   @ApiProperty({
     enum: EmploymentType,
-    example: EmploymentType.FULL_TIME,
+    example: EmploymentType.full_time,
     description: 'The employment type of this career posting',
   })
   employment_type: EmploymentType;
@@ -81,6 +81,22 @@ export class CreateCareerPostingDto {
     description: 'The PK uuid of the user location',
   })
   user_location_id: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  @ApiProperty({
+    example: 'User UUID for verifier of this career posting',
+    description: 'The uuid of verifier user for this career posting',
+  })
+  verifier_id: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  @ApiProperty({
+    example: 'User UUID for career posting approver',
+    description: 'The uuid of approver user for this career posting',
+  })
+  approver_id: string;
 }
 
 export class UpdateCareerPostingDto {
@@ -102,14 +118,14 @@ export class UpdateCareerPostingDto {
   })
   slots?: number;
 
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 'Manages the development team',
-    description: 'The description of the position',
-  })
-  job_description?: string;
+  // @IsOptional()
+  // @IsString()
+  // @IsNotEmpty()
+  // @ApiProperty({
+  //   example: 'Manages the development team',
+  //   description: 'The description of the position',
+  // })
+  // job_description?: string;
 
   @IsOptional()
   @IsUUID()
@@ -128,7 +144,7 @@ export class UpdateCareerPostingDto {
   @Type(() => String)
   @ApiProperty({
     enum: EmployeeType,
-    example: EmployeeType.LAND_BASED,
+    example: EmployeeType.land_based,
     description: 'The employee type of this career posting',
   })
   employee_type?: EmployeeType;
@@ -157,7 +173,7 @@ export class UpdateCareerPostingDto {
   @Type(() => String)
   @ApiProperty({
     enum: EmploymentType,
-    example: EmploymentType.FULL_TIME,
+    example: EmploymentType.full_time,
     description: 'The employment type of this career posting',
   })
   employment_type?: EmploymentType;
@@ -165,13 +181,14 @@ export class UpdateCareerPostingDto {
   @IsOptional()
   @IsString()
   @IsEnum(CareerPostingStatus, {
-    message: 'Career Posting status must be draft, submitted, verified, approved, rejected',
+    message:
+      'Career Posting status must be draft, submitted, verified, approved, rejected',
   })
   @Type(() => String)
   @ApiProperty({
     enum: CareerPostingStatus,
-    example: CareerPostingStatus.DRAFT,
-    description: 'The status of this career posting'
+    example: CareerPostingStatus.draft,
+    description: 'The status of this career posting',
   })
   status?: CareerPostingStatus;
 
@@ -183,4 +200,20 @@ export class UpdateCareerPostingDto {
     description: 'The PK uuid of the user location',
   })
   user_location_id?: string;
+
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({
+    example: 'User UUID for verifier of this career posting',
+    description: 'The uuid of verifier user for this career posting',
+  })
+  verifier_id?: string;
+
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({
+    example: 'User UUID for career posting approver',
+    description: 'The uuid of approver user for this career posting',
+  })
+  approver_id?: string;
 }

@@ -1,5 +1,5 @@
 require("dotenv/config");
-const { defineConfig, env } = require("prisma/config");
+const { defineConfig } = require("prisma/config");
 
 module.exports = defineConfig({
   schema: "prisma/schema.prisma",
@@ -8,9 +8,6 @@ module.exports = defineConfig({
     seed: "node prisma/seed.js",
   },
   datasource: {
-    // local dev
     url: process.env.DATABASE_URL,
-    //  production
-    // url: env("DIRECT_URL"),
   },
 });

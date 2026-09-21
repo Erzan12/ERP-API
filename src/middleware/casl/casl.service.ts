@@ -13,7 +13,7 @@ export class CaslAbilityService {
   private Ability: AbilityClass<AppAbility>;
 
   constructor() {
-    this.Ability = PureAbility as AbilityClass<AppAbility>;
+    this.Ability = PureAbility;
   }
 
   //revamped version simplified

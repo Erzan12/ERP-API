@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { SECURITY_CLEARANCE_KEY } from './security-clearance.decorator';
-import { AuthenticatedRequest } from 'src/utils/types/interface';
+import { AuthenticatedRequest } from 'src/utils/types/authentication.interface';
 
 @Injectable()
 export class SecurityClearanceGuard implements CanActivate {

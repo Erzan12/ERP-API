@@ -10,10 +10,7 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import {
-  ApplicationSource,
-  ApplicationStatus,
-} from 'src/utils/decorators/global.enums.decorator';
+import { ApplicationSource, ApplicationStatus } from '@prisma/client';
 
 export class CreateApplicantDto {
   @IsUUID()
@@ -64,34 +61,6 @@ export class CreateApplicantDto {
   })
   mobile_number: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @IsEnum(ApplicationSource, {
-    message:
-      'Application Source must be company_website, walk_in, referral, linkedIn, jobstreet',
-  })
-  @Type(() => String)
-  @ApiProperty({
-    enum: ApplicationSource,
-    example: ApplicationSource.COMPANY_WEBSITE,
-    description: 'The application source of the applicant',
-  })
-  application_source: ApplicationSource;
-
-  @IsString()
-  @IsNotEmpty()
-  @IsEnum(ApplicationStatus, {
-    message:
-      'Application Status must be applied, screening, for_interview, accepted, rejected, onboarding',
-  })
-  @Type(() => String)
-  @ApiProperty({
-    enum: ApplicationStatus,
-    example: ApplicationStatus.FOR_INTERVIEW,
-    description: 'The status of application of the applicant',
-  })
-  application_status: ApplicationStatus;
-
   @IsDateString()
   @IsNotEmpty()
   @ApiProperty({
@@ -99,6 +68,38 @@ export class CreateApplicantDto {
     description: 'The date of application of the applicant',
   })
   date_applied: string;
+
+  @IsNotEmpty()
+  @IsEnum(ApplicationSource, {
+    each: true,
+    message:
+      'Application Source must be company_website, walk_in, referral, linkedIn, jobstreet',
+  })
+  @ApiProperty({
+    enum: ApplicationSource,
+    example: ApplicationSource,
+    description: 'The application source of the applicant',
+  })
+  application_source: ApplicationSource;
+
+  // @Transform(({ value }) => {
+  //   if (Array.isArray(value)) return value;
+  //   return [value];
+  // })
+  // @IsArray()
+  // @IsEnum(DocumentType, { each: true })
+  // file_desc: DocumentType[];
+  // @IsString()
+  // // @IsNotEmpty()
+  // @ApiProperty({
+  //   example: '09633416290',
+  //   description: 'Mobile no. of the applicant',
+  // })
+  // file_desc?: string;
+  // @IsArray()
+  // @ValidateNested({ each: true })
+  // @Type(() => DocumentDto)
+  // documents: DocumentDto[];
 }
 
 export class UpdateApplicantDto {
@@ -159,7 +160,7 @@ export class UpdateApplicantDto {
   @Type(() => String)
   @ApiProperty({
     enum: ApplicationSource,
-    example: ApplicationSource.COMPANY_WEBSITE,
+    example: ApplicationSource.company_website,
     description: 'The application source of the applicant',
   })
   application_source?: ApplicationSource;
@@ -173,7 +174,7 @@ export class UpdateApplicantDto {
   @Type(() => String)
   @ApiProperty({
     enum: ApplicationStatus,
-    example: ApplicationStatus.FOR_INTERVIEW,
+    example: ApplicationStatus.screening,
     description: 'The status of application of the applicant',
   })
   application_status?: ApplicationStatus;

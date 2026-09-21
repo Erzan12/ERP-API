@@ -7,6 +7,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { ExecuteDbQueryDto } from './dto/execute-db-query.dto';
 import { SlackService } from 'src/jobs/slack/slack.service';
+import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @Injectable()
 export class DbQueryService {
@@ -30,7 +31,36 @@ export class DbQueryService {
     }
   }
 
-  async executeQuery(dto: ExecuteDbQueryDto, adminId: string) {
+  async executeQuery(dto: ExecuteDbQueryDto, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator'];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
     this.validateSql(dto.sql);
     const start = Date.now();
     let success = true;
@@ -55,7 +85,7 @@ export class DbQueryService {
 
     await this.prisma.adminDBQueryLog.create({
       data: {
-        adminId,
+        adminId: user.id,
         sql: dto.sql,
         purpose: dto.purpose,
         // confirm: true,
@@ -72,7 +102,7 @@ export class DbQueryService {
     await this.slackService.notify(
       // `Admin ${adminId} executed manual SQL:\n${dto.purpose}`
       `🚨 Manual SQL executed
-      Admin: ${adminId}
+      Admin: ${user.id}
       Purpose: ${dto.purpose}
       Success: ${success}
       Time: ${executionMs}ms`,
@@ -84,14 +114,72 @@ export class DbQueryService {
     };
   }
 
-  async getLogs() {
+  async getLogs(user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator'];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
     return this.prisma.adminDBQueryLog.findMany({
       orderBy: { executedAt: 'desc' },
       take: 50,
     });
   }
 
-  async getLogById(id: string) {
+  async getLogById(id: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = ['Administrator', 'Super Administrator'];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
     return this.prisma.adminDBQueryLog.findUnique({
       where: { id },
     });

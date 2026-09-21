@@ -24,7 +24,7 @@ import {
 
 @ApiTags('Administrator - Database Manuel Query')
 @Controller({ path: 'administrator/db-query', version: '2' })
-export class DbQueryControllerV2 {
+export class DbQueryController {
   constructor(private readonly dbQueryService: DbQueryService) {}
 
   @Post('execute')
@@ -39,22 +39,25 @@ export class DbQueryControllerV2 {
     @Body() dto: ExecuteDbQueryDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.dbQueryService.executeQuery(dto, user.id);
+    return this.dbQueryService.executeQuery(dto, user);
   }
 
   @Get('logs')
   @ApiOperation({ summary: 'Get latest executed manual queries' })
   @ApiGetResponse('Logs for all manual db queries performed')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
-  getLogs() {
-    return this.dbQueryService.getLogs();
+  getLogs(@SessionUser() user: RequestUser) {
+    return this.dbQueryService.getLogs(user);
   }
 
   @Get('logs/:id')
   @ApiOperation({ summary: 'Get specific manual query log' })
   @ApiGetResponse('Get a specific manual db query log')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
-  getLog(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.dbQueryService.getLogById(id);
+  getLog(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.dbQueryService.getLogById(id, user);
   }
 }
