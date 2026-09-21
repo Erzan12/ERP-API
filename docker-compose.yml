@@ -1,6 +1,6 @@
 services:
   nestjs:
-    container_name: nestjs-app
+    container_name: nestjs-app-erp
     build:
       context: .
       # dockerfile: Dockerfile
@@ -19,7 +19,7 @@ services:
       - postgres
   postgres:
     image: postgres:17
-    container_name: postgres-db
+    container_name: postgres-db-erp
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -36,7 +36,7 @@ services:
 
   prisma-studio:
     image: node:lts
-    container_name: prisma-studio
+    container_name: prisma-studio-erp
     working_dir: /app
     volumes:
       - .:/app
@@ -48,11 +48,11 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/abas_v2
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/abas_erp_v2
 
   pgadmin:
     image: dpage/pgadmin4:7.6      #pin to stable version
-    container_name: pgadmin
+    container_name: pgadmin-erp
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
