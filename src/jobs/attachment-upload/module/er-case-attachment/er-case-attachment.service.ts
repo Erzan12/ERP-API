@@ -224,6 +224,169 @@ export class ErCaseAttachmentService {
     return prisma.hrErCaseAttachment.createMany({ data });
   }
 
+  private async attachFilesForExplanation(
+    params: {
+      file: Express.Multer.File;
+      transaction_type: string;
+      explanation_id: string;
+      user_id?: string;
+    },
+    tx?: Prisma.TransactionClient,
+  ) {
+    const prisma = tx || this.prisma;
+    const { file, transaction_type, explanation_id, user_id } = params;
+
+    // Guard: make sure a file was provided
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+
+    // Guard: catch missing buffer early
+    if (!file.buffer) {
+      throw new BadRequestException(
+        `File "${file.originalname}" has no buffer. Ensure multer is using memoryStorage.`,
+      );
+    }
+
+    const bucket = MINIO_BUCKETS.DOCUMENTS;
+
+    const extension =
+      file.originalname.split('.').pop()?.toLowerCase() || 'bin';
+    const fileName = `written-explaination-documents/${randomUUID()}.${extension}`;
+
+    await minioClient.putObject(bucket, fileName, file.buffer, file.size, {
+      'Content-Type': file.mimetype,
+    });
+
+    const fileUrl = buildFileUrl(bucket, fileName);
+
+    const data = {
+      transaction_type,
+      explanation_id,
+      file_name: file.originalname,
+      file_url: fileUrl,
+      file_type: file.mimetype,
+      file_size: file.size,
+      uploaded_by: user_id,
+    };
+
+    return prisma.hrErCaseAttachment.create({ data });
+  }
+
+  private async attachFilesForCaseHearing(
+    params: {
+      files: Express.Multer.File[];
+      transaction_type: string;
+      hearing_id: string;
+      document_types?: string[];
+      user_id?: string;
+    },
+    tx?: Prisma.TransactionClient,
+  ) {
+    const prisma = tx || this.prisma;
+    const { files, transaction_type, hearing_id, document_types, user_id } =
+      params;
+
+    if (document_types && files.length !== document_types.length) {
+      throw new BadRequestException(
+        'Files and document types count must match',
+      );
+    }
+
+    const bucket = MINIO_BUCKETS.DOCUMENTS;
+
+    // Upload each file to MinIO and build attachment records
+    const data = await Promise.all(
+      files.map(async (files) => {
+        // Guard: catch missing buffer early
+        if (!files.buffer) {
+          throw new BadRequestException(
+            `File "${files.originalname}" has no buffer. Ensure multer is using memoryStorage.`,
+          );
+        }
+
+        const extension =
+          files.originalname.split('.').pop()?.toLowerCase() || 'bin';
+        const fileName = `hearing-documents/${randomUUID()}.${extension}`;
+
+        await minioClient.putObject(
+          bucket,
+          fileName,
+          files.buffer,
+          files.size,
+          {
+            'Content-Type': files.mimetype,
+          },
+        );
+
+        const fileUrl = buildFileUrl(bucket, fileName);
+
+        return {
+          transaction_type,
+          // transaction_id,
+          hearing_id,
+          file_name: files.originalname,
+          file_url: fileUrl,
+          file_type: files.mimetype,
+          file_size: files.size,
+          // document_type: document_types?.[i] ?? null,
+          uploaded_by: user_id,
+        };
+      }),
+    );
+
+    return prisma.hrErCaseAttachment.createMany({ data });
+  }
+
+  private async attachFilesForDecision(
+    params: {
+      file: Express.Multer.File;
+      transaction_type: string;
+      decision_id: string;
+      user_id?: string;
+    },
+    tx?: Prisma.TransactionClient,
+  ) {
+    const prisma = tx || this.prisma;
+    const { file, transaction_type, decision_id, user_id } = params;
+
+    // Guard: make sure a file was provided
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+
+    // Guard: catch missing buffer early
+    if (!file.buffer) {
+      throw new BadRequestException(
+        `File "${file.originalname}" has no buffer. Ensure multer is using memoryStorage.`,
+      );
+    }
+
+    const bucket = MINIO_BUCKETS.DOCUMENTS;
+
+    const extension =
+      file.originalname.split('.').pop()?.toLowerCase() || 'bin';
+    const fileName = `notice-of-decision-documents/${randomUUID()}.${extension}`;
+
+    await minioClient.putObject(bucket, fileName, file.buffer, file.size, {
+      'Content-Type': file.mimetype,
+    });
+
+    const fileUrl = buildFileUrl(bucket, fileName);
+
+    const data = {
+      transaction_type,
+      decision_id,
+      file_name: file.originalname,
+      file_url: fileUrl,
+      file_type: file.mimetype,
+      file_size: file.size,
+      uploaded_by: user_id,
+    };
+
+    return prisma.hrErCaseAttachment.create({ data });
+  }
+
   async uploadErCaseDocs(
     disciplinaryCaseId: string,
     user: RequestUser,
@@ -309,6 +472,94 @@ export class ErCaseAttachmentService {
     return {
       status: 'success',
       message: 'Attachments for this NTE uploaded.',
+      attachment,
+    };
+  }
+
+  async uploadExplanationDocs(
+    explanationId: string,
+    user: RequestUser,
+    file: Express.Multer.File,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingExplanation =
+      await this.prisma.hrErCaseExplanation.findUnique({
+        where: { id: explanationId },
+      });
+
+    if (!existingExplanation) {
+      throw new NotFoundException('Written Explaination does not exists.');
+    }
+
+    const attachment = await this.attachFilesForExplanation({
+      file,
+      transaction_type: TRANSACTION_TYPE.WRITTEN_EXPLANATION_DOC,
+      explanation_id: existingExplanation.id,
+      user_id: user.id,
+    });
+
+    return {
+      status: 'success',
+      message: 'Attachments for this Written Explanation uploaded.',
+      attachment,
+    };
+  }
+
+  async uploadHearingDocs(
+    hearingId: string,
+    user: RequestUser,
+    files: Express.Multer.File[],
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingHearing = await this.prisma.hrErCaseHearing.findUnique({
+      where: { id: hearingId },
+    });
+
+    if (!existingHearing) {
+      throw new NotFoundException('Written Explaination does not exists.');
+    }
+
+    const attachments = await this.attachFilesForCaseHearing({
+      files,
+      transaction_type: TRANSACTION_TYPE.ADMIN_HEARING_DOC,
+      hearing_id: existingHearing.id,
+      user_id: user.id,
+    });
+
+    return {
+      status: 'success',
+      message: 'Attachments for this Case Hearing uploaded.',
+      attachments,
+    };
+  }
+
+  async uploadDecisionDocs(
+    decisionId: string,
+    user: RequestUser,
+    file: Express.Multer.File,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingDecision = await this.prisma.hrErCaseDecision.findUnique({
+      where: { id: decisionId },
+    });
+
+    if (!existingDecision) {
+      throw new NotFoundException('Written Explaination does not exists.');
+    }
+
+    const attachment = await this.attachFilesForDecision({
+      file,
+      transaction_type: TRANSACTION_TYPE.WRITTEN_EXPLANATION_DOC,
+      decision_id: existingDecision.id,
+      user_id: user.id,
+    });
+
+    return {
+      status: 'success',
+      message: 'Attachments for this Written Explanation uploaded.',
       attachment,
     };
   }

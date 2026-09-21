@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { HrErCaseStage } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
@@ -109,6 +110,7 @@ export class CaseCloseService {
         data: {
           case_id: disciplinaryCaseId,
           actor_id: user.id,
+          stage: HrErCaseStage.case_closed,
           action: 'case_closed',
         },
       });

@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { SubmitExplainationDto } from './dto/submit-explanation.dto';
@@ -13,6 +14,7 @@ import {
   HrErExplanationChannel,
   HrErExplanationStatus,
 } from '@prisma/client';
+import { logActivity } from '../activity-grouping-helper/activity-log.helper';
 
 @Injectable()
 export class WrittenExplainationService {
@@ -58,6 +60,29 @@ export class WrittenExplainationService {
     return requestUser;
   }
 
+  async getWrittenExplanation(explanationId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const writtenExplanation = await this.prisma.hrErCaseExplanation.findUnique(
+      {
+        where: { id: explanationId },
+        include: {
+          attachment: true,
+        },
+      },
+    );
+
+    if (!writtenExplanation) {
+      throw new NotFoundException('No available Written Explanation found.');
+    }
+
+    return {
+      status: 'success',
+      message: 'Here is the Written Explanation',
+      writtenExplanation,
+    };
+  }
+
   async submitWrittenExplanation(
     dto: SubmitExplainationDto,
     user: RequestUser,
@@ -87,11 +112,15 @@ export class WrittenExplainationService {
         );
       }
 
-      const existing = await tx.hrErCaseExplanation.findUnique({
+      const existingExplanation = await tx.hrErCaseExplanation.findUnique({
         where: { party_id: dto.party_id },
       });
 
-      if (existing?.status === HrErExplanationStatus.received) {
+      // if (!existingExplanation) {
+      //   throw new NotFoundException('Written Explantion does not exist.');
+      // }
+
+      if (existingExplanation?.status === HrErExplanationStatus.received) {
         throw new ConflictException(
           'An explanation has already been recorded for this respondent.',
         );
@@ -99,8 +128,9 @@ export class WrittenExplainationService {
 
       if (
         dto.channel !== HrErExplanationChannel.did_not_proceed &&
-        !dto.response_text &&
-        !dto.file_url
+        !dto.response_text
+        // &&
+        // !dto.file_url
       ) {
         throw new BadRequestException(
           'Provide response_text or file_url, or select "did not proceed".',
@@ -114,7 +144,7 @@ export class WrittenExplainationService {
           status: HrErExplanationStatus.received,
           channel: dto.channel,
           response_text: dto.response_text,
-          file_url: dto.file_url,
+          file_url: 'string',
           received_at: new Date(),
           created_by: user.id,
         },
@@ -122,19 +152,19 @@ export class WrittenExplainationService {
           status: HrErExplanationStatus.received,
           channel: dto.channel,
           response_text: dto.response_text,
-          file_url: dto.file_url,
+          file_url: 'string',
           received_at: new Date(),
           updated_by: user.id,
         },
       });
 
-      await tx.hrErCaseActivityLog.create({
-        data: {
-          case_id: dto.disciplinary_case_id,
-          party_id: dto.party_id,
-          actor_id: user.id,
-          action: 'written_explanation_received',
-        },
+      await logActivity(tx, {
+        case_id: party.case_id,
+        party_id: party.id,
+        actor_id: user.id,
+        stage: HrErCaseStage.written_explanation,
+        action: 'written_explanation_received',
+        metadata: { written_explanation_id: existingExplanation?.id },
       });
 
       return {

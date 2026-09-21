@@ -38,11 +38,11 @@ export class SubmitExplainationDto {
   })
   response_text?: string;
 
-  @IsOptional()
-  @IsString()
-  @ApiPropertyOptional({
-    required: false,
-    description: 'URL of the uploaded written explanation file',
-  })
-  file_url?: string;
+  // @IsOptional()
+  // @IsString()
+  // @ApiPropertyOptional({
+  //   required: false,
+  //   description: 'URL of the uploaded written explanation file',
+  // })
+  // file_url?: string;
 }

@@ -4,4 +4,7 @@ export const TRANSACTION_TYPE = {
   ER_CASE_DOC: 'ER Case Document',
   IR_ER_DOC: 'IR or ER Document',
   NTE_DOC: 'NTE Document',
+  WRITTEN_EXPLANATION_DOC: 'Written Explanation Document',
+  ADMIN_HEARING_DOC: 'Administrative Hearing',
+  NOTICE_OF_DECISION_DOC: 'Notice of Decision',
 };
