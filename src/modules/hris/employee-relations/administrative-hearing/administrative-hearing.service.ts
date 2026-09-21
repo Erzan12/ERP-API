@@ -95,7 +95,7 @@ export class AdministrativeHearingService {
     expectedStage: HrErCaseStage,
   ) {
     const party = await tx.hrErCaseParty.findUniqueOrThrow({
-      where: { id: partyId, case_id: disciplinaryCaseId},
+      where: { id: partyId, case_id: disciplinaryCaseId },
     });
 
     if (party.role !== HrErCasePartyRole.respondent) {
@@ -115,7 +115,6 @@ export class AdministrativeHearingService {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
-      
       await this.assertRespondentStage(
         tx,
         dto.disciplinary_case_id,
@@ -193,7 +192,9 @@ export class AdministrativeHearingService {
         where: {
           id: hearingId,
           party_id: partyId,
-          status: { notIn: [HrErHearingStatus.no_show, HrErHearingStatus.conducted] },
+          status: {
+            notIn: [HrErHearingStatus.no_show, HrErHearingStatus.conducted],
+          },
         },
         include: {
           party: true,

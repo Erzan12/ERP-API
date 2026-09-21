@@ -16,7 +16,7 @@ import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
 @ApiTags('Attachment/Documents Upload - Employee Relations')
-@Controller({ path:'er-attachment', version: '2' })
+@Controller({ path: 'er-attachment', version: '2' })
 export class ErCaseAttachmentController {
   constructor(
     private readonly erCaseAttachmentService: ErCaseAttachmentService,
