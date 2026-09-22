@@ -2,7 +2,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { AdministratorV2Module } from 'src/modules/administrator/administratorV2.module';
+import { AdministratorModule } from 'src/modules/administrator/administrator.module';
 
 export function setupAdminSwagger(app: INestApplication): void {
   // build document for V1
@@ -54,7 +54,7 @@ export function setupAdminSwagger(app: INestApplication): void {
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
-    include: [AdministratorV2Module, AuthModule],
+    include: [AdministratorModule, AuthModule],
   });
 
   // mount individual endpoints (This automatically exposes /docs/admin/v1-json and v2-json)
