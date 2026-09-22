@@ -10,9 +10,10 @@ import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
 import { AuditService } from '../administrator/audit/audit.service';
 import { RoleManagementController } from './role-management/role-management.controller';
 import { RoleManagementService } from './role-management/role-management.service';
+import { UserManagementModule } from './user-management/user-management.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [UserManagementModule],
   controllers: [PermissionTemplateController, RoleManagementController],
   providers: [
     PrismaService,

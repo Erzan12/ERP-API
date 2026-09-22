@@ -7,7 +7,6 @@ import {
   Put,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { PermissionTemplateService } from './permission-template.service';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -26,6 +25,7 @@ import {
 } from 'src/utils/constants/ability.constant';
 import { AssignTemplateDto } from './dto/assign-template.dto';
 import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';
+import { PermissionTemplateService } from './permission-template.service';
 
 @ApiTags('Manager - Permission Template')
 @Controller({ path: 'manager', version: '2' })
@@ -54,20 +54,20 @@ export class PermissionTemplateController {
   }
 
   //get user permission templates
-  @Get('permission-template/user/:userPermissionTemplateId')
-  @ApiOperation({ summary: 'Get available permission templates to user' })
-  @ApiGetResponse('Here are the list of permission templates available')
-  @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
-  getUserPermissionTemplate(
-    @Param('userPermissionTemplateId', new ParseUUIDPipe())
-    userPermissionTemplateId: string,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.permissionTemplateService.getUserPermissionTemplate(
-      userPermissionTemplateId,
-      user,
-    );
-  }
+  // @Get('permission-template/user/:userPermissionTemplateId')
+  // @ApiOperation({ summary: 'Get available permission templates to user' })
+  // @ApiGetResponse('Here are the list of permission templates available')
+  // @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
+  // getUserPermissionTemplate(
+  //   @Param('userPermissionTemplateId', new ParseUUIDPipe())
+  //   userPermissionTemplateId: string,
+  //   @SessionUser() user: RequestUser,
+  // ) {
+  //   return this.permissionTemplateService.getUserPermissionTemplate(
+  //     userPermissionTemplateId,
+  //     user,
+  //   );
+  // }
 
   //create new permission template
   @Post('permission-template')

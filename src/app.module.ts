@@ -9,7 +9,7 @@ import { AdministratorModule } from './modules/administrator/administrator.modul
 import { HrModule } from './modules/hris/hr.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { MastertableModule } from './modules/mastertable/mastertable.module';
-import { UserManagementV2Module } from './modules/manager/user-management/user-management.module';
+import { UserManagementModule } from './modules/manager/user-management/user-management.module';
 import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
@@ -33,6 +33,12 @@ import { PrismaService } from './config/prisma/prisma.service';
 import { DivisionService } from './modules/mastertable/division/division.service';
 import { MailService } from './jobs/mail/mail.service';
 import { UserLocationService } from './modules/mastertable/user-location/user-location.service';
+import { AttachmentUploadService } from './jobs/attachment-upload/attachment-upload.service';
+import { MulterModule } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+// import { SmsModule } from './jobs/sms/sms.module';
+// import { ControlNumberModule } from './jobs/control-number/control-number.module';
+import { AttachmentUploadModule } from './jobs/attachment-upload/attachment-upload.module';
 
 @Module({
   imports: [
@@ -49,9 +55,12 @@ import { UserLocationService } from './modules/mastertable/user-location/user-lo
     CaslModule,
     HrModule,
     ManagerModule,
-    UserManagementV2Module,
+    UserManagementModule,
     EmployeeDashboardModule,
     PrismaModule,
+    // SmsModule,
+    // ControlNumberModule,
+    AttachmentUploadModule
     // HealthCheckModule,
     // HealthModule,
   ],
@@ -83,8 +92,10 @@ import { UserLocationService } from './modules/mastertable/user-location/user-lo
     CompanyService,
     EmploymentStatusService,
     UserLocationService,
+    AttachmentUploadService,
     // HealthCheckService,
   ],
+  exports: [AttachmentUploadService],
   controllers: [
     // EmployeeControllerV1,
     AuthController,

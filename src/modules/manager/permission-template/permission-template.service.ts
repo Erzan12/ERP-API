@@ -3,12 +3,12 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { CreatePermissionTemplateDto } from 'src/modules/manager/permission-template/dto/create-permission-template.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AssignTemplateDto } from './dto/assign-template.dto';
 import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { UserRole } from '@prisma/client';
+import { CreatePermissionTemplateDto } from './dto/create-permission-template.dto';
 
 @Injectable()
 export class PermissionTemplateService {
@@ -45,6 +45,7 @@ export class PermissionTemplateService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -99,6 +100,7 @@ export class PermissionTemplateService {
     const allowedRoles = [
       'Administrator',
       'Super Administrator',
+      'HR Administrator',
       'HR Manager',
       'HR Clerk',
       'HR Staff',
@@ -157,7 +159,11 @@ export class PermissionTemplateService {
       const rolePermissions = await tx.rolePermission.findMany({
         where: {
           id: { in: role_permission_ids },
-          department_id,
+          ...(department_id && {
+            role: {
+              department_id,
+            },
+          }),
           ...(position_id && { position_id }),
         },
       });
@@ -256,7 +262,11 @@ export class PermissionTemplateService {
       const rolePermissions = await tx.rolePermission.findMany({
         where: {
           id: { in: role_permission_ids },
-          department_id,
+          ...(department_id && {
+            role: {
+              department_id,
+            },
+          }),
           ...(position_id && { position_id }),
         },
       });
@@ -305,7 +315,7 @@ export class PermissionTemplateService {
       const templateDept = await tx.permissionTemplateDepartment.findFirst({
         where: {
           permission_template_id: template_id,
-          department_id: existingUser.employee.department_id,
+          department_id: existingUser.employee.department_id ?? '',
           OR: [
             { position_id: existingUser.employee.position_id },
             { position_id: null }, // fallback to template for all positions in dept
@@ -313,7 +323,18 @@ export class PermissionTemplateService {
         },
         include: {
           permission_template_role_permissions: {
-            include: { role_permissions: true },
+            include: {
+              role_permissions: {
+                include: {
+                  role: true,
+                  sub_module_permission: {
+                    include: {
+                      sub_module: true,
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       });
@@ -327,8 +348,9 @@ export class PermissionTemplateService {
       const userRolesMap = new Map<string, UserRole>();
 
       for (const ptrp of templateDept.permission_template_role_permissions) {
-        const rp = ptrp.role_permissions;
-        const key = `${rp.role_id}-${rp.sub_module_id}`;
+        const rp = ptrp.role_permissions.role;
+        const sp = ptrp.role_permissions.sub_module_permission;
+        const key = `${rp.id}-${sp.sub_module_id}`;
 
         let userRole = userRolesMap.get(key);
 
@@ -336,7 +358,7 @@ export class PermissionTemplateService {
           const existing = await tx.userRole.findFirst({
             where: {
               user_id: user.id,
-              role_id: rp.role_id,
+              role_id: rp.name,
             },
             include: { role: true },
           });
@@ -347,8 +369,8 @@ export class PermissionTemplateService {
             userRole = await tx.userRole.create({
               data: {
                 user_id: user.id,
-                role_id: rp.role_id,
-                role_name: rp.role_name,
+                role_id: rp.id,
+                role_name: rp.name,
                 created_at: new Date(),
               },
               include: {
@@ -374,7 +396,7 @@ export class PermissionTemplateService {
               user_id: user.id,
               user_role_id: userRole.id,
               role_permission_id: rp.id,
-              action: rp.action,
+              action: sp.action,
             },
           });
         }
@@ -419,83 +441,83 @@ export class PermissionTemplateService {
     });
   }
 
-  async getUserPermissionTemplate(
-    userPermissionTemplateId: string,
-    user: RequestUser,
-  ) {
-    const userWithEmployee = await this.prisma.user.findUnique({
-      where: { id: userPermissionTemplateId },
-      include: {
-        employee: true,
-      },
-    });
+  // async getUserPermissionTemplate(
+  //   userPermissionTemplateId: string,
+  //   user: RequestUser,
+  // ) {
+  //   const userWithEmployee = await this.prisma.user.findUnique({
+  //     where: { id: userPermissionTemplateId },
+  //     include: {
+  //       employee: true,
+  //     },
+  //   });
 
-    if (!userWithEmployee || !userWithEmployee.employee) {
-      throw new BadRequestException('User or employee not found');
-    }
+  //   if (!userWithEmployee || !userWithEmployee.employee) {
+  //     throw new BadRequestException('User or employee not found');
+  //   }
 
-    const { department_id, position_id } = userWithEmployee.employee;
+  //   const { department_id, position_id } = userWithEmployee.employee;
 
-    if (!department_id && !position_id) {
-      throw new BadRequestException(
-        'User has no department or position assigned',
-      );
-    }
+  //   if (!department_id && !position_id) {
+  //     throw new BadRequestException(
+  //       'User has no department or position assigned',
+  //     );
+  //   }
 
-    const userPermissionTemplate =
-      await this.prisma.permissionTemplate.findMany({
-        where: {
-          department_id,
-          departments: {
-            some: {
-              department_id,
-              OR: [{ position_id }, { position_id: null }],
-            },
-          },
-        },
-        include: {
-          departments: true,
-          role_permissions: {
-            include: {
-              role_permissions: true,
-            },
-          },
-        },
-      });
+  //   // const userPermissionTemplate =
+  //   //   await this.prisma.permissionTemplate.findMany({
+  //   //     where: {
+  //   //       department_id,
+  //   //       departments: {
+  //   //         some: {
+  //   //           department_id,
+  //   //           OR: [{ position_id }, { position_id: null }],
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //     include: {
+  //   //       departments: true,
+  //   //       role_permissions: {
+  //   //         include: {
+  //   //           role_permissions: true,
+  //   //         },
+  //   //       },
+  //   //     },
+  //   //   });
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
+  //   const requestUser = await this.prisma.user.findUnique({
+  //     where: { id: user.id },
+  //     include: {
+  //       employee: {
+  //         include: {
+  //           person: true,
+  //           position: true,
+  //         },
+  //       },
+  //       user_roles: true,
+  //     },
+  //   });
 
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
+  //   if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+  //     throw new BadRequestException(`User does not exist.`);
+  //   }
 
-    const isAdmin = requestUser.user_roles.some(
-      (role) =>
-        // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
-        role.role_name === 'Administrator' || 'Super Administrator',
-    );
+  //   const isAdmin = requestUser.user_roles.some(
+  //     (role) =>
+  //       // role.role_id === 'b1118e05-6377-4e64-a677-14f9b9226fdd' &&
+  //       role.role_name === 'Administrator' || 'Super Administrator',
+  //   );
 
-    if (!isAdmin) {
-      throw new ForbiddenException(
-        'You are not allowed to perform this action',
-      );
-    }
+  //   if (!isAdmin) {
+  //     throw new ForbiddenException(
+  //       'You are not allowed to perform this action',
+  //     );
+  //   }
 
-    return {
-      status: 'success',
-      message: 'Here is the Users Permission Template.',
-      userPermissionTemplate,
-    };
-  }
+  //   return {
+  //     status: 'success',
+  //     message: 'Here is the Users Permission Template.',
+  //     userPermissionTemplate,
+  //   };
+  // }
 }

@@ -1,6 +1,18 @@
-import { Controller, Body, Post, Get, Put, Req, Param, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Post,
+  Get,
+  Put,
+  Req,
+  Param,
+  ParseUUIDPipe,
+  Query,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { UserManagementService } from './user-management.service';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   ApiGetResponse,
   ApiPostResponse,
@@ -13,15 +25,12 @@ import {
   DeactivateUserAccountDto,
   ReactivateUserAccountDto,
 } from './dto/user-account-status.dto';
-import { CreateUserWithRoleDto } from './dto/create-user-with-role-permission.dto';
-import { UserEmailResetTokenDto } from './dto/user-email.reset-token.dto';
 
 import {
   ACTION_READ,
   ACTION_CREATE,
   USER_ACCOUNT,
   SEC_LVL_5,
-  USER_TOKEN_KEY,
 } from 'src/utils/constants/ability.constant';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { Can } from 'src/utils/decorators/can.decorator';
@@ -29,10 +38,14 @@ import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Request } from 'express';
+import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UserDetailsDto } from './dto/user-details.dto';
+import { memoryStorage } from 'multer';
 
 @ApiTags('User Management')
 @Controller({ path: 'users', version: '2' })
-export class UserManagementControllerV2 {
+export class UserManagementController {
   constructor(private userManagementService: UserManagementService) {}
 
   //view user accounts
@@ -43,15 +56,81 @@ export class UserManagementControllerV2 {
   @ApiSecurityClearance(SEC_LVL_5)
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
-  viewUsers(@SessionUser() user: RequestUser) {
-    return this.userManagementService.viewUserAccount(user);
+  viewUsers(
+    @SessionUser() user: RequestUser,
+    @Query() dto: UserManagementPaginationDto,
+  ) {
+    return this.userManagementService.getUsers(user, dto);
+  }
+
+  @Get('get-managers')
+  @ApiOperation({ summary: 'Get Managers with department and employees' })
+  @ApiGetResponse(
+    'Here are the list of Managers with departments and employees',
+  )
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  @Can({ action: ACTION_READ, subject: USER_ACCOUNT })
+  getManagers(@SessionUser() user: RequestUser) {
+    return this.userManagementService.getManagers(user);
+  }
+
+  @Get('new_employees')
+  @ApiOperation({ summary: 'Get the new employees without user accounts' })
+  @ApiGetResponse('Here are the list of new employees without user accounts')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  viewNewEmployees(
+    @SessionUser() user: RequestUser,
+    // @Query() dto: UserManagementPaginationDto,
+  ) {
+    return this.userManagementService.viewNewEmployeeWithoutUserAccount(
+      user,
+      // dto,
+    );
+  }
+
+  @Get(':userId')
+  @ApiOperation({ summary: 'Get User Account' })
+  @ApiGetResponse('Here is the User')
+  @ApiSecurityClearance(SEC_LVL_5)
+  @SecurityClearance(SEC_LVL_5)
+  getUser(
+    @SessionUser() user: RequestUser,
+    @Param('userId', new ParseUUIDPipe()) userId: string,
+  ) {
+    return this.userManagementService.getUser(user, userId);
   }
 
   //create user account
   @Post()
+  // @UseInterceptors(FileInterceptor('avatar'))
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+      },
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
-    type: CreateUserWithRoleDto,
-    description: 'Payload to create User Account',
+    schema: {
+      type: 'object',
+      properties: {
+        employee_id: { type: 'string' },
+        username: { type: 'string' },
+        email: { type: 'string' },
+        // password: { type: 'string' },
+        role_id: { type: 'string', nullable: true },
+        avatar: {
+          type: 'string',
+          format: 'binary',
+          nullable: true,
+        },
+      },
+      required: ['employee_id', 'username', 'email'],
+    },
   })
   @ApiOperation({ summary: 'Create a new user account' })
   @ApiPostResponse('User Account created successfully')
@@ -59,35 +138,19 @@ export class UserManagementControllerV2 {
   @SecurityClearance(SEC_LVL_5)
   @Can({ action: ACTION_CREATE, subject: USER_ACCOUNT })
   createUser(
-    @Body() createUserWithRoleDto: CreateUserWithRoleDto,
+    @Body() dto: UserDetailsDto,
     @SessionUser() user: RequestUser,
     @Req() req: Request,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
+    // @Param('userId', new ParseUUIDPipe()) userId: string,
+    @UploadedFile() file: Express.Multer.File | undefined,
   ) {
     return this.userManagementService.createUserAccount(
-      createUserWithRoleDto,
+      dto,
       user,
       req,
-      userId
+      // userId,
+      file,
     );
-  }
-
-  //for expired first time login reset token key
-  @Post('resend-invitation')
-  @ApiBody({
-    type: UserEmailResetTokenDto,
-    description: 'Payload for new user reset token',
-  })
-  @ApiOperation({ summary: 'Reset token for first time log in' })
-  @ApiPostResponse('Password reset done! you can now log in!')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  @Can({ action: ACTION_CREATE, subject: USER_TOKEN_KEY })
-  newResetToken(
-    @Body() dto: UserEmailResetTokenDto,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.userManagementService.resendInvitation(dto, user);
   }
 
   //first login password reset token
@@ -103,12 +166,12 @@ export class UserManagementControllerV2 {
   //   @Body() createUserWithTemplateDto: CreateUserWithRoleDto,
   //   @SessionUser() user: RequestUser,
   //   @Req() req: Request,
+
   // ) {
   //   return this.userManagementService.createUserAccount(
   //     createUserWithTemplateDto,
   //     user,
   //     req,
-  //     user,
   //   );
   // }
 
@@ -140,15 +203,6 @@ export class UserManagementControllerV2 {
       reactivateUserAccountDto,
       user,
     );
-  }
-
-  @Get('new_employees')
-  @ApiOperation({ summary: 'Get the new employees without user accounts' })
-  @ApiGetResponse('Here are the list of new employees without user accounts')
-  @ApiSecurityClearance(SEC_LVL_5)
-  @SecurityClearance(SEC_LVL_5)
-  viewNewEmployees(@SessionUser() user: RequestUser) {
-    return this.userManagementService.viewNewEmployeeWithoutUserAccount(user);
   }
 
   // @Get('with_roles_permissions')
