@@ -1360,7 +1360,7 @@
     },
     "/v2/mastertable/positions": {
       "get": {
-        "operationId": "PositionControllerV2_getPositions_v2",
+        "operationId": "PositionController_getPositions_v2",
         "parameters": [
           {
             "name": "search",
@@ -1438,7 +1438,7 @@
         ]
       },
       "post": {
-        "operationId": "PositionControllerV2_createPosition_v2",
+        "operationId": "PositionController_createPosition_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1479,7 +1479,7 @@
     },
     "/v2/mastertable/positions/{positionId}": {
       "get": {
-        "operationId": "PositionControllerV2_getPosition_v2",
+        "operationId": "PositionController_getPosition_v2",
         "parameters": [
           {
             "name": "positionId",
@@ -1516,7 +1516,7 @@
         ]
       },
       "put": {
-        "operationId": "PositionControllerV2_updatePosition_v2",
+        "operationId": "PositionController_updatePosition_v2",
         "parameters": [
           {
             "name": "positionId",
@@ -1566,7 +1566,7 @@
     },
     "/v2/mastertable/departments": {
       "get": {
-        "operationId": "DepartmentControllerV2_getDepartments_v2",
+        "operationId": "DepartmentController_getDepartments_v2",
         "parameters": [
           {
             "name": "search",
@@ -1644,7 +1644,7 @@
         ]
       },
       "post": {
-        "operationId": "DepartmentControllerV2_createDepartment_v2",
+        "operationId": "DepartmentController_createDepartment_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1685,7 +1685,7 @@
     },
     "/v2/mastertable/departments/{departmentId}": {
       "get": {
-        "operationId": "DepartmentControllerV2_getDepartment_v2",
+        "operationId": "DepartmentController_getDepartment_v2",
         "parameters": [
           {
             "name": "departmentId",
@@ -1722,7 +1722,7 @@
         ]
       },
       "put": {
-        "operationId": "DepartmentControllerV2_updateDepartment_v2",
+        "operationId": "DepartmentController_updateDepartment_v2",
         "parameters": [
           {
             "name": "departmentId",
@@ -1772,7 +1772,7 @@
     },
     "/v2/mastertable/companies": {
       "get": {
-        "operationId": "CompanyControllerV2_getCompanies_v2",
+        "operationId": "CompanyController_getCompanies_v2",
         "parameters": [
           {
             "name": "search",
@@ -1850,7 +1850,7 @@
         ]
       },
       "post": {
-        "operationId": "CompanyControllerV2_createCompany_v2",
+        "operationId": "CompanyController_createCompany_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -1891,7 +1891,7 @@
     },
     "/v2/mastertable/companies/{companyId}": {
       "get": {
-        "operationId": "CompanyControllerV2_getCompany_v2",
+        "operationId": "CompanyController_getCompany_v2",
         "parameters": [
           {
             "name": "companyId",
@@ -1928,7 +1928,7 @@
         ]
       },
       "put": {
-        "operationId": "CompanyControllerV2_updateCompany_v2",
+        "operationId": "CompanyController_updateCompany_v2",
         "parameters": [
           {
             "name": "companyId",
@@ -1978,7 +1978,7 @@
     },
     "/v2/mastertable/divisions": {
       "get": {
-        "operationId": "DivisionControllerV2_getDivisions_v2",
+        "operationId": "DivisionController_getDivisions_v2",
         "parameters": [
           {
             "name": "search",
@@ -2056,7 +2056,7 @@
         ]
       },
       "post": {
-        "operationId": "DivisionControllerV2_createDivision_v2",
+        "operationId": "DivisionController_createDivision_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2097,7 +2097,7 @@
     },
     "/v2/mastertable/divisions/{divisionId}": {
       "get": {
-        "operationId": "DivisionControllerV2_getDivision_v2",
+        "operationId": "DivisionController_getDivision_v2",
         "parameters": [
           {
             "name": "divisionId",
@@ -2134,7 +2134,7 @@
         ]
       },
       "put": {
-        "operationId": "DivisionControllerV2_updateDivision_v2",
+        "operationId": "DivisionController_updateDivision_v2",
         "parameters": [
           {
             "name": "divisionId",
@@ -2184,7 +2184,7 @@
     },
     "/v2/mastertable/employment_status": {
       "get": {
-        "operationId": "EmploymentStatusControllerV2_getEmployeeStats_v2",
+        "operationId": "EmploymentStatusController_getEmployeeStats_v2",
         "parameters": [
           {
             "name": "search",
@@ -2262,7 +2262,7 @@
         ]
       },
       "post": {
-        "operationId": "EmploymentStatusControllerV2_createEmployeeStatus_v2",
+        "operationId": "EmploymentStatusController_createEmployeeStatus_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2303,7 +2303,7 @@
     },
     "/v2/mastertable/employment_status/{employeeStatusId}": {
       "get": {
-        "operationId": "EmploymentStatusControllerV2_getEmployeeStat_v2",
+        "operationId": "EmploymentStatusController_getEmployeeStat_v2",
         "parameters": [
           {
             "name": "employeeStatusId",
@@ -2340,7 +2340,7 @@
         ]
       },
       "put": {
-        "operationId": "EmploymentStatusControllerV2_updateEmployeeStatus_v2",
+        "operationId": "EmploymentStatusController_updateEmployeeStatus_v2",
         "parameters": [
           {
             "name": "employeeStatusId",
@@ -2389,7 +2389,7 @@
     },
     "/v2/mastertable/user-locations": {
       "get": {
-        "operationId": "UserLocationControllerV2_getUserLocations_v2",
+        "operationId": "UserLocationController_getUserLocations_v2",
         "parameters": [
           {
             "name": "search",
@@ -2467,7 +2467,7 @@
         ]
       },
       "post": {
-        "operationId": "UserLocationControllerV2_createUserLocation_v2",
+        "operationId": "UserLocationController_createUserLocation_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2508,7 +2508,7 @@
     },
     "/v2/mastertable/user-locations/{userLocationId}": {
       "get": {
-        "operationId": "UserLocationControllerV2_getUserLocation_v2",
+        "operationId": "UserLocationController_getUserLocation_v2",
         "parameters": [
           {
             "name": "userLocationId",
@@ -2545,7 +2545,7 @@
         ]
       },
       "put": {
-        "operationId": "UserLocationControllerV2_updateUserLocation_v2",
+        "operationId": "UserLocationController_updateUserLocation_v2",
         "parameters": [
           {
             "name": "userLocationId",

@@ -7,16 +7,16 @@ import { CompanyService } from './company/company.service';
 import { CreateCompanyDto } from './company/dto/company.dto';
 import { DivisionService } from './division/division.service';
 import { CreateDivisionDto } from './division/dto/division.dto';
-import { PositionControllerV2 } from './position/positionV2.controller';
-import { DepartmentControllerV2 } from './department/departmentV2.controller';
-import { CompanyControllerV2 } from './company/companyV2.controller';
-import { DivisionControllerV2 } from './division/divisionV2.controller';
-import { EmploymentStatusService } from './employment_status/employment_status.service';
-import { EmploymentStatusControllerV2 } from './employment_status/employment_statusV2.controller';
+import { PositionController } from './position/position.controller';
+import { DivisionController } from './division/division.controller';
+import { EmploymentStatusService } from './employment-status/employment-status.service';
+import { EmploymentStatusController } from './employment-status/employment-status.controller';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { UserLocationService } from './user_location/user_location.service';
+import { UserLocationService } from './user-location/user-location.service';
 import { AuthModule } from 'src/auth/auth.module';
-import { UserLocationControllerV2 } from './user_location/user_locationV2.controller';
+import { UserLocationController } from './user-location/user-location.controller';
+import { DepartmentController } from './department/department.controller';
+import { CompanyController } from './company/company.controller';
 
 @Module({
   imports: [AuthModule],
@@ -34,13 +34,13 @@ import { UserLocationControllerV2 } from './user_location/user_locationV2.contro
     UserLocationService,
   ],
   controllers: [
-    PositionControllerV2,
-    DepartmentControllerV2,
-    CompanyControllerV2,
-    DivisionControllerV2,
-    EmploymentStatusControllerV2,
-    UserLocationControllerV2,
+    PositionController,
+    DepartmentController,
+    CompanyController,
+    DivisionController,
+    EmploymentStatusController,
+    UserLocationController,
   ],
   exports: [],
 })
-export class MasterV2Module {}
+export class MastertableModule {}

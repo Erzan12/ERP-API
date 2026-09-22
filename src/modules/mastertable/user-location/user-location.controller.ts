@@ -8,7 +8,7 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { UserLocationService } from './user_location.service';
+import { UserLocationService } from './user-location.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CreateUserLocationDto,
@@ -32,7 +32,7 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Mastertable - User Location')
 @Controller({ path: 'mastertable', version: '2' })
-export class UserLocationControllerV2 {
+export class UserLocationController {
   constructor(private userLocationService: UserLocationService) {}
 
   @Get('user-locations')

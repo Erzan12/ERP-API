@@ -2,7 +2,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { MasterV2Module } from 'src/modules/mastertable/masterV2.module';
+import { MastertableModule } from 'src/modules/mastertable/mastertable.module';
 
 export function setupMasterSwagger(app: INestApplication): void {
   // build document for V1
@@ -50,7 +50,7 @@ export function setupMasterSwagger(app: INestApplication): void {
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
-    include: [MasterV2Module, AuthModule],
+    include: [MastertableModule, AuthModule],
   });
 
   // mount individual endpoints (This automatically exposes /docs/admin/v1-json and v2-json)

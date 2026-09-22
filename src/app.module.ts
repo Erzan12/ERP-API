@@ -8,7 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AdministratorModule } from './modules/administrator/administrator.module';
 import { HrV2Module } from './modules/hris/hrV2.module';
 import { ManagerModule } from './modules/manager/manager.module';
-import { MasterV2Module } from './modules/mastertable/masterV2.module';
+import { MastertableModule } from './modules/mastertable/mastertable.module';
 import { UserManagementV2Module } from './modules/manager/user-management/user-management.module';
 import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
@@ -27,12 +27,12 @@ import { PositionService } from './modules/mastertable/position/position.service
 import { EmployeeService } from './modules/hris/employee/employee-masterlist/employee.service';
 import { CaslAbilityService } from './middleware/casl/casl.service';
 import { DepartmentService } from './modules/mastertable/department/department.service';
-import { EmploymentStatusService } from './modules/mastertable/employment_status/employment_status.service';
+import { EmploymentStatusService } from './modules/mastertable/employment-status/employment-status.service';
 import { CompanyService } from './modules/mastertable/company/company.service';
 import { PrismaService } from './config/prisma/prisma.service';
 import { DivisionService } from './modules/mastertable/division/division.service';
 import { MailService } from './jobs/mail/mail.service';
-import { UserLocationService } from './modules/mastertable/user_location/user_location.service';
+import { UserLocationService } from './modules/mastertable/user-location/user-location.service';
 
 @Module({
   imports: [
@@ -45,7 +45,7 @@ import { UserLocationService } from './modules/mastertable/user_location/user_lo
     AuthModule,
     JwtModule,
     AdministratorModule,
-    MasterV2Module,
+    MastertableModule,
     CaslModule,
     HrV2Module,
     ManagerModule,

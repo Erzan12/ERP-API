@@ -9,7 +9,7 @@ import { setupMasterSwagger } from './mastertable/mastertable.swagger';
 import { AdministratorModule } from 'src/modules/administrator/administrator.module';
 import { HrV2Module } from 'src/modules/hris/hrV2.module';
 import { ManagerModule } from 'src/modules/manager/manager.module';
-import { MasterV2Module } from 'src/modules/mastertable/masterV2.module';
+import { MastertableModule } from 'src/modules/mastertable/mastertable.module';
 import { setupUserSwagger } from './user-management/user-management.swagger';
 import { setupPerformanceEvaluationSwagger } from './employee-dashboard/employee-dashboard.swagger';
 
@@ -41,7 +41,7 @@ function setupAppSwagger(app: INestApplication): void {
       AdministratorModule,
       HrV2Module,
       ManagerModule,
-      MasterV2Module,
+      MastertableModule,
     ],
   });
 
