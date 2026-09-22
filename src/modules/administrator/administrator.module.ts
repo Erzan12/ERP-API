@@ -7,7 +7,7 @@ import { RoleController } from './role/role.controller';
 import { RoleService } from './role/role.service';
 import { ModuleService } from './module/module.service';
 import { ModuleController } from './module/module.controller';
-import { SubModuleController } from './sub-module/sub-moduleV2.controller';
+import { SubModuleController } from './sub-module/sub-module.controller';
 import { SecurityClearanceService } from './security-clearance/security-clearance.service';
 import { SecurityClearanceController } from './security-clearance/security-clearance.controller';
 import { PrismaService } from 'src/config/prisma/prisma.service';
