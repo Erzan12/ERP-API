@@ -6,7 +6,7 @@ import { LandingModule } from './landing/landing.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AdministratorModule } from './modules/administrator/administrator.module';
-import { HrV2Module } from './modules/hris/hrV2.module';
+import { HrModule } from './modules/hris/hr.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { MastertableModule } from './modules/mastertable/mastertable.module';
 import { UserManagementV2Module } from './modules/manager/user-management/user-management.module';
@@ -47,7 +47,7 @@ import { UserLocationService } from './modules/mastertable/user-location/user-lo
     AdministratorModule,
     MastertableModule,
     CaslModule,
-    HrV2Module,
+    HrModule,
     ManagerModule,
     UserManagementV2Module,
     EmployeeDashboardModule,

@@ -59,6 +59,6 @@ import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-u
     LeaveCasesController,
     LeaveCategoryController
   ],
-  exports: [HrV2Module],
+  exports: [HrModule],
 })
-export class HrV2Module {}
+export class HrModule {}
