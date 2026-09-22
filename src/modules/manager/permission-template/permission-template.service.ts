@@ -3,7 +3,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { CreatePermissionTemplateDto } from 'src/modules/manager/permission_template/dto/create-permission-template.dto';
+import { CreatePermissionTemplateDto } from 'src/modules/manager/permission-template/dto/create-permission-template.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AssignTemplateDto } from './dto/assign-template.dto';
 import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';

@@ -7,9 +7,9 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AdministratorModule } from './modules/administrator/administrator.module';
 import { HrV2Module } from './modules/hris/hrV2.module';
-import { ManagerV2Module } from './modules/manager/managerV2.module';
+import { ManagerModule } from './modules/manager/manager.module';
 import { MasterV2Module } from './modules/master/masterV2.module';
-import { UserManagementV2Module } from './modules/manager/user_management/user_managementV2.module';
+import { UserManagementV2Module } from './modules/manager/user-management/user-management.module';
 import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
@@ -21,7 +21,7 @@ import { AuthController } from './auth/auth.controller';
 // import { UserController } from './modules/manager/user/controllers/userv2.controller';
 // import { UserLocationController } from './modules/master/user_location/controller/user_locationV2.controller';
 
-import { UserManagementService } from './modules/manager/user_management/user_management.service';
+import { UserManagementService } from './modules/manager/user-management/user-management.service';
 import { AuditService } from './modules/administrator/audit/audit.service';
 import { PositionService } from './modules/master/position/position.service';
 import { EmployeeService } from './modules/hris/employee/employee-masterlist/employee.service';
@@ -48,7 +48,7 @@ import { UserLocationService } from './modules/master/user_location/user_locatio
     MasterV2Module,
     CaslModule,
     HrV2Module,
-    ManagerV2Module,
+    ManagerModule,
     UserManagementV2Module,
     EmployeeDashboardModule,
     PrismaModule,
