@@ -2,16 +2,31 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
+  ForbiddenException,
+  NotFoundException,
+  Inject,
+  forwardRef,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcryptjs';
-import { ResetPasswordWithTokenDto } from './dto/reset-password-with-token.dto';
+import {
+  ResetPasswordWithTokenDto,
+  ResendInvitationTokenDto,
+  VerifyForgotPasswordDto,
+  ForgotPasswordDto,
+} from './dto/reset-password-with-token.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-permisison.helper';
+import { MailService } from 'src/jobs/mail/mail.service';
+import { UserManagementService } from 'src/modules/manager/user-management/user-management.service';
+import { OtpPurposeTemplate } from '@prisma/client';
+import { ActionEntry } from './type/action-entry.type';
+import { generateOtp, getOtpExpiration } from 'src/utils/constants/otp-verification.constants';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +34,10 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly auditService: AuditService,
+    private readonly mailService: MailService,
+
+    @Inject(forwardRef(() => UserManagementService))
+    private readonly userManagementService: UserManagementService,
   ) {}
 
   //For first time log in password reset with token from user or person registration/creation
@@ -93,6 +112,14 @@ export class AuthService {
       },
     });
 
+    await this.prisma.passwordHistory.create({
+      data: {
+        user_id: updatedUser.id,
+        created_by: user.id,
+        password_hash: updatedUser.password,
+      },
+    });
+
     //delete the token or mark it used
 
     //<---- this section will delete the generated reset token in db upon changing for your new password -->
@@ -109,6 +136,205 @@ export class AuthService {
     };
   }
 
+  async resendInvitation(dto: ResendInvitationTokenDto, user: RequestUser) {
+    const actingUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!actingUser || !actingUser.employee || !actingUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const admin = `${actingUser.employee.person.first_name} ${actingUser.employee.person.last_name}`;
+    const adminPos = actingUser.employee.position?.name;
+
+    // scalable approach
+    const allowedRoles = ['Administrator', 'Super Administrator', 'Manager'];
+    const isAdmin = actingUser.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!isAdmin) {
+      throw new ForbiddenException('User is not allowed create User Account');
+    }
+
+    const invitedUser = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (!invitedUser) {
+      throw new NotFoundException('User not found or email does not exist');
+    }
+
+    if (invitedUser.require_reset === 0) {
+      throw new BadRequestException(
+        'User has already completed first log in reset password.',
+      );
+    }
+
+    // Call Auth service to regenerate token
+    const resetToken = await this.generateResetToken(invitedUser.id);
+    // const { password_token } = token;
+
+    await this.mailService.sendResetTokenEmail(
+      invitedUser.email,
+      invitedUser.username,
+      // newUser.password,
+      resetToken.token.password_token,
+    );
+
+    return {
+      status: 'success',
+      message: `Invitation resent to ${invitedUser.email}`,
+      user_id: invitedUser.id,
+      reset_token: resetToken.token,
+      user_name: invitedUser.username,
+      updated_by: {
+        name: admin,
+        position: adminPos,
+      },
+    };
+  }
+
+  //forgot password
+  async forgotPassword(dto: ForgotPasswordDto) {
+    const user = await this.userManagementService.findByIdentifier(
+      dto.identifier,
+    );
+
+    if (!user) {
+      return { message: 'If account exists, OTP sent' };
+    }
+
+    const existingOtp = await this.prisma.otpVerification.findFirst({
+      where: {
+        user_id: user.id,
+        purpose: OtpPurposeTemplate.forgot_password,
+        is_used: false,
+        expires_at: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (existingOtp) {
+      throw new BadRequestException(
+        'An OTP has already been sent. Please wait until it expires.',
+      );
+    }
+
+    const generatedOtp = await this.prisma.otpVerification.create({
+      data: {
+        employee_id: user.employee_id,
+        user_id: user.id,
+        code: generateOtp(),
+        purpose: OtpPurposeTemplate.forgot_password,
+        expires_at: getOtpExpiration(),
+      },
+    });
+
+    try {
+      await this.mailService.sendOtp(user.email, generateOtp());
+    } catch {
+      throw new InternalServerErrorException('Failed to send OTP email.');
+    }
+
+    return {
+      status: 'success',
+      message: 'Generated OTP successfully',
+      generatedOtp,
+    };
+  }
+
+  async verifyForgotPassword(dto: VerifyForgotPasswordDto) {
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(dto.identifier);
+
+    const user = isEmail
+      ? await this.prisma.user.findUnique({
+          where: { email: dto.identifier },
+        })
+      : await this.prisma.user.findFirst({
+          where: {
+            employee: {
+              mobile_numbers: {
+                some: {
+                  mobile_number: dto.identifier,
+                },
+              },
+            },
+          },
+        });
+
+    if (!user) throw new BadRequestException('Invalid request');
+
+    const otpRecord = await this.prisma.otpVerification.findFirst({
+      where: {
+        user_id: user.id,
+        code: dto.otp,
+        purpose: OtpPurposeTemplate.forgot_password,
+        is_used: false,
+        expires_at: { gt: new Date() },
+      },
+    });
+
+    if (!otpRecord) {
+      throw new BadRequestException('Invalid or expired OTP');
+    }
+
+    // password history check
+    const history = await this.prisma.passwordHistory.findMany({
+      where: { user_id: user.id },
+      take: 5,
+      orderBy: { created_at: 'desc' },
+    });
+
+    for (const h of history) {
+      const reused = await bcrypt.compare(dto.newPassword, h.password_hash);
+      if (reused) {
+        throw new BadRequestException('Password already used before');
+      }
+    }
+
+    if (await bcrypt.compare(dto.newPassword, user.password)) {
+      throw new BadRequestException('Same as current password');
+    }
+
+    const hashed = await bcrypt.hash(dto.newPassword, 10);
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.passwordHistory.create({
+        data: {
+          user_id: user.id,
+          password_hash: user.password,
+        },
+      });
+
+      await tx.user.update({
+        where: { id: user.id },
+        data: { password: hashed },
+      });
+
+      await tx.otpVerification.update({
+        where: { id: otpRecord.id },
+        data: {
+          is_used: true,
+          used_at: new Date(),
+        },
+      });
+    });
+
+    return { message: 'Password reset successful' };
+  }
+
   //generate reset token
   async generateResetToken(userId: string) {
     // Delete old unused tokens
@@ -122,7 +348,7 @@ export class AuthService {
     const tokenKey = crypto.randomBytes(64).toString('hex');
 
     const expiresAt = new Date(
-      Date.now() + 1000 * 60 * 60 * 24 * 3, // 3 days
+      Date.now() + 1000 * 60 * 60 * 24 * 1, // 1 day
     );
 
     const token = await this.prisma.passwordResetToken.create({
@@ -149,10 +375,32 @@ export class AuthService {
         user_roles: {
           where: { is_active: true },
           include: {
-            role: {
+            // role: {
+            //   include: {
+            //     role_permissions: {
+            //       where: { is_active: true },
+            //       include: {
+            //         sub_module_permission: {
+            //           include: {
+            //             sub_module: true,
+            //           }
+            //         }
+            //       },
+            //     },
+            //   },
+            // },
+            user_permissions: {
               include: {
-                role_permissions: {
-                  where: { is_active: true },
+                role_permission: {
+                  include: {
+                    sub_module_permission: {
+                      include: {
+                        sub_module: true,
+                      },
+                    },
+                  },
+                },
+                sub_module_permission: {
                   include: {
                     sub_module: true,
                   },
@@ -189,6 +437,15 @@ export class AuthService {
             user_permissions: {
               include: {
                 role_permission: {
+                  include: {
+                    sub_module_permission: {
+                      include: {
+                        sub_module: true,
+                      },
+                    },
+                  },
+                },
+                sub_module_permission: {
                   include: {
                     sub_module: true,
                   },
@@ -253,7 +510,7 @@ export class AuthService {
     const payload = {
       userUUID: userValidate.id,
       tokenVersion: userValidate.token_version,
-      department_id: userValidate.employee.department_id,
+      department_id: userValidate.employee.department_id ?? '',
       name: userValidate.username,
       issuedAt: issuedAt,
     };
@@ -275,7 +532,7 @@ export class AuthService {
     const requestUser: RequestUser = {
       id: userValidate.id,
       email: userValidate.email,
-      department_id: userValidate.employee.department_id,
+      department_id: userValidate.employee.department_id ?? '',
       security_clearance_level: userValidate.security_clearance_level ?? 0,
       roles: mapRolesToRequestUser(userValidate.user_roles),
     };
@@ -331,6 +588,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or missing token');
     }
 
+    // Toggle set to false if you don't want slug/code fields in the response
+    const SHOW_SLUG_AND_CODE = true;
+
     const user = await this.prisma.user.findUnique({
       where: { id: requestUser.id }, // ownership enforced here
       include: {
@@ -352,12 +612,64 @@ export class AuthService {
         user_roles: {
           where: { is_active: true },
           include: {
-            role: {
+            user_permissions: {
               include: {
-                role_permissions: {
-                  where: { is_active: true },
+                role_permission: {
                   include: {
-                    sub_module: true,
+                    sub_module_permission: {
+                      select: {
+                        id: true,
+                        action: true,
+                        code: true, // uncommented — used below
+                        sub_module: {
+                          select: {
+                            id: true,
+                            name: true,
+                            slug: true, // uncommented — used below
+                            module: {
+                              select: {
+                                id: true,
+                                name: true,
+                                slug: true, // uncommented — used below
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                sub_module_permission: {
+                  select: {
+                    id: true,
+                    action: true,
+                    code: true, // uncommented — used below
+                    sub_module: {
+                      select: {
+                        id: true,
+                        name: true,
+                        slug: true, // uncommented — used below
+                        module: {
+                          select: {
+                            id: true,
+                            name: true,
+                            slug: true, // uncommented — used below
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            role: {
+              select: {
+                id: true,
+                name: true,
+                department: {
+                  select: {
+                    id: true,
+                    name: true,
                   },
                 },
               },
@@ -378,10 +690,11 @@ export class AuthService {
       message: 'User is validated successfully',
       data: {
         id: user.id,
+        employee_id: employee.id,
         full_name: [
-          employee.person.first_name,
-          employee.person.middle_name,
-          employee.person.last_name,
+          employee.person?.first_name,
+          employee.person?.middle_name,
+          employee.person?.last_name,
         ]
           .filter(Boolean)
           .join(' '),
@@ -392,40 +705,108 @@ export class AuthService {
               name: employee.department.name,
             }
           : null,
-        company: employee.company.name,
-        division: employee.division.name,
-        position: employee.position.name,
+        company: employee.company?.name,
+        division: employee.division?.name,
+        position: employee.position?.name,
         security_clearance_level: user.security_clearance_level ?? 0,
-        // roles: user.user_roles.map((ur) => ({
-        //     id: ur.role?.id ?? 0,
-        //     role_name: ur.role?.name ?? 'Unknown Role',
-        //     // module: {
-        //     //   id: ur.role.module?.id,
-        //     //   name: ur.role.module?.name,
-        //     // },
-        //     sub_modules: ur.user_permissions.map((up) => ({
-        //     name: up.role_permission?.sub_module?.name ?? 'unknown', // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
-        //     // action: up.role_permission?.action ?? 'unknown',
-        //     // status: true, // if you have a field for it, use it
-        //     })),
-        // })),
+
         roles: user.user_roles.map((ur) => {
-          const uniqueSubmodules = [
-            ...new Map(
-              ur.role.role_permissions.map((rp) => [
-                rp.sub_module.id,
+          const moduleMap = new Map<
+            string,
+            {
+              id: string;
+              name: string;
+              slug?: string | null;
+              subModules: Map<
+                string,
                 {
-                  id: rp.sub_module.id,
-                  name: rp.sub_module.name,
-                },
-              ]),
-            ).values(),
-          ];
+                  subModuleId: string;
+                  name: string;
+                  slug?: string | null;
+                  // keyed by permission.id to prevent duplicate action entries
+                  actionsMap: Map<string, ActionEntry>;
+                }
+              >;
+            }
+          >();
+
+          ur.user_permissions.forEach((rp) => {
+            // Prefer the direct permission if it exists; otherwise use the role's permission.
+            const permission =
+              rp.sub_module_permission ??
+              rp.role_permission?.sub_module_permission;
+
+            if (!permission) return;
+
+            const subModule = permission?.sub_module;
+            if (!subModule) return;
+
+            const module = subModule.module;
+            if (!module) return;
+
+            if (!moduleMap.has(module.id)) {
+              moduleMap.set(module.id, {
+                id: module.id,
+                name: module.name,
+                ...(SHOW_SLUG_AND_CODE && { slug: module.slug ?? null }),
+                subModules: new Map(),
+              });
+            }
+
+            const moduleEntry = moduleMap.get(module.id)!;
+
+            if (!moduleEntry.subModules.has(subModule.id)) {
+              moduleEntry.subModules.set(subModule.id, {
+                subModuleId: subModule.id,
+                name: subModule.name,
+                ...(SHOW_SLUG_AND_CODE && { slug: subModule.slug ?? null }),
+                actionsMap: new Map(),
+              });
+            }
+
+            const subModuleEntry = moduleEntry.subModules.get(subModule.id)!;
+
+            // Build this action's entry
+            const entry = {
+              ...(rp.sub_module_permission_id && {
+                subModulePermissionId: rp.sub_module_permission_id,
+              }),
+              ...(rp.role_permission_id && {
+                rolePermissionId: rp.role_permission_id,
+              }),
+              action: permission.action,
+              ...(SHOW_SLUG_AND_CODE && { code: permission.code ?? null }),
+              source: rp.source ?? 'role',
+            };
+
+            // Merge with existing entry if this permission was already seen
+            // (dedupes the case where both a role-based and direct/override
+            // user_permission row point at the same sub_module_permission)
+            const existing = subModuleEntry.actionsMap.get(permission.id);
+            subModuleEntry.actionsMap.set(
+              permission.id,
+              existing ? { ...existing, ...entry } : entry,
+            );
+          });
+
+          const modules = [...moduleMap.values()].map((module) => ({
+            id: module.id,
+            name: module.name,
+            ...(SHOW_SLUG_AND_CODE && { slug: module.slug }),
+            subModules: [...module.subModules.values()].map((sm) => ({
+              subModuleId: sm.subModuleId,
+              name: sm.name,
+              ...(SHOW_SLUG_AND_CODE && { slug: sm.slug }),
+              actions: [...sm.actionsMap.values()],
+            })),
+          }));
+
           return {
-            id: ur.role?.id ?? 0,
-            role_name: ur.role?.name ?? 'Unknown Role',
-            isActive: ur.is_active ?? 'false',
-            sub_modules: uniqueSubmodules,
+            id: ur.role_id ?? 0,
+            roleName: ur.role.name,
+            department: ur.role.department,
+            isActive: ur.is_active,
+            modules,
           };
         }),
       },
