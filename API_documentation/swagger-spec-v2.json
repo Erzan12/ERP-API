@@ -2595,7 +2595,7 @@
     },
     "/v2/hris/employees": {
       "get": {
-        "operationId": "EmployeeControllerV2_getEmployees_v2",
+        "operationId": "EmployeeController_getEmployees_v2",
         "parameters": [
           {
             "name": "search",
@@ -2673,7 +2673,7 @@
         ]
       },
       "post": {
-        "operationId": "EmployeeControllerV2_createEmployee_v2",
+        "operationId": "EmployeeController_createEmployee_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2714,7 +2714,7 @@
     },
     "/v2/hris/employees/{id}": {
       "get": {
-        "operationId": "EmployeeControllerV2_getEmployee_v2",
+        "operationId": "EmployeeController_getEmployee_v2",
         "parameters": [
           {
             "name": "id",
@@ -2751,7 +2751,7 @@
         ]
       },
       "put": {
-        "operationId": "EmployeeControllerV2_updateEmployee_v2",
+        "operationId": "EmployeeController_updateEmployee_v2",
         "parameters": [
           {
             "name": "id",
@@ -2801,7 +2801,7 @@
     },
     "/v2/hris": {
       "get": {
-        "operationId": "DashboardControllerV2_getHrDashboard_v2",
+        "operationId": "DashboardController_getHrDashboard_v2",
         "parameters": [],
         "responses": {
           "200": {
@@ -2831,7 +2831,7 @@
     },
     "/v2/hris/recruitments": {
       "get": {
-        "operationId": "CareerPostingV2Controller_getCareerPostings_v2",
+        "operationId": "CareerPostingController_getCareerPostings_v2",
         "parameters": [
           {
             "name": "search",
@@ -2927,7 +2927,7 @@
         ]
       },
       "post": {
-        "operationId": "CareerPostingV2Controller_createCareerPosting_v2",
+        "operationId": "CareerPostingController_createCareerPosting_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2968,7 +2968,7 @@
     },
     "/v2/hris/recruitments/status-count": {
       "get": {
-        "operationId": "CareerPostingV2Controller_getStatusCountActive_v2",
+        "operationId": "CareerPostingController_getStatusCountActive_v2",
         "parameters": [
           {
             "name": "is_active",
@@ -3008,7 +3008,7 @@
     },
     "/v2/hris/recruitments/{recruitmentId}": {
       "get": {
-        "operationId": "CareerPostingV2Controller_getCareerPosting_v2",
+        "operationId": "CareerPostingController_getCareerPosting_v2",
         "parameters": [
           {
             "name": "recruitmentId",
@@ -3045,7 +3045,7 @@
         ]
       },
       "put": {
-        "operationId": "CareerPostingV2Controller_updateCareerPosting_v2",
+        "operationId": "CareerPostingController_updateCareerPosting_v2",
         "parameters": [
           {
             "name": "recruitmentId",
