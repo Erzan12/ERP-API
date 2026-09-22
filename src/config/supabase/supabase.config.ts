@@ -7,9 +7,19 @@ export const SUPABASE_BUCKETS = {
 
 // Use the SERVICE ROLE key on the backend (never expose this to the frontend).
 // It bypasses Row Level Security, which is what you want for a trusted server.
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+
+console.log('SUPABASE_URL:', process.env.SUPABASE_URL);
+console.log('SUPABASE_KEY exists:', !!process.env.SUPABASE_KEY);
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('SUPABASE_URL and SUPABASE_KEY must be configured');
+}
+
 export const supabase = createClient(
-    process.env.SUPABASE_URL as string,
-    process.env.SUPABASE_SERVICE_ROLE_KEY as string,
+  supabaseUrl,
+  supabaseKey
 );
 
 export function buildFileUrl(bucket: string, path: string): string {
