@@ -9,7 +9,7 @@ import { AdministratorModule } from './modules/administrator/administrator.modul
 import { HrModule } from './modules/hris/hr.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { MastertableModule } from './modules/mastertable/mastertable.module';
-import { UserManagementV2Module } from './modules/manager/user-management/user-management.module';
+import { UserManagementModule } from './modules/manager/user-management/user-management.module';
 import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
@@ -49,7 +49,7 @@ import { UserLocationService } from './modules/mastertable/user-location/user-lo
     CaslModule,
     HrModule,
     ManagerModule,
-    UserManagementV2Module,
+    UserManagementModule,
     EmployeeDashboardModule,
     PrismaModule,
     // HealthCheckModule,

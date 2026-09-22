@@ -6339,7 +6339,8 @@
             "enum": [
               "initial",
               "second",
-              "final"
+              "final",
+              "completed"
             ],
             "example": "initial",
             "description": "The interview stage for the interviewer"
