@@ -2,7 +2,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { HrV2Module } from 'src/modules/hris/hrV2.module';
+import { HrModule } from 'src/modules/hris/hr.module';
 
 export function setupHRISSwagger(app: INestApplication): void {
   // build document for V1
@@ -45,7 +45,7 @@ export function setupHRISSwagger(app: INestApplication): void {
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
-    include: [HrV2Module, AuthModule],
+    include: [HrModule, AuthModule],
   });
 
   // mount individual endpoints (This automatically exposes /docs/admin/v1-json and v2-json)
