@@ -13,7 +13,7 @@ import { CreateSubModuleDto } from './dto/create-sub-module.dto';
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
 import { SessionUser } from '../../../utils/decorators/session-user.decorator';
 import { RequestUser } from '../../../utils/types/request-user.interface';
-import { SubModuleService } from './sub_module.service';
+import { SubModuleService } from './sub-module.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AddSubModulePermissionDto } from './dto/add-sub-module-permission.dto';
 import {
@@ -30,7 +30,7 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Administrator - Submodule')
 @Controller({ path: 'administrator', version: '2' })
-export class SubModuleControllerV2 {
+export class SubModuleController {
   constructor(private subModuleService: SubModuleService) {}
 
   //get list of submodules

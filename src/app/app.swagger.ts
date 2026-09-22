@@ -6,7 +6,7 @@ import { setupAdminSwagger } from './admin/admin.swagger';
 import { setupHRISSwagger } from './hris/hris.swagger';
 import { setupManagerSwagger } from './manager/manager.swagger';
 import { setupMasterSwagger } from './mastertable/mastertable.swagger';
-import { AdministratorV2Module } from 'src/modules/administrator/administratorV2.module';
+import { AdministratorModule } from 'src/modules/administrator/administrator.module';
 import { HrV2Module } from 'src/modules/hris/hrV2.module';
 import { ManagerV2Module } from 'src/modules/manager/managerV2.module';
 import { MasterV2Module } from 'src/modules/master/masterV2.module';
@@ -38,7 +38,7 @@ function setupAppSwagger(app: INestApplication): void {
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
     include: [
-      AdministratorV2Module,
+      AdministratorModule,
       HrV2Module,
       ManagerV2Module,
       MasterV2Module,
