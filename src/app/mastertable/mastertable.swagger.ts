@@ -2,7 +2,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { MasterV2Module } from 'src/modules/master/masterV2.module';
+import { MasterV2Module } from 'src/modules/mastertable/masterV2.module';
 
 export function setupMasterSwagger(app: INestApplication): void {
   // build document for V1

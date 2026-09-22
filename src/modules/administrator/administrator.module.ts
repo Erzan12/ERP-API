@@ -11,7 +11,7 @@ import { SubModuleController } from './sub-module/sub-moduleV2.controller';
 import { SecurityClearanceService } from './security-clearance/security-clearance.service';
 import { SecurityClearanceController } from './security-clearance/security-clearance.controller';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { EmploymentStatusService } from '../master/employment_status/employment_status.service';
+import { EmploymentStatusService } from '../mastertable/employment_status/employment_status.service';
 import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
 import { AuditController } from './audit/audit.controller';
 import { AuditService } from './audit/audit.service';
