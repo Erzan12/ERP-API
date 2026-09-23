@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { NoticeOfDecisionService } from './notice-of-decision.service';
 import { CreateDecisionDto, UpdateDecisionDto } from './dto/decision.dto';
@@ -14,7 +22,7 @@ export class NoticeOfDecisionController {
 
   @Get('employee-relations/notice-of-decision/:decisionId')
   @ApiOperation({
-    summary: 'Get a Notice of Decision'
+    summary: 'Get a Notice of Decision',
   })
   getDecision(
     @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
@@ -25,7 +33,7 @@ export class NoticeOfDecisionController {
 
   @Post('employee-relations/notice-of-decision')
   @ApiOperation({
-    summary: 'Create a Notice of Decision'
+    summary: 'Create a Notice of Decision',
   })
   createDecision(
     @Body() dto: CreateDecisionDto,
@@ -43,7 +51,11 @@ export class NoticeOfDecisionController {
     @Body() dto: UpdateDecisionDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.noticeOfDecisionService.updateNoticeOfDecision(decisionId, dto, user);
+    return this.noticeOfDecisionService.updateNoticeOfDecision(
+      decisionId,
+      dto,
+      user,
+    );
   }
 
   @Put('employee-relations/notice-of-decision/:decisionId/party')
@@ -54,6 +66,9 @@ export class NoticeOfDecisionController {
     @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.noticeOfDecisionService.submitNoticeOfDecision(decisionId, user);
+    return this.noticeOfDecisionService.submitNoticeOfDecision(
+      decisionId,
+      user,
+    );
   }
 }

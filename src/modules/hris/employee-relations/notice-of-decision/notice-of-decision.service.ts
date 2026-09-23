@@ -7,7 +7,12 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { HrErCasePartyRole, HrErCaseStage, HrErDecisionStatus, Prisma } from '@prisma/client';
+import {
+  HrErCasePartyRole,
+  HrErCaseStage,
+  HrErDecisionStatus,
+  Prisma,
+} from '@prisma/client';
 import { CreateDecisionDto, UpdateDecisionDto } from './dto/decision.dto';
 
 @Injectable()
@@ -87,14 +92,14 @@ export class NoticeOfDecisionService {
     });
 
     if (!decision) {
-      throw new NotFoundException('Notice of decision does not exists.')
+      throw new NotFoundException('Notice of decision does not exists.');
     }
 
     return {
       status: 'success',
       message: 'Here is the Notice of Decision',
       decision,
-    }
+    };
   }
 
   async createNoticeOfDecision(dto: CreateDecisionDto, user: RequestUser) {
@@ -108,12 +113,12 @@ export class NoticeOfDecisionService {
         HrErCaseStage.notice_of_decision,
       );
 
-      const existing = await tx.hrErCaseDecision.findUnique({
-        where: { party_id: dto.party_id },
-        include: {
-          party: true,
-        },
-      });
+      // const existing = await tx.hrErCaseDecision.findUnique({
+      //   where: { party_id: dto.party_id },
+      //   include: {
+      //     party: true,
+      //   },
+      // });
 
       // if (existing?.issued_at) {
       //   throw new ConflictException(
@@ -136,12 +141,12 @@ export class NoticeOfDecisionService {
           party_id: dto.party_id,
           decision_type: dto.decision_type,
           effectivity_start: dto.effectivity_start,
-            // ? new Date(dto.effectivity_start)
-            // : null,
+          // ? new Date(dto.effectivity_start)
+          // : null,
           effectivity_end: dto.effectivity_end,
-            // ? new Date(dto.effectivity_end)
-            // : null,
-          signed_file_url: "string",
+          // ? new Date(dto.effectivity_end)
+          // : null,
+          signed_file_url: 'string',
           remarks: dto.remarks,
           // issued_at: new Date(),
           created_by: user.id,
@@ -165,7 +170,11 @@ export class NoticeOfDecisionService {
     });
   }
 
-  async updateNoticeOfDecision(decisionId: string, dto: UpdateDecisionDto, user: RequestUser) {
+  async updateNoticeOfDecision(
+    decisionId: string,
+    dto: UpdateDecisionDto,
+    user: RequestUser,
+  ) {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
