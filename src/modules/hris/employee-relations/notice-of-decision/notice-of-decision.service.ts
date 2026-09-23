@@ -3,11 +3,12 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { HrErCasePartyRole, HrErCaseStage, Prisma } from '@prisma/client';
-import { SubmitDecisionDto } from './dto/submit-decision.dto';
+import { HrErCasePartyRole, HrErCaseStage, HrErDecisionStatus, Prisma } from '@prisma/client';
+import { CreateDecisionDto, UpdateDecisionDto } from './dto/decision.dto';
 
 @Injectable()
 export class NoticeOfDecisionService {
@@ -75,7 +76,28 @@ export class NoticeOfDecisionService {
     return party;
   }
 
-  async submitNoticeOfDecision(dto: SubmitDecisionDto, user: RequestUser) {
+  async getNoticeOfDecision(decisionId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const decision = await this.prisma.hrErCaseDecision.findUnique({
+      where: { id: decisionId },
+      include: {
+        attachment: true,
+      },
+    });
+
+    if (!decision) {
+      throw new NotFoundException('Notice of decision does not exists.')
+    }
+
+    return {
+      status: 'success',
+      message: 'Here is the Notice of Decision',
+      decision,
+    }
+  }
+
+  async createNoticeOfDecision(dto: CreateDecisionDto, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     return this.prisma.$transaction(async (tx) => {
@@ -93,11 +115,11 @@ export class NoticeOfDecisionService {
         },
       });
 
-      if (existing?.issued_at) {
-        throw new ConflictException(
-          'A decision has already been issued for this respondent.',
-        );
-      }
+      // if (existing?.issued_at) {
+      //   throw new ConflictException(
+      //     'A decision has already been issued for this respondent.',
+      //   );
+      // }
 
       if (dto.effectivity_start && dto.effectivity_end) {
         const start = new Date(dto.effectivity_start);
@@ -109,33 +131,19 @@ export class NoticeOfDecisionService {
         }
       }
 
-      const decision = await tx.hrErCaseDecision.upsert({
-        where: { party_id: dto.party_id },
-        create: {
+      const decision = await tx.hrErCaseDecision.create({
+        data: {
           party_id: dto.party_id,
           decision_type: dto.decision_type,
-          effectivity_start: dto.effectivity_start
-            ? new Date(dto.effectivity_start)
-            : null,
-          effectivity_end: dto.effectivity_end
-            ? new Date(dto.effectivity_end)
-            : null,
-          signed_file_url: dto.signed_file_url,
+          effectivity_start: dto.effectivity_start,
+            // ? new Date(dto.effectivity_start)
+            // : null,
+          effectivity_end: dto.effectivity_end,
+            // ? new Date(dto.effectivity_end)
+            // : null,
+          signed_file_url: "string",
           remarks: dto.remarks,
-          issued_at: new Date(),
-          created_by: user.id,
-        },
-        update: {
-          decision_type: dto.decision_type,
-          effectivity_start: dto.effectivity_start
-            ? new Date(dto.effectivity_start)
-            : null,
-          effectivity_end: dto.effectivity_end
-            ? new Date(dto.effectivity_end)
-            : null,
-          signed_file_url: dto.signed_file_url,
-          remarks: dto.remarks,
-          issued_at: new Date(),
+          // issued_at: new Date(),
           created_by: user.id,
         },
       });
@@ -145,13 +153,150 @@ export class NoticeOfDecisionService {
           case_id: dto.disciplinary_case_id,
           party_id: dto.party_id,
           actor_id: user.id,
-          action: 'notice_of_decision_served',
+          action: 'notice_of_decision_create',
         },
       });
 
       return {
         status: 'success',
-        message: 'Notice of Decision served',
+        message: 'Notice of Decision created',
+        decision,
+      };
+    });
+  }
+
+  async updateNoticeOfDecision(decisionId: string, dto: UpdateDecisionDto, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    return this.prisma.$transaction(async (tx) => {
+      // await this.assertRespondentAtStage(
+      //   tx,
+      //   // dto.disciplinary_case_id,
+      //   // dto.party_id,
+      //   HrErCaseStage.notice_of_decision,
+      // );
+
+      const existing = await tx.hrErCaseDecision.findUnique({
+        where: { id: decisionId, status: { not: HrErDecisionStatus.issued } },
+        include: {
+          party: true,
+        },
+      });
+
+      if (!existing) {
+        throw new BadRequestException('Notice of Decision does not exists.');
+      }
+
+      if (existing?.issued_at) {
+        throw new ConflictException(
+          'A decision has already been issued for this respondent.',
+        );
+      }
+
+      // if (dto.effectivity_start && dto.effectivity_end) {
+      //   const start = new Date(dto.effectivity_start);
+      //   const end = new Date(dto.effectivity_end);
+      //   if (start >= end) {
+      //     throw new BadRequestException(
+      //       'Effectivity end must be later than the start date.',
+      //     );
+      //   }
+      // }
+
+      const decision = await tx.hrErCaseDecision.update({
+        where: { party_id: dto.party_id },
+        data: {
+          decision_type: dto.decision_type,
+          effectivity_start: dto.effectivity_start
+            ? new Date(dto.effectivity_start)
+            : null,
+          effectivity_end: dto.effectivity_end
+            ? new Date(dto.effectivity_end)
+            : null,
+          // signed_file_url: dto.signed_file_url,
+          remarks: dto.remarks,
+          // issued_at: new Date(),
+          updated_by: user.id,
+        },
+      });
+
+      // await tx.hrErCaseActivityLog.create({
+      //   data: {
+      //     case_id: existing.id,
+      //     party_id: existing.party_id,
+      //     actor_id: user.id,
+      //     action: 'notice_of_decision_issued',
+      //   },
+      // });
+
+      return {
+        status: 'success',
+        message: 'Notice of Decision issued',
+        decision,
+      };
+    });
+  }
+
+  async submitNoticeOfDecision(decisionId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    return this.prisma.$transaction(async (tx) => {
+      // await this.assertRespondentAtStage(
+      //   tx,
+      //   // dto.disciplinary_case_id,
+      //   // dto.party_id,
+      //   HrErCaseStage.notice_of_decision,
+      // );
+
+      const existing = await tx.hrErCaseDecision.findUnique({
+        where: { id: decisionId },
+        include: {
+          party: true,
+        },
+      });
+
+      if (!existing) {
+        throw new BadRequestException('Notice of Decision does not exists.');
+      }
+
+      if (existing?.issued_at) {
+        throw new ConflictException(
+          'A decision has already been issued for this respondent.',
+        );
+      }
+
+      // if (dto.effectivity_start && dto.effectivity_end) {
+      //   const start = new Date(dto.effectivity_start);
+      //   const end = new Date(dto.effectivity_end);
+      //   if (start >= end) {
+      //     throw new BadRequestException(
+      //       'Effectivity end must be later than the start date.',
+      //     );
+      //   }
+      // }
+
+      const decision = await tx.hrErCaseDecision.update({
+        where: { id: decisionId },
+        data: {
+          status: HrErDecisionStatus.issued,
+          // signed_file_url: dto.signed_file_url,
+          issued_at: new Date(),
+          updated_by: user.id,
+        },
+      });
+
+      await tx.hrErCaseActivityLog.create({
+        data: {
+          case_id: existing.id,
+          party_id: existing.party_id,
+          actor_id: user.id,
+          action: 'notice_of_decision_issued',
+        },
+      });
+
+      return {
+        status: 'success',
+        message: 'Notice of Decision issued',
         decision,
       };
     });

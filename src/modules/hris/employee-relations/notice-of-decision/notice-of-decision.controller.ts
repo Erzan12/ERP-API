@@ -1,7 +1,7 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { NoticeOfDecisionService } from './notice-of-decision.service';
-import { SubmitDecisionDto } from './dto/submit-decision.dto';
+import { CreateDecisionDto, UpdateDecisionDto } from './dto/decision.dto';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 
@@ -12,14 +12,48 @@ export class NoticeOfDecisionController {
     private readonly noticeOfDecisionService: NoticeOfDecisionService,
   ) {}
 
-  @Post('employee-relations/notice-of-decision/parties')
+  @Get('employee-relations/notice-of-decision/:decisionId')
+  @ApiOperation({
+    summary: 'Get a Notice of Decision'
+  })
+  getDecision(
+    @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.noticeOfDecisionService.getNoticeOfDecision(decisionId, user);
+  }
+
+  @Post('employee-relations/notice-of-decision')
+  @ApiOperation({
+    summary: 'Create a Notice of Decision'
+  })
+  createDecision(
+    @Body() dto: CreateDecisionDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.noticeOfDecisionService.createNoticeOfDecision(dto, user);
+  }
+
+  @Put('employee-relations/notice-of-decision/:decisionId')
+  @ApiOperation({
+    summary: 'Update an existing Notice of Decision.',
+  })
+  updateDecision(
+    @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
+    @Body() dto: UpdateDecisionDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.noticeOfDecisionService.updateNoticeOfDecision(decisionId, dto, user);
+  }
+
+  @Put('employee-relations/notice-of-decision/:decisionId/party')
   @ApiOperation({
     summary: 'Record and serve a the Notice of Decision for a respondent.',
   })
   submitDecision(
-    @Body() dto: SubmitDecisionDto,
+    @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.noticeOfDecisionService.submitNoticeOfDecision(dto, user);
+    return this.noticeOfDecisionService.submitNoticeOfDecision(decisionId, user);
   }
 }
