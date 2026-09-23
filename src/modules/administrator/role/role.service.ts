@@ -4,21 +4,104 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
-import { CreateRolePermissionDto } from './dto/create-role-permission.dto';
-import { UpdateRolePermissionsDto } from './dto/update-role-permisisons.dto';
+import {
+  CreateRoleDto,
+  UpdateRoleDto,
+  UpdateRolePermissionDto,
+} from './dto/role.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { Prisma } from '@prisma/client';
+import { RoleWithPermissions } from 'src/utils/types/role-with-permission.interface';
+import { GroupedPermission } from './type/group-permission';
 
 @Injectable()
 export class RoleService {
   constructor(private prisma: PrismaService) {}
 
+  //formatted role helper
+  private formatRolePermissions(role: RoleWithPermissions) {
+    const { role_permissions, ...rest } = role;
+
+    // console.dir(role.role_permissions[0].sub_module_permission, {
+    //   depth: null,
+    // });
+
+    const groupedPermissions = role_permissions.reduce<
+      Record<string, GroupedPermission>
+    >((acc, permission) => {
+      const subModule = permission.sub_module_permission.sub_module;
+      const subModuleId = subModule.id;
+
+      if (!acc[subModuleId]) {
+        acc[subModuleId] = {
+          id: subModule.id,
+          actions: [],
+          sub_module: {
+            id: subModule.id,
+            name: subModule.name,
+          },
+        };
+      }
+
+      // acc[subModuleId].actions.push(permission.sub_module_permission.actions);
+      acc[subModuleId].actions.push({
+        role_permission_id: permission.id,
+        sub_module_permission_id: permission.sub_module_permission.id,
+        code: permission.sub_module_permission.code ?? '',
+        action: permission.sub_module_permission.action,
+      });
+
+      return acc;
+    }, {});
+
+    return {
+      ...rest,
+      department: role_permissions[0]?.role.department ?? null,
+      role_permissions: Object.values(groupedPermissions),
+    };
+  }
+
   //Add Get Role -> to query the roles available
   async getRoles(user: RequestUser, dto: PaginationDto) {
     const { search, sortBy, order, page, perPage } = dto;
+
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
 
     const skip = (page - 1) * perPage;
 
@@ -74,6 +157,38 @@ export class RoleService {
           ...whereCondition,
         },
         include: {
+          role_permissions: {
+            select: {
+              id: true,
+              role: {
+                select: {
+                  id: true,
+                  name: true,
+                  department_id: true,
+                  department: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
+              sub_module_permission: {
+                select: {
+                  id: true,
+                  sub_module_action_id: true,
+                  action: true,
+                  code: true,
+                  sub_module: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
           createdBy: {
             select: {
               person: {
@@ -105,10 +220,27 @@ export class RoleService {
       }),
     ]);
 
+    const formattedRoles = roles.map((role) =>
+      this.formatRolePermissions(role),
+    );
+
     // if (roles.length === 0) {
     //   throw new BadRequestException('No available or active roles exist!');
     // }
 
+    return {
+      status: 'success',
+      message: 'Here are the list of Roles',
+      count: total,
+      page,
+      perPage,
+      // totalPage: Math.ceil(total / perPage),
+      roles: formattedRoles,
+    };
+  }
+
+  async getRolePermissions(user: RequestUser) {
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -126,9 +258,15 @@ export class RoleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator'];
-
-    const canView = requestUser.user_roles.some((role) =>
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
 
@@ -138,22 +276,116 @@ export class RoleService {
       );
     }
 
+    const rolePermissions = await this.prisma.rolePermission.findMany({
+      // where: { id: roleId },
+      select: {
+        // id: true,
+        role: {
+          select: {
+            id: true,
+            name: true,
+            department: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+        user_permission: {
+          select: {
+            id: true,
+            action: true,
+            user_id: true,
+            user_role_id: true,
+            role_permission_id: true,
+          },
+        },
+      },
+    });
+
+    if (rolePermissions.length === 0) {
+      throw new NotFoundException('There are no role permissions available');
+    }
+
     return {
       status: 'success',
-      message: 'Here are the list of Roles',
-      count: total,
-      page,
-      perPage,
-      // totalPage: Math.ceil(total / perPage),
-      roles,
+      message: 'List of Role Permissions available',
+      rolePermissions,
     };
   }
 
-  async getRole(id: string, user: RequestUser) {
-    const role = await this.prisma.role.findUnique({
-      where: { id },
+  async getRole(roleId: string, user: RequestUser) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
       include: {
-        role_permissions: true,
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const role = await this.prisma.role.findUnique({
+      where: { id: roleId, is_active: true },
+      include: {
+        role_permissions: {
+          select: {
+            id: true,
+            role: {
+              select: {
+                id: true,
+                name: true,
+                department_id: true,
+                department: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+            sub_module_permission: {
+              select: {
+                id: true,
+                sub_module_action_id: true,
+                action: true,
+                sub_module: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         createdBy: {
           select: {
             person: {
@@ -179,10 +411,55 @@ export class RoleService {
       },
     });
 
-    if (!role) {
-      throw new NotFoundException('Role does not exist');
+    if (!role || role.is_active === false) {
+      throw new NotFoundException('Role does not exist or is inactive');
     }
 
+    // const groupPermissions = role.role_permissions.reduce(
+    //   (acc, permission) => {
+    //     const subModule =
+    //       permission.sub_module_permission.sub_module;
+
+    //     const subModuleId = subModule.id;
+
+    //     if (!acc[subModuleId]) {
+    //       acc[subModuleId] = {
+    //         id: permission.sub_module_permission.id,
+    //         actions: [],
+    //         subModule: {
+    //           id: subModule.id,
+    //           name: subModule.name,
+    //         },
+    //       };
+    //     }
+
+    //     acc[subModuleId].actions.push(
+    //       permission.sub_module_permission.action,
+    //     );
+
+    //     return acc;
+    //   },
+    //   {} as Record<string, any>,
+    // );
+
+    // const formattedRole = {
+    //   ...role,
+    //   role_permissions: Object.values(groupPermissions),
+    // };
+
+    const formattedRole = this.formatRolePermissions(role);
+
+    return {
+      status: 'success',
+      message: 'Here is the Role',
+      role: formattedRole,
+    };
+  }
+
+  async createRole(createRoleDto: CreateRoleDto, user: RequestUser) {
+    const { name, description, department_id } = createRoleDto;
+
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -200,9 +477,15 @@ export class RoleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const allowedRoles = ['Administrator', 'Super Administrator'];
-
-    const canView = requestUser.user_roles.some((role) =>
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
       allowedRoles.includes(role.role_name),
     );
 
@@ -212,18 +495,6 @@ export class RoleService {
       );
     }
 
-    return {
-      status: 'success',
-      message: 'Here is the Role',
-      data: {
-        role,
-      },
-    };
-  }
-
-  async createRole(createRoleDto: CreateRoleDto, user: RequestUser) {
-    const { name, description } = createRoleDto;
-
     const existingRole = await this.prisma.role.findUnique({
       where: { name: createRoleDto.name },
     });
@@ -232,29 +503,14 @@ export class RoleService {
       throw new BadRequestException('Role already exist! Try again');
     }
 
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     const role = await this.prisma.role.create({
       data: {
         name,
         description,
+        department_id,
         created_by: user.id,
       },
     });
@@ -273,14 +529,9 @@ export class RoleService {
   }
 
   async updateRole(dto: UpdateRoleDto, user: RequestUser, roleId: string) {
-    const existingRole = await this.prisma.role.findUnique({
-      where: { id: roleId },
-    });
+    const { name, description, department_id, is_active } = dto;
 
-    if (!existingRole) {
-      throw new BadRequestException('Role does not exist!');
-    }
-
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -290,6 +541,7 @@ export class RoleService {
             position: true,
           },
         },
+        user_roles: true,
       },
     });
 
@@ -297,21 +549,49 @@ export class RoleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPosition = requestUser.employee.position.name;
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const existingRole = await this.prisma.role.findUnique({
+      where: { id: roleId },
+    });
+
+    if (!existingRole) {
+      throw new BadRequestException('Role does not exist!');
+    }
+
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
 
     const role = await this.prisma.role.update({
       where: { id: roleId },
       data: {
-        name: dto.name ?? undefined,
-        description: dto.description ?? undefined,
+        name: name ?? undefined,
+        description: description ?? undefined,
+        department_id: department_id ?? undefined,
+        is_active: is_active ?? undefined,
         updated_by: user.id,
       },
     });
 
     return {
       status: 'success',
-      message: `Role have been successfully created!`,
+      message: `Role have been successfully updated!`,
       // created_by: {
       //   id: requestUser.id,
       //   name: userName,
@@ -323,72 +603,18 @@ export class RoleService {
   }
 
   //Add Get submodule permission -> to query the submodule permission table for available submolues with permission
-  async createRolePermissions(
-    createRolePermissionDto: CreateRolePermissionDto,
-    user: RequestUser,
-  ) {
-    const { action, sub_module_id, role_id, department_id, position_id } =
-      createRolePermissionDto;
+  async assignRolePermissions(dto: UpdateRolePermissionDto, user: RequestUser) {
+    const { sub_module_id, role_id, sub_module_permission_id = [] } = dto;
 
-    const existingRole = await this.prisma.role.findFirst({
-      where: { id: role_id },
-    });
-
-    if (!existingRole) {
-      throw new BadRequestException('Role not found or does not exist!');
-    }
-
-    const validSubModuleActions =
-      await this.prisma.subModulePermission.findMany({
-        where: { sub_module_id },
-      });
-
-    const validActions = validSubModuleActions.map((perm) => perm.action);
-
-    const invalidActions = action.filter((act) => !validActions.includes(act));
-
-    if (invalidActions.length > 0) {
-      throw new BadRequestException(
-        `Invalid action(s) for this sub module: ${invalidActions.join(', ')}`,
-      );
-    }
-
-    // to map the role_name and sub_module_permission_id so it wont return null in prisma studio
-    const subModulePermissionMap = new Map(
-      validSubModuleActions.map((perm) => [perm.action, perm.id]),
-    );
-
-    const createRolePermission = action.map((act) => ({
-      action: act,
-      sub_module_id,
-      role_id,
-      role_name: existingRole.name,
-      sub_module_permission_id: subModulePermissionMap.get(act)!, // ! to asset sub_mobule_permission id if it is always defined and cannot be null
-      department_id,
-      position_id,
-    }));
-
-    await this.prisma.rolePermission.createMany({
-      data: createRolePermission,
-      skipDuplicates: true,
-    });
-
-    const rolePermission = await this.prisma.role.findFirst({
-      where: { id: role_id },
-    });
-
-    if (!rolePermission) {
-      throw new BadRequestException('Role Permission does not exist');
-    }
-
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
         employee: {
           include: {
+            department: true,
             person: true,
             position: true,
-            department: true,
           },
         },
         user_roles: true,
@@ -399,51 +625,660 @@ export class RoleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
-    const userRole = requestUser.user_roles.map((r) => r.role_name);
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
-    return {
-      status: 'success',
-      message: `Added permissions to Role ${rolePermission?.name}`,
-      created_by: {
-        id: requestUser.id,
-        name: userName,
-        department: requestUser.employee.department,
-        position: userPos,
-        role: userRole,
-      },
-      role_id: rolePermission.id,
-      role_name: rolePermission.name,
-    };
-  }
-
-  async updateRolePermissions(
-    id: string,
-    updateRolePermissionsDto: UpdateRolePermissionsDto,
-    user: RequestUser,
-  ) {
-    const { action_updates = [] } = updateRolePermissionsDto;
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
 
     const existingRole = await this.prisma.role.findUnique({
-      where: { id },
+      where: { id: role_id, is_active: true },
       include: {
-        role_permissions: true,
+        user_roles: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
     if (!existingRole) {
-      throw new BadRequestException('Role does not exist!');
+      throw new BadRequestException('Role not found or does not exist!');
     }
 
-    if (existingRole.role_permissions.length === 0) {
-      throw new BadRequestException('This role has no existing role to update');
-    }
+    const existingRolePermission = await this.prisma.rolePermission.findMany({
+      where: {
+        role_id,
+        sub_module_permission: {
+          sub_module_id,
+        },
+      },
+      include: {
+        sub_module_permission: {
+          select: {
+            id: true,
+            action: true,
+            sub_module_id: true,
+          },
+        },
+      },
+    });
 
-    const toUpdate = existingRole.role_permissions.filter((perm) =>
-      action_updates.some((update) => update.currentAction === perm.action),
+    const existingActions = existingRolePermission.map(
+      (rp) => rp.sub_module_permission.id,
     );
 
+    // permissions to remove in the role
+    const actionsToDelete = existingRolePermission
+      .filter(
+        (rp) => !sub_module_permission_id.includes(rp.sub_module_permission.id),
+      )
+      .map((rp) => rp.id);
+
+    // Only compute actionsToDelete when the client actually sent IDs to update.
+    // const actionsToDelete =
+    //   sub_module_permission_id.length > 0
+    //     ? existingRolePermission
+    //         .filter(
+    //           (rp) =>
+    //             !sub_module_permission_id.includes(rp.sub_module_permission.id),
+    //         )
+    //         .map((rp) => rp.id)
+    //     : [];
+
+    // check permissions added in submodule permission before it will be assigned to role permission
+    const availablePermissions = await this.prisma.subModulePermission.findMany(
+      {
+        where: {
+          sub_module_id,
+        },
+        select: {
+          id: true,
+          action: true,
+        },
+      },
+    );
+
+    // const validActions = availablePermissions.map((perm) => perm.action);
+
+    // const invalidActions = actions.filter((act) => !validActions.includes(act));
+
+    // using a Set
+    const validActions = new Set(availablePermissions.map((p) => p.id));
+    const invalidActions = sub_module_permission_id.filter(
+      (id) => !validActions.has(id),
+    );
+
+    if (invalidActions.length > 0) {
+      throw new BadRequestException(
+        `Invalid action(s) for this sub module: ${invalidActions.join(', ')}`,
+      );
+    }
+
+    // Filter from the requested actions:
+    // Now only the actions that were sent by the client are created.
+    const actionsToCreate = availablePermissions.filter(
+      (perm) =>
+        sub_module_permission_id.includes(perm.id) &&
+        !existingActions.includes(perm.id),
+    );
+
+    const createRolePermission = actionsToCreate.map((perm) => ({
+      // action: perm.action,
+      role_id,
+      sub_module_permission_id: perm.id, // to assess sub_module_permission_id if it is always defined and cannot be null
+      created_by: user.id,
+    }));
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      if (
+        // sub_module_permission_id.length > 0 &&
+        actionsToDelete.length > 0
+      ) {
+        await tx.rolePermission.deleteMany({
+          where: {
+            id: {
+              in: actionsToDelete,
+            },
+          },
+        });
+      }
+
+      return tx.rolePermission.createMany({
+        data: createRolePermission,
+        skipDuplicates: true,
+      });
+    });
+
+    const updateRole = await this.prisma.role.findUnique({
+      where: {
+        id: role_id,
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        is_active: true,
+        department: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        // role_permissions: {
+        //   select: {
+        //     id: true,
+        //     is_active: true,
+        //     sub_module_permission: {
+        //       select: {
+        //         action: true,
+        //       },
+        //     },
+        //   },
+        // },
+      },
+    });
+
+    const requestedCount = sub_module_permission_id.length;
+    const createdCount = result.count;
+    const deletedCount = actionsToDelete.length;
+
+    let message = '';
+
+    // if (createdCount === 0) {
+    //   message = `All selected permissions already exist in Role ${existingRole.name}.`;
+    // } else if (createdCount < requestedCount) {
+    //   message = `${createdCount} permission(s) added. ${
+    //     requestedCount - createdCount
+    //   } permission(s) already existed in Role ${existingRole.name}`;
+    // } else {
+    //   message = `Added ${createdCount} permission(s) to Role ${existingRole.name}`;
+    // }
+
+    if (createdCount === 0 && deletedCount === 0) {
+      message = 'No changes were made.';
+    } else {
+      message = `Added ${createdCount} permission(s), removed ${deletedCount} permission(s).`;
+    }
+
+    const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+    const userPosition = requestUser.employee.position?.name;
+
+    return {
+      status: 'success',
+      message,
+      // : `Added permissions to Role ${existingRole.name}`,
+      created_by: `${userName} - ${userPosition}`,
+      role: updateRole,
+      data: {
+        requested: requestedCount,
+        created: createdCount,
+        deleted: deletedCount,
+        current_permissions: sub_module_permission_id,
+      },
+    };
+  }
+
+  // using is active not delete
+  // async assignRolePermissions(dto: UpdateRolePermissionDto, user: RequestUser) {
+  //   const { sub_module_id, role_id, sub_module_permission_id = [] } = dto;
+
+  //   const requestUser = await this.prisma.user.findUnique({
+  //     where: { id: user.id },
+  //     include: {
+  //       employee: {
+  //         include: {
+  //           department: true,
+  //           person: true,
+  //           position: true,
+  //         },
+  //       },
+  //       user_roles: true,
+  //     },
+  //   });
+
+  //   if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+  //     throw new BadRequestException(`User does not exist.`);
+  //   }
+
+  //   const allowedRoles = [
+  //     'Administrator',
+  //     'Super Administrator',
+  //     'HR Administrator',
+  //     'HR Manager',
+  //     'HR Clerk',
+  //     'HR Staff',
+  //   ];
+  //   const canView = requestUser?.user_roles.some((role) =>
+  //     allowedRoles.includes(role.role_name),
+  //   );
+
+  //   if (!canView) {
+  //     throw new ForbiddenException(
+  //       'You are not authorized to perform this action',
+  //     );
+  //   }
+
+  //   const existingRole = await this.prisma.role.findUnique({
+  //     where: { id: role_id, is_active: true },
+  //     include: {
+  //       user_roles: {
+  //         select: { id: true },
+  //       },
+  //     },
+  //   });
+
+  //   if (!existingRole) {
+  //     throw new BadRequestException('Role not found or does not exist!');
+  //   }
+
+  //   // Fetch ALL role permissions for this sub-module, active or not,
+  //   // so we can tell "never existed" apart from "exists but deactivated".
+  //   const existingRolePermission = await this.prisma.rolePermission.findMany({
+  //     where: {
+  //       role_id,
+  //       sub_module_permission: {
+  //         sub_module_id,
+  //       },
+  //     },
+  //     include: {
+  //       sub_module_permission: {
+  //         select: {
+  //           id: true,
+  //           action: true,
+  //           sub_module_id: true,
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   const activeRolePermissions = existingRolePermission.filter((rp) => rp.is_active);
+  //   const inactiveRolePermissions = existingRolePermission.filter((rp) => !rp.is_active);
+
+  //   // Requested submodule permission ids that are currently active but
+  //   // NOT in the new requested list -> deactivate.
+  //   const actionsToDeactivate = activeRolePermissions
+  //     .filter(
+  //       (rp) => !sub_module_permission_id.includes(rp.sub_module_permission.id),
+  //     )
+  //     .map((rp) => rp.id);
+
+  //   const availablePermissions = await this.prisma.subModulePermission.findMany({
+  //     where: { sub_module_id },
+  //     select: { id: true, action: true },
+  //   });
+
+  //   const validActions = new Set(availablePermissions.map((p) => p.id));
+  //   const invalidActions = sub_module_permission_id.filter(
+  //     (id) => !validActions.has(id),
+  //   );
+
+  //   if (invalidActions.length > 0) {
+  //     throw new BadRequestException(
+  //       `Invalid action(s) for this sub module: ${invalidActions.join(', ')}`,
+  //     );
+  //   }
+
+  //   // Requested ids that already have a RolePermission row, but it's
+  //   // currently inactive -> reactivate instead of trying to create.
+  //   const actionsToReactivate = inactiveRolePermissions
+  //     .filter((rp) => sub_module_permission_id.includes(rp.sub_module_permission.id))
+  //     .map((rp) => rp.id);
+
+  //   // Requested ids with no RolePermission row at all (active or inactive) -> create.
+  //   const existingSubModulePermissionIds = new Set(
+  //     existingRolePermission.map((rp) => rp.sub_module_permission.id),
+  //   );
+
+  //   const actionsToCreate = availablePermissions.filter(
+  //     (perm) =>
+  //       sub_module_permission_id.includes(perm.id) &&
+  //       !existingSubModulePermissionIds.has(perm.id),
+  //   );
+
+  //   const createRolePermission = actionsToCreate.map((perm) => ({
+  //     role_id,
+  //     sub_module_permission_id: perm.id,
+  //     created_by: user.id,
+  //   }));
+
+  //   const result = await this.prisma.$transaction(async (tx) => {
+  //     if (actionsToDeactivate.length > 0) {
+  //       await tx.rolePermission.updateMany({
+  //         where: { id: { in: actionsToDeactivate } },
+  //         data: {
+  //           is_active: false,
+  //           updated_by: user.id,
+  //         },
+  //       });
+  //     }
+
+  //     if (actionsToReactivate.length > 0) {
+  //       await tx.rolePermission.updateMany({
+  //         where: { id: { in: actionsToReactivate } },
+  //         data: {
+  //           is_active: true,
+  //           updated_by: user.id,
+  //         },
+  //       });
+  //     }
+
+  //     return tx.rolePermission.createMany({
+  //       data: createRolePermission,
+  //       skipDuplicates: true,
+  //     });
+  //   });
+
+  //   const updateRole = await this.prisma.role.findUnique({
+  //     where: { id: role_id },
+  //     select: {
+  //       id: true,
+  //       name: true,
+  //       description: true,
+  //       is_active: true,
+  //       department: {
+  //         select: { id: true, name: true },
+  //       },
+  //     },
+  //   });
+
+  //   const requestedCount = sub_module_permission_id.length;
+  //   const createdCount = result.count;
+  //   const deactivatedCount = actionsToDeactivate.length;
+  //   const reactivatedCount = actionsToReactivate.length;
+
+  //   let message = '';
+  //   if (createdCount === 0 && deactivatedCount === 0 && reactivatedCount === 0) {
+  //     message = 'No changes were made.';
+  //   } else {
+  //     message = `Added ${createdCount} permission(s), removed ${deactivatedCount} permission(s), restored ${reactivatedCount} permission(s).`;
+  //   }
+
+  //   const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+  //   const userPosition = requestUser.employee.position?.name;
+
+  //   return {
+  //     status: 'success',
+  //     message,
+  //     created_by: `${userName} - ${userPosition}`,
+  //     role: updateRole,
+  //     data: {
+  //       requested: requestedCount,
+  //       created: createdCount,
+  //       deactivated: deactivatedCount,
+  //       reactivated: reactivatedCount,
+  //       current_permissions: sub_module_permission_id,
+  //     },
+  //   };
+  // }
+}
+
+@Injectable()
+export class RolePermissionService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  //formatted role helper
+  private formatRolePermissions(role: RoleWithPermissions) {
+    const { role_permissions, ...rest } = role;
+
+    const groupedPermissions = role_permissions.reduce<
+      Record<string, GroupedPermission>
+    >((acc, permission) => {
+      const subModule = permission.sub_module_permission.sub_module;
+      const subModuleId = subModule.id;
+
+      if (!acc[subModuleId]) {
+        acc[subModuleId] = {
+          id: subModule.id,
+          actions: [],
+          sub_module: {
+            id: subModule.id,
+            name: subModule.name,
+          },
+        };
+      }
+
+      // acc[subModuleId].actions.push(permission.sub_module_permission.actions);
+      acc[subModuleId].actions.push({
+        role_permission_id: permission.id,
+        sub_module_permission_id: permission.sub_module_permission.id,
+        code: permission.sub_module_permission.code ?? '',
+        action: permission.sub_module_permission.action,
+      });
+
+      return acc;
+    }, {});
+
+    return {
+      ...rest,
+      department: role_permissions[0]?.role.department ?? null,
+      role_permissions: Object.values(groupedPermissions),
+    };
+  }
+
+  // //Add Get submodule permission -> to query the submodule permission table for available submolues with permission
+  // async assignRolePermissions(dto: UpdateRolePermissionDto, user: RequestUser) {
+  //   const { sub_module_id, role_id, actions } = dto;
+
+  //   // Auth check first
+  //   const requestUser = await this.prisma.user.findUnique({
+  //     where: { id: user.id },
+  //     include: {
+  //       employee: {
+  //         include: {
+  //           department: true,
+  //           person: true,
+  //           position: true,
+  //         },
+  //       },
+  //       user_roles: true,
+  //     },
+  //   });
+
+  //   if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+  //     throw new BadRequestException(`User does not exist.`);
+  //   }
+
+  //   const allowedRoles = [
+  //     'Administrator',
+  //     'Super Administrator',
+  //     'HR Manager',
+  //     'HR Clerk',
+  //     'HR Staff',
+  //   ];
+  //   const canView = requestUser?.user_roles.some((role) =>
+  //     allowedRoles.includes(role.role_name),
+  //   );
+
+  //   if (!canView) {
+  //     throw new ForbiddenException(
+  //       'You are not authorized to perform this action',
+  //     );
+  //   }
+
+  //   const existingRole = await this.prisma.role.findUnique({
+  //     where: { id: role_id, is_active: true },
+  //     include: {
+  //       user_roles: {
+  //         select: {
+  //           id: true,
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   if (!existingRole) {
+  //     throw new BadRequestException('Role not found or does not exist!');
+  //   }
+
+  //   const existingRolePermission = await this.prisma.rolePermission.findMany({
+  //     where: {
+  //       role_id,
+  //       sub_module_permission: {
+  //         sub_module_id,
+  //       },
+  //     },
+  //     include: {
+  //       sub_module_permission: {
+  //         select: {
+  //           id: true,
+  //           action: true,
+  //           sub_module_id: true,
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   const existingActions = existingRolePermission.map(
+  //     (rp) => rp.sub_module_permission.action,
+  //   );
+
+  //   // permissions to remove in the role
+  //   const actionsToDelete = existingRolePermission
+  //     .filter((rp) => !actions.includes(rp.sub_module_permission.action))
+  //     .map((rp) => rp.id);
+
+  //   // check permissions added in submodule permission before it will be assigned to role permission
+  //   const availablePermissions = await this.prisma.subModulePermission.findMany(
+  //     {
+  //       where: {
+  //         sub_module_id,
+  //       },
+  //       select: {
+  //         id: true,
+  //         action: true,
+  //       },
+  //     },
+  //   );
+
+  //   // const validActions = availablePermissions.map((perm) => perm.action);
+
+  //   // const invalidActions = actions.filter((act) => !validActions.includes(act));
+
+  //   // using a Set
+  //   const validActions = new Set(availablePermissions.map((p) => p.action));
+  //   const invalidActions = actions.filter((act) => !validActions.has(act));
+
+  //   if (invalidActions.length > 0) {
+  //     throw new BadRequestException(
+  //       `Invalid aciton(s) for this sub module: ${invalidActions.join(', ')}`,
+  //     );
+  //   }
+
+  //   // Filter from the requested actions:
+  //   // Now only the actions that were sent by the client are created.
+  //   const actionsToCreate = availablePermissions.filter(
+  //     (perm) =>
+  //       actions.includes(perm.action) && !existingActions.includes(perm.action),
+  //   );
+
+  //   const createRolePermission = actionsToCreate.map((perm) => ({
+  //     // action: perm.action,
+  //     role_id,
+  //     sub_module_permission_id: perm.id, // to assess sub_module_permission_id if it is always defined and cannot be null
+  //     created_by: user.id,
+  //   }));
+
+  //   const result = await this.prisma.$transaction(async (tx) => {
+  //     if (actionsToDelete.length > 0) {
+  //       await tx.rolePermission.deleteMany({
+  //         where: {
+  //           id: {
+  //             in: actionsToDelete,
+  //           },
+  //         },
+  //       });
+  //     }
+
+  //     return tx.rolePermission.createMany({
+  //       data: createRolePermission,
+  //       skipDuplicates: true,
+  //     });
+  //   });
+
+  //   const updateRole = await this.prisma.role.findUnique({
+  //     where: {
+  //       id: role_id,
+  //     },
+  //     select: {
+  //       id: true,
+  //       name: true,
+  //       description: true,
+  //       is_active: true,
+  //       department: {
+  //         select: {
+  //           id: true,
+  //           name: true,
+  //         },
+  //       },
+  //       // role_permissions: {
+  //       //   select: {
+  //       //     id: true,
+  //       //     is_active: true,
+  //       //     sub_module_permission: {
+  //       //       select: {
+  //       //         action: true,
+  //       //       },
+  //       //     },
+  //       //   },
+  //       // },
+  //     },
+  //   });
+
+  //   const requestedCount = actions.length;
+  //   const createdCount = result.count;
+  //   const deletedCount = actionsToDelete.length;
+
+  //   let message = '';
+
+  //   // if (createdCount === 0) {
+  //   //   message = `All selected permissions already exist in Role ${existingRole.name}.`;
+  //   // } else if (createdCount < requestedCount) {
+  //   //   message = `${createdCount} permission(s) added. ${
+  //   //     requestedCount - createdCount
+  //   //   } permission(s) already existed in Role ${existingRole.name}`;
+  //   // } else {
+  //   //   message = `Added ${createdCount} permission(s) to Role ${existingRole.name}`;
+  //   // }
+
+  //   if (createdCount === 0 && deletedCount === 0) {
+  //     message = 'No changes were made.';
+  //   } else {
+  //     message = `Added ${createdCount} permission(s), removed ${deletedCount} permission(s).`;
+  //   }
+
+  //   const userName = `${requestUser.employee.person?.first_name} ${requestUser.employee.person?.last_name}`;
+  //   const userPosition = requestUser.employee.position?.name;
+
+  //   return {
+  //     status: 'success',
+  //     message,
+  //     // : `Added permissions to Role ${existingRole.name}`,
+  //     created_by: `${userName} - ${userPosition}`,
+  //     role: updateRole,
+  //     data: {
+  //       requested: requestedCount,
+  //       created: createdCount,
+  //       deleted: deletedCount,
+  //       current_permissions: actions,
+  //     },
+  //   };
+  // }
+
+  async getSingleRoleWithPermissions(user: RequestUser, roleId: string) {
+    // Auth check first
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
       include: {
@@ -453,6 +1288,7 @@ export class RoleService {
             position: true,
           },
         },
+        user_roles: true,
       },
     });
 
@@ -460,114 +1296,202 @@ export class RoleService {
       throw new BadRequestException(`User does not exist.`);
     }
 
-    const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-    const userPos = requestUser.employee.position.name;
-
-    const results = await Promise.all(
-      toUpdate.map((perm) => {
-        const updateData = action_updates.find(
-          (u) => u.currentAction === perm.action,
-        );
-
-        if (!updateData) {
-          throw new ForbiddenException('Updating action failed');
-        }
-
-        return this.prisma.rolePermission.update({
-          where: { id: perm.id },
-          data: {
-            action: updateData.newAction,
-          },
-        });
-      }),
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
     );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
+
+    const roleWithPermissions = await this.prisma.role.findUnique({
+      where: { id: roleId, is_active: true },
+      include: {
+        role_permissions: {
+          select: {
+            id: true,
+            // sub_module_permission_id: true,
+            // is_active: true,
+            role: {
+              select: {
+                id: true,
+                name: true,
+                department_id: true,
+                department: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+            sub_module_permission: {
+              select: {
+                id: true,
+                sub_module_action_id: true,
+                action: true,
+                sub_module: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+            created_at: true,
+            updated_at: true,
+            createdBy: {
+              select: {
+                person: {
+                  select: {
+                    first_name: true,
+                    middle_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+            updatedBy: {
+              select: {
+                person: {
+                  select: {
+                    first_name: true,
+                    middle_name: true,
+                    last_name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!roleWithPermissions || roleWithPermissions.is_active === false) {
+      throw new BadRequestException('Role does not exist or is inactive');
+    }
+
+    const formattedRole = this.formatRolePermissions(roleWithPermissions);
+
     return {
       status: 'success',
-      message: 'Role Permission successfully updated',
-      updated_by: {
-        id: requestUser.id,
-        name: userName,
-        position: userPos,
-      },
-      updated_data: {
-        results,
-      },
+      message: 'Here is the Role with its role permission',
+      roleWithPermissions: formattedRole,
     };
   }
 
-  // //unassing currently selected role permission
-  // async unassignRolePermission(unassignRolePermissionDto: UnassignRolePermissionDto, user) {
-  //     const { sub_module_id, role_permission_id } = unassignRolePermissionDto;
+  async getUserWithRolePermission(user: RequestUser, userId: string) {
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
 
-  //     const requestUser = await this.prisma.user.findUnique({
-  //         where: { id: user.id },
-  //         include:{
-  //             employee: {
-  //                 include: {
-  //                     person: true,
-  //                     position: true,
-  //                 }
-  //             }
-  //         }
-  //     })
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
 
-  //     if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-  //         throw new BadRequestException(`User does not exist.`);
-  //     }
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
 
-  //     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
-  //     const userPos = requestUser.employee.position.name;
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
 
-  //     const existingSubModule = await this.prisma.subModule.findFirst({
-  //         where: { id: unassignRolePermissionDto.sub_module_id },
-  //         include: {
-  //             role_permission: {
-  //                 include: {
-  //                     role: true,
-  //                 },
-  //             },
-  //         },
-  //     });
+    const userRolePermission = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        user_permission: {
+          select: {
+            id: true,
+            action: true,
+            role_permission: {
+              select: {
+                id: true,
+                role: {
+                  select: {
+                    id: true,
+                    name: true,
+                    department_id: true,
+                    department: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+                sub_module_permission: {
+                  select: {
+                    id: true,
+                    sub_module_action_id: true,
+                    action: true,
+                    sub_module: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            sub_module_permission: {
+              select: {
+                id: true,
+                sub_module_action_id: true,
+                action: true,
+                sub_module: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
 
-  //     if(!existingSubModule){
-  //         throw new BadRequestException('Selected Sub Module does not exist');
-  //     }
+    if (!userRolePermission) {
+      throw new NotFoundException('User not found or does not exist');
+    }
 
-  //     const existingRolePermission = await this.prisma.rolePermission.findMany({
-  //         where: { id: {
-  //             in: unassignRolePermissionDto.role_permission_id
-  //             },
-  //         },
-  //     });
-
-  //     if(!existingRolePermission){
-  //         throw new BadRequestException('Selected Role Permission does not exist in this Sub Module');
-  //     };
-
-  //     const unassignedRolePermission = await this.prisma.rolePermission.updateMany({
-  //         where: {
-  //             id: {
-  //                 in: unassignRolePermissionDto.role_permission_id,
-  //             },
-  //             sub_module_id: unassignRolePermissionDto.sub_module_id,
-  //             status: true, // Only update active assignments
-  //         },
-  //         data: {
-  //             status: false, // Mark as unassigned
-  //         },
-  //     });
-
-  //     return {
-  //         status: 'success',
-  //         message: 'You have successfuly update a role permission',
-  //         updated_by: {
-  //                 id: requestUser.id,
-  //                 name: userName,
-  //                 position: userPos,
-  //             },
-  //         data: {
-  //             unassignedRolePermission
-  //         },
-  //     };
-  // }
+    return {
+      status: 'success',
+      message:
+        'Here is the user with its role permission(s) and direct permission(s)',
+      userRolePermission,
+    };
+  }
 }

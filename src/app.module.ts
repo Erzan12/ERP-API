@@ -5,11 +5,11 @@ import { CaslModule } from './middleware/casl/casl.module';
 import { LandingModule } from './landing/landing.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
-import { AdministratorV2Module } from './modules/administrator/administratorV2.module';
-import { HrV2Module } from './modules/hris/hrV2.module';
-import { ManagerV2Module } from './modules/manager/managerV2.module';
-import { MasterV2Module } from './modules/master/masterV2.module';
-import { UserManagementV2Module } from './modules/manager/user_management/user_managementV2.module';
+import { AdministratorModule } from './modules/administrator/administrator.module';
+import { HrModule } from './modules/hris/hr.module';
+import { ManagerModule } from './modules/manager/manager.module';
+import { MastertableModule } from './modules/mastertable/mastertable.module';
+import { UserManagementModule } from './modules/manager/user-management/user-management.module';
 import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
@@ -21,18 +21,24 @@ import { AuthController } from './auth/auth.controller';
 // import { UserController } from './modules/manager/user/controllers/userv2.controller';
 // import { UserLocationController } from './modules/master/user_location/controller/user_locationV2.controller';
 
-import { UserManagementService } from './modules/manager/user_management/user_management.service';
+import { UserManagementService } from './modules/manager/user-management/user-management.service';
 import { AuditService } from './modules/administrator/audit/audit.service';
-import { PositionService } from './modules/master/position/position.service';
+import { PositionService } from './modules/mastertable/position/position.service';
 import { EmployeeService } from './modules/hris/employee/employee-masterlist/employee.service';
 import { CaslAbilityService } from './middleware/casl/casl.service';
-import { DepartmentService } from './modules/master/department/department.service';
-import { EmploymentStatusService } from './modules/master/employment_status/employment_status.service';
-import { CompanyService } from './modules/master/company/company.service';
+import { DepartmentService } from './modules/mastertable/department/department.service';
+import { EmploymentStatusService } from './modules/mastertable/employment-status/employment-status.service';
+import { CompanyService } from './modules/mastertable/company/company.service';
 import { PrismaService } from './config/prisma/prisma.service';
-import { DivisionService } from './modules/master/division/division.service';
+import { DivisionService } from './modules/mastertable/division/division.service';
 import { MailService } from './jobs/mail/mail.service';
-import { UserLocationService } from './modules/master/user_location/user_location.service';
+import { UserLocationService } from './modules/mastertable/user-location/user-location.service';
+import { AttachmentUploadService } from './jobs/attachment-upload/attachment-upload.service';
+import { MulterModule } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+// import { SmsModule } from './jobs/sms/sms.module';
+// import { ControlNumberModule } from './jobs/control-number/control-number.module';
+import { AttachmentUploadModule } from './jobs/attachment-upload/attachment-upload.module';
 
 @Module({
   imports: [
@@ -44,14 +50,17 @@ import { UserLocationService } from './modules/master/user_location/user_locatio
     LandingModule,
     AuthModule,
     JwtModule,
-    AdministratorV2Module,
-    MasterV2Module,
+    AdministratorModule,
+    MastertableModule,
     CaslModule,
-    HrV2Module,
-    ManagerV2Module,
-    UserManagementV2Module,
+    HrModule,
+    ManagerModule,
+    UserManagementModule,
     EmployeeDashboardModule,
     PrismaModule,
+    // SmsModule,
+    // ControlNumberModule,
+    AttachmentUploadModule
     // HealthCheckModule,
     // HealthModule,
   ],
@@ -83,8 +92,10 @@ import { UserLocationService } from './modules/master/user_location/user_locatio
     CompanyService,
     EmploymentStatusService,
     UserLocationService,
+    AttachmentUploadService,
     // HealthCheckService,
   ],
+  exports: [AttachmentUploadService],
   controllers: [
     // EmployeeControllerV1,
     AuthController,
