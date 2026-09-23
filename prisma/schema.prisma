@@ -362,6 +362,7 @@ enum HrErActionType {
 }
 
 enum HrErDecisionType {
+  suspension
   written_reprimand
   stern_warning
   suspension_7d
@@ -369,6 +370,11 @@ enum HrErDecisionType {
   dismissal
   acquitted
   rehabilitation
+}
+
+enum HrErDecisionStatus {
+  draft
+  issued
 }
 
 enum HrErRecommendedPenalty {
@@ -2128,6 +2134,7 @@ model HrErCaseDecision {
   issued_at         DateTime?
   signed_file_url   String?
   remarks           String?          @db.Text
+  status            HrErDecisionStatus @default(draft)
 
   created_by String?  @db.Uuid
   updated_by String?  @db.Uuid
