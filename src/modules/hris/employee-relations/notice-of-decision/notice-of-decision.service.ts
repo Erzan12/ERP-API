@@ -296,7 +296,7 @@ export class NoticeOfDecisionService {
 
       await tx.hrErCaseActivityLog.create({
         data: {
-          case_id: existing.id,
+          case_id: existing.party.case_id,
           party_id: existing.party_id,
           actor_id: user.id,
           action: 'notice_of_decision_issued',
