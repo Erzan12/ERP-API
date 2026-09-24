@@ -16,11 +16,10 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Request } from 'express';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
-import { Prisma, User } from '@prisma/client';
-import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 import { UserDetailsDto } from './dto/user-details.dto';
 import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
 import { TRANSACTION_TYPE } from 'src/utils/constants/transaction-type.constant';
+import { Prisma, User } from '@prisma/client';
 
 @Injectable()
 export class UserManagementService {
@@ -28,7 +27,6 @@ export class UserManagementService {
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
     private readonly auditService: AuditService,
-    private readonly uploadService: AttachmentUploadService,
   ) {}
 
   async findByIdentifier(identifier: string) {
@@ -303,7 +301,7 @@ export class UserManagementService {
     user: RequestUser,
     req: Request,
     // userId: string,
-    file?: Express.Multer.File,
+    // file?: Express.Multer.File,
   ) {
     return this.prisma.$transaction(async (tx) => {
       try {
@@ -408,25 +406,25 @@ export class UserManagementService {
           },
         });
 
-        console.log('User created:', newUser.id);
+        // console.log('User created:', newUser.id);
 
-        console.log('Uploading avatar...');
+        // console.log('Uploading avatar...');
 
-        let attachment = null;
+        // let attachment = null;
 
-        if (file) {
-          attachment = await this.uploadService.avatarUpload(
-            {
-              file,
-              transaction_type: TRANSACTION_TYPE.USER_AVATAR,
-              transaction_id: newUser.id,
-              user_id: user.id,
-            },
-            tx,
-          );
-        }
+        // if (file) {
+        //   attachment = await this.uploadService.avatarUpload(
+        //     {
+        //       file,
+        //       transaction_type: TRANSACTION_TYPE.USER_AVATAR,
+        //       transaction_id: newUser.id,
+        //       user_id: user.id,
+        //     },
+        //     tx,
+        //   );
+        // }
 
-        console.log('Avatar uploaded');
+        // console.log('Avatar uploaded');
 
         const empDept = await tx.employee.findUnique({
           where: { id: employee.id },
@@ -547,7 +545,7 @@ export class UserManagementService {
           user_id: newUser.id,
           username: newUser.username,
           reset_token: createdToken.password_token,
-          attachment,
+          // attachment,
           // user_permission_template: templates
         };
       } catch (error) {

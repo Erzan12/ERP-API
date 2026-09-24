@@ -20,7 +20,7 @@
     "strictPropertyInitialization": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "types": ["jest", "node", "multer"]
+    "types": ["jest", "node"]
     // "types" field removed — TypeScript will auto-discover all @types/* packages
   },
   "watchOptions": {

@@ -8,7 +8,6 @@ import { join } from 'path';
 
 import { setupAppSwagger } from './app/app.swagger';
 import { setupGlobalPrefix } from './utils/helpers/global-prefix.helper';
-// import cookieParser = require('cookie-parser');
 import cookieParser from 'cookie-parser';
 
 import { PrismaExceptionFilter } from './utils/filters/prisma-exception.filter';

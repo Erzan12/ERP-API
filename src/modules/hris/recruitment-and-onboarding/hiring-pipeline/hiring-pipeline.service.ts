@@ -17,14 +17,12 @@ import {
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 import { Prisma } from '@prisma/client';
-import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constant';
 
 @Injectable()
 export class HiringPipelineService {
   constructor(
     private prisma: PrismaService,
-    private uploadService: AttachmentUploadService
   ) {}
 
   async getApplicant(applicantId: string, user: RequestUser) {
@@ -315,7 +313,7 @@ export class HiringPipelineService {
   async createApplicant(
     createApplicantDto: CreateApplicantDto,
     user: RequestUser,
-    files: Express.Multer.File[]
+    // files: Express.Multer.File[]
   ) {
     const { career_id, application_source } =
       createApplicantDto;
@@ -382,13 +380,13 @@ export class HiringPipelineService {
       },
     });
 
-    const attachments = await this.uploadService.attachFiles({
-      files,
-      transaction_type: 'Applicant',
-      transaction_id: applicant.id,
-      // file_desc: file_desc,
-      user_id: user.id,
-    });
+    // const attachments = await this.uploadService.attachFiles({
+    //   files,
+    //   transaction_type: 'Applicant',
+    //   transaction_id: applicant.id,
+    //   // file_desc: file_desc,
+    //   user_id: user.id,
+    // });
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
@@ -397,7 +395,7 @@ export class HiringPipelineService {
       status: 'success',
       message: `Applicant has been created successfully`,
       applicant,
-      attachments,
+      // attachments,
       created_by_user: `${userName} - ${userPosition}`,
     };
   }

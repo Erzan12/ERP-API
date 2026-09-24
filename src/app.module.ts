@@ -18,9 +18,6 @@ import { SecurityClearanceGuard } from './middleware/security_clearance/security
 import { APP_GUARD } from '@nestjs/core';
 
 import { AuthController } from './auth/auth.controller';
-// import { UserController } from './modules/manager/user/controllers/userv2.controller';
-// import { UserLocationController } from './modules/master/user_location/controller/user_locationV2.controller';
-
 import { UserManagementService } from './modules/manager/user-management/user-management.service';
 import { AuditService } from './modules/administrator/audit/audit.service';
 import { PositionService } from './modules/mastertable/position/position.service';
@@ -33,12 +30,6 @@ import { PrismaService } from './config/prisma/prisma.service';
 import { DivisionService } from './modules/mastertable/division/division.service';
 import { MailService } from './jobs/mail/mail.service';
 import { UserLocationService } from './modules/mastertable/user-location/user-location.service';
-import { AttachmentUploadService } from './jobs/attachment-upload/attachment-upload.service';
-import { MulterModule } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
-// import { SmsModule } from './jobs/sms/sms.module';
-// import { ControlNumberModule } from './jobs/control-number/control-number.module';
-import { AttachmentUploadModule } from './jobs/attachment-upload/attachment-upload.module';
 
 @Module({
   imports: [
@@ -58,11 +49,6 @@ import { AttachmentUploadModule } from './jobs/attachment-upload/attachment-uplo
     UserManagementModule,
     EmployeeDashboardModule,
     PrismaModule,
-    // SmsModule,
-    // ControlNumberModule,
-    AttachmentUploadModule
-    // HealthCheckModule,
-    // HealthModule,
   ],
   providers: [
     {
@@ -92,16 +78,9 @@ import { AttachmentUploadModule } from './jobs/attachment-upload/attachment-uplo
     CompanyService,
     EmploymentStatusService,
     UserLocationService,
-    AttachmentUploadService,
-    // HealthCheckService,
   ],
-  exports: [AttachmentUploadService],
   controllers: [
-    // EmployeeControllerV1,
     AuthController,
-    // HealthCheckController,
-    // UserController,
-    // UserLocationController,
   ],
 })
 export class AppModule {}

@@ -41,7 +41,6 @@ import { Request } from 'express';
 import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserDetailsDto } from './dto/user-details.dto';
-import { memoryStorage } from 'multer';
 
 @ApiTags('User Management')
 @Controller({ path: 'users', version: '2' })
@@ -105,14 +104,14 @@ export class UserManagementController {
   //create user account
   @Post()
   // @UseInterceptors(FileInterceptor('avatar'))
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: memoryStorage(),
-      limits: {
-        fileSize: 5 * 1024 * 1024,
-      },
-    }),
-  )
+  // @UseInterceptors(
+  //   FileInterceptor('avatar', {
+  //     storage: memoryStorage(),
+  //     limits: {
+  //       fileSize: 5 * 1024 * 1024,
+  //     },
+  //   }),
+  // )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -123,11 +122,11 @@ export class UserManagementController {
         email: { type: 'string' },
         // password: { type: 'string' },
         role_id: { type: 'string', nullable: true },
-        avatar: {
-          type: 'string',
-          format: 'binary',
-          nullable: true,
-        },
+        // avatar: {
+        //   type: 'string',
+        //   format: 'binary',
+        //   nullable: true,
+        // },
       },
       required: ['employee_id', 'username', 'email'],
     },
@@ -142,14 +141,14 @@ export class UserManagementController {
     @SessionUser() user: RequestUser,
     @Req() req: Request,
     // @Param('userId', new ParseUUIDPipe()) userId: string,
-    @UploadedFile() file: Express.Multer.File | undefined,
+    // @UploadedFile() file: Express.Multer.File | undefined,
   ) {
     return this.userManagementService.createUserAccount(
       dto,
       user,
       req,
       // userId,
-      file,
+      // file,
     );
   }
 

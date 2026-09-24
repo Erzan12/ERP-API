@@ -36,10 +36,6 @@ import {
 } from 'src/utils/dtos/recruitment-pagination.dto';
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
-
 /**
  * Applicant CONTROLLER SECTION
  */
@@ -91,20 +87,20 @@ export class ApplicantsController {
   }
 
   @Post('applicants')
-  @UseInterceptors(
-    FilesInterceptor('files', 5, {
-      storage: diskStorage({
-        destination: './uploads',
-        filename: (req, file, cb) => {
-          const timestamp = Date.now();
-          const ext = extname(file.originalname);
-          const name = file.originalname.replace(ext, '').replace(/\s+/g, '-');
+  // @UseInterceptors(
+  //   FilesInterceptor('files', 5, {
+  //     storage: diskStorage({
+  //       destination: './uploads',
+  //       filename: (req, file, cb) => {
+  //         const timestamp = Date.now();
+  //         const ext = extname(file.originalname);
+  //         const name = file.originalname.replace(ext, '').replace(/\s+/g, '-');
 
-          cb(null, `${name}-${timestamp}${ext}`);
-        },
-      }),
-    }),
-  )
+  //         cb(null, `${name}-${timestamp}${ext}`);
+  //       },
+  //     }),
+  //   }),
+  // )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -120,10 +116,10 @@ export class ApplicantsController {
 
         date_applied:{ type: 'string' },
 
-        files: {
-          type: 'array',
-          items: { type: 'string', format: 'binary' },
-        },
+        // files: {
+        //   type: 'array',
+        //   items: { type: 'string', format: 'binary' },
+        // },
 
         application_source: { 
           type: 'string',
@@ -156,11 +152,11 @@ export class ApplicantsController {
   @ApiPostResponse('Applicant posted successfully')
   @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
   createApplicant(
-    @UploadedFiles() files: Express.Multer.File[],
+    // @UploadedFiles() files: Express.Multer.File[],
     @Body() dto: CreateApplicantDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.createApplicant(dto, user, files );
+    return this.hiringPipelineService.createApplicant(dto, user);
   }
 
   @Put('applicants/:applicationId')

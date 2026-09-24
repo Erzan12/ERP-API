@@ -3161,13 +3161,6 @@
                   "date_applied": {
                     "type": "string"
                   },
-                  "files": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "format": "binary"
-                    }
-                  },
                   "application_source": {
                     "type": "string",
                     "enum": [
