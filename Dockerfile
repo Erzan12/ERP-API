@@ -1,29 +1,16 @@
-# dockerfile with bind mount to sync local dev with docker linux container to enable hot reload
-
-# Stage 1: Builder (General Dependencies)
+# Build stage
 FROM node:20-alpine AS builder
-
 WORKDIR /app
-
 COPY package*.json ./
-
-RUN npm install
-
-# Use full Node 20 image (better for development)
-FROM node:20-alpine AS development
-
-# Set working directory
-WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-
-# Copy app source
+RUN npm ci
 COPY . .
+RUN npm run build
 
-# Generate Prisma client
-RUN npx prisma generate
-
-# Expose app port
+# Production stage
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY --from=builder /app/dist ./dist
 EXPOSE 3000
-
-# Start in development mode
-CMD ["npm", "run", "start:dev"]
+CMD ["node", "dist/main"]
