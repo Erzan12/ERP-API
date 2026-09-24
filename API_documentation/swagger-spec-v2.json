@@ -13940,12 +13940,7 @@
           "remarks": {
             "type": "string"
           }
-        },
-        "required": [
-          "disciplinary_case_id",
-          "party_id",
-          "decision_type"
-        ]
+        }
       },
       "OtpVerificationDto": {
         "type": "object",
