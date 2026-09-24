@@ -5,7 +5,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import { PrismaPg } from '@prisma/adapter-pg';
 
 import { setupAppSwagger } from './app/app.swagger';
 import { setupGlobalPrefix } from './utils/helpers/global-prefix.helper';
@@ -13,7 +12,6 @@ import { setupGlobalPrefix } from './utils/helpers/global-prefix.helper';
 import cookieParser from 'cookie-parser';
 
 import { PrismaExceptionFilter } from './utils/filters/prisma-exception.filter';
-import { PrismaClient } from '@prisma/client';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -21,20 +19,6 @@ async function bootstrap() {
   // 1. GLOBAL MIDDLEWARES & FILTERS
   app.use(cookieParser());
   app.useGlobalFilters(new PrismaExceptionFilter());
-
-  //log manual queries
-  const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL,
-  });
-
-  new PrismaClient({ adapter, log: ['query'] });
-
-  // 2. SECURITY & VALIDATION
-  app.enableCors({
-    origin: ['http://localhost:3002', 'http://localhost:3003'], // Add your Render frontend URL here later!
-    methods: 'GET,POST,PUT,PATCH,DELETE',
-    credentials: true,
-  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -54,11 +38,31 @@ async function bootstrap() {
   app.setBaseViewsDir(join(process.cwd(), 'views'));
   app.setViewEngine('hbs');
 
-  // await app.listen(3000, () => {
-  //   console.log('Server is running at http://localhost:3000');
-  //   console.log('Swagger API is running at http://localhost:3000/docs');
-  //   console.log('Prisma Studio is running at http://localhost:51212');
-  // });
+  function logMemoryUsage() {
+    const before = process.memoryUsage();
+
+    console.log('[MEMORY BEFORE GC]', {
+      rss: `${Math.round(before.rss / 1024 / 1024)} MB`,
+      heapTotal: `${Math.round(before.heapTotal / 1024 / 1024)} MB`,
+      heapUsed: `${Math.round(before.heapUsed / 1024 / 1024)} MB`,
+      external: `${Math.round(before.external / 1024 / 1024)} MB`,
+    });
+
+    if (global.gc) {
+      global.gc();
+    }
+
+    const after = process.memoryUsage();
+
+    console.log('[MEMORY AFTER GC]', {
+      rss: `${Math.round(after.rss / 1024 / 1024)} MB`,
+      heapTotal: `${Math.round(after.heapTotal / 1024 / 1024)} MB`,
+      heapUsed: `${Math.round(after.heapUsed / 1024 / 1024)} MB`,
+      external: `${Math.round(after.external / 1024 / 1024)} MB`,
+    });
+  }
+
+  setInterval(logMemoryUsage, 10_000);
 
   // 5. FINALLY, START THE SERVER
   const port = process.env.PORT || 3000;

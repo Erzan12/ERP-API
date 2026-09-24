@@ -9,7 +9,7 @@ module.exports = defineConfig({
   },
   datasource: {
     // local dev
-    url: process.env.DATABASE_URL,
+    url: env.DATABASE_URL,
     //  production
     // url: env("DIRECT_URL"),
   },
