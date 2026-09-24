@@ -8,8 +8,6 @@ import {
   Post,
   Put,
   Query,
-  UploadedFiles,
-  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
@@ -31,9 +29,7 @@ import {
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { Can } from 'src/utils/decorators/can.decorator';
-import {
-  RecruitmentPaginationDto,
-} from 'src/utils/dtos/recruitment-pagination.dto';
+import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 /**
@@ -43,10 +39,7 @@ import { AssessInterviewDto } from './dto/assess-interviewer.dto';
 @ApiTags('Human Resources - Recruitment and Onboarding (Applicants)')
 @Controller({ path: 'hris', version: '2' })
 export class ApplicantsController {
-  constructor(
-    private readonly hiringPipelineService: HiringPipelineService,
-    private readonly interviewApplicantService: InterviewApplicantService,
-  ) {}
+  constructor(private readonly hiringPipelineService: HiringPipelineService) {}
 
   @Get('applicants')
   @ApiOperation({ summary: 'List of all applicant posted' })
@@ -69,9 +62,7 @@ export class ApplicantsController {
   @ApiOperation({ summary: 'List of all Applicants status' })
   @ApiGetResponse('List of all Applicants status')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
-  getStatusCountActive(
-    @SessionUser() user: RequestUser,
-  ) {
+  getStatusCountActive(@SessionUser() user: RequestUser) {
     return this.hiringPipelineService.statusCount(user);
   }
 
@@ -87,64 +78,27 @@ export class ApplicantsController {
   }
 
   @Post('applicants')
-  // @UseInterceptors(
-  //   FilesInterceptor('files', 5, {
-  //     storage: diskStorage({
-  //       destination: './uploads',
-  //       filename: (req, file, cb) => {
-  //         const timestamp = Date.now();
-  //         const ext = extname(file.originalname);
-  //         const name = file.originalname.replace(ext, '').replace(/\s+/g, '-');
-
-  //         cb(null, `${name}-${timestamp}${ext}`);
-  //       },
-  //     }),
-  //   }),
-  // )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        career_id: { type: 'string'},
-
+        career_id: { type: 'string' },
         first_name: { type: 'string' },
         last_name: { type: 'string' },
         email: { type: 'string' },
-
         mobile_number: { type: 'string' },
-
-        date_applied:{ type: 'string' },
-
-        // files: {
-        //   type: 'array',
-        //   items: { type: 'string', format: 'binary' },
-        // },
-
-        application_source: { 
+        date_applied: { type: 'string' },
+        application_source: {
           type: 'string',
           enum: [
             'company_website',
             'walk_in',
             'referral',
             'linkedIn',
-            'jobstreet'
-          ]
+            'jobstreet',
+          ],
         },
-
-        // document_type: {
-        //   type: 'array',
-        //   items: {
-        //     type: 'string',
-        //     enum: [
-        //       'resume',
-        //       'cover_letter',
-        //       'portfolio',
-        //       'certificate',
-        //       'other',
-        //     ],
-        //   },
-        // },
       },
     },
   })
@@ -152,7 +106,6 @@ export class ApplicantsController {
   @ApiPostResponse('Applicant posted successfully')
   @Can({ action: ACTION_CREATE, subject: EMPLOYEE_MASTERLIST })
   createApplicant(
-    // @UploadedFiles() files: Express.Multer.File[],
     @Body() dto: CreateApplicantDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -172,11 +125,7 @@ export class ApplicantsController {
     @Body() dto: UpdateApplicantDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.updateApplicant(
-      applicationId,
-      dto,
-      user,
-    );
+    return this.hiringPipelineService.updateApplicant(applicationId, dto, user);
   }
 
   // HIRING PIPELINE WORKFLOW STATUS
@@ -184,50 +133,50 @@ export class ApplicantsController {
   @ApiOperation({ summary: 'Shortlist an Applicant' })
   @ApiPostResponse('Applicant has been shortlisted')
   submitLeave(
-      @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-      @SessionUser() user: RequestUser
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
   ) {
-      return this.hiringPipelineService.shortlisted(applicantId,user)
+    return this.hiringPipelineService.shortlisted(applicantId, user);
   }
 
   @Post('applicants/:applicantId/for-interview')
   @ApiOperation({ summary: 'Set an Applicant for Interview' })
   @ApiPostResponse('Applicant has been set for interview')
   forInterview(
-      @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-      @SessionUser() user: RequestUser
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
   ) {
-      return this.hiringPipelineService.forInterview(applicantId,user)
+    return this.hiringPipelineService.forInterview(applicantId, user);
   }
 
   @Post('applicants/:applicantId/accept')
   @ApiOperation({ summary: 'Accept an Applicant' })
   @ApiPostResponse('Applicant has been accepted')
   accept(
-    @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-    @SessionUser() user: RequestUser
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.accepted(applicantId, user)
+    return this.hiringPipelineService.accepted(applicantId, user);
   }
 
   @Post('applicants/:applicantId/onboard')
   @ApiOperation({ summary: 'Onbaord an Applicant' })
   @ApiPostResponse('Applicant is now onboard')
   onBoard(
-    @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-    @SessionUser() user: RequestUser
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.onBoarding(applicantId, user)
+    return this.hiringPipelineService.onBoarding(applicantId, user);
   }
 
   @Post('applicants/:applicantId/reject')
   @ApiOperation({ summary: 'Reject an Applicant' })
   @ApiPostResponse('Applicant has been rejected')
   reject(
-    @Param('applicantId', new ParseUUIDPipe) applicantId: string,
-    @SessionUser() user: RequestUser
+    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @SessionUser() user: RequestUser,
   ) {
-    return this.hiringPipelineService.reject(applicantId, user)
+    return this.hiringPipelineService.reject(applicantId, user);
   }
 }
 

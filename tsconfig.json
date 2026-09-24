@@ -17,11 +17,10 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-    "strictPropertyInitialization": false,
+    "strictPropertyInitialization": false, //will check typescript if dtos like company_id has initializer if none will be red line error so we will put ! to promise it will be initialize at runtime or we can make it false but its recommented to just put ! in dtos
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "types": ["jest", "node"]
-    // "types" field removed — TypeScript will auto-discover all @types/* packages
   },
   "watchOptions": {
     "watchFile": "priorityPollingInterval",
@@ -30,6 +29,6 @@
     "synchronousWatchDirectory": true,
     "excludeDirectories": ["**/node_modules", "dist"]
   },
-  "include": ["src/**/*", "src/types/express.ts", "public", ".d.ts"],
-  "exclude": ["node_modules", "test", "**/*spec.ts"]
+  // "include": ["src/**/*", "src/types/express.ts", "public", ".d.ts", "test/**/*",] 
+  "include": ["src/**/*", "src/types/express.ts", "public", ".d.ts",] 
 }

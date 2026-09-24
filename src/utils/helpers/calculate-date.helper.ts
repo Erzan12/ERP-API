@@ -1,8 +1,12 @@
 import { addMonths } from 'date-fns';
-import { EvaluationStageStatus, STAGE_RULES } from '../constants/evaluation.constant';
-import { EvaluationStage } from '@prisma/client';
+import { EvaluationStageStatus, EvaluationStage } from '@prisma/client';
+import { Evaluation } from 'src/modules/hris/performance-management/regularization-reviews/type/evaluation-type';
+import { STAGE_RULES } from '../constants/evaluation.constant';
 
-export function getExpectedDueDate(hireDate: Date, stage: keyof typeof STAGE_RULES) {
+export function getExpectedDueDate(
+  hireDate: Date,
+  stage: keyof typeof STAGE_RULES,
+) {
   const months = STAGE_RULES[stage];
   return addMonths(hireDate, months);
 }
@@ -19,13 +23,16 @@ export function getExpectedDueDate(hireDate: Date, stage: keyof typeof STAGE_RUL
 //   return "pending";
 // }
 
-export function computeEvaluationStatus(evaluation: any, now = new Date()) {
+export function computeEvaluationStatus(
+  evaluation: Evaluation,
+  now = new Date(),
+) {
   if (evaluation.completed_at) {
-    return EvaluationStageStatus.COMPLETE
+    return EvaluationStageStatus.complete;
   }
 
   const hireDate = evaluation.employee?.hire_date;
-  if (!hireDate) return EvaluationStageStatus.PENDING;
+  if (!hireDate) return EvaluationStageStatus.pending;
 
   let deadline: Date;
 
@@ -35,17 +42,17 @@ export function computeEvaluationStatus(evaluation: any, now = new Date()) {
 
   //probation date is adjustable and is not based on hire date of employee
   if (evaluation.stage === EvaluationStage.third_month_evaluation) {
-    deadline = new Date(evaluation.probation_date, 3);
+    deadline = addMonths(evaluation.evaluation_period_start, 3);
     // deadline = addMonths(hireDate, 3);
-  } else if ( evaluation.stage === EvaluationStage.fifth_month_evaluation) {
+  } else if (evaluation.stage === EvaluationStage.fifth_month_evaluation) {
     deadline = addMonths(hireDate, 5);
   } else {
-    return EvaluationStageStatus.PENDING;
+    return EvaluationStageStatus.pending;
   }
 
   if (now > deadline) {
-    return EvaluationStageStatus.OVERDUE;
+    return EvaluationStageStatus.overdue;
   } else {
-    return EvaluationStageStatus.PENDING;
+    return EvaluationStageStatus.pending;
   }
 }

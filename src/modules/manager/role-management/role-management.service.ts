@@ -8,7 +8,12 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PermissionSource, Prisma } from '@prisma/client';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
-import { AddRoleToUserDto, AddUserPermissionDto, AssignCustomRolePermissiontDto, AssignDirectPermissionDto } from './dto/role-management.dto';
+import {
+  AddRoleToUserDto,
+  AddUserPermissionDto,
+  AssignCustomRolePermissiontDto,
+  AssignDirectPermissionDto,
+} from './dto/role-management.dto';
 
 @Injectable()
 export class RoleManagementService {

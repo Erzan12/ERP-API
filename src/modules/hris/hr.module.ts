@@ -20,7 +20,7 @@ import {
 import {
   ApplicantsController,
   InterviewApplicantController,
-} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipelineV2.controller';
+} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.controller';
 import { RegularizationReviewsService } from './performance-management/regularization-reviews/regularization-reviews.service';
 import { RegularizationReviewsController } from './performance-management/regularization-reviews/regularization-reviews.controller';
 import { PerformanceCompetencyService } from './performance-management/performance-competency/performance-competency.service';
@@ -55,7 +55,7 @@ import { LeaveCategoryController } from './time-and-attendance-cases/leave-categ
     RegularizationReviewsController,
     PerformanceCompetencyController,
     LeaveCasesController,
-    LeaveCategoryController
+    LeaveCategoryController,
   ],
   exports: [HrModule],
 })

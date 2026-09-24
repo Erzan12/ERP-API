@@ -165,13 +165,14 @@ export class UpdateCareerPostingDto {
   @IsOptional()
   @IsString()
   @IsEnum(CareerPostingStatus, {
-    message: 'Career Posting status must be draft, submitted, verified, approved, rejected',
+    message:
+      'Career Posting status must be draft, submitted, verified, approved, rejected',
   })
   @Type(() => String)
   @ApiProperty({
     enum: CareerPostingStatus,
     example: CareerPostingStatus.DRAFT,
-    description: 'The status of this career posting'
+    description: 'The status of this career posting',
   })
   status?: CareerPostingStatus;
 

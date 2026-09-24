@@ -8,6 +8,6 @@ import { PerformanceEvaluationController } from './performance-evaluation/perfor
 @Module({
   imports: [AuthModule],
   controllers: [PerformanceEvaluationController],
-  providers: [PerformanceEvaluationService, PrismaService]
+  providers: [PerformanceEvaluationService, PrismaService],
 })
 export class EmployeeDashboardModule {}

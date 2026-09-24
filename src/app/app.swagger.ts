@@ -37,12 +37,7 @@ function setupAppSwagger(app: INestApplication): void {
     .build();
 
   const documentV2 = SwaggerModule.createDocument(app, optionsV2, {
-    include: [
-      AdministratorModule,
-      HrModule,
-      ManagerModule,
-      MastertableModule,
-    ],
+    include: [AdministratorModule, HrModule, ManagerModule, MastertableModule],
   });
 
   // SwaggerModule.setup('docs/v1', app, documentV1);

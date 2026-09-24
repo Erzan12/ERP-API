@@ -79,8 +79,6 @@ import { UserLocationService } from './modules/mastertable/user-location/user-lo
     EmploymentStatusService,
     UserLocationService,
   ],
-  controllers: [
-    AuthController,
-  ],
+  controllers: [AuthController],
 })
 export class AppModule {}

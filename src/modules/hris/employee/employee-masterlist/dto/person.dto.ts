@@ -10,7 +10,6 @@ import { Type } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CivilStatus, Gender } from '@prisma/client';
 
-
 export class CreatePersonDto {
   @IsString()
   @IsNotEmpty()

@@ -49,4 +49,3 @@ export class StatusCountDto {
   @ApiPropertyOptional({ default: '' })
   is_active?: boolean;
 }
-

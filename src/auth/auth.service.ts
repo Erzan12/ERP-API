@@ -26,7 +26,10 @@ import { MailService } from 'src/jobs/mail/mail.service';
 import { UserManagementService } from 'src/modules/manager/user-management/user-management.service';
 import { OtpPurposeTemplate } from '@prisma/client';
 import { ActionEntry } from './type/action-entry.type';
-import { generateOtp, getOtpExpiration } from 'src/utils/constants/otp-verification.constants';
+import {
+  generateOtp,
+  getOtpExpiration,
+} from 'src/utils/constants/otp-verification.constants';
 
 @Injectable()
 export class AuthService {

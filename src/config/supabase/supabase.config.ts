@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 export const SUPABASE_BUCKETS = {
-    DOCUMENTS: 'documents',
-    AVATARS: 'avatars',
+  DOCUMENTS: 'documents',
+  AVATARS: 'avatars',
 };
 
 // Use the SERVICE ROLE key on the backend (never expose this to the frontend).
@@ -17,12 +17,9 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error('SUPABASE_URL and SUPABASE_KEY must be configured');
 }
 
-export const supabase = createClient(
-  supabaseUrl,
-  supabaseKey
-);
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export function buildFileUrl(bucket: string, path: string): string {
-    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-    return data.publicUrl;
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl;
 }

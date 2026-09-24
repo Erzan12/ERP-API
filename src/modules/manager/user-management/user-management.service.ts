@@ -18,7 +18,6 @@ import { Request } from 'express';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { UserDetailsDto } from './dto/user-details.dto';
 import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
-import { TRANSACTION_TYPE } from 'src/utils/constants/transaction-type.constant';
 import { Prisma, User } from '@prisma/client';
 
 @Injectable()

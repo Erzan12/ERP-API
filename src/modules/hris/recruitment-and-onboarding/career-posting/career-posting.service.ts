@@ -120,25 +120,116 @@ export class CareerPostingService {
   }
 
   //get career postings
+  //get career postings
   async getCareerPostings(user: RequestUser, dto: RecruitmentPaginationDto) {
     const { search, status, sortBy, order, page, perPage } = dto;
+
+    // Auth check first
+    const requestUser = await this.prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        employee: {
+          include: {
+            person: true,
+            position: true,
+          },
+        },
+        user_roles: true,
+      },
+    });
+
+    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
+      throw new BadRequestException(`User does not exist.`);
+    }
+
+    const allowedRoles = [
+      'Administrator',
+      'Super Administrator',
+      'HR Administrator',
+      'HR Manager',
+      'HR Clerk',
+      'HR Staff',
+    ];
+    const canView = requestUser?.user_roles.some((role) =>
+      allowedRoles.includes(role.role_name),
+    );
+
+    if (!canView) {
+      throw new ForbiddenException(
+        'You are not authorized to perform this action',
+      );
+    }
 
     //pagination area
     const skip = (page - 1) * perPage;
 
-    //with status params filter
+    // const parsedStatus = status as CareerPostingStatus;
+
+    const isValidStatus = Object.values(CareerPostingStatus).includes(
+      status as CareerPostingStatus,
+    );
+
+    // invalid → empty result
+    if (status && !isValidStatus) {
+      return {
+        status: 'success',
+        message: 'List of Career Posting',
+        count: 0,
+        page,
+        perPage,
+        recruitments: [],
+      };
+    }
+
+    // const parsedStatus = isValidStatus ? (status as CareerPostingStatus) : undefined;
+
+    //filter for status submitted and verified if status filter is submitted
     // const whereCondition: Prisma.CareerPostingWhereInput = {
     //   is_active: true,
-    //   ...(status && {
-    //     status: status as CareerPostingStatus,
+    //   ...(parsedStatus && parsedStatus !== CareerPostingStatus.ALL && {
+    //     status:
+    //       parsedStatus === CareerPostingStatus.SUBMITTED
+    //         ? {
+    //             in: [
+    //               CareerPostingStatus.SUBMITTED,
+    //               CareerPostingStatus.VERIFIED,
+    //             ],
+    //           }
+    //         : parsedStatus,
     //   }),
     // };
+
+    // const whereCondition: Prisma.CareerPostingWhereInput = {
+    //   is_active: true,
+    //   ...(parsedStatus &&
+    //     parsedStatus !== CareerPostingStatus.ALL && {
+    //       status:
+    //         parsedStatus === CareerPostingStatus.SUBMITTED
+    //           ? {
+    //               in: [
+    //                 CareerPostingStatus.SUBMITTED,
+    //                 CareerPostingStatus.VERIFIED,
+    //               ],
+    //             }
+    //           : parsedStatus,
+    //     }),
+    // };
+
+    const parsedStatus = status as CareerPostingStatus;
+
     const whereCondition: Prisma.CareerPostingWhereInput = {
       is_active: true,
-      ...(status && status !== CareerPostingStatus.ALL && {
-        status: status as Exclude<CareerPostingStatus, typeof CareerPostingStatus.ALL>,
-      }),
     };
+
+    if (parsedStatus && parsedStatus !== CareerPostingStatus.ALL) {
+      if (parsedStatus === CareerPostingStatus.SUBMITTED) {
+        whereCondition.status = {
+          in: [CareerPostingStatus.SUBMITTED, CareerPostingStatus.VERIFIED],
+        };
+      } else {
+        whereCondition.status = parsedStatus;
+      }
+    }
 
     const positionFields = ['name'];
     const departmentFields = ['name'];
@@ -199,6 +290,7 @@ export class CareerPostingService {
       'created_at',
       'updated_at',
     ];
+
     const safeSortBy = allowSortFields.includes(sortBy) ? sortBy : 'created_at';
 
     const [total, recruitments] = await this.prisma.$transaction([
@@ -277,41 +369,6 @@ export class CareerPostingService {
         },
       }),
     ]);
-
-    const requestUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            position: true,
-          },
-        },
-        user_roles: true,
-      },
-    });
-
-    if (!requestUser || !requestUser.employee || !requestUser.employee.person) {
-      throw new BadRequestException(`User does not exist.`);
-    }
-
-    const allowedRoles = [
-      'Administrator',
-      'Super Administrator',
-      'HR Manager',
-      'HR Clerk',
-      'HR Staff',
-    ];
-
-    const canView = requestUser.user_roles.some((role) =>
-      allowedRoles.includes(role.role_name),
-    );
-
-    if (!canView) {
-      throw new ForbiddenException(
-        'You are not authorized to perform this action',
-      );
-    }
 
     return {
       status: 'success',
@@ -444,7 +501,11 @@ export class CareerPostingService {
         is_active: updateCareerPostingDto.is_active ?? undefined,
         employment_type: updateCareerPostingDto.employment_type ?? undefined,
         employee_type: updateCareerPostingDto.employee_type ?? undefined,
-        status: updateCareerPostingDto.status && updateCareerPostingDto.status !== CareerPostingStatus.ALL ? updateCareerPostingDto.status : undefined,
+        status:
+          updateCareerPostingDto.status &&
+          updateCareerPostingDto.status !== CareerPostingStatus.ALL
+            ? updateCareerPostingDto.status
+            : undefined,
         updated_by: user.id,
       },
     });
