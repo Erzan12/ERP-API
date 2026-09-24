@@ -29,7 +29,7 @@ export class ScheduleHearingDto {
   party_id: string;
 
   @IsDateString()
-  @ApiProperty({ example: '2026-09-0109:00:00.000Z' })
+  @ApiProperty({ example: '2026-09-01T09:00:00.000Z' })
   scheduled_at: string;
 
   @IsEnum(HrErHearingChannel)
