@@ -11,7 +11,18 @@ type TrailEntry = {
   action: string;
   label: string;
   stage: HrErCaseStage | null;
-  actor_id: string;
+  actor: {
+    id: string;
+    username: string;
+    email: string;
+    avatar: string | null;
+    person: {
+      first_name: string;
+      last_name: string;
+      middle_name: string | null;
+      suffix: string | null;
+    };
+  } | null;
   party_id: string | null;
   occurred_at: Date;
   metadata: unknown;
@@ -45,6 +56,19 @@ type ActivityTrailLog = {
   party_id: string | null;
   occurred_at: Date;
   metadata: unknown;
+
+  actor: {
+    id: string;
+    username: string;
+    email: string;
+    avatar: string | null;
+    person: {
+      first_name: string;
+      last_name: string;
+      middle_name: string | null;
+      suffix: string | null;
+    };
+  } | null;
 };
 
 type ActivityTrailStageLog = {
@@ -133,7 +157,16 @@ export function buildActivityTrail(disciplinaryCase: ActivityTrailCase): {
       action: log.action,
       label: ACTION_LABEL[log.action] ?? log.action.replace(/_/g, ' '),
       stage: log.stage,
-      actor_id: log.actor_id,
+      // actor_id: log.actor_id,
+      actor: log.actor
+        ? {
+            id: log.actor.id,
+            username: log.actor.username,
+            email: log.actor.email,
+            avatar: log.actor.avatar,
+            person: log.actor.person,
+          }
+        : null,
       party_id: log.party_id,
       occurred_at: log.occurred_at,
       metadata: log.metadata,

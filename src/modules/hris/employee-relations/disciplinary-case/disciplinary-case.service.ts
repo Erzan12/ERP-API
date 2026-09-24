@@ -565,7 +565,26 @@ export class DisciplinaryCaseService {
             actions: true,
           },
         },
-        activity_logs: true,
+        activity_logs: {
+          include: {
+            actor: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+                avatar: true,
+                person: {
+                  select: {
+                    first_name: true,
+                    last_name: true,
+                    middle_name: true,
+                    suffix: true,
+                  },
+                },
+              },
+            },
+          },
+        },
         attachments: true,
       },
     });
