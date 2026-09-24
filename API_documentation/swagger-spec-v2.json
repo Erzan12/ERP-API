@@ -8952,102 +8952,22 @@
         ]
       }
     },
-    "/v2/hris/employee-relations/notice-of-decision/{decisionId}": {
-      "get": {
-        "operationId": "NoticeOfDecisionController_getDecision_v2",
-        "parameters": [
-          {
-            "name": "decisionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Get a Notice of Decision",
-        "tags": [
-          "Human Resources - Employee Relations(Notice of Decision)"
-        ]
-      },
-      "put": {
-        "operationId": "NoticeOfDecisionController_updateDecision_v2",
-        "parameters": [
-          {
-            "name": "decisionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateDecisionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "summary": "Update an existing Notice of Decision.",
-        "tags": [
-          "Human Resources - Employee Relations(Notice of Decision)"
-        ]
-      }
-    },
-    "/v2/hris/employee-relations/notice-of-decision": {
+    "/v2/hris/employee-relations/notice-of-decision/parties": {
       "post": {
-        "operationId": "NoticeOfDecisionController_createDecision_v2",
+        "operationId": "NoticeOfDecisionController_submitDecision_v2",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateDecisionDto"
+                "$ref": "#/components/schemas/SubmitDecisionDto"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": ""
-          }
-        },
-        "summary": "Create a Notice of Decision",
-        "tags": [
-          "Human Resources - Employee Relations(Notice of Decision)"
-        ]
-      }
-    },
-    "/v2/hris/employee-relations/notice-of-decision/{decisionId}/party": {
-      "put": {
-        "operationId": "NoticeOfDecisionController_submitDecision_v2",
-        "parameters": [
-          {
-            "name": "decisionId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
             "description": ""
           }
         },
@@ -13774,7 +13694,7 @@
           },
           "scheduled_at": {
             "type": "string",
-            "example": "2026-09-01T09:00:00.000Z"
+            "example": "2026-09-0109:00:00.000Z"
           },
           "channel": {
             "type": "string",
@@ -13855,7 +13775,7 @@
           "channel"
         ]
       },
-      "CreateDecisionDto": {
+      "SubmitDecisionDto": {
         "type": "object",
         "properties": {
           "disciplinary_case_id": {
@@ -13883,13 +13803,17 @@
           },
           "effectivity_start": {
             "type": "string",
-            "example": "2026-09-01T09:00:00.000Z",
+            "example": "2026-08-01",
             "description": "Required for suspension/rehabilitation decisions"
           },
           "effectivity_end": {
             "type": "string",
-            "example": "2026-09-05T09:00:00.000Z",
+            "example": "2026-08-03",
             "description": "Required for suspension/rehabilitation decisions"
+          },
+          "signed_file_url": {
+            "type": "string",
+            "description": "URL of the signed Notice of Decision"
           },
           "remarks": {
             "type": "string"
@@ -13900,47 +13824,6 @@
           "party_id",
           "decision_type"
         ]
-      },
-      "UpdateDecisionDto": {
-        "type": "object",
-        "properties": {
-          "disciplinary_case_id": {
-            "type": "string",
-            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-            "description": "Disciplinary Case UUID"
-          },
-          "party_id": {
-            "type": "string",
-            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-            "description": "Party UUID"
-          },
-          "decision_type": {
-            "type": "string",
-            "enum": [
-              "suspension",
-              "written_reprimand",
-              "stern_warning",
-              "suspension_7d",
-              "suspension_15d",
-              "dismissal",
-              "acquitted",
-              "rehabilitation"
-            ]
-          },
-          "effectivity_start": {
-            "type": "string",
-            "example": "2026-09-0109:00:00.000Z",
-            "description": "Required for suspension/rehabilitation decisions"
-          },
-          "effectivity_end": {
-            "type": "string",
-            "example": "2026-09-0109:00:00.000Z",
-            "description": "Required for suspension/rehabilitation decisions"
-          },
-          "remarks": {
-            "type": "string"
-          }
-        }
       },
       "OtpVerificationDto": {
         "type": "object",
