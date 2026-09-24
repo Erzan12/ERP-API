@@ -213,9 +213,9 @@ export class NoticeOfDecisionService {
       // }
 
       const decision = await tx.hrErCaseDecision.update({
-        where: { party_id: dto.party_id },
+        where: { id: decisionId },
         data: {
-          decision_type: dto.decision_type,
+          decision_type: dto.decision_type ?? undefined,
           effectivity_start: dto.effectivity_start
             ? new Date(dto.effectivity_start)
             : null,
@@ -223,7 +223,7 @@ export class NoticeOfDecisionService {
             ? new Date(dto.effectivity_end)
             : null,
           // signed_file_url: dto.signed_file_url,
-          remarks: dto.remarks,
+          remarks: dto.remarks ?? undefined,
           // issued_at: new Date(),
           updated_by: user.id,
         },
