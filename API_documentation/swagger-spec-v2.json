@@ -13966,7 +13966,8 @@
             "description": "Required for suspension/rehabilitation decisions"
           },
           "remarks": {
-            "type": "string"
+            "type": "string",
+            "example": "String"
           },
           "deduct_payroll": {
             "$ref": "#/components/schemas/PayrollAdjustmentDto"
