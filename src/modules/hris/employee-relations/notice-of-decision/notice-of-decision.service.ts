@@ -87,6 +87,7 @@ export class NoticeOfDecisionService {
     const decision = await this.prisma.hrErCaseDecision.findUnique({
       where: { id: decisionId },
       include: {
+        deduct_payroll: true,
         attachment: true,
       },
     });
@@ -150,6 +151,26 @@ export class NoticeOfDecisionService {
           remarks: dto.remarks,
           // issued_at: new Date(),
           created_by: user.id,
+          deduct_payroll: dto.deduct_payroll
+            ? {
+                create: {
+                  deduction_start: dto.deduct_payroll.deduction_start
+                    ? new Date(dto.deduct_payroll.deduction_start)
+                    : null,
+                  deduction_end: dto.deduct_payroll.deduction_end
+                    ? new Date(dto.deduct_payroll.deduction_end)
+                    : null,
+                  total_deduction: dto.deduct_payroll.total_deduction,
+                  semi_monthly_deduction:
+                    dto.deduct_payroll.semi_monthly_deduction,
+                  decision_remarks: dto.deduct_payroll.decision_remarks,
+                  created_by: user.id,
+                },
+              }
+            : undefined,
+        },
+        include: {
+          deduct_payroll: true,
         },
       });
 
@@ -215,7 +236,7 @@ export class NoticeOfDecisionService {
       const decision = await tx.hrErCaseDecision.update({
         where: { id: decisionId },
         data: {
-          decision_type: dto.decision_type ?? undefined,
+          decision_type: dto.decision_type ?? existing.decision_type,
           effectivity_start: dto.effectivity_start
             ? new Date(dto.effectivity_start)
             : null,
@@ -223,9 +244,44 @@ export class NoticeOfDecisionService {
             ? new Date(dto.effectivity_end)
             : null,
           // signed_file_url: dto.signed_file_url,
-          remarks: dto.remarks ?? undefined,
+          remarks: dto.remarks ?? existing.remarks,
           // issued_at: new Date(),
           updated_by: user.id,
+          deduct_payroll: dto.deduct_payroll
+            ? {
+                upsert: {
+                  create: {
+                    deduction_start: dto.deduct_payroll.deduction_start
+                      ? new Date(dto.deduct_payroll.deduction_start)
+                      : null,
+                    deduction_end: dto.deduct_payroll.deduction_end
+                      ? new Date(dto.deduct_payroll.deduction_end)
+                      : null,
+                    total_deduction: dto.deduct_payroll.total_deduction,
+                    semi_monthly_deduction:
+                      dto.deduct_payroll.semi_monthly_deduction,
+                    decision_remarks: dto.deduct_payroll.decision_remarks,
+                    created_by: user.id,
+                  },
+                  update: {
+                    deduction_start: dto.deduct_payroll.deduction_start
+                      ? new Date(dto.deduct_payroll.deduction_start)
+                      : undefined,
+                    deduction_end: dto.deduct_payroll.deduction_end
+                      ? new Date(dto.deduct_payroll.deduction_end)
+                      : undefined,
+                    total_deduction: dto.deduct_payroll.total_deduction,
+                    semi_monthly_deduction:
+                      dto.deduct_payroll.semi_monthly_deduction,
+                    decision_remarks: dto.deduct_payroll.decision_remarks,
+                    updated_by: user.id,
+                  },
+                },
+              }
+            : undefined,
+        },
+        include: {
+          deduct_payroll: true,
         },
       });
 
@@ -240,7 +296,7 @@ export class NoticeOfDecisionService {
 
       return {
         status: 'success',
-        message: 'Notice of Decision issued',
+        message: 'Notice of Decision updated',
         decision,
       };
     });
