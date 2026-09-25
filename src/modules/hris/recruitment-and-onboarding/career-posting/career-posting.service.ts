@@ -10,12 +10,12 @@ import {
 } from './dto/career-posting.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
 import {
   RecruitmentPaginationDto,
   StatusCountDto,
 } from 'src/utils/dtos/recruitment-pagination.dto';
 import { CareerPostingStatus } from 'src/utils/decorators/global.enums.decorator';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class CareerPostingService {

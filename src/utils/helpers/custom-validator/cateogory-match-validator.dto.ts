@@ -1,10 +1,10 @@
-import { EmployeeType } from '@prisma/client';
 import {
   ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { CategoryMatchObject } from './category-match-object.interface';
+import { EmployeeType } from 'src/generated/prisma/enums';
 
 @ValidatorConstraint({ name: 'CategoryMatch', async: false })
 export class CategoryMatchValidator implements ValidatorConstraintInterface {

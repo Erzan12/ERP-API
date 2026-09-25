@@ -18,7 +18,7 @@ import { Request } from 'express';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { UserDetailsDto } from './dto/user-details.dto';
 import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, User } from 'src/generated/prisma/client';
 
 @Injectable()
 export class UserManagementService {

@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CivilStatus, Gender } from '@prisma/client';
+import { CivilStatus, Gender } from 'src/generated/prisma/enums';
 
 export class CreatePersonDto {
   @IsString()

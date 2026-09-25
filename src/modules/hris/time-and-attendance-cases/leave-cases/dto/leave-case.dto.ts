@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LeaveCompensation } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsDateString,
@@ -11,6 +10,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
+import { LeaveCompensation } from 'src/generated/prisma/enums';
 
 export class CreateLeaveRequestDto {
   @IsUUID()

@@ -1,4 +1,5 @@
-import { Prisma } from '@prisma/client';
+
+import { Prisma } from 'src/generated/prisma/client';
 import { computeEvaluationStatus } from 'src/utils/helpers/calculate-date.helper';
 import { computeOverallStatus } from 'src/utils/helpers/compute-overall-status.helper';
 

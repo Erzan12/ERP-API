@@ -7,7 +7,7 @@ import {
 import { AssignSubModulePermissionDto } from './dto/assign-sub-module-permission.dto';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../../../generated/prisma/client';
 import { CreateSubModuleDto, UpdateSubmoduleDto } from './dto/sub-module.dto';
 import { SubModulePaginationDto } from 'src/utils/dtos/module-pagination.dto';
 

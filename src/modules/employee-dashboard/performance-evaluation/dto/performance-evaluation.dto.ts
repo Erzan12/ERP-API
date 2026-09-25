@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EvaluationDecision, PerformanceRating } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -9,6 +8,7 @@ import {
   IsUUID,
   ValidateNested,
 } from 'class-validator';
+import { EvaluationDecision, PerformanceRating } from 'src/generated/prisma/enums';
 
 export class EvaluationDetailDto {
   @IsUUID()

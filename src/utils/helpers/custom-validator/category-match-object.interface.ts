@@ -1,4 +1,4 @@
-import { EmployeeType } from '@prisma/client';
+import { EmployeeType } from "src/generated/prisma/enums";
 
 export interface CategoryMatchObject {
   department_group: EmployeeType;

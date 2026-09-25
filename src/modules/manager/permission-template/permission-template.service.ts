@@ -7,8 +7,8 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { AssignTemplateDto } from './dto/assign-template.dto';
 import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { UserRole } from '@prisma/client';
 import { CreatePermissionTemplateDto } from './dto/create-permission-template.dto';
+import { UserRole } from 'src/generated/prisma/client';
 
 @Injectable()
 export class PermissionTemplateService {

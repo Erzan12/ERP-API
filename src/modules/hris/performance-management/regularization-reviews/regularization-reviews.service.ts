@@ -8,12 +8,16 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { computeEvaluationStatus } from 'src/utils/helpers/calculate-date.helper';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateEvaluationDto } from './dto/evaluation.dto';
-import { EvaluationStage, EvaluationStatus, Prisma } from '@prisma/client';
 import { RegularizationReviewDto } from 'src/utils/dtos/regularization-pagination.dto';
 import { computeOverallStatus } from 'src/utils/helpers/compute-overall-status.helper';
 import { PREVIOUS_STAGE_MAP } from 'src/utils/constants/evaluation.constant';
 import { Evaluation, ProcessedEvaluation } from './type/evaluation-type';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constant';
+import {
+  EvaluationStage,
+  EvaluationStatus,
+  Prisma,
+} from 'src/generated/prisma/client';
 
 @Injectable()
 export class RegularizationReviewsService {

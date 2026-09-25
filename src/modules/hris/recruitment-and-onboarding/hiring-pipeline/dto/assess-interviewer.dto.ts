@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { InterviewStage } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
@@ -11,6 +10,7 @@ import {
   ValidateNested,
   IsEnum,
 } from 'class-validator';
+import { InterviewStage } from 'src/generated/prisma/enums';
 
 export class ExaminationRatingDto {
   @IsString()

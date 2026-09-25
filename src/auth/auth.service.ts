@@ -24,12 +24,12 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { mapRolesToRequestUser } from 'src/utils/helpers/reusable-group-role-permisison.helper';
 import { MailService } from 'src/jobs/mail/mail.service';
 import { UserManagementService } from 'src/modules/manager/user-management/user-management.service';
-import { OtpPurposeTemplate } from '@prisma/client';
 import { ActionEntry } from './type/action-entry.type';
 import {
   generateOtp,
   getOtpExpiration,
 } from 'src/utils/constants/otp-verification.constants';
+import { OtpPurposeTemplate } from 'src/generated/prisma/enums';
 
 @Injectable()
 export class AuthService {

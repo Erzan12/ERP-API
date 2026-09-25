@@ -14,8 +14,8 @@ import {
 } from 'src/utils/decorators/global.enums.decorator';
 import { BulkAssignInterviewDto } from './dto/bulk-assign-interviewer.dto';
 import { AssessInterviewDto } from './dto/assess-interviewer.dto';
-import { Prisma } from '@prisma/client';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constant';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class HiringPipelineService {

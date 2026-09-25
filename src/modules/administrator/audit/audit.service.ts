@@ -4,7 +4,7 @@ import { RequestUser } from 'src/utils/types/request-user.interface';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Request } from 'express';
 import { NewUserData } from 'src/utils/types/types';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../../../generated/prisma/client';
 
 @Injectable()
 export class AuditService {

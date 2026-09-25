@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '../../../generated/prisma/client';
 import { ExecuteDbQueryDto } from './dto/execute-db-query.dto';
 import { SlackService } from 'src/jobs/slack/slack.service';
 

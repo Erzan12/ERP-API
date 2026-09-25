@@ -11,8 +11,9 @@ import {
 } from './dto/employee-person.dto';
 
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { CivilStatus, Gender, Prisma } from '@prisma/client';
 import { RequestUser } from 'src/utils/types/request-user.interface';
+import { CivilStatus, Gender } from 'src/generated/prisma/enums';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class EmployeeService {

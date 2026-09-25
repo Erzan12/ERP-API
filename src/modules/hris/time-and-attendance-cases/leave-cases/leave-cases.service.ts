@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { LeaveRequestStatus, Prisma, WorkflowActionType } from '@prisma/client';
+
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import {
@@ -13,6 +13,8 @@ import {
 } from './dto/leave-case.dto';
 import { WORKFLOW_ENTITY } from 'src/utils/constants/workflow-entity.constant';
 import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-pagination.dto';
+import { LeaveRequestStatus, WorkflowActionType } from 'src/generated/prisma/enums';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class LeaveCasesService {

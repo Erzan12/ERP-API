@@ -8,11 +8,7 @@ import {
   IsString,
   Validate,
 } from 'class-validator';
-import {
-  EmployeeType,
-  LandBasedCategory,
-  SeaBasedCategory,
-} from '@prisma/client';
+import { EmployeeType, LandBasedCategory, SeaBasedCategory } from 'src/generated/prisma/enums';
 import { CategoryMatchValidator } from 'src/utils/helpers/custom-validator/cateogory-match-validator.dto';
 
 export class CreatePerformanceCompetencyDto {

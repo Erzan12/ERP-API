@@ -1,7 +1,7 @@
 import { addMonths } from 'date-fns';
-import { EvaluationStageStatus, EvaluationStage } from '@prisma/client';
 import { Evaluation } from 'src/modules/hris/performance-management/regularization-reviews/type/evaluation-type';
 import { STAGE_RULES } from '../constants/evaluation.constant';
+import { EvaluationStage, EvaluationStageStatus } from 'src/generated/prisma/enums';
 
 export function getExpectedDueDate(
   hireDate: Date,

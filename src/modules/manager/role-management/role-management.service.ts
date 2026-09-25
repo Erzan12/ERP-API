@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { RequestUser } from 'src/utils/types/request-user.interface';
-import { PermissionSource, Prisma } from '@prisma/client';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import {
   AddRoleToUserDto,
@@ -14,6 +13,7 @@ import {
   AssignCustomRolePermissiontDto,
   AssignDirectPermissionDto,
 } from './dto/role-management.dto';
+import { PermissionSource, Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class RoleManagementService {

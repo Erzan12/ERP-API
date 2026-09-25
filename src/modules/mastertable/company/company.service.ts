@@ -5,14 +5,11 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-
-import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 import { CreateCompanyDto, UpdateCompanyDto } from './dto/company.dto';
-
 import { RequestUser } from 'src/utils/types/request-user.interface';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class CompanyService {

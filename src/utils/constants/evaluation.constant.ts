@@ -1,4 +1,4 @@
-import { EvaluationStage } from '@prisma/client';
+import { EvaluationStage } from "src/generated/prisma/enums";
 
 export const STAGE_RULES = {
   third_month_evaluation: 3,
