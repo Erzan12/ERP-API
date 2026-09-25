@@ -527,7 +527,11 @@ export class DisciplinaryCaseService {
                 attachment: true,
               },
             },
-            decision: true,
+            decision: {
+              include: {
+                deduct_payroll: true,
+              },
+            },
             stage_logs: true,
             offenses: {
               select: {
