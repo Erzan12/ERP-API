@@ -387,6 +387,56 @@ export class ErCaseAttachmentService {
     return prisma.hrErCaseAttachment.create({ data });
   }
 
+  private async attachFilesForDeductAuthority(
+    params: {
+      file: Express.Multer.File;
+      transaction_type: string;
+      decision_payroll_deduction_id: string;
+      user_id?: string;
+    },
+    tx?: Prisma.TransactionClient,
+  ) {
+    const prisma = tx || this.prisma;
+    const { file, transaction_type, decision_payroll_deduction_id, user_id } =
+      params;
+
+    // Guard: make sure a file was provided
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+
+    // Guard: catch missing buffer early
+    if (!file.buffer) {
+      throw new BadRequestException(
+        `File "${file.originalname}" has no buffer. Ensure multer is using memoryStorage.`,
+      );
+    }
+
+    const bucket = MINIO_BUCKETS.DOCUMENTS;
+
+    const extension =
+      file.originalname.split('.').pop()?.toLowerCase() || 'bin';
+    const fileName = `authority-to-deduct-documents/${randomUUID()}.${extension}`;
+
+    await minioClient.putObject(bucket, fileName, file.buffer, file.size, {
+      'Content-Type': file.mimetype,
+    });
+
+    const fileUrl = buildFileUrl(bucket, fileName);
+
+    const data = {
+      transaction_type,
+      decision_payroll_deduction_id,
+      file_name: file.originalname,
+      file_url: fileUrl,
+      file_type: file.mimetype,
+      file_size: file.size,
+      uploaded_by: user_id,
+    };
+
+    return prisma.hrErCaseAttachment.create({ data });
+  }
+
   async uploadErCaseDocs(
     disciplinaryCaseId: string,
     user: RequestUser,
@@ -560,6 +610,36 @@ export class ErCaseAttachmentService {
     return {
       status: 'success',
       message: 'Attachments for this Written Explanation uploaded.',
+      attachment,
+    };
+  }
+
+  async uploadAuthorityToDeductDocs(
+    deductPayrollId: string,
+    user: RequestUser,
+    file: Express.Multer.File,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingDeductAuthority =
+      await this.prisma.hrErNodPayrollAdjustment.findUnique({
+        where: { id: deductPayrollId },
+      });
+
+    if (!existingDeductAuthority) {
+      throw new NotFoundException('Payroll adjustment does not exists.');
+    }
+
+    const attachment = await this.attachFilesForDeductAuthority({
+      file,
+      transaction_type: TRANSACTION_TYPE.DEDUCT_AUTHORITY_DOC,
+      decision_payroll_deduction_id: existingDeductAuthority.id,
+      user_id: user.id,
+    });
+
+    return {
+      status: 'success',
+      message: 'Attachments for Authority to deduct uploaded.',
       attachment,
     };
   }

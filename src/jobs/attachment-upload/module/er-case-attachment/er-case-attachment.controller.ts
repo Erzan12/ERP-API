@@ -222,4 +222,39 @@ export class ErCaseAttachmentController {
       file,
     );
   }
+
+  @Put('notice-of-decision/authority-to-deduct/:deductPayrollId/uploads')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          nullable: true,
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Upload Attachment for Authority to Deduct Payroll',
+  })
+  @ApiPostResponse('Attachment uploaded successfully')
+  authorityToDeductDoc(
+    @Param('deductPayrollId', new ParseUUIDPipe()) deductPayrollId: string,
+    @SessionUser() user: RequestUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.erCaseAttachmentService.uploadAuthorityToDeductDocs(
+      deductPayrollId,
+      user,
+      file,
+    );
+  }
 }
