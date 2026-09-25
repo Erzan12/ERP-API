@@ -144,9 +144,9 @@ export class UpdateDecisionDto {
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ 
+  @ApiPropertyOptional({
     required: false,
-    example: "String" 
+    example: 'String',
   })
   remarks?: string;
 
