@@ -23,11 +23,6 @@ async function bootstrap() {
   //catch erros e.g database exception errors mising migration, or columns or tables
   app.useGlobalFilters(new PrismaExceptionFilter());
 
-  //log manual queries
-  const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL,
-  });
-
   app.enableCors({
     // origin: ['https://www.example.com'], // specify allowed domains
     origin: ['http://localhost:3002', 'http://localhost:3003'],
@@ -36,9 +31,6 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
     credentials: true, // allow cookies/auth headers
   });
-
-  //log manual queries
-  new PrismaClient({ adapter, log: ['query'] });
 
   //enable validation pipe globally -> This ensures the DTOs and decorators (@ValidateNested, @IsDateString, etc.) work properly and transform inputs like date strings into Date objects where necessary.
   app.useGlobalPipes(
