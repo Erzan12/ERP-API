@@ -3,8 +3,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
 
 import { setupAppSwagger } from './app/app.swagger';
 import { setupGlobalPrefix } from './utils/helpers/global-prefix.helper';
