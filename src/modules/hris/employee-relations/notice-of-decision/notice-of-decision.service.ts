@@ -171,6 +171,7 @@ export class NoticeOfDecisionService {
         },
         include: {
           deduct_payroll: true,
+          attachment: true,
         },
       });
 
