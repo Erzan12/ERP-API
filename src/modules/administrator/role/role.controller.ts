@@ -31,7 +31,7 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Administrator - Role')
 @Controller({ path: 'administrator', version: '2' })
-export class RoleControllerV2 {
+export class RoleController {
   constructor(private roleService: RoleService) {}
 
   //get all available roles

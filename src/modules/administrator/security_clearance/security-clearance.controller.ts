@@ -15,7 +15,7 @@ import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Administrator - Security Clearance')
 @Controller({ path: 'administrator', version: '2' })
-export class SecurityClearanceControllerV2 {
+export class SecurityClearanceController {
   constructor(private clearanceService: SecurityClearanceService) {}
 
   @Put('/security_clearance/:id')
