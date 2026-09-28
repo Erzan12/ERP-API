@@ -176,6 +176,12 @@ enum WorkflowActionType {
   acknowledge
 }
 
+enum VesselType {
+  vessel_cargo
+  tugboat
+  barge
+}
+
 ////////////////////////////////////////
 // CORE IDENTITY
 ////////////////////////////////////////
@@ -358,7 +364,9 @@ model User {
   HrErCaseViolationUpdatedBy               HrErCaseViolation[]                @relation("HrErCaseViolationUpdatedBy")
   HrErCaseTypeOfOffenseCreatedBy           HrErCaseTypeOfOffense[]            @relation("HrErCaseTypeOfOffenseCreatedBy")
   HrErCaseTypeOfOffenseUpdatedBy           HrErCaseTypeOfOffense[]            @relation("HrErCaseTypeOfOffenseUpdatedBy")
-  
+  VesselCreatedBy                          Vessel[]                           @relation("VesselCreatedBy")
+  VesselUpdatedBy                          Vessel[]                           @relation("VesselUpdatedBy")
+
   @@index([person_id])
   @@index([employee_id])
 }
@@ -434,6 +442,88 @@ model PasswordResetToken {
 ////////////////////////////////////////
 // ORGANIZATION STRUCTURE
 ////////////////////////////////////////
+model Vessel {
+  id         String     @id @default(uuid()) @db.Uuid
+  company_id String     @db.Uuid
+  photo      String?    @db.Text
+  name       String
+  type       VesselType
+  is_active  Boolean    @default(true)
+
+  created_by String? @db.Uuid
+  updated_by String? @db.Uuid
+
+  createdBy User? @relation("VesselCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("VesselUpdatedBy", fields: [updated_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  company Company @relation(fields: [company_id], references: [id])
+
+  vesselDetails VesselDetails?
+  //overtimes     HrOvertimeRequest[]
+  employee      Employee[]
+
+  @@index([company_id])
+}
+
+model VesselDetails {
+  id                         String    @id @default(uuid()) @db.Uuid
+  vessel_id                  String    @unique @db.Uuid
+  price_sold                 String?
+  price_paid                 String?
+  length_loa                 String?
+  length_lbp                 String?
+  breadth                    String?
+  depth                      String?
+  draft                      String?
+  year_built                 String?
+  builder                    String?
+  place_built                String?
+  jap_dwt                    String?
+  bale_capacity              String?
+  grain_capacity             String?
+  hatch_size                 String?
+  hatch_type                 String?
+  hull_type                  String?
+  hull_number                String?
+  fuel_type                  String?
+  gearbox_ratio              String?
+  year_last_drydocked        String?
+  place_last_drydocked       String?
+  phil_dwt                   Decimal?
+  gross_tonnage              String?
+  net_tonnage                String?
+  main_engine                String?
+  main_engine_rating         String?
+  main_engine_actual_rating  String?
+  model_serial_no            String?
+  estimated_fuel_consumption String?
+  bow_thrusters              String?
+  propeller                  String?
+  call_sign                  String?
+  imo_no                     String?
+  mmsi_no                    String?
+  maiden_voyage              DateTime?
+  min_main_engine_rating     Float?
+  max_main_engine_rating     Float?
+  auxillary_engine_1_rating  Float?
+  auxillary_engine_2_rating  Float?
+  auxillary_engine_3_rating  Float?
+  generator_set_rating       Float?
+  crane_rating               Float?
+  is_coupled_generator       Boolean?
+  min_service_knots          Float?
+  max_service_knots          Float?
+  bank_account_number        String?
+  bank_account_name          String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  vessel Vessel @relation(fields: [vessel_id], references: [id])
+}
 
 model Company {
   id           String  @id @default(uuid()) @db.Uuid
@@ -455,6 +545,7 @@ model Company {
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
   employee   Employee[]
+  vessel     Vessel[]
 
   @@index([name])
   @@index([abbreviation])
@@ -545,6 +636,7 @@ model Employee {
   position_id               String          @db.Uuid
   division_id               String          @db.Uuid
   user_id                   String?         @db.Uuid
+  vessel_id                 String?         @db.Uuid
   hire_date                 DateTime
   salary                    Decimal
   pay_frequency             String
@@ -575,6 +667,7 @@ model Employee {
   person            Person           @relation("PersonEmployee", fields: [person_id], references: [id], onDelete: Cascade)
   position          Position         @relation(fields: [position_id], references: [id])
   division          Division         @relation(fields: [division_id], references: [id])
+  vessel            Vessel?          @relation(fields: [vessel_id], references: [id])
 
   user                      User?
   employment_history        EmploymentHistory[]
@@ -1401,4 +1494,11 @@ view RegularizationEligibility {
 
   // Relations (Optional, but helpful for deep queries)
   employee Employee @relation(fields: [employeeId], references: [id])
+}
+
+// user_location and vessel list view
+view WorkAssignment {
+  id   String
+  name String
+  type String
 }
