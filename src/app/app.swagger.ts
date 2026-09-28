@@ -8,7 +8,7 @@ import { setupManagerSwagger } from './manager/manager.swagger';
 import { setupMasterSwagger } from './mastertable/mastertable.swagger';
 import { AdministratorV2Module } from 'src/modules/administrator/administratorV2.module';
 import { HrV2Module } from 'src/modules/hris/hrV2.module';
-import { ManagerV2Module } from 'src/modules/manager/managerV2.module';
+import { ManagerV2Module } from 'src/modules/manager/manager.module';
 import { MastertableModule } from 'src/modules/mastertable/mastertable.module';
 import { setupUserSwagger } from './user-management/user-management.swagger';
 import { setupPerformanceEvaluationSwagger } from './employee-dashboard/employee-dashboard.swagger';
