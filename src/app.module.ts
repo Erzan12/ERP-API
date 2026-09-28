@@ -8,8 +8,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { AdministratorModule } from './modules/administrator/administrator.module';
 import { HrisModule } from './modules/hris/hris.module';
 import { ManagerModule } from './modules/manager/manager.module';
-import { MasterV2Module } from './modules/master/masterV2.module';
-import { UserManagementV2Module } from './modules/manager/user_management/user_management.module';
+import { MastertableModule } from './modules/mastertable/mastertable.module';
+import { UserManagementModule } from './modules/manager/user_management/user_management.module';
 import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
@@ -23,16 +23,16 @@ import { AuthController } from './auth/auth.controller';
 
 import { UserManagementService } from './modules/manager/user_management/user_management.service';
 import { AuditService } from './modules/administrator/audit/audit.service';
-import { PositionService } from './modules/master/position/position.service';
+import { PositionService } from './modules/mastertable/position/position.service';
 import { EmployeeService } from './modules/hris/employee/employee-masterlist/employee.service';
 import { CaslAbilityService } from './middleware/casl/casl.service';
-import { DepartmentService } from './modules/master/department/department.service';
-import { EmploymentStatusService } from './modules/master/employment_status/employment_status.service';
-import { CompanyService } from './modules/master/company/company.service';
+import { DepartmentService } from './modules/mastertable/department/department.service';
+import { EmploymentStatusService } from './modules/mastertable/employment_status/employment_status.service';
+import { CompanyService } from './modules/mastertable/company/company.service';
 import { PrismaService } from './config/prisma/prisma.service';
-import { DivisionService } from './modules/master/division/division.service';
+import { DivisionService } from './modules/mastertable/division/division.service';
 import { MailService } from './jobs/mail/mail.service';
-import { UserLocationService } from './modules/master/user_location/user_location.service';
+import { UserLocationService } from './modules/mastertable/user_location/user_location.service';
 
 @Module({
   imports: [
@@ -45,11 +45,11 @@ import { UserLocationService } from './modules/master/user_location/user_locatio
     AuthModule,
     JwtModule,
     AdministratorModule,
-    MasterV2Module,
+    MastertableModule,
     CaslModule,
     HrisModule,
     ManagerModule,
-    UserManagementV2Module,
+    UserManagementModule,
     EmployeeDashboardModule,
     PrismaModule,
     // HealthCheckModule,

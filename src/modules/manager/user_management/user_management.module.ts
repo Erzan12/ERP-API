@@ -23,4 +23,4 @@ import { UserManagementController } from './user_management.controller';
   ],
   exports: [AuthService, UserManagementService],
 })
-export class UserManagementV2Module {}
+export class UserManagementModule {}

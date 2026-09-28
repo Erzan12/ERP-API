@@ -31,7 +31,7 @@ import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Mastertable - Employment Status')
 @Controller({ path: 'mastertable', version: '2' })
-export class EmploymentStatusControllerV2 {
+export class EmploymentStatusController {
   constructor(private employmentStatusService: EmploymentStatusService) {}
 
   //get all employment_status
