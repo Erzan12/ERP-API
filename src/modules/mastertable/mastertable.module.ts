@@ -19,6 +19,8 @@ import { AuthModule } from 'src/auth/auth.module';
 import { UserLocationController } from './user-location/user-location.controller';
 import { ErCaseViolationsService } from './employee-relations-cases/er-case-violations/er-case-violations.service';
 import { ErCaseViolationsController } from './employee-relations-cases/er-case-violations/er-case-violations.controller';
+import { ErCaseArticlesService } from './employee-relations-cases/er-case-articles/er-case-articles.service';
+import { ErCaseArticlesController } from './employee-relations-cases/er-case-articles/er-case-articles.controller';
 
 @Module({
   imports: [AuthModule],
@@ -34,6 +36,7 @@ import { ErCaseViolationsController } from './employee-relations-cases/er-case-v
     CreatePositionDto,
     CreateCompanyDto,
     UserLocationService,
+    ErCaseArticlesService,
     ErCaseViolationsService,
   ],
   controllers: [
@@ -43,6 +46,7 @@ import { ErCaseViolationsController } from './employee-relations-cases/er-case-v
     DivisionController,
     EmploymentStatusController,
     UserLocationController,
+    ErCaseArticlesController,
     ErCaseViolationsController,
   ],
   exports: [],
