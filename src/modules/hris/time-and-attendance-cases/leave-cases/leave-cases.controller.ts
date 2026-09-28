@@ -7,7 +7,7 @@ import { ACTION_READ, EMPLOYEE_MASTERLIST } from 'src/utils/constants/ability.co
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateLeaveRequestWithDetailsDto } from './dto/leave-case.dto';
-import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request.dto';
+import { LeaveRequestPaginationDto } from 'src/utils/dtos/leave-request-pagination.dto';
 
 @ApiTags('Human Resources - Time and Attendance Cases (Leave Cases)')
 @Controller({path:'hris', version: '2'})
