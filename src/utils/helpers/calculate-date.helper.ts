@@ -1,5 +1,4 @@
 import { addMonths } from 'date-fns';
-STAGE_RULES
 import { EvaluationStageStatus, EvaluationStage } from '@prisma/client';
 import { Evaluation } from 'src/modules/hris/performance-management/regularization-reviews/type/evaluation-type';
 import { STAGE_RULES } from '../constants/evaluation.constant';

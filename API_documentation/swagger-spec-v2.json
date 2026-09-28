@@ -15,12 +15,21 @@
             }
           },
           {
+            "name": "module_id",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
             "name": "sortBy",
             "required": false,
             "in": "query",
             "schema": {
-              "default": "id",
-              "example": "id",
+              "default": "created_at",
+              "example": "created_at",
               "type": "string"
             }
           },
@@ -120,13 +129,22 @@
         ]
       }
     },
-    "/v2/administrator/sub-modules/permissions": {
+    "/v2/administrator/sub-modules/{subModuleId}": {
       "get": {
-        "operationId": "SubModuleController_getSubModuleActions_v2",
-        "parameters": [],
+        "operationId": "SubModuleController_getSubmodule_v2",
+        "parameters": [
+          {
+            "name": "subModuleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Here are the list of Submodule actions/permissions available"
+            "description": "Get a Submodule"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -144,28 +162,37 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Get Submodule actions/permissions",
+        "summary": "Get a Submodule",
         "tags": [
           "Administrator - Submodule"
         ]
       },
-      "post": {
-        "operationId": "SubModuleController_createPermission_v2",
-        "parameters": [],
+      "put": {
+        "operationId": "SubModuleController_updateSubmodule_v2",
+        "parameters": [
+          {
+            "name": "subModuleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "required": true,
-          "description": "Payload to create permissions for submodule",
+          "description": "Payload to update the current sub module",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AddSubModulePermissionDto"
+                "$ref": "#/components/schemas/UpdateSubmoduleDto"
               }
             }
           }
         },
         "responses": {
-          "201": {
-            "description": "Permission created successfully"
+          "200": {
+            "description": "Sub module updated successfully"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -176,18 +203,42 @@
           "403": {
             "description": "Forbidden - You do not have access to this resource"
           },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
+          "404": {
+            "description": "Not Found - The requested resource was not found."
           },
           "500": {
             "description": "Internal Server Error"
           }
         },
-        "summary": "Create a new permissions/actions for submodule(acts as inventory of actions for submodules)",
+        "summary": "Update a current Submodule details",
         "tags": [
           "Administrator - Submodule"
         ]
       },
+      "delete": {
+        "operationId": "SubModuleController_deleteSubmodule_v2",
+        "parameters": [
+          {
+            "name": "subModuleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Delete a submodule ",
+        "tags": [
+          "Administrator - Submodule"
+        ]
+      }
+    },
+    "/v2/administrator/sub-modules/permissions": {
       "put": {
         "operationId": "SubModuleController_createSubModulePermission_v2",
         "parameters": [],
@@ -223,95 +274,6 @@
           }
         },
         "summary": "Assign a new permission for submodule",
-        "tags": [
-          "Administrator - Submodule"
-        ]
-      }
-    },
-    "/v2/administrator/sub-modules/{subModuleId}": {
-      "get": {
-        "operationId": "SubModuleController_getSubmodule_v2",
-        "parameters": [
-          {
-            "name": "subModuleId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "status: Success!"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Get a Submodule",
-        "tags": [
-          "Administrator - Submodule"
-        ]
-      }
-    },
-    "/v2/administrator/sub-module/permissions/{id}": {
-      "put": {
-        "operationId": "SubModuleController_updatePermission_v2",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "description": "Payload to update the current sub module permission",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSubModulePermisisonDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Sub module permission updated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "404": {
-            "description": "Not Found - The requested resource was not found."
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Update a current sub module permission",
         "tags": [
           "Administrator - Submodule"
         ]
@@ -642,6 +604,36 @@
         ]
       }
     },
+    "/v2/administrator/roles/role-permissions": {
+      "get": {
+        "operationId": "RoleController_getRolePermissions_v2",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Here are the list of Role Permissions"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get all Role Permissions",
+        "tags": [
+          "Administrator - Role"
+        ]
+      }
+    },
     "/v2/administrator/roles/{id}": {
       "get": {
         "operationId": "RoleController_getRole_v2",
@@ -681,6 +673,46 @@
         ]
       }
     },
+    "/v2/administrator/roles/role_permission": {
+      "put": {
+        "operationId": "RoleController_updateRolePermission_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRolePermissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Permissions added to role"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Adding/Updating permission(s) to role",
+        "tags": [
+          "Administrator - Role"
+        ]
+      }
+    },
     "/v2/administrator/roles/{roleId}": {
       "put": {
         "operationId": "RoleController_updateRole_v2",
@@ -705,97 +737,8 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "Role updated successfully"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Update current role",
-        "tags": [
-          "Administrator - Role"
-        ]
-      }
-    },
-    "/v2/administrator/roles/role_permission": {
-      "put": {
-        "operationId": "RoleController_createRolePermission_v2",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRolePermissionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Permissions added to role"
-          },
-          "400": {
-            "description": "Bad Request - Invalid or missing input or parameters"
-          },
-          "401": {
-            "description": "Unauthorized - You do not have access to this resource"
-          },
-          "403": {
-            "description": "Forbidden - You do not have access to this resource"
-          },
-          "409": {
-            "description": "Conflict - Resource already exist or duplicate entry"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "summary": "Adding permission to role",
-        "tags": [
-          "Administrator - Role"
-        ]
-      }
-    },
-    "/v2/administrator/roles/role_permission/{id}": {
-      "put": {
-        "operationId": "RoleController_updateRolePermissions_v2",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateRolePermissionsDto"
-              }
-            }
-          }
-        },
-        "responses": {
           "200": {
-            "description": "Permissions updated to role"
+            "description": "Role updated successfully"
           },
           "400": {
             "description": "Bad Request - Invalid or missing input or parameters"
@@ -813,7 +756,7 @@
             "description": "Internal Server Error"
           }
         },
-        "summary": "Updating current permission to role",
+        "summary": "Update current role",
         "tags": [
           "Administrator - Role"
         ]
@@ -5250,20 +5193,11 @@
           "module_id": {
             "type": "string",
             "example": "PK UUID",
-            "description": "Module ID of the submodule "
-          }
-        },
-        "required": [
-          "name",
-          "module_id"
-        ]
-      },
-      "AddSubModulePermissionDto": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "example": "[\"view\", \"create\", \"update\", \"note\", \"delete\"]",
-            "description": "Create permission for sub module, also can add multiple permissions at once",
+            "description": "Primary Key ID of the module "
+          },
+          "subModuleActionId": {
+            "example": "[\"Array of PK UUID\"]",
+            "description": "If you want to update the current actions",
             "type": "array",
             "items": {
               "type": "string"
@@ -5271,47 +5205,55 @@
           }
         },
         "required": [
-          "action"
+          "name",
+          "module_id",
+          "subModuleActionId"
         ]
       },
       "AssignSubModulePermissionDto": {
         "type": "object",
         "properties": {
-          "action": {
-            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
+          "sub_module_id": {
+            "type": "string",
+            "example": "UUID",
+            "description": "ID of the Sub Module"
+          },
+          "sub_module_actions_id": {
+            "example": "[\"Array of PK UUID of submodule actions\"]",
             "description": "Assign permissions to sub module, also can add multiple permissions at once",
             "type": "array",
             "items": {
               "type": "string"
             }
-          },
-          "sub_module_id": {
-            "type": "string",
-            "example": "UUID",
-            "description": "ID of the Sub Module"
           }
         },
         "required": [
-          "action",
-          "sub_module_id"
+          "sub_module_id",
+          "sub_module_actions_id"
         ]
       },
-      "UpdateSubModulePermisisonDto": {
+      "UpdateSubmoduleDto": {
         "type": "object",
         "properties": {
-          "action": {
+          "name": {
             "type": "string",
-            "example": "view, create, update, note, delete",
-            "description": "if you want to update the current actions"
+            "example": "New sub module name",
+            "description": "If you want to update current submodule name"
+          },
+          "module_id": {
+            "type": "string",
+            "example": "PK UUID",
+            "description": "Module ID of the submodule "
           },
           "is_active": {
             "type": "boolean",
             "example": "true or false",
-            "description": "If you want to update the status of the action "
+            "description": "If you want to update the status of the sub module"
           }
         },
         "required": [
-          "action",
+          "name",
+          "module_id",
           "is_active"
         ]
       },
@@ -5348,13 +5290,47 @@
           },
           "description": {
             "type": "string",
-            "example": "Office staff for IT department",
+            "example": "Office staff for IT dept.",
             "description": "Description of the role"
+          },
+          "department_id": {
+            "type": "string",
+            "example": "PK UUID",
+            "description": "Department the role belongs to"
           }
         },
         "required": [
           "name",
-          "description"
+          "description",
+          "department_id"
+        ]
+      },
+      "UpdateRolePermissionDto": {
+        "type": "object",
+        "properties": {
+          "role_id": {
+            "type": "string",
+            "example": 1,
+            "description": "Primary Key ID of the Role"
+          },
+          "sub_module_id": {
+            "type": "string",
+            "example": 1,
+            "description": "Primary Key ID of the Sub Module"
+          },
+          "sub_module_permission_id": {
+            "example": "[\"Array of PK UUID of sub module permission id\"]",
+            "description": "Assign/Update permissions to role, also can add multiple permissions at once",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "role_id",
+          "sub_module_id",
+          "sub_module_permission_id"
         ]
       },
       "UpdateRoleDto": {
@@ -5370,72 +5346,22 @@
             "example": "Office staff for IT department",
             "description": "Description of the role"
           },
-          "status": {
-            "type": "number",
-            "example": "active or inactive",
-            "description": "active, inactive"
+          "department_id": {
+            "type": "string",
+            "example": "PK UUID",
+            "description": "Department the role belongs to"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": true,
+            "description": "If you want to update the status of the role"
           }
         },
         "required": [
           "name",
           "description",
-          "status"
-        ]
-      },
-      "CreateRolePermissionDto": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "example": "[\"read\", \"update\", \"create\", \"delete\"]",
-            "description": "Assign permissions to role, also can add multiple permissions at once",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "sub_module_id": {
-            "type": "string",
-            "example": 1,
-            "description": "ID of the Sub Module"
-          },
-          "role_id": {
-            "type": "string",
-            "example": 1,
-            "description": "ID of the Role"
-          },
-          "department_id": {
-            "type": "string",
-            "example": 1,
-            "description": "ID of the Department"
-          },
-          "position_id": {
-            "type": "string",
-            "example": 1,
-            "description": "ID of the Position"
-          }
-        },
-        "required": [
-          "action",
-          "sub_module_id",
-          "role_id",
           "department_id",
-          "position_id"
-        ]
-      },
-      "UpdateRolePermissionsDto": {
-        "type": "object",
-        "properties": {
-          "action_updates": {
-            "example": "[\"read\", \"update\", \"delete\", \"create\"]",
-            "description": "User can add or update new permission for a current role",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "action_updates"
+          "is_active"
         ]
       },
       "UpdateSecurityClearanceDto": {
