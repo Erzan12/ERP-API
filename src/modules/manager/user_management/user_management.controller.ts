@@ -32,7 +32,7 @@ import { Request } from 'express';
 
 @ApiTags('User Management')
 @Controller({ path: 'users', version: '2' })
-export class UserManagementControllerV2 {
+export class UserManagementController {
   constructor(private userManagementService: UserManagementService) {}
 
   //view user accounts

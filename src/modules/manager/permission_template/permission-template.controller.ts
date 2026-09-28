@@ -7,7 +7,7 @@ import {
   Put,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { PermissionTemplateService } from './permission_template.service';
+import { PermissionTemplateService } from './permission-template.service';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -29,7 +29,7 @@ import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dt
 
 @ApiTags('Manager - Permission Template')
 @Controller({ path: 'manager', version: '2' })
-export class PermissionTemplateControllerV2 {
+export class PermissionTemplateController {
   constructor(private permissionTemplateService: PermissionTemplateService) {}
 
   //get permission templates

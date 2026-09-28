@@ -7,11 +7,11 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { UserManagementService } from './user_management.service';
-import { UserManagementControllerV2 } from './user_managementV2.controller';
+import { UserManagementController } from './user_management.controller';
 
 @Module({
   imports: [AuthModule],
-  controllers: [UserManagementControllerV2],
+  controllers: [UserManagementController],
   providers: [
     UserManagementService,
     PrismaService,

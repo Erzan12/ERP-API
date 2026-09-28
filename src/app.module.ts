@@ -7,9 +7,9 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AdministratorModule } from './modules/administrator/administrator.module';
 import { HrisModule } from './modules/hris/hris.module';
-import { ManagerV2Module } from './modules/manager/managerV2.module';
+import { ManagerV2Module } from './modules/manager/manager.module';
 import { MasterV2Module } from './modules/master/masterV2.module';
-import { UserManagementV2Module } from './modules/manager/user_management/user_managementV2.module';
+import { UserManagementV2Module } from './modules/manager/user_management/user_management.module';
 import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
