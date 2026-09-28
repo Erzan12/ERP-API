@@ -8,7 +8,7 @@ import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardController } from './dashboard/dashboard.controller';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { AdministratorV2Module } from '../administrator/administratorV2.module';
+import { AdministratorModule } from '../administrator/administrator.module';
 
 import { CareerPostingService } from './recruitment-and-onboarding/career-posting/career-posting.service';
 import { CareerPostingController } from './recruitment-and-onboarding/career-posting/career-posting.controller';
@@ -32,7 +32,7 @@ import { LeaveCategoryController } from './time-and-attendance-cases/leave-categ
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 
 @Module({
-  imports: [AuthModule, AdministratorV2Module],
+  imports: [AuthModule, AdministratorModule],
   providers: [
     EmployeeService,
     PrismaService,

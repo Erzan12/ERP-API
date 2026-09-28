@@ -24,7 +24,7 @@ import {
 
 @ApiTags('Administrator - Database Manuel Query')
 @Controller({ path: 'administrator/db-query', version: '2' })
-export class DbQueryControllerV2 {
+export class DbQueryController {
   constructor(private readonly dbQueryService: DbQueryService) {}
 
   @Post('execute')

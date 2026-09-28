@@ -6,7 +6,7 @@ import { setupAdminSwagger } from './admin/admin.swagger';
 import { setupHRISSwagger } from './hris/hris.swagger';
 import { setupManagerSwagger } from './manager/manager.swagger';
 import { setupMasterSwagger } from './mastertable/mastertable.swagger';
-import { AdministratorV2Module } from 'src/modules/administrator/administratorV2.module';
+import { AdministratorV2Module } from 'src/modules/administrator/administrator.module';
 import { HrV2Module } from 'src/modules/hris/hris.module';
 import { ManagerV2Module } from 'src/modules/manager/manager.module';
 import { MastertableModule } from 'src/modules/mastertable/mastertable.module';

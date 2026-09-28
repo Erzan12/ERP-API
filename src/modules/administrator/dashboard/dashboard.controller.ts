@@ -9,7 +9,7 @@ import { DashboardService } from './dashboard.service';
 
 @ApiTags('Administrator - Dashboard')
 @Controller({ path: 'administrator', version: '2' })
-export class DashboardControllerv2 {
+export class DashboardController {
   constructor(private dashboardService: DashboardService) {}
 
   //load dashboard
