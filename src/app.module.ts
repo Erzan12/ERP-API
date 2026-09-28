@@ -5,11 +5,11 @@ import { CaslModule } from './middleware/casl/casl.module';
 import { LandingModule } from './landing/landing.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
-import { AdministratorV2Module } from './modules/administrator/administrator.module';
-import { HrV2Module } from './modules/hris/hris.module';
-import { ManagerV2Module } from './modules/manager/manager.module';
-import { MasterV2Module } from './modules/mastertable/mastertable.module';
-import { UserManagementV2Module } from './modules/manager/user-management/user-management.module';
+import { AdministratorModule } from './modules/administrator/administrator.module';
+import { HrisModule } from './modules/hris/hris.module';
+import { ManagerModule } from './modules/manager/manager.module';
+import { MastertableModule } from './modules/mastertable/mastertable.module';
+import { UserManagementModule } from './modules/manager/user-management/user-management.module';
 import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
@@ -44,12 +44,12 @@ import { UserLocationService } from './modules/mastertable/user-location/user-lo
     LandingModule,
     AuthModule,
     JwtModule,
-    AdministratorV2Module,
-    MasterV2Module,
+    AdministratorModule,
+    MastertableModule,
     CaslModule,
-    HrV2Module,
-    ManagerV2Module,
-    UserManagementV2Module,
+    HrisModule,
+    ManagerModule,
+    UserManagementModule,
     EmployeeDashboardModule,
     PrismaModule,
     // HealthCheckModule,
