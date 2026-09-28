@@ -38,7 +38,7 @@ import { CareerPostingService } from './career-posting.service';
 
 @ApiTags('Human Resources - Recruitment and Onboarding')
 @Controller({ path: 'hris', version: '2' })
-export class CareerPostingV2Controller {
+export class CareerPostingController {
   constructor(private readonly careerPostingService: CareerPostingService) {}
 
   @Get('recruitments')

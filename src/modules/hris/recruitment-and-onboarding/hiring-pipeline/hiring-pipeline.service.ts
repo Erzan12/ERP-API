@@ -315,7 +315,7 @@ export class HiringPipelineService {
   async createApplicant(
     createApplicantDto: CreateApplicantDto,
     user: RequestUser,
-    files: Express.Multer.File[]
+    // files: Express.Multer.File[]
   ) {
     const { career_id, application_source } =
       createApplicantDto;
@@ -382,13 +382,13 @@ export class HiringPipelineService {
       },
     });
 
-    const attachments = await this.uploadService.attachFiles({
-      files,
-      transaction_type: 'Applicant',
-      transaction_id: applicant.id,
-      // file_desc: file_desc,
-      user_id: user.id,
-    });
+    // const attachments = await this.uploadService.attachFiles({
+    //   files,
+    //   transaction_type: 'Applicant',
+    //   transaction_id: applicant.id,
+    //   // file_desc: file_desc,
+    //   user_id: user.id,
+    // });
 
     const userName = `${requestUser.employee.person.first_name} ${requestUser.employee.person.last_name}`;
     const userPosition = requestUser.employee.position.name;
@@ -397,7 +397,7 @@ export class HiringPipelineService {
       status: 'success',
       message: `Applicant has been created successfully`,
       applicant,
-      attachments,
+      // attachments,
       created_by_user: `${userName} - ${userPosition}`,
     };
   }

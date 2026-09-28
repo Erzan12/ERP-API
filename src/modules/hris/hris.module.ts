@@ -5,13 +5,13 @@ import { EmployeeService } from './employee/employee-masterlist/employee.service
 import { EmployeeControllerV2 } from './employee/employee-masterlist/employee.controller';
 
 import { DashboardService } from './dashboard/dashboard.service';
-import { DashboardControllerV2 } from './dashboard/dashboardV2.controller';
+import { DashboardController } from './dashboard/dashboard.controller';
 
 import { AuthModule } from 'src/auth/auth.module';
-import { AdministratorV2Module } from '../administrator/administrator.module';
+import { AdministratorModule } from '../administrator/administrator.module';
 
 import { CareerPostingService } from './recruitment-and-onboarding/career-posting/career-posting.service';
-import { CareerPostingV2Controller } from './recruitment-and-onboarding/career-posting/career-posting-v2.controller';
+import { CareerPostingController } from './recruitment-and-onboarding/career-posting/career-posting.controller';
 
 import {
   HiringPipelineService,
@@ -20,7 +20,7 @@ import {
 import {
   ApplicantsController,
   InterviewApplicantController,
-} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipelineV2.controller';
+} from './recruitment-and-onboarding/hiring-pipeline/hiring-pipeline.controller';
 import { RegularizationReviewsService } from './performance-management/regularization-reviews/regularization-reviews.service';
 import { RegularizationReviewsController } from './performance-management/regularization-reviews/regularization-reviews.controller';
 import { PerformanceCompetencyService } from './performance-management/performance-competency/performance-competency.service';
@@ -32,7 +32,7 @@ import { LeaveCategoryController } from './time-and-attendance-cases/leave-categ
 import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 
 @Module({
-  imports: [AuthModule, AdministratorV2Module],
+  imports: [AuthModule, AdministratorModule],
   providers: [
     EmployeeService,
     PrismaService,
@@ -49,8 +49,8 @@ import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-u
   ],
   controllers: [
     EmployeeControllerV2,
-    DashboardControllerV2,
-    CareerPostingV2Controller,
+    DashboardController,
+    CareerPostingController,
     ApplicantsController,
     // ScreeningApplicantController,
     InterviewApplicantController,
@@ -59,6 +59,6 @@ import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-u
     LeaveCasesController,
     LeaveCategoryController
   ],
-  exports: [HrV2Module],
+  exports: [HrisModule],
 })
-export class HrV2Module {}
+export class HrisModule {}

@@ -7,7 +7,7 @@ import { setupHRISSwagger } from './hris/hris.swagger';
 import { setupManagerSwagger } from './manager/manager.swagger';
 import { setupMasterSwagger } from './mastertable/mastertable.swagger';
 import { AdministratorV2Module } from 'src/modules/administrator/administrator.module';
-import { HrV2Module } from 'src/modules/hris/hrV2.module';
+import { HrV2Module } from 'src/modules/hris/hris.module';
 import { ManagerV2Module } from 'src/modules/manager/managerV2.module';
 import { MasterV2Module } from 'src/modules/master/masterV2.module';
 import { setupUserSwagger } from './user-management/user-management.swagger';

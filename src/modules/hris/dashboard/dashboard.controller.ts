@@ -10,7 +10,7 @@ import {
 
 @ApiTags('Human Resources - Dashboard')
 @Controller({ path: 'hris', version: '2' })
-export class DashboardControllerV2 {
+export class DashboardController {
   constructor(private dashboardService: DashboardService) {}
 
   @Get()
