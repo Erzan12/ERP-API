@@ -17,6 +17,12 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { UserLocationService } from './user-location/user-location.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { UserLocationController } from './user-location/user-location.controller';
+import { ErCaseViolationsService } from './employee-relations-cases/er-case-violations/er-case-violations.service';
+import { ErCaseViolationsController } from './employee-relations-cases/er-case-violations/er-case-violations.controller';
+import { ErCaseArticlesService } from './employee-relations-cases/er-case-articles/er-case-articles.service';
+import { ErCaseArticlesController } from './employee-relations-cases/er-case-articles/er-case-articles.controller';
+import { ErCaseTypesOfOffenseService } from './employee-relations-cases/er-case-types-of-offense/er-case-types-of-offense.service';
+import { ErCaseTypesOfOffenseController } from './employee-relations-cases/er-case-types-of-offense/er-case-types-of-offense.controller';
 
 @Module({
   imports: [AuthModule],
@@ -32,6 +38,9 @@ import { UserLocationController } from './user-location/user-location.controller
     CreatePositionDto,
     CreateCompanyDto,
     UserLocationService,
+    ErCaseArticlesService,
+    ErCaseViolationsService,
+    ErCaseTypesOfOffenseService,
   ],
   controllers: [
     PositionController,
@@ -40,6 +49,9 @@ import { UserLocationController } from './user-location/user-location.controller
     DivisionController,
     EmploymentStatusController,
     UserLocationController,
+    ErCaseArticlesController,
+    ErCaseViolationsController,
+    ErCaseTypesOfOffenseController,
   ],
   exports: [],
 })
