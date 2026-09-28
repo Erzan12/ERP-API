@@ -49,7 +49,6 @@ import { extname } from 'path';
 export class ApplicantsController {
   constructor(
     private readonly hiringPipelineService: HiringPipelineService,
-    private readonly interviewApplicantService: InterviewApplicantService,
   ) {}
 
   @Get('applicants')

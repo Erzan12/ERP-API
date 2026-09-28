@@ -6,7 +6,7 @@ import { LandingModule } from './landing/landing.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AdministratorV2Module } from './modules/administrator/administratorV2.module';
-import { HrV2Module } from './modules/hris/hrV2.module';
+import { HrV2Module } from './modules/hris/hris.module';
 import { ManagerV2Module } from './modules/manager/manager.module';
 import { MasterV2Module } from './modules/mastertable/mastertable.module';
 import { UserManagementV2Module } from './modules/manager/user-management/user-management.module';
