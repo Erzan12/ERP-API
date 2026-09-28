@@ -35,7 +35,7 @@ import { DepartmentService } from './department.service';
 
 @ApiTags('Mastertable - Department')
 @Controller({ path: 'mastertable', version: '2' })
-export class DepartmentControllerV2 {
+export class DepartmentController {
   constructor(private departmentService: DepartmentService) {}
 
   @Get('departments')
