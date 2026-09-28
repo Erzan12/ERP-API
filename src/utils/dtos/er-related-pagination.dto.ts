@@ -89,14 +89,16 @@ export class ErCaseViolationPaginationDto {
   @IsOptional()
   @IsUUID()
   @ApiPropertyOptional({
-    example: 'Article UUID',
+    default: ''
   })
   article_id: string;
 
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  @ApiPropertyOptional({ example: 1 })
+  @ApiPropertyOptional({
+    default: ''
+  })
   section: number;
 
   @IsOptional()
