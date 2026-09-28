@@ -22,7 +22,7 @@ export class MailService {
   async sendWelcomeMail(
     to: string,
     username: string,
-    plainPassword: string,
+    // plainPassword: string,
     token: string,
   ) {
     //valdiate config in your app
@@ -38,12 +38,13 @@ export class MailService {
                 <h3>Hello ${username},</h3>
                 <p>Your account has been created successfully.</p>
                 <p><strong>Username:</strong> ${username} </p>
-                <p><strong>Temporary Password:</strong> ${plainPassword} </p>
+              
                 <p>Please login and change your password immediately</p>
                 <p>Click below to reset your password:</p>
                 <a href="http://localhost:3000/auth/reset-password?token=${token}">Reset Password</a>
             `,
     };
+    // <p><strong>Temporary Password:</strong> ${plainPassword} </p>
 
     return await this.transporter.sendMail(mailOption);
   }
