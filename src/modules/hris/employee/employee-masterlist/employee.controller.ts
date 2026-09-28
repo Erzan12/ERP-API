@@ -39,7 +39,7 @@ import { EmployeeService } from './employee.service';
 // @ApiCookieAuth('access-token')
 @ApiTags('Human Resources - Employees')
 @Controller({ path: 'hris', version: '2' })
-export class EmployeeControllerV2 {
+export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 
   @Get('employees')
