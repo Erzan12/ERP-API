@@ -3023,6 +3023,220 @@
         ]
       }
     },
+    "/v2/mastertable/er-case-type-of-offenses/{erCaseTypeOfOffenseId}": {
+      "get": {
+        "operationId": "ErCaseTypesOfOffenseController_getErTypeOfOffense_v2",
+        "parameters": [
+          {
+            "name": "erCaseTypeOfOffenseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": " Here is the ER Case Violation"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get a ER Case Type of Offense",
+        "tags": [
+          "Mastertable - Employee Relation Case(Type of Offense)"
+        ]
+      },
+      "put": {
+        "operationId": "ErCaseTypesOfOffenseController_updateErCaseTypeOfOffense_v2",
+        "parameters": [
+          {
+            "name": "erCaseTypeOfOffenseId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to update ER Case Type of Offense",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateErCaseTypesOfOffenseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ER Case Type of Offense updated successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Update a current ER Case Type of Offense",
+        "tags": [
+          "Mastertable - Employee Relation Case(Type of Offense)"
+        ]
+      }
+    },
+    "/v2/mastertable/er-case-type-of-offenses": {
+      "get": {
+        "operationId": "ErCaseTypesOfOffenseController_getErTypeOfOffenses_v2",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "created_at",
+              "example": "created_at",
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "desc",
+              "example": "desc",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "perPage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 10,
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of ER Case Violations"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "404": {
+            "description": "Not Found - The requested resource was not found."
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Get all ER Case Type of Offenses",
+        "tags": [
+          "Mastertable - Employee Relation Case(Type of Offense)"
+        ]
+      },
+      "post": {
+        "operationId": "ErCaseTypesOfOffenseController_createErCaseTypeOfOffense_v2",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Payload to create ER Case Type of Offense",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateErCaseTypesOfOffenseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "ER Case Type of Offense created successfully"
+          },
+          "400": {
+            "description": "Bad Request - Invalid or missing input or parameters"
+          },
+          "401": {
+            "description": "Unauthorized - You do not have access to this resource"
+          },
+          "403": {
+            "description": "Forbidden - You do not have access to this resource"
+          },
+          "409": {
+            "description": "Conflict - Resource already exist or duplicate entry"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "summary": "Create a new ER Case Type of Offense",
+        "tags": [
+          "Mastertable - Employee Relation Case(Type of Offense)"
+        ]
+      }
+    },
     "/v2/hris/employees": {
       "get": {
         "operationId": "EmployeeController_getEmployees_v2",
@@ -6270,6 +6484,45 @@
           "section",
           "behavior",
           "category"
+        ]
+      },
+      "CreateErCaseTypesOfOffenseDto": {
+        "type": "object",
+        "properties": {
+          "type_of_offense": {
+            "type": "string",
+            "example": "Tardiness"
+          },
+          "description": {
+            "type": "string",
+            "example": "This is for tardy employees"
+          }
+        },
+        "required": [
+          "type_of_offense",
+          "description"
+        ]
+      },
+      "UpdateErCaseTypesOfOffenseDto": {
+        "type": "object",
+        "properties": {
+          "type_of_offense": {
+            "type": "string",
+            "example": "Tardiness"
+          },
+          "description": {
+            "type": "string",
+            "example": "This is for tardy employees"
+          },
+          "is_active": {
+            "type": "boolean",
+            "example": "true or false"
+          }
+        },
+        "required": [
+          "type_of_offense",
+          "description",
+          "is_active"
         ]
       },
       "CreatePersonDto": {
