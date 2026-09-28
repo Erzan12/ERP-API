@@ -17,6 +17,8 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { UserLocationService } from './user-location/user-location.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { UserLocationController } from './user-location/user-location.controller';
+import { ErCaseViolationsService } from './employee-relations-cases/er-case-violations/er-case-violations.service';
+import { ErCaseViolationsController } from './employee-relations-cases/er-case-violations/er-case-violations.controller';
 
 @Module({
   imports: [AuthModule],
@@ -32,6 +34,7 @@ import { UserLocationController } from './user-location/user-location.controller
     CreatePositionDto,
     CreateCompanyDto,
     UserLocationService,
+    ErCaseViolationsService,
   ],
   controllers: [
     PositionController,
@@ -40,6 +43,7 @@ import { UserLocationController } from './user-location/user-location.controller
     DivisionController,
     EmploymentStatusController,
     UserLocationController,
+    ErCaseViolationsController,
   ],
   exports: [],
 })
