@@ -27,7 +27,7 @@ import {
   generateOtp,
   getOtpExpiration,
 } from 'src/utils/constants/otp-verification.constants';
-import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
+import { UserManagementService } from 'src/modules/manager/user-management/user-management.service';
 import { ActionEntry } from './type/action-entry.type';
 import { OtpPurposeTemplate } from '@prisma/client';
 
