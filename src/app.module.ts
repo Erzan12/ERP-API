@@ -9,7 +9,7 @@ import { AdministratorModule } from './modules/administrator/administrator.modul
 import { HrisModule } from './modules/hris/hris.module';
 import { ManagerModule } from './modules/manager/manager.module';
 import { MastertableModule } from './modules/mastertable/mastertable.module';
-import { UserManagementModule } from './modules/manager/user_management/user_management.module';
+import { UserManagementModule } from './modules/manager/user-management/user-management.module';
 import { EmployeeDashboardModule } from './modules/employee-dashboard/employee-dashboard.module';
 
 import { PermissionsGuard } from './middleware/guards/permission.guard';
@@ -21,7 +21,7 @@ import { AuthController } from './auth/auth.controller';
 // import { UserController } from './modules/manager/user/controllers/userv2.controller';
 // import { UserLocationController } from './modules/master/user_location/controller/user_locationV2.controller';
 
-import { UserManagementService } from './modules/manager/user_management/user_management.service';
+import { UserManagementService } from './modules/manager/user-management/user-management.service';
 import { AuditService } from './modules/administrator/audit/audit.service';
 import { PositionService } from './modules/mastertable/position/position.service';
 import { EmployeeService } from './modules/hris/employee/employee-masterlist/employee.service';

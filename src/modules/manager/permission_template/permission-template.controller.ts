@@ -54,20 +54,20 @@ export class PermissionTemplateController {
   }
 
   //get user permission templates
-  @Get('permission-template/user/:userPermissionTemplateId')
-  @ApiOperation({ summary: 'Get available permission templates to user' })
-  @ApiGetResponse('Here are the list of permission templates available')
-  @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
-  getUserPermissionTemplate(
-    @Param('userPermissionTemplateId', new ParseUUIDPipe())
-    userPermissionTemplateId: string,
-    @SessionUser() user: RequestUser,
-  ) {
-    return this.permissionTemplateService.getUserPermissionTemplate(
-      userPermissionTemplateId,
-      user,
-    );
-  }
+  // @Get('permission-template/user/:userPermissionTemplateId')
+  // @ApiOperation({ summary: 'Get available permission templates to user' })
+  // @ApiGetResponse('Here are the list of permission templates available')
+  // @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
+  // getUserPermissionTemplate(
+  //   @Param('userPermissionTemplateId', new ParseUUIDPipe())
+  //   userPermissionTemplateId: string,
+  //   @SessionUser() user: RequestUser,
+  // ) {
+  //   return this.permissionTemplateService.getUserPermissionTemplate(
+  //     userPermissionTemplateId,
+  //     user,
+  //   );
+  // }
 
   //create new permission template
   @Post('permission-template')

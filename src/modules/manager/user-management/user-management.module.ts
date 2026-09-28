@@ -6,8 +6,8 @@ import { MailService } from 'src/jobs/mail/mail.service';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { JwtStrategy } from 'src/middleware/jwt/jwt.strategy';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
-import { UserManagementService } from './user_management.service';
-import { UserManagementController } from './user_management.controller';
+import { UserManagementService } from './user-management.service';
+import { UserManagementController } from './user-management.controller';
 
 @Module({
   imports: [AuthModule],
