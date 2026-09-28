@@ -17,7 +17,6 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { Request } from 'express';
 import { AuditService } from 'src/modules/administrator/audit/audit.service';
 import { Prisma, User } from '@prisma/client';
-import { AttachmentUploadService } from 'src/jobs/attachment-upload/attachment-upload.service';
 import { UserDetailsDto } from './dto/user-details.dto';
 import { UserManagementPaginationDto } from 'src/utils/dtos/user-mngt-pagination.dto';
 
@@ -27,7 +26,6 @@ export class UserManagementService {
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
     private readonly auditService: AuditService,
-    private readonly uploadService: AttachmentUploadService,
   ) {}
 
   async findByIdentifier(identifier: string) {
