@@ -16,7 +16,7 @@ import {
   ACTION_READ,
   AUDIT_TRAIL,
   SEC_LVL_8,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 
 @ApiTags('Administrator - Audit')
 @Controller({ path: 'administrator', version: '2' })

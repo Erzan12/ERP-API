@@ -10,7 +10,7 @@ import {
   ACTION_CREATE,
   ACTION_READ,
   SYSTEM_MANAGEMENT,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { DbQueryService } from './db-query.service';
 import { Can } from 'src/utils/decorators/can.decorator';

@@ -24,7 +24,7 @@ import {
 import {
   ACTION_READ,
   SYSTEM_MANAGEMENT,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { SubModulePaginationDto } from 'src/utils/dtos/module-pagination.dto';
 
 @ApiTags('Administrator - Submodule')

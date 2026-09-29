@@ -27,7 +27,7 @@ import {
   ACTION_READ,
   ACTION_UPDATE,
   SALARY_GRADE,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Human Resources - Salary Grade')

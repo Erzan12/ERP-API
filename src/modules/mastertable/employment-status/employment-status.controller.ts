@@ -26,7 +26,7 @@ import {
   ACTION_READ,
   ACTION_UPDATE,
   MASTERTABLES,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { PaginationDto } from 'src/utils/dtos/pagination.dto';
 
 @ApiTags('Mastertable - Employment Status')

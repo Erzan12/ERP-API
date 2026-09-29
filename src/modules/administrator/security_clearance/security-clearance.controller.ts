@@ -8,7 +8,7 @@ import {
   ACTION_UPDATE,
   USER_ACCOUNT,
   SEC_LVL_7,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { ApiSecurityClearance } from 'src/utils/helpers/swagger-response.helper';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';

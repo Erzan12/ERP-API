@@ -9,7 +9,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import {
   ACTION_READ,
   EMPLOYEE_MASTERLIST,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { Can } from 'src/utils/decorators/can.decorator';
 
 @ApiTags('Administrator - Health Check')

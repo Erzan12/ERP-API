@@ -32,3 +32,12 @@ export const MINIO_BUCKETS = {
 
 export const buildFileUrl = (bucket: string, fileName: string) =>
   `${MINIO_PUBLIC_URL}/${bucket}/${fileName}`;
+
+export const extractObjectName = (bucket: string, fileUrl: string) => {
+  const marker = `/${bucket}/`;
+  const idx = fileUrl.indexOf(marker);
+  if (idx === -1) {
+    throw new Error(`Unexpected file URL format: ${fileUrl}`);
+  }
+  return fileUrl.slice(idx + marker.length);
+};

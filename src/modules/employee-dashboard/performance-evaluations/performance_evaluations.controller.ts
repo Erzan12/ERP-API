@@ -18,7 +18,7 @@ import {
   ACTION_CREATE,
   ACTION_READ,
   EMPLOYEE_DASHBOARD,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { Can } from 'src/utils/decorators/can.decorator';
