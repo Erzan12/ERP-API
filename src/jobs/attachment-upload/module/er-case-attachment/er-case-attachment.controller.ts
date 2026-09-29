@@ -111,7 +111,7 @@ export class ErCaseAttachmentController {
         file: {
           type: 'string',
           format: 'binary',
-          nullable: true,
+          nullable: false,
         },
       },
     },
@@ -121,11 +121,20 @@ export class ErCaseAttachmentController {
   })
   @ApiPostResponse('Attachment uploaded successfully')
   uploadNteDoc(
-    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @Param('nteId', ParseUUIDPipe) nteId: string,
     @SessionUser() user: RequestUser,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.erCaseAttachmentService.uploadNteDocs(nteId, user, file);
+  }
+
+  @Delete('nte/:nteId/documents/:attachmentId')
+  async deleteNteDoc(
+    @Param('nteId', ParseUUIDPipe) nteId: string,
+    @Param('attachmentId', ParseUUIDPipe) attachmentId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.erCaseAttachmentService.deleteNteDoc(nteId, attachmentId, user);
   }
 
   @Put('written-explaination/:explanationId/uploads')
