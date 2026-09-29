@@ -58,6 +58,9 @@ export class ErCaseAttachmentController {
   }
 
   @Delete('er-case/:disciplinaryCaseId/documents/:attachmentId')
+  @ApiOperation({
+    summary: 'Disciplinary Case Attachment deleted successfully.',
+  })
   async deleteErCaseDoc(
     @Param('disciplinaryCaseId', ParseUUIDPipe) disciplinaryCaseId: string,
     @Param('attachmentId', ParseUUIDPipe) attachmentId: string,
@@ -117,7 +120,7 @@ export class ErCaseAttachmentController {
     },
   })
   @ApiOperation({
-    summary: 'Upload Attachment for NTE',
+    summary: 'Upload or Update Attachment for an NTE',
   })
   @ApiPostResponse('Attachment uploaded successfully')
   uploadNteDoc(
@@ -129,6 +132,9 @@ export class ErCaseAttachmentController {
   }
 
   @Delete('nte/:nteId/documents/:attachmentId')
+  @ApiOperation({
+    summary: 'NTE Attachment deleted successfully.',
+  })
   async deleteNteDoc(
     @Param('nteId', ParseUUIDPipe) nteId: string,
     @Param('attachmentId', ParseUUIDPipe) attachmentId: string,
