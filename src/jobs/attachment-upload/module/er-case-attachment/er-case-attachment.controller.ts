@@ -66,7 +66,11 @@ export class ErCaseAttachmentController {
     @Param('attachmentId', ParseUUIDPipe) attachmentId: string,
     @SessionUser() user: RequestUser,
   ) {
-    return this.erCaseAttachmentService.deleteErCaseDoc(disciplinaryCaseId, attachmentId, user);
+    return this.erCaseAttachmentService.deleteErCaseDoc(
+      disciplinaryCaseId,
+      attachmentId,
+      user,
+    );
   }
 
   @Put('ir-er/:reportId/uploads')

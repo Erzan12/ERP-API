@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import {
@@ -19,6 +19,8 @@ import {
 @Injectable()
 export class ErCaseAttachmentService {
   constructor(private readonly prisma: PrismaService) {}
+
+  private readonly logger = new Logger(ErCaseAttachmentService.name);
 
   // Helper for auth check
   private async assertHrAccess(userId: string) {
@@ -493,11 +495,17 @@ export class ErCaseAttachmentService {
 
     // Then remove the object from MinIO ()
     try {
-      const objectName = extractObjectName(MINIO_BUCKETS.DOCUMENTS, attachment.file_url);
+      const objectName = extractObjectName(
+        MINIO_BUCKETS.DOCUMENTS,
+        attachment.file_url,
+      );
       await minioClient.removeObject(MINIO_BUCKETS.DOCUMENTS, objectName);
-    } catch (e) {
-      console.warn(
-        `Failed to remove MinIO object for attachment ${attachment.id}: ${e}`,
+    } catch (err) {
+      this.logger.error(
+        `Failed to remove MinIO object for attachment ${attachment.id}: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+        err instanceof Error ? err.stack : undefined,
       );
     }
 
@@ -572,9 +580,12 @@ export class ErCaseAttachmentService {
           oldAttachment.file_url,
         );
         await minioClient.removeObject(MINIO_BUCKETS.DOCUMENTS, oldObjectName);
-      } catch (e) {
-        console.warn(
-          `Failed to remove old MinIO object for attachment ${oldAttachment.id}: ${e}`,
+      } catch (err) {
+        this.logger.error(
+          `Failed to remove MinIO object for attachment ${attachment.id}: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+          err instanceof Error ? err.stack : undefined,
         );
       }
     }
@@ -588,11 +599,7 @@ export class ErCaseAttachmentService {
     };
   }
 
-  async deleteNteDoc (
-    nteId: string,
-    attachmentId: string,
-    user: RequestUser,
-  ) {
+  async deleteNteDoc(nteId: string, attachmentId: string, user: RequestUser) {
     await this.assertHrAccess(user.id);
 
     const attachment = await this.prisma.hrErCaseAttachment.findFirst({
@@ -614,11 +621,17 @@ export class ErCaseAttachmentService {
 
     // Then remove the object from MinIO ()
     try {
-      const objectName = extractObjectName(MINIO_BUCKETS.DOCUMENTS, attachment.file_url);
+      const objectName = extractObjectName(
+        MINIO_BUCKETS.DOCUMENTS,
+        attachment.file_url,
+      );
       await minioClient.removeObject(MINIO_BUCKETS.DOCUMENTS, objectName);
-    } catch (e) {
-      console.warn(
-        `Failed to remove MinIO object for attachment ${attachment.id}: ${e}`,
+    } catch (err) {
+      this.logger.error(
+        `Failed to remove MinIO object for attachment ${attachment.id}: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+        err instanceof Error ? err.stack : undefined,
       );
     }
 
