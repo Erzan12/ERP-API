@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import {
   buildFileUrl,
+  extractObjectName,
   MINIO_BUCKETS,
   minioClient,
 } from 'src/config/minio/minio.config';
@@ -463,6 +464,47 @@ export class ErCaseAttachmentService {
       status: 'success',
       message: 'Attachments for this Disciplinary Case uploaded.',
       attachments,
+    };
+  }
+
+  async deleteErCaseDoc(
+    disciplinaryCaseId: string,
+    attachmentId: string,
+    user: RequestUser,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const attachment = await this.prisma.hrErCaseAttachment.findFirst({
+      where: {
+        id: attachmentId,
+        transaction_type: TRANSACTION_TYPE.ER_CASE_DOC,
+        case_id: disciplinaryCaseId,
+      },
+    });
+
+    if (!attachment) {
+      throw new NotFoundException('Attachment does not exists on this case.');
+    }
+
+    // Delete DB record first
+    await this.prisma.hrErCaseAttachment.delete({
+      where: { id: attachment.id },
+    });
+
+    // Then remove the object from MinIO ()
+    try {
+      const objectName = extractObjectName(MINIO_BUCKETS.DOCUMENTS, attachment.file_url);
+      await minioClient.removeObject(MINIO_BUCKETS.DOCUMENTS, objectName);
+    } catch (e) {
+      console.warn(
+        `Failed to remove MinIO object for attachment ${attachment.id}: ${e}`,
+      );
+    }
+
+    return {
+      status: 'success',
+      message: 'Attachment deleted.',
+      attachment_id: attachment.id,
     };
   }
 

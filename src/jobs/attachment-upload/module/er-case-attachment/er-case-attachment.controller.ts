@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Param,
   ParseUUIDPipe,
   Put,
@@ -54,6 +55,15 @@ export class ErCaseAttachmentController {
       user,
       files,
     );
+  }
+
+  @Delete('er-case/:disciplinaryCaseId/documents/:attachmentId')
+  async deleteErCaseDoc(
+    @Param('disciplinaryCaseId', ParseUUIDPipe) disciplinaryCaseId: string,
+    @Param('attachmentId', ParseUUIDPipe) attachmentId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.erCaseAttachmentService.deleteErCaseDoc(disciplinaryCaseId, attachmentId, user);
   }
 
   @Put('ir-er/:reportId/uploads')
