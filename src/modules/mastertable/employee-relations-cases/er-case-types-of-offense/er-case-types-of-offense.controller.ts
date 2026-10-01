@@ -25,7 +25,7 @@ import {
   ACTION_READ,
   ACTION_UPDATE,
   MASTERTABLES,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ErCaseTypesOfOffensePaginationDto } from 'src/utils/dtos/er-related-pagination.dto';

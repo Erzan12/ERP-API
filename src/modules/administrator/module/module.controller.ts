@@ -21,7 +21,7 @@ import {
   ACTION_READ,
   ACTION_UPDATE,
   SYSTEM_MANAGEMENT,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 
 import { Can } from '../../../utils/decorators/can.decorator';
 

@@ -7,7 +7,7 @@ import {
   Put,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { PermissionTemplateService } from './permission_template.service';
+import { PermissionTemplateService } from './permission-template.service';
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -23,7 +23,7 @@ import {
   ACTION_READ,
   ACTION_UPDATE,
   PERMISSION_TEMPLATE,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { AssignTemplateDto } from './dto/assign-template.dto';
 import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';
 

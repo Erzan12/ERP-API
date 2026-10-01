@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import {
   buildFileUrl,
+  extractObjectName,
   MINIO_BUCKETS,
   minioClient,
 } from 'src/config/minio/minio.config';
@@ -18,6 +19,8 @@ import {
 @Injectable()
 export class ErCaseAttachmentService {
   constructor(private readonly prisma: PrismaService) {}
+
+  private readonly logger = new Logger(ErCaseAttachmentService.name);
 
   // Helper for auth check
   private async assertHrAccess(userId: string) {
@@ -176,8 +179,7 @@ export class ErCaseAttachmentService {
     params: {
       file: Express.Multer.File;
       transaction_type: string;
-      nte_id?: string;
-      // document_types?: string;
+      nte_id: string;
       user_id?: string;
     },
     tx?: Prisma.TransactionClient,
@@ -185,12 +187,10 @@ export class ErCaseAttachmentService {
     const prisma = tx || this.prisma;
     const { file, transaction_type, nte_id, user_id } = params;
 
-    // Guard: make sure a file was provided
     if (!file) {
       throw new BadRequestException('File is required.');
     }
 
-    // Guard: catch missing buffer early
     if (!file.buffer) {
       throw new BadRequestException(
         `File "${file.originalname}" has no buffer. Ensure multer is using memoryStorage.`,
@@ -198,7 +198,6 @@ export class ErCaseAttachmentService {
     }
 
     const bucket = MINIO_BUCKETS.DOCUMENTS;
-
     const extension =
       file.originalname.split('.').pop()?.toLowerCase() || 'bin';
     const fileName = `nte-documents/${randomUUID()}.${extension}`;
@@ -207,21 +206,25 @@ export class ErCaseAttachmentService {
       'Content-Type': file.mimetype,
     });
 
-    const fileUrl = buildFileUrl(bucket, fileName);
-
-    const data = {
-      transaction_type,
-      // transaction_id,
-      nte_id,
+    const fileData = {
       file_name: file.originalname,
-      file_url: fileUrl,
+      file_url: buildFileUrl(bucket, fileName),
       file_type: file.mimetype,
       file_size: file.size,
-      // document_type: document_types?.[i] ?? null,
       uploaded_by: user_id,
     };
 
-    return prisma.hrErCaseAttachment.createMany({ data });
+    try {
+      return await prisma.hrErCaseAttachment.upsert({
+        where: { nte_id },
+        create: { ...fileData, transaction_type, nte_id },
+        update: { ...fileData, created_at: new Date() }, // optional
+      });
+    } catch (err) {
+      // DB failed: don't leave the just-uploaded object orphaned
+      await minioClient.removeObject(bucket, fileName).catch(() => undefined);
+      throw err;
+    }
   }
 
   private async attachFilesForExplanation(
@@ -387,6 +390,56 @@ export class ErCaseAttachmentService {
     return prisma.hrErCaseAttachment.create({ data });
   }
 
+  private async attachFilesForDeductAuthority(
+    params: {
+      file: Express.Multer.File;
+      transaction_type: string;
+      decision_payroll_deduction_id: string;
+      user_id?: string;
+    },
+    tx?: Prisma.TransactionClient,
+  ) {
+    const prisma = tx || this.prisma;
+    const { file, transaction_type, decision_payroll_deduction_id, user_id } =
+      params;
+
+    // Guard: make sure a file was provided
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+
+    // Guard: catch missing buffer early
+    if (!file.buffer) {
+      throw new BadRequestException(
+        `File "${file.originalname}" has no buffer. Ensure multer is using memoryStorage.`,
+      );
+    }
+
+    const bucket = MINIO_BUCKETS.DOCUMENTS;
+
+    const extension =
+      file.originalname.split('.').pop()?.toLowerCase() || 'bin';
+    const fileName = `authority-to-deduct-documents/${randomUUID()}.${extension}`;
+
+    await minioClient.putObject(bucket, fileName, file.buffer, file.size, {
+      'Content-Type': file.mimetype,
+    });
+
+    const fileUrl = buildFileUrl(bucket, fileName);
+
+    const data = {
+      transaction_type,
+      decision_payroll_deduction_id,
+      file_name: file.originalname,
+      file_url: fileUrl,
+      file_type: file.mimetype,
+      file_size: file.size,
+      uploaded_by: user_id,
+    };
+
+    return prisma.hrErCaseAttachment.create({ data });
+  }
+
   async uploadErCaseDocs(
     disciplinaryCaseId: string,
     user: RequestUser,
@@ -413,6 +466,53 @@ export class ErCaseAttachmentService {
       status: 'success',
       message: 'Attachments for this Disciplinary Case uploaded.',
       attachments,
+    };
+  }
+
+  async deleteErCaseDoc(
+    disciplinaryCaseId: string,
+    attachmentId: string,
+    user: RequestUser,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const attachment = await this.prisma.hrErCaseAttachment.findFirst({
+      where: {
+        id: attachmentId,
+        transaction_type: TRANSACTION_TYPE.ER_CASE_DOC,
+        case_id: disciplinaryCaseId,
+      },
+    });
+
+    if (!attachment) {
+      throw new NotFoundException('Attachment does not exists on this case.');
+    }
+
+    // Delete DB record first
+    await this.prisma.hrErCaseAttachment.delete({
+      where: { id: attachment.id },
+    });
+
+    // Then remove the object from MinIO ()
+    try {
+      const objectName = extractObjectName(
+        MINIO_BUCKETS.DOCUMENTS,
+        attachment.file_url,
+      );
+      await minioClient.removeObject(MINIO_BUCKETS.DOCUMENTS, objectName);
+    } catch (err) {
+      this.logger.error(
+        `Failed to remove MinIO object for attachment ${attachment.id}: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+        err instanceof Error ? err.stack : undefined,
+      );
+    }
+
+    return {
+      status: 'success',
+      message: 'Attachment deleted.',
+      attachment_id: attachment.id,
     };
   }
 
@@ -456,11 +556,14 @@ export class ErCaseAttachmentService {
 
     const existingNte = await this.prisma.hrErCaseNte.findUnique({
       where: { id: nteId },
+      include: { attachment: true },
     });
 
     if (!existingNte) {
       throw new NotFoundException('NTE does not exists.');
     }
+
+    const oldAttachment = existingNte.attachment;
 
     const attachment = await this.attachFilesForNTE({
       file,
@@ -469,10 +572,73 @@ export class ErCaseAttachmentService {
       user_id: user.id,
     });
 
+    // Only after the new file and row are safely in place
+    if (oldAttachment) {
+      try {
+        const oldObjectName = extractObjectName(
+          MINIO_BUCKETS.DOCUMENTS,
+          oldAttachment.file_url,
+        );
+        await minioClient.removeObject(MINIO_BUCKETS.DOCUMENTS, oldObjectName);
+      } catch (err) {
+        this.logger.error(
+          `Failed to remove MinIO object for attachment ${attachment.id}: ${
+            err instanceof Error ? err.message : String(err)
+          }`,
+          err instanceof Error ? err.stack : undefined,
+        );
+      }
+    }
+
     return {
       status: 'success',
-      message: 'Attachments for this NTE uploaded.',
+      message: oldAttachment
+        ? 'NTE attachment replaced.'
+        : 'Attachments for this NTE uploaded.',
       attachment,
+    };
+  }
+
+  async deleteNteDoc(nteId: string, attachmentId: string, user: RequestUser) {
+    await this.assertHrAccess(user.id);
+
+    const attachment = await this.prisma.hrErCaseAttachment.findFirst({
+      where: {
+        id: attachmentId,
+        transaction_type: TRANSACTION_TYPE.NTE_DOC,
+        nte_id: nteId,
+      },
+    });
+
+    if (!attachment) {
+      throw new NotFoundException('Attachment does not exists on this case.');
+    }
+
+    // Delete DB record first
+    await this.prisma.hrErCaseAttachment.delete({
+      where: { id: attachment.id },
+    });
+
+    // Then remove the object from MinIO ()
+    try {
+      const objectName = extractObjectName(
+        MINIO_BUCKETS.DOCUMENTS,
+        attachment.file_url,
+      );
+      await minioClient.removeObject(MINIO_BUCKETS.DOCUMENTS, objectName);
+    } catch (err) {
+      this.logger.error(
+        `Failed to remove MinIO object for attachment ${attachment.id}: ${
+          err instanceof Error ? err.message : String(err)
+        }`,
+        err instanceof Error ? err.stack : undefined,
+      );
+    }
+
+    return {
+      status: 'success',
+      message: 'Attachment deleted',
+      attachment_id: attachment.id,
     };
   }
 
@@ -560,6 +726,36 @@ export class ErCaseAttachmentService {
     return {
       status: 'success',
       message: 'Attachments for this Written Explanation uploaded.',
+      attachment,
+    };
+  }
+
+  async uploadAuthorityToDeductDocs(
+    deductPayrollId: string,
+    user: RequestUser,
+    file: Express.Multer.File,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    const existingDeductAuthority =
+      await this.prisma.hrErNodPayrollAdjustment.findUnique({
+        where: { id: deductPayrollId },
+      });
+
+    if (!existingDeductAuthority) {
+      throw new NotFoundException('Payroll adjustment does not exists.');
+    }
+
+    const attachment = await this.attachFilesForDeductAuthority({
+      file,
+      transaction_type: TRANSACTION_TYPE.DEDUCT_AUTHORITY_DOC,
+      decision_payroll_deduction_id: existingDeductAuthority.id,
+      user_id: user.id,
+    });
+
+    return {
+      status: 'success',
+      message: 'Attachments for Authority to deduct uploaded.',
       attachment,
     };
   }

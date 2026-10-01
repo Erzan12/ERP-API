@@ -18,6 +18,7 @@ import {
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ConductHearingDto } from './dto/conduct-hearing.dto';
 import { logActivity } from '../activity-grouping-helper/activity-log.helper';
+import { NoShowHearingDto } from './dto/no-show-hearing.dto';
 
 @Injectable()
 export class AdministrativeHearingService {
@@ -312,6 +313,100 @@ export class AdministrativeHearingService {
       return {
         status: 'success',
         message: 'Hearing marked as complete and is conducted',
+        hearing,
+      };
+    });
+  }
+
+  async noShow(
+    hearingId: string,
+    partyId: string,
+    dto: NoShowHearingDto,
+    user: RequestUser,
+  ) {
+    await this.assertHrAccess(user.id);
+
+    return this.prisma.$transaction(async (tx) => {
+      await this.assertExistingHearing(
+        tx,
+        hearingId,
+        partyId,
+        HrErCaseStage.administrative_hearing,
+      );
+
+      const activeScheduled = await tx.hrErCaseHearing.findFirst({
+        where: {
+          id: hearingId,
+          status: { not: HrErHearingStatus.conducted },
+        },
+        include: {
+          party: true,
+        },
+      });
+
+      if (!activeScheduled) {
+        throw new BadRequestException(
+          'Admin hearing does not exist - please confirm if hearing is scheduled or existed.',
+        );
+      }
+
+      const now = new Date();
+
+      if (!activeScheduled.scheduled_at) {
+        throw new BadRequestException(
+          'Admin hearing does not have a scheduled date.',
+        );
+      }
+
+      if (activeScheduled.scheduled_at > now) {
+        throw new BadRequestException(
+          'The scheduled hearing date and time has not yet passed.',
+        );
+      }
+
+      const hearing = await tx.hrErCaseHearing.update({
+        where: { id: activeScheduled.id },
+        data: {
+          status: HrErHearingStatus.no_show,
+          remarks: dto.remarks,
+          updated_by: user.id,
+        },
+        include: {
+          party: true,
+        },
+      });
+
+      // Handle party stage/logs
+      if (hearing.party.stage === HrErCaseStage.administrative_hearing) {
+        await tx.hrErCaseStageLog.updateMany({
+          where: {
+            party_id: hearing.party.id,
+            stage: HrErCaseStage.administrative_hearing,
+            exited_at: null,
+          },
+          data: {
+            exited_at: now,
+          },
+        });
+
+        // Record activity
+        await tx.hrErCaseActivityLog.create({
+          data: {
+            case_id: hearing.party.case_id, 
+            party_id: hearing.party.id,
+            actor_id: user.id,
+            stage: HrErCaseStage.administrative_hearing,
+            action: 'hearing_no_show',
+            metadata: {
+              hearing_id: hearing.id,
+            },
+          },
+        });
+      }
+
+      return {
+        status: 'succeess',
+        message: 'Party mark as no show, did not attend the hearing',
         hearing,
       };
     });

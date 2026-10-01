@@ -27,7 +27,7 @@ import {
   generateOtp,
   getOtpExpiration,
 } from 'src/utils/constants/otp-verification.constants';
-import { UserManagementService } from 'src/modules/manager/user_management/user_management.service';
+import { UserManagementService } from 'src/modules/manager/user-management/user-management.service';
 import { ActionEntry } from './type/action-entry.type';
 import { OtpPurposeTemplate } from '@prisma/client';
 
@@ -419,9 +419,9 @@ export class AuthService {
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    console.log('Entered password:', password);
-    console.log('Stored hashed password:', user.password);
-    console.log('Password valid?', isPasswordValid);
+    // console.log('Entered password:', password);
+    // console.log('Stored hashed password:', user.password);
+    // console.log('Password valid?', isPasswordValid);
 
     if (!isPasswordValid) throw new UnauthorizedException('Invalid password');
 

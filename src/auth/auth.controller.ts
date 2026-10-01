@@ -31,7 +31,7 @@ import {
   ACTION_CREATE,
   SEC_LVL_5,
   USER_TOKEN_KEY,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';
 import { Can } from 'src/utils/decorators/can.decorator';
 

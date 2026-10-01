@@ -23,7 +23,7 @@ import {
   ACTION_UPDATE,
   ROLE_MANAGEMENT,
   SEC_LVL_5,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { SecurityClearance } from 'src/middleware/security_clearance/security-clearance.decorator';

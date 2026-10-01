@@ -57,6 +57,7 @@ export class CaseCloseService {
           parties: {
             where: {
               role: 'respondent',
+              stage: HrErCaseStage.case_closed,
             },
             select: {
               id: true,

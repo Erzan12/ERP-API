@@ -21,7 +21,7 @@ import {
   ACTION_READ,
   ACTION_UPDATE,
   MASTERTABLES,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 
 import { DivisionService } from './division.service';
 

@@ -22,7 +22,7 @@ import {
   ACTION_READ,
   ACTION_UPDATE,
   EMPLOYEE_MASTERLIST,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 
 import {
   CreateEmployeeWithDetailsDto,

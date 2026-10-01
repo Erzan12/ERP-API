@@ -24,7 +24,7 @@ import {
   ACTION_UPDATE,
   ACTION_VERIFY,
   CAREER_POSTING,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 
 import { RecruitmentPaginationDto } from 'src/utils/dtos/recruitment-pagination.dto';
 import {

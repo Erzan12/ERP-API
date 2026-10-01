@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Param,
   ParseUUIDPipe,
   Put,
@@ -56,6 +57,22 @@ export class ErCaseAttachmentController {
     );
   }
 
+  @Delete('er-case/:disciplinaryCaseId/documents/:attachmentId')
+  @ApiOperation({
+    summary: 'Disciplinary Case Attachment deleted successfully.',
+  })
+  async deleteErCaseDoc(
+    @Param('disciplinaryCaseId', ParseUUIDPipe) disciplinaryCaseId: string,
+    @Param('attachmentId', ParseUUIDPipe) attachmentId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.erCaseAttachmentService.deleteErCaseDoc(
+      disciplinaryCaseId,
+      attachmentId,
+      user,
+    );
+  }
+
   @Put('ir-er/:reportId/uploads')
   @UseInterceptors(
     FilesInterceptor('files', 5, {
@@ -101,21 +118,33 @@ export class ErCaseAttachmentController {
         file: {
           type: 'string',
           format: 'binary',
-          nullable: true,
+          nullable: false,
         },
       },
     },
   })
   @ApiOperation({
-    summary: 'Upload Attachment for NTE',
+    summary: 'Upload or Update Attachment for an NTE',
   })
   @ApiPostResponse('Attachment uploaded successfully')
   uploadNteDoc(
-    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @Param('nteId', ParseUUIDPipe) nteId: string,
     @SessionUser() user: RequestUser,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.erCaseAttachmentService.uploadNteDocs(nteId, user, file);
+  }
+
+  @Delete('nte/:nteId/documents/:attachmentId')
+  @ApiOperation({
+    summary: 'NTE Attachment deleted successfully.',
+  })
+  async deleteNteDoc(
+    @Param('nteId', ParseUUIDPipe) nteId: string,
+    @Param('attachmentId', ParseUUIDPipe) attachmentId: string,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.erCaseAttachmentService.deleteNteDoc(nteId, attachmentId, user);
   }
 
   @Put('written-explaination/:explanationId/uploads')
@@ -218,6 +247,41 @@ export class ErCaseAttachmentController {
   ) {
     return this.erCaseAttachmentService.uploadDecisionDocs(
       decisionId,
+      user,
+      file,
+    );
+  }
+
+  @Put('notice-of-decision/authority-to-deduct/:deductPayrollId/uploads')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          nullable: true,
+        },
+      },
+    },
+  })
+  @ApiOperation({
+    summary: 'Upload Attachment for Authority to Deduct Payroll',
+  })
+  @ApiPostResponse('Attachment uploaded successfully')
+  authorityToDeductDoc(
+    @Param('deductPayrollId', new ParseUUIDPipe()) deductPayrollId: string,
+    @SessionUser() user: RequestUser,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.erCaseAttachmentService.uploadAuthorityToDeductDocs(
+      deductPayrollId,
       user,
       file,
     );

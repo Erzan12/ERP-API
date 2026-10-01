@@ -27,7 +27,7 @@ import {
   ACTION_UPDATE,
   ACTION_VERIFY,
   EXTENDED_LEAVE_REQUEST,
-} from 'src/utils/constants/ability.constant';
+} from 'src/utils/constants/ability.constants';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import {

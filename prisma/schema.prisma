@@ -644,6 +644,8 @@ model User {
   HrErCaseHearingAttendeeUpdatedBy         HrErCaseHearingAttendee[]          @relation("HrErCaseHearingAttendeeUpdatedBy")
   HrErCaseDecisionCreatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionCreatedBy")
   HrErCaseDecisionUpdatedBy                HrErCaseDecision[]                 @relation("HrErCaseDecisionUpdatedBy")             
+  HrErNodPayrollAdjustmentCreatedBy        HrErNodPayrollAdjustment[]         @relation("HrErNodPayrollAdjustmentCreatedBy")
+  HrErNodPayrollAdjustmentUpdatedBy        HrErNodPayrollAdjustment[]         @relation("HrErNodPayrollAdjustmentUpdatedBy")
   HrErCaseAttachmentUploadedBy             HrErCaseAttachment[]               @relation("HrErCaseAttachmentUploadedBy")
   HrErCaseActivityLogActor                 HrErCaseActivityLog[]              @relation("HrErCaseActivityLogActor")
 
@@ -2127,7 +2129,7 @@ model HrErCaseHearingAttendee {
 
 model HrErCaseDecision {
   id                String           @id @default(uuid()) @db.Uuid
-  party_id          String           @unique @db.Uuid
+  party_id          String           @unique @db.Uuid 
   decision_type     HrErDecisionType
   effectivity_start DateTime?
   effectivity_end   DateTime?
@@ -2145,8 +2147,30 @@ model HrErCaseDecision {
   updatedBy User? @relation("HrErCaseDecisionUpdatedBy", fields: [updated_by], references: [id])
 
   party     HrErCaseParty      @relation(fields: [party_id], references: [id], onDelete: Cascade)
+  deduct_payroll HrErNodPayrollAdjustment?
   approvals HrErCaseApproval[]
   attachment HrErCaseAttachment[]
+}
+
+model HrErNodPayrollAdjustment {
+  id          String         @id @default(uuid()) @db.Uuid
+  decision_id     String     @unique @db.Uuid
+  deduction_start DateTime?
+  deduction_end   DateTime?
+  total_deduction Decimal?   @db.Decimal(10, 2)
+  semi_monthly_deduction Decimal?  @db.Decimal(10, 2)
+  decision_remarks String?
+
+  created_by String?  @db.Uuid
+  updated_by String?  @db.Uuid
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  createdBy User? @relation("HrErNodPayrollAdjustmentCreatedBy", fields: [created_by], references: [id])
+  updatedBy User? @relation("HrErNodPayrollAdjustmentUpdatedBy", fields: [updated_by], references: [id])
+
+  decision   HrErCaseDecision @relation(fields: [decision_id], references: [id], onDelete: Cascade)
+  attachment HrErCaseAttachment?
 }
 
 // ---------- SHARED APPROVAL / REVIEWER STEP (reused by NTE + Decision) ----------
@@ -2191,6 +2215,7 @@ model HrErCaseAttachment {
   explanation_id String? @unique @db.Uuid
   hearing_id     String? @db.Uuid
   decision_id String? @db.Uuid
+  decision_payroll_deduction_id String? @unique @db.Uuid
 
   file_name String
   file_url  String
@@ -2207,6 +2232,7 @@ model HrErCaseAttachment {
   explanation HrErCaseExplanation? @relation(fields: [explanation_id], references: [id], onDelete: Cascade)
   hearing     HrErCaseHearing? @relation(fields: [hearing_id], references: [id], onDelete: Cascade)
   decision    HrErCaseDecision? @relation(fields: [decision_id], references: [id], onDelete: Cascade)
+  decision_payroll_deduction HrErNodPayrollAdjustment? @relation(fields: [decision_payroll_deduction_id], references: [id], onDelete: Cascade)
   uploadedBy User?           @relation("HrErCaseAttachmentUploadedBy", fields: [uploaded_by], references: [id])
 
   @@index([intake_id])

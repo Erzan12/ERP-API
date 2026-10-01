@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { HrErDecisionType } from '@prisma/client';
+import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsEnum,
@@ -8,7 +9,9 @@ import {
   IsString,
   IsUUID,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
+import { PayrollAdjustmentDto } from './payroll-adjustment.dto';
 
 const DATED_DECISION_TYPES: HrErDecisionType[] = [
   HrErDecisionType.acquitted,
@@ -77,6 +80,12 @@ export class CreateDecisionDto {
   @IsString()
   @ApiProperty({ required: false })
   remarks?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PayrollAdjustmentDto)
+  @ApiPropertyOptional({ type: PayrollAdjustmentDto })
+  deduct_payroll?: PayrollAdjustmentDto;
 }
 
 export class UpdateDecisionDto {
@@ -135,6 +144,15 @@ export class UpdateDecisionDto {
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ required: false })
+  @ApiPropertyOptional({
+    required: false,
+    example: 'String',
+  })
   remarks?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PayrollAdjustmentDto)
+  @ApiPropertyOptional({ type: PayrollAdjustmentDto })
+  deduct_payroll?: PayrollAdjustmentDto;
 }
