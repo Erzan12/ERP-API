@@ -92,7 +92,8 @@ export class AdministrativeHearingController {
     'employee-relations/administrative-hearing/:hearingId/parties/:partyId/no-show',
   )
   @ApiOperation({
-    summary: 'Mark a respondent administrative hearing as no show if schedule already pass',
+    summary:
+      'Mark a respondent administrative hearing as no show if schedule already pass',
   })
   noShowHearing(
     @Param('hearingId', ParseUUIDPipe) hearingId: string,
@@ -100,7 +101,12 @@ export class AdministrativeHearingController {
     @Body() dto: NoShowHearingDto,
     @SessionUser() user: RequestUser,
   ) {
-    return this.administrativeHearingService.noShow(hearingId, partyId, dto, user);
+    return this.administrativeHearingService.noShow(
+      hearingId,
+      partyId,
+      dto,
+      user,
+    );
   }
 
   // @Put(

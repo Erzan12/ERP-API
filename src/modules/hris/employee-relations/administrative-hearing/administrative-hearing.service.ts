@@ -376,7 +376,7 @@ export class AdministrativeHearingService {
         },
       });
 
-      // 2. Handle party stage/logs
+      // Handle party stage/logs
       if (hearing.party.stage === HrErCaseStage.administrative_hearing) {
         await tx.hrErCaseStageLog.updateMany({
           where: {
@@ -389,10 +389,10 @@ export class AdministrativeHearingService {
           },
         });
 
-        // 3. Record activity
+        // Record activity
         await tx.hrErCaseActivityLog.create({
           data: {
-            case_id: hearing.party.case_id, // adjust if your relation/property is different
+            case_id: hearing.party.case_id, 
             party_id: hearing.party.id,
             actor_id: user.id,
             stage: HrErCaseStage.administrative_hearing,
@@ -409,7 +409,7 @@ export class AdministrativeHearingService {
         message: 'Party mark as no show, did not attend the hearing',
         hearing,
       };
-    })
+    });
   }
 
   // async hearingAttendance(dto: AttendeeHearingDto, user: RequestUser) {

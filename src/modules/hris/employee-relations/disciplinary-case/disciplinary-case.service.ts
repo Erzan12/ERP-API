@@ -130,7 +130,7 @@ export class DisciplinaryCaseService {
   ) {
     const respondents = await tx.hrErCaseParty.findMany({
       where: { case_id: caseId, role: 'respondent' },
-      select: { 
+      select: {
         stage: true,
         hearings: { select: { status: true } },
       },
