@@ -221,16 +221,23 @@ export function buildActivityTrail(disciplinaryCase: ActivityTrailCase): {
         )
       : null;
 
+    let status: TrailStage['status'];
+
+    if (index < currentIndex) {
+      status = 'completed';
+    } else if (index === currentIndex) {
+      // Current stage is done once every respondent in it has exited
+      // For case_closed, closeCase() fills exited_at on the stage logs
+      status = exited_at !== null ? 'completed' : 'in_progress';
+    } else {
+      status = 'pending';
+    }
+
     return {
       stage,
       label: STAGE_LABEL[stage],
       sequence: index + 1,
-      status:
-        index < currentIndex
-          ? 'completed'
-          : index === currentIndex
-            ? 'in_progress'
-            : 'pending',
+      status,
       sla_days: relevant[0]?.sla_days ?? null,
       entered_at,
       exited_at,
