@@ -91,11 +91,27 @@ export class DisciplinaryCaseService {
           ? { eligible: true }
           : { eligible: false, reason: 'Still awaiting written explanation.' };
       }
+      // case HrErCaseStage.administrative_hearing: {
+      //   const latest = party.hearings; // most recent by created_at
+      //   return latest && ['conducted', 'no_show'].includes(latest.status)
+      //     ? { eligible: true }
+      //     : { eligible: false, reason: 'Hearing not yet conducted.' };
+      // }
       case HrErCaseStage.administrative_hearing: {
-        const latest = party.hearings; // most recent by created_at
-        return latest && ['conducted', 'no_show'].includes(latest.status)
-          ? { eligible: true }
-          : { eligible: false, reason: 'Hearing not yet conducted.' };
+        const hearing = party.hearings;
+
+        if (hearing?.status === 'conducted') {
+          return { eligible: true };
+        }
+
+        if (hearing?.status === 'no_show') {
+          return {
+            eligible: false,
+            reason: 'Respondent did not attend the hearing (no_show).',
+          };
+        }
+
+        return { eligible: false, reason: 'Hearing not yet conducted.' };
       }
 
       case HrErCaseStage.notice_of_decision:
@@ -114,13 +130,32 @@ export class DisciplinaryCaseService {
   ) {
     const respondents = await tx.hrErCaseParty.findMany({
       where: { case_id: caseId, role: 'respondent' },
-      select: { stage: true },
+      select: { 
+        stage: true,
+        hearings: { select: { status: true } },
+      },
     });
     // const active = respondents.filter(r => r.stage !== 'case_closed');
+    // const active = respondents.filter(
+    //   (r): r is { stage: HrErCaseStage } =>
+    //     r.stage !== null && r.stage !== 'case_closed',
+    // );
+    // const allClosed = active.length === 0;
+
     const active = respondents.filter(
-      (r): r is { stage: HrErCaseStage } =>
-        r.stage !== null && r.stage !== 'case_closed',
+      (r): r is typeof r & { stage: HrErCaseStage } => {
+        if (r.stage === null || r.stage === HrErCaseStage.case_closed) {
+          return false;
+        }
+        // No-show respondents are left behind in administrative_hearing
+        // and do not hold back the rest of the case.
+        const isNoShow =
+          r.stage === HrErCaseStage.administrative_hearing &&
+          r.hearings?.status === 'no_show';
+        return !isNoShow;
+      },
     );
+
     const allClosed = active.length === 0;
 
     const STAGE_ORDER: HrErCaseStage[] = [
@@ -1323,15 +1358,31 @@ export class DisciplinaryCaseService {
 
         if (!eligible) {
           skipped.push({ partyId: party.id, reason: reason! });
-          await tx.hrErCaseActivityLog.create({
-            data: {
-              case_id: caseId,
-              party_id: party.id,
-              actor_id: user.id,
-              action: 'stage_advance_skipped',
-              metadata: { reason },
-            },
-          });
+
+          const isNoShow =
+            party.stage === HrErCaseStage.administrative_hearing &&
+            party.hearings?.status === 'no_show';
+
+          // await tx.hrErCaseActivityLog.create({
+          //   data: {
+          //     case_id: caseId,
+          //     party_id: party.id,
+          //     actor_id: user.id,
+          //     action: 'stage_advance_skipped',
+          //     metadata: { reason },
+          //   },
+          // });
+          if (!isNoShow) {
+            await tx.hrErCaseActivityLog.create({
+              data: {
+                case_id: caseId,
+                party_id: party.id,
+                actor_id: user.id,
+                action: 'stage_advance_skipped',
+                metadata: { reason },
+              },
+            });
+          }
           continue; // left behind — not included in the next stage, exactly as your PM described
         }
 
