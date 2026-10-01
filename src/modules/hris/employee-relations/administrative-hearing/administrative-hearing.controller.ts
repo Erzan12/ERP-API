@@ -15,6 +15,7 @@ import {
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { ConductHearingDto } from './dto/conduct-hearing.dto';
+import { NoShowHearingDto } from './dto/no-show-hearing.dto';
 
 @ApiTags('Human Resources - Employee Relations(Administrative Hearing)')
 @Controller({ path: 'hris', version: '2' })
@@ -85,6 +86,21 @@ export class AdministrativeHearingController {
       dto,
       user,
     );
+  }
+
+  @Put(
+    'employee-relations/administrative-hearing/:hearingId/parties/:partyId/no-show',
+  )
+  @ApiOperation({
+    summary: 'Mark a respondent administrative hearing as no show if schedule already pass',
+  })
+  noShowHearing(
+    @Param('hearingId', ParseUUIDPipe) hearingId: string,
+    @Param('partyId', ParseUUIDPipe) partyId: string,
+    @Body() dto: NoShowHearingDto,
+    @SessionUser() user: RequestUser,
+  ) {
+    return this.administrativeHearingService.noShow(hearingId, partyId, dto, user);
   }
 
   // @Put(
