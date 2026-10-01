@@ -419,9 +419,9 @@ export class AuthService {
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    console.log('Entered password:', password);
-    console.log('Stored hashed password:', user.password);
-    console.log('Password valid?', isPasswordValid);
+    // console.log('Entered password:', password);
+    // console.log('Stored hashed password:', user.password);
+    // console.log('Password valid?', isPasswordValid);
 
     if (!isPasswordValid) throw new UnauthorizedException('Invalid password');
 
