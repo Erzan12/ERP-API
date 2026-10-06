@@ -330,8 +330,7 @@ export class UpdateCaseDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    example: 
-    'The closing remarks for this case'
+    example: 'The closing remarks for this case',
   })
   closing_remarks?: string;
 }
