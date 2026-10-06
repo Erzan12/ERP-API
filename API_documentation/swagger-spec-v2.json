@@ -8952,6 +8952,48 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/administrative-hearing/{hearingId}/parties/{partyId}/no-show": {
+      "put": {
+        "operationId": "AdministrativeHearingController_noShowHearing_v2",
+        "parameters": [
+          {
+            "name": "hearingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoShowHearingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark a respondent administrative hearing as no show if schedule already pass",
+        "tags": [
+          "Human Resources - Employee Relations(Administrative Hearing)"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/notice-of-decision/{decisionId}": {
       "get": {
         "operationId": "NoticeOfDecisionController_getDecision_v2",
@@ -13510,6 +13552,10 @@
           "incident_narrative": {
             "type": "string",
             "example": "Describe what happened, who was involved, where it happened and supporting circumstances"
+          },
+          "closing_remarks": {
+            "type": "string",
+            "example": "The closing remarks for this case"
           }
         }
       },
@@ -13855,6 +13901,40 @@
           "channel"
         ]
       },
+      "NoShowHearingDto": {
+        "type": "object",
+        "properties": {
+          "remarks": {
+            "type": "string",
+            "example": "Party is no show or did not attend the hearing schedule"
+          }
+        }
+      },
+      "PayrollAdjustmentDto": {
+        "type": "object",
+        "properties": {
+          "deduction_start": {
+            "type": "string",
+            "example": "2026-09-01T09:00:00.000Z"
+          },
+          "deduction_end": {
+            "type": "string",
+            "example": "2026-09-05T09:00:00.000Z"
+          },
+          "total_deduction": {
+            "type": "number",
+            "example": "2200"
+          },
+          "semi_monthly_deduction": {
+            "type": "number",
+            "example": "1100"
+          },
+          "decision_remarks": {
+            "type": "string",
+            "example": "This is be paid for two months."
+          }
+        }
+      },
       "CreateDecisionDto": {
         "type": "object",
         "properties": {
@@ -13893,6 +13973,9 @@
           },
           "remarks": {
             "type": "string"
+          },
+          "deduct_payroll": {
+            "$ref": "#/components/schemas/PayrollAdjustmentDto"
           }
         },
         "required": [
@@ -13938,7 +14021,11 @@
             "description": "Required for suspension/rehabilitation decisions"
           },
           "remarks": {
-            "type": "string"
+            "type": "string",
+            "example": "String"
+          },
+          "deduct_payroll": {
+            "$ref": "#/components/schemas/PayrollAdjustmentDto"
           }
         }
       },
