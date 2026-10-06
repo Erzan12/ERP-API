@@ -16,11 +16,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        // (request: Request) => request?.cookies?.['accessToken'],
-        // (request: Request) =>
-        //   (request as Request & { cookies: Record<string, string> })
-        //     ?.cookies?.['accessToken']
-        // },
         (request: Request): string | null => {
           return typeof request.cookies?.['accessToken'] === 'string'
             ? request.cookies['accessToken']
@@ -40,20 +35,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         user_roles: {
           where: { is_active: true },
           include: {
-            // role: {
-            //   include: {
-            //     role_permissions: {
-            //       where: { is_active: true },
-            //       include: {
-            //         sub_module_permission: {
-            //           include: {
-            //             sub_module: true,
-            //           }
-            //         }
-            //       },
-            //     },
-            //   },
-            // },
             user_permissions: {
               include: {
                 role_permission: {
