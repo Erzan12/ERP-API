@@ -923,6 +923,9 @@ export class DisciplinaryCaseService {
           incident_narrative:
             dto.incident_narrative ??
             existingDisciplinaryCase.incident_narrative,
+          closing_remarks: 
+            dto.closing_remarks ??
+            existingDisciplinaryCase.closing_remarks,
           updated_by: user.id,
         },
       });
