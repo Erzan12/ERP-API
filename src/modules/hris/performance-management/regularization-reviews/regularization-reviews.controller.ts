@@ -50,7 +50,7 @@ export class RegularizationReviewsController {
     return this.regularizationService.statusCount(user);
   }
 
-  @Post()
+  @Post('')
   @ApiOperation({
     summary: 'Create an Employee Evaluation for the first 3rd and 5th month',
   })
@@ -60,7 +60,7 @@ export class RegularizationReviewsController {
     @SessionUser() user: RequestUser,
     @Body() dto: CreateEvaluationDto,
   ) {
-    return this.regularizationService.createEvaluation(dto, user);
+    return this.regularizationService.monitorEvaluation(dto, user);
   }
 
   @Get(':employeeId')
