@@ -8,7 +8,6 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { computeEvaluationStatus } from 'src/utils/helpers/calculate-date.helper';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateEvaluationDto } from './dto/evaluation.dto';
-import { PREVIOUS_STAGE_MAP } from 'src/utils/constants/evaluation.constants';
 import { EvaluationStage, EvaluationStatus, Prisma } from '@prisma/client';
 import { RegularizationReviewDto } from 'src/utils/dtos/regularization-pagination.dto';
 import { computeOverallStatus } from 'src/utils/helpers/compute-overall-status.helper';
@@ -222,10 +221,7 @@ export class RegularizationReviewsService {
     };
   }
 
-  async monitorEvaluation(
-    dto: CreateEvaluationDto, 
-    user: RequestUser
-  ) {
+  async monitorEvaluation(dto: CreateEvaluationDto, user: RequestUser) {
     // Authorization Check
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -277,8 +273,7 @@ export class RegularizationReviewsService {
     // Validate dates BEFORE creating the record
     if (
       dto.date_evaluated &&
-      new Date(dto.date_evaluated) >
-        new Date(dto.scheduled_evaluation_date)
+      new Date(dto.date_evaluated) > new Date(dto.scheduled_evaluation_date)
     ) {
       throw new BadRequestException(
         'Date Evaluated cannot be later than Scheduled Evaluation Date.',
@@ -326,8 +321,8 @@ export class RegularizationReviewsService {
         stage: dto.stage,
         is_reviewed: dto.is_reviewed,
         recommendation: dto.recommendation ?? undefined,
-        date_evaluated: dto.date_evaluated 
-          ? new Date(dto.date_evaluated) 
+        date_evaluated: dto.date_evaluated
+          ? new Date(dto.date_evaluated)
           : undefined,
         scheduled_evaluation_date: new Date(dto.scheduled_evaluation_date),
         created_by: user.id,

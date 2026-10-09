@@ -73,7 +73,14 @@ async function bootstrap() {
   app.setViewEngine('hbs');
 
   app.use((req: Request, _res: Response, next: NextFunction) => {
-    console.log('[REQ]', new Date().toISOString(), req.method, req.originalUrl, 'content-length=', req.headers['content-length']);
+    console.log(
+      '[REQ]',
+      new Date().toISOString(),
+      req.method,
+      req.originalUrl,
+      'content-length=',
+      req.headers['content-length'],
+    );
     next();
   });
 

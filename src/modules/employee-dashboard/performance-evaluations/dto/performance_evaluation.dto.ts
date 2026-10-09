@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EvaluationDecision, EvaluationStage, PerformanceRating, TypeOfEvaluation } from '@prisma/client';
+import {
+  EvaluationDecision,
+  EvaluationStage,
+  PerformanceRating,
+  TypeOfEvaluation,
+} from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -42,7 +47,7 @@ export class EvaluationDetailDto {
   remarks: string;
 }
 
-export class SubmitEvaluationDto { 
+export class SubmitEvaluationDto {
   @IsUUID()
   @IsNotEmpty()
   @ApiProperty({
@@ -97,7 +102,8 @@ export class SubmitEvaluationDto {
   @IsDateString()
   @ApiProperty({
     example: '2026-01-10',
-    description: 'End date of the employee for this evaluation; 3rd month eval or 5th month eval',
+    description:
+      'End date of the employee for this evaluation; 3rd month eval or 5th month eval',
   })
   evaluation_period_end: string;
 
