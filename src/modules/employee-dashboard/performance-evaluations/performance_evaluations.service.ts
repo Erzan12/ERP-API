@@ -199,15 +199,21 @@ export class PerformanceEvaluationService {
       );
 
       // Update evaluation
-      const submitEvaluation = await tx.hrEmployeeEvaluation.update({
-        where: { id: evaluationId },
+      const submitEvaluation = await tx.hrEmployeeEvaluation.create({
+        // where: { id: evaluationId },
         data: {
+          employee_id: dto.employee_id,
+          evaluator_id: requestUser.employee.id,
+          stage: dto.stage,
+          type_of_evaluation: dto.type_of_evaluation,
+          evaluation_period_start: dto.evaluation_period_start,
+          evaluation_period_end: dto.evaluation_period_end,
           status: 'for_acknowledgment',
           overall_rating: overall,
           decision: dto.decision,
           comments: dto.comments,
           evaluated_on: new Date(),
-          updated_by: user.id,
+          updated_by: requestUser.id,
           completed_at: new Date(),
           // status: 'evaluated',
         },
