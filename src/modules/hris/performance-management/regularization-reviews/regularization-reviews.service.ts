@@ -409,9 +409,9 @@ export class RegularizationReviewsService {
       orderBy: { created_at: 'asc' },
     });
 
-    if (evaluations.length === 0) {
-      throw new NotFoundException('No employee evaluation yet.');
-    }
+    // if (evaluations.length === 0) {
+    //   throw new NotFoundException('No employee evaluation yet.');
+    // }
 
     return evaluations.map((evaluation) => ({
       ...evaluation,

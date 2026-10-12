@@ -50,7 +50,7 @@ export class RegularizationReviewsController {
     return this.regularizationService.statusCount(user);
   }
 
-  @Post('')
+  @Post()
   @ApiOperation({
     summary: 'Create an Employee Evaluation for the first 3rd and 5th month',
   })
@@ -74,7 +74,7 @@ export class RegularizationReviewsController {
     return this.regularizationService.getEmployeeEvaluations(employeeId, user);
   }
 
-  @Get('')
+  @Get()
   @ApiOperation({ summary: 'List of evaluated employees' })
   @ApiGetResponse('List of evalauted employees')
   @Can({ action: ACTION_READ, subject: REGULARIZATION_REVIEW })
