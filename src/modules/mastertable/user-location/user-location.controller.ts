@@ -56,7 +56,7 @@ export class UserLocationController {
   @ApiGetResponse('Here is the user location')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getUserLocation(
-    @Param('userLocationId', new ParseUUIDPipe()) userLocationId: string,
+    @Param('userLocationId', ParseUUIDPipe) userLocationId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.userLocationService.getUserLocation(userLocationId, user);
@@ -89,7 +89,7 @@ export class UserLocationController {
   @ApiPatchResponse('User Location updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateUserLocation(
-    @Param('userLocationId', new ParseUUIDPipe()) userLocationId: string,
+    @Param('userLocationId', ParseUUIDPipe) userLocationId: string,
     @Body() updateUserLocationDto: UpdateUserLocationDto,
     @SessionUser() user: RequestUser,
   ) {

@@ -52,7 +52,7 @@ export class OvertimeRateController {
   @Can({ action: ACTION_READ, subject: OVERTIME_RATE })
   getOvertimeRate(
     @SessionUser() user: RequestUser,
-    @Param('overtimeRateId', new ParseUUIDPipe()) overtimeRateId: string,
+    @Param('overtimeRateId', ParseUUIDPipe) overtimeRateId: string,
   ) {
     return this.overtimeService.getOvertimeRate(user, overtimeRateId);
   }
@@ -83,7 +83,7 @@ export class OvertimeRateController {
   updateOvertimeRate(
     @SessionUser() user: RequestUser,
     @Body() dto: UpdateOvertimeRateDto,
-    @Param('overtimeRateId', new ParseUUIDPipe()) overtimeRateId: string,
+    @Param('overtimeRateId', ParseUUIDPipe) overtimeRateId: string,
   ) {
     return this.overtimeService.updateOvertimeRate(user, dto, overtimeRateId);
   }

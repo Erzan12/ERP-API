@@ -24,7 +24,7 @@ export class SecurityClearanceController {
   @SecurityClearance(SEC_LVL_7) // admin must be 9+ to update others
   @Can({ action: ACTION_UPDATE, subject: USER_ACCOUNT })
   updateClearance(
-    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
     @Body() dto: UpdateSecurityClearanceDto,
     @SessionUser() user: RequestUser,
   ) {

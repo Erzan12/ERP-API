@@ -65,7 +65,7 @@ export class AuditController {
   @SecurityClearance(SEC_LVL_8)
   @Can({ action: ACTION_READ, subject: AUDIT_TRAIL })
   getUserActivity(
-    @Param('id', new ParseUUIDPipe()) userId: string,
+    @Param('id', ParseUUIDPipe) userId: string,
     @Query('days') days?: number,
   ) {
     return this.auditService.getUserActivity(userId, days);

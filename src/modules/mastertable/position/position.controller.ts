@@ -62,7 +62,7 @@ export class PositionController {
   @ApiGetResponse('Here is the position.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getPosition(
-    @Param('positionId', new ParseUUIDPipe()) positionId: string,
+    @Param('positionId', ParseUUIDPipe) positionId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.positionService.getPosition(positionId, user);
@@ -92,7 +92,7 @@ export class PositionController {
   @ApiPatchResponse('Position updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updatePosition(
-    @Param('positionId', new ParseUUIDPipe()) positionId: string,
+    @Param('positionId', ParseUUIDPipe) positionId: string,
     @Body() updatePositionDto: UpdatePositionDto,
     @SessionUser() user: RequestUser,
   ) {

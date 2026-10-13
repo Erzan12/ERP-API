@@ -60,7 +60,7 @@ export class CompanyController {
   @ApiGetResponse('Here is the company')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getCompany(
-    @Param('companyId', new ParseUUIDPipe()) companyId: string,
+    @Param('companyId', ParseUUIDPipe) companyId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.companyService.getCompany(companyId, user);
@@ -84,7 +84,7 @@ export class CompanyController {
   @ApiPatchResponse('Company updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateCompany(
-    @Param('companyId', new ParseUUIDPipe()) companyId: string,
+    @Param('companyId', ParseUUIDPipe) companyId: string,
     @Body() updateCompanyDto: UpdateCompanyDto,
     @SessionUser() user: RequestUser,
   ) {

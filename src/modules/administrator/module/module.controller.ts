@@ -60,7 +60,7 @@ export class ModuleController {
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   getModule(
     @SessionUser() user: RequestUser,
-    @Param('moduleId', new ParseUUIDPipe()) moduleId: string,
+    @Param('moduleId', ParseUUIDPipe) moduleId: string,
   ) {
     return this.moduleService.getModule(user, moduleId); // 👈 pass the id to your service
   }
@@ -87,7 +87,7 @@ export class ModuleController {
   updateModule(
     @Body() updateModuleDto: UpdateModuleDto,
     @SessionUser() user: RequestUser,
-    @Param('id', new ParseUUIDPipe()) id: string, //can be number can be string depends on the defined prisma value if int or string
+    @Param('id', ParseUUIDPipe) id: string, //can be number can be string depends on the defined prisma value if int or string
   ) {
     return this.moduleService.updateModude(updateModuleDto, user, id);
   }

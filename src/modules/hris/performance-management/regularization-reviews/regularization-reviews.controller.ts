@@ -68,7 +68,7 @@ export class RegularizationReviewsController {
   @ApiGetResponse('Employee with evaluation')
   @Can({ action: ACTION_READ, subject: REGULARIZATION_REVIEW })
   getEvaluations(
-    @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
+    @Param('employeeId', ParseUUIDPipe) employeeId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.regularizationService.getEmployeeEvaluations(employeeId, user);

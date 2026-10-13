@@ -59,7 +59,7 @@ export class DivisionController {
   @ApiGetResponse('Here is the division')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDivision(
-    @Param('divisionId', new ParseUUIDPipe()) divisionId: string,
+    @Param('divisionId', ParseUUIDPipe) divisionId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.divisionService.getDivision(divisionId, user);
@@ -90,7 +90,7 @@ export class DivisionController {
   @ApiPatchResponse('Division updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateDivision(
-    @Param('divisionId', new ParseUUIDPipe()) divisionId: string,
+    @Param('divisionId', ParseUUIDPipe) divisionId: string,
     @Body() updateDivisiionDto: UpdateDivisionDto,
     @SessionUser() user: RequestUser,
   ) {

@@ -47,7 +47,7 @@ export class PermissionTemplateController {
   @ApiGetResponse('Here is the permission template')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
   getPermissionTemplate(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.permissionTemplateService.getPermissionTemplate(id, user);
@@ -59,7 +59,7 @@ export class PermissionTemplateController {
   // @ApiGetResponse('Here are the list of permission templates available')
   // @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
   // getUserPermissionTemplate(
-  //   @Param('userPermissionTemplateId', new ParseUUIDPipe())
+  //   @Param('userPermissionTemplateId', ParseUUIDPipe)
   //   userPermissionTemplateId: string,
   //   @SessionUser() user: RequestUser,
   // ) {
@@ -112,7 +112,7 @@ export class PermissionTemplateController {
   @Can({ action: ACTION_UPDATE, subject: PERMISSION_TEMPLATE })
   updatePermissionTemplate(
     @Body() dto: UpdatePermissionTemplateDto,
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.permissionTemplateService.updatePermissionTemplate(

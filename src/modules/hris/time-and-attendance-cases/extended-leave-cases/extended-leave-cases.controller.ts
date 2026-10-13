@@ -68,7 +68,7 @@ export class ExtendedLeaveCasesController {
   @Can({ action: ACTION_READ, subject: EXTENDED_LEAVE_REQUEST })
   getExtendedLeave(
     @SessionUser() user: RequestUser,
-    @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
+    @Param('extendedHrLeaveRequestId', ParseUUIDPipe)
     extendedHrLeaveRequestId: string,
   ) {
     return this.extendedLeaveCasesService.getExtendedLeave(
@@ -87,7 +87,7 @@ export class ExtendedLeaveCasesController {
   @Can({ action: ACTION_CREATE, subject: EXTENDED_LEAVE_REQUEST })
   createExtendedLeaveRequest(
     @SessionUser() user: RequestUser,
-    @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
+    @Param('hrLeaveRequestId', ParseUUIDPipe) hrLeaveRequestId: string,
     @Body()
     dto: CreateExtendedLeaveRequestWithDetailsDto,
   ) {
@@ -107,7 +107,7 @@ export class ExtendedLeaveCasesController {
   @ApiPatchResponse('Extended Leave Request updated successfully')
   @Can({ action: ACTION_UPDATE, subject: EXTENDED_LEAVE_REQUEST })
   updateExtendedLeaveRequest(
-    @Param('extendedLeaveRequestId', new ParseUUIDPipe())
+    @Param('extendedLeaveRequestId', ParseUUIDPipe)
     extendedLeaveRequestId: string,
     @Body() dto: UpdateExtendedLeaveRequestWithDetailsDto,
     @SessionUser() user: RequestUser,
@@ -127,7 +127,7 @@ export class ExtendedLeaveCasesController {
   @ApiPatchResponse('Extended Leave Request submitted')
   @Can({ action: ACTION_SUBMIT, subject: EXTENDED_LEAVE_REQUEST })
   submitExtendedLeave(
-    @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
+    @Param('extendedHrLeaveRequestId', ParseUUIDPipe)
     extendedHrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
@@ -144,7 +144,7 @@ export class ExtendedLeaveCasesController {
   @ApiPatchResponse('Extended Leave Request verified')
   @Can({ action: ACTION_VERIFY, subject: EXTENDED_LEAVE_REQUEST })
   verifyExtendedLeave(
-    @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
+    @Param('extendedHrLeaveRequestId', ParseUUIDPipe)
     extendedHrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
@@ -161,7 +161,7 @@ export class ExtendedLeaveCasesController {
   @ApiPatchResponse('Extended Leave Request approved')
   @Can({ action: ACTION_APPROVE, subject: EXTENDED_LEAVE_REQUEST })
   approveExtendedLeave(
-    @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
+    @Param('extendedHrLeaveRequestId', ParseUUIDPipe)
     extendedHrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
@@ -178,7 +178,7 @@ export class ExtendedLeaveCasesController {
   @ApiPatchResponse('Extended Leave Request processed')
   @Can({ action: ACTION_PROCESS, subject: EXTENDED_LEAVE_REQUEST })
   processExtendedLeave(
-    @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
+    @Param('extendedHrLeaveRequestId', ParseUUIDPipe)
     extendedHrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
@@ -195,7 +195,7 @@ export class ExtendedLeaveCasesController {
   @ApiPatchResponse('Extended Leave Request rejected')
   @Can({ action: ACTION_REJECT, subject: EXTENDED_LEAVE_REQUEST })
   rejectExtendedLeave(
-    @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
+    @Param('extendedHrLeaveRequestId', ParseUUIDPipe)
     extendedHrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
@@ -212,7 +212,7 @@ export class ExtendedLeaveCasesController {
   @ApiPatchResponse('Extended Leave Request cancelled')
   @Can({ action: ACTION_CANCEL, subject: EXTENDED_LEAVE_REQUEST })
   cancelExtendedLeave(
-    @Param('extendedHrLeaveRequestId', new ParseUUIDPipe())
+    @Param('extendedHrLeaveRequestId', ParseUUIDPipe)
     extendedHrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {

@@ -63,7 +63,7 @@ export class PerformanceEvaluationController {
   @ApiPostResponse('Employee Performance Evaluation submitted')
   @Can({ action: ACTION_CREATE, subject: EMPLOYEE_DASHBOARD })
   submitEvaluation(
-    @Param('evaluationId', new ParseUUIDPipe()) evaluationId: string,
+    @Param('evaluationId', ParseUUIDPipe) evaluationId: string,
     @SessionUser() user: RequestUser,
     @Body() dto: SubmitEvaluationDto,
   ) {
@@ -75,7 +75,7 @@ export class PerformanceEvaluationController {
   @ApiPatchResponse('Employee acknowledge evaluation successfully')
   @Can({ action: ACTION_CREATE, subject: EMPLOYEE_DASHBOARD })
   acknowledgeEvaluation(
-    @Param('evaluationId', new ParseUUIDPipe()) evaluationId: string,
+    @Param('evaluationId', ParseUUIDPipe) evaluationId: string,
     @SessionUser() user: RequestUser,
     @Body() dto: AcknowledgeEvaluationDto,
   ) {

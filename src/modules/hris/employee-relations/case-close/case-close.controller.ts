@@ -16,7 +16,7 @@ export class CaseCloseController {
       'Closes the disciplinary case and exits the case_cloased stage for all respondents.',
   })
   closeCase(
-    @Param('disciplinaryCaseId', new ParseUUIDPipe())
+    @Param('disciplinaryCaseId', ParseUUIDPipe)
     disciplinaryCaseId: string,
     @SessionUser() user: RequestUser,
   ) {

@@ -45,7 +45,7 @@ export class VesselController {
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getVessel(
     @SessionUser() user: RequestUser,
-    @Param('vesselId', new ParseUUIDPipe()) vesselId: string,
+    @Param('vesselId', ParseUUIDPipe) vesselId: string,
   ) {
     return this.vesselService.getVessel(user, vesselId);
   }
@@ -84,7 +84,7 @@ export class VesselController {
   updateVessel(
     @SessionUser() user: RequestUser,
     @Body() dto: UpdateVesselWithDetailsDto,
-    @Param('vesselId', new ParseUUIDPipe()) vesselId: string,
+    @Param('vesselId', ParseUUIDPipe) vesselId: string,
   ) {
     return this.vesselService.updateVessel(user, dto, vesselId);
   }

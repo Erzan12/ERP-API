@@ -45,7 +45,7 @@ export class LeaveCategoryController {
   @ApiGetResponse('Here is the Leave Category')
   @Can({ action: ACTION_READ, subject: LEAVE_CATEGORY })
   getLeaveCategory(
-    @Param('leaveCategoryId', new ParseUUIDPipe()) leaveCategoryId: string,
+    @Param('leaveCategoryId', ParseUUIDPipe) leaveCategoryId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.leaveCategoryService.getLeaveCategory(leaveCategoryId, user);
@@ -75,7 +75,7 @@ export class LeaveCategoryController {
   @ApiPatchResponse('Leave Category updated successfully')
   @Can({ action: ACTION_UPDATE, subject: LEAVE_CATEGORY })
   updateLeaveCategory(
-    @Param('leaveCategoryId', new ParseUUIDPipe()) leaveCategoryId: string,
+    @Param('leaveCategoryId', ParseUUIDPipe) leaveCategoryId: string,
     @Body() dto: UpdateLeaveCategory,
     @SessionUser() user: RequestUser,
   ) {

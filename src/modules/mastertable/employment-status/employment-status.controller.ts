@@ -57,7 +57,7 @@ export class EmploymentStatusController {
   @ApiGetResponse('Here is the employment status.')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getEmployeeStat(
-    @Param('employeeStatusId', new ParseUUIDPipe()) employeeStatusId: string,
+    @Param('employeeStatusId', ParseUUIDPipe) employeeStatusId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.employmentStatusService.getEmployeeStat(employeeStatusId, user);
@@ -87,7 +87,7 @@ export class EmploymentStatusController {
   @ApiPatchResponse('Employee status details updated successfully.')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateEmployeeStatus(
-    @Param('employeeStatusId', new ParseUUIDPipe()) employeeStatusId: string,
+    @Param('employeeStatusId', ParseUUIDPipe) employeeStatusId: string,
     @Body() updateEmployeeStatusDto: UpdateEmployeeStatusDto,
     @SessionUser() user: RequestUser,
   ) {

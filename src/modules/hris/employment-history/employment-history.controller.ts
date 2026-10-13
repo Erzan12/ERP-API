@@ -20,7 +20,7 @@ export class EmploymentHistoryController {
   @Get('employees/employment-history/:employeeId/')
   getEmploymentHistories(
     @SessionUser() user: RequestUser,
-    @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
+    @Param('employeeId', ParseUUIDPipe) employeeId: string,
   ) {
     return this.employmentHistoryService.getEmploymentHistories(
       user,

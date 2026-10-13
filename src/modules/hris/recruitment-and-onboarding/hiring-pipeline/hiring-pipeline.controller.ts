@@ -87,7 +87,7 @@ export class ApplicantsController {
   @ApiGetResponse('Get a Applicant')
   @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
   getCareerPosting(
-    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @Param('applicantId', ParseUUIDPipe) applicantId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.hiringPipelineService.getApplicant(applicantId, user);
@@ -98,7 +98,7 @@ export class ApplicantsController {
   @ApiGetResponse('Get Applicant document')
   @Can({ action: ACTION_READ, subject: HIRING_PIPELINE })
   getApplicantDocuments(
-    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @Param('applicantId', ParseUUIDPipe) applicantId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.hiringPipelineService.getApplicantDocuments(applicantId, user);
@@ -179,7 +179,7 @@ export class ApplicantsController {
   @ApiPatchResponse('Career Posting updated successfully')
   @Can({ action: ACTION_UPDATE, subject: HIRING_PIPELINE })
   updateCareerPosting(
-    @Param('applicationId', new ParseUUIDPipe()) applicationId: string,
+    @Param('applicationId', ParseUUIDPipe) applicationId: string,
     @UploadedFiles() files: Express.Multer.File[],
     @Body() dto: UpdateApplicantDto,
     @SessionUser() user: RequestUser,
@@ -198,7 +198,7 @@ export class ApplicantsController {
   @ApiPatchResponse('Applicant has been shortlisted')
   @Can({ action: ACTION_SUBMIT, subject: HIRING_PIPELINE })
   submitLeave(
-    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @Param('applicantId', ParseUUIDPipe) applicantId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.hiringPipelineService.screenApplicant(applicantId, user);
@@ -209,7 +209,7 @@ export class ApplicantsController {
   @ApiPatchResponse('Applicant has been set for interview')
   @Can({ action: ACTION_SUBMIT, subject: HIRING_PIPELINE })
   forInterview(
-    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @Param('applicantId', ParseUUIDPipe) applicantId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.hiringPipelineService.forInterview(applicantId, user);
@@ -220,7 +220,7 @@ export class ApplicantsController {
   @ApiPatchResponse('Applicant has been accepted')
   @Can({ action: ACTION_ACCEPT, subject: HIRING_PIPELINE })
   accept(
-    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @Param('applicantId', ParseUUIDPipe) applicantId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.hiringPipelineService.accepted(applicantId, user);
@@ -231,7 +231,7 @@ export class ApplicantsController {
   @ApiPatchResponse('Applicant is now onboard')
   @Can({ action: ACTION_ONBOARD, subject: HIRING_PIPELINE })
   onBoard(
-    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @Param('applicantId', ParseUUIDPipe) applicantId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.hiringPipelineService.onBoarding(applicantId, user);
@@ -242,7 +242,7 @@ export class ApplicantsController {
   @ApiPatchResponse('Applicant has been rejected')
   @Can({ action: ACTION_REJECT, subject: HIRING_PIPELINE })
   reject(
-    @Param('applicantId', new ParseUUIDPipe()) applicantId: string,
+    @Param('applicantId', ParseUUIDPipe) applicantId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.hiringPipelineService.reject(applicantId, user);
@@ -286,7 +286,7 @@ export class InterviewApplicantController {
   @ApiPatchResponse('Assess applicant interview')
   @Can({ action: ACTION_UPDATE, subject: HIRING_PIPELINE })
   async assessInterview(
-    @Param('interviewId', new ParseUUIDPipe()) interviewId: string,
+    @Param('interviewId', ParseUUIDPipe) interviewId: string,
     @Body() dto: AssessInterviewDto,
     @SessionUser() user: RequestUser,
   ) {

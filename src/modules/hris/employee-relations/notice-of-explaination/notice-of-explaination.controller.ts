@@ -29,7 +29,7 @@ export class NoticeOfExplainationController {
     summary: 'Get single NTE',
   })
   getNteList(
-    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @Param('nteId', ParseUUIDPipe) nteId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.noticeOfExplainationService.getNte(nteId, user);
@@ -48,7 +48,7 @@ export class NoticeOfExplainationController {
     summary: 'Update NTE Details',
   })
   updateNte(
-    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @Param('nteId', ParseUUIDPipe) nteId: string,
     @SessionUser() user: RequestUser,
     @Body() dto: UpdateNteDto,
   ) {
@@ -60,7 +60,7 @@ export class NoticeOfExplainationController {
     summary: 'Submit NTE',
   })
   submitNte(
-    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @Param('nteId', ParseUUIDPipe) nteId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.noticeOfExplainationService.submitNte(nteId, user);
@@ -71,7 +71,7 @@ export class NoticeOfExplainationController {
     summary: 'Issue an NTE to a respondent',
   })
   issueNte(
-    @Param('nteId', new ParseUUIDPipe()) nteId: string,
+    @Param('nteId', ParseUUIDPipe) nteId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.noticeOfExplainationService.issueNte(nteId, user);
@@ -80,8 +80,8 @@ export class NoticeOfExplainationController {
   @Put('employee-relations/nte/:nteId/approvals/:approvalId')
   @ApiOperation({ summary: 'Reviewer approves or request revision on an NTE.' })
   reviewNteApproval(
-    @Param('nteId', new ParseUUIDPipe()) nteId: string,
-    @Param('approvalId', new ParseUUIDPipe()) approvalId: string,
+    @Param('nteId', ParseUUIDPipe) nteId: string,
+    @Param('approvalId', ParseUUIDPipe) approvalId: string,
     @Body() dto: ReviewNteApprovalDto,
     @SessionUser() user: RequestUser,
   ) {

@@ -52,7 +52,7 @@ export class SalaryGradeController {
   @Can({ action: ACTION_READ, subject: SALARY_GRADE })
   getSalaryGrade(
     @SessionUser() user: RequestUser,
-    @Param('salaryGradeId', new ParseUUIDPipe()) salaryGradeId: string,
+    @Param('salaryGradeId', ParseUUIDPipe) salaryGradeId: string,
   ) {
     return this.salaryGradeService.getSalaryGrade(salaryGradeId, user);
   }
@@ -81,7 +81,7 @@ export class SalaryGradeController {
   @ApiPatchResponse('Salary Grade updated successfully')
   @Can({ action: ACTION_UPDATE, subject: SALARY_GRADE })
   updateSalaryGrade(
-    @Param('salaryGradeId', new ParseUUIDPipe()) salaryGradeId: string,
+    @Param('salaryGradeId', ParseUUIDPipe) salaryGradeId: string,
     @SessionUser() user: RequestUser,
     @Body() dto: UpdateSalaryGradeDto,
   ) {

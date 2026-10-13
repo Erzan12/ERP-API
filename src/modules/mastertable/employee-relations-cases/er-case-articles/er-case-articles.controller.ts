@@ -40,7 +40,7 @@ export class ErCaseArticlesController {
   @ApiGetResponse('Here is the ER Case Article')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getArticle(
-    @Param('erCaseArticleId', new ParseUUIDPipe()) erCaseArticleId: string,
+    @Param('erCaseArticleId', ParseUUIDPipe) erCaseArticleId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.erCaseArticleService.getArticle(erCaseArticleId, user);
@@ -81,7 +81,7 @@ export class ErCaseArticlesController {
   @ApiPatchResponse('ER Case Article updated succesfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateErCaseArticle(
-    @Param('erCaseArticleId', new ParseUUIDPipe()) erCaseArticleId: string,
+    @Param('erCaseArticleId', ParseUUIDPipe) erCaseArticleId: string,
     @Body() dto: UpdateErCaseArticleDto,
     @SessionUser() user: RequestUser,
   ) {

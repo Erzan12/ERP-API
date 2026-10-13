@@ -86,7 +86,7 @@ export class OvertimeCasesController {
   @Can({ action: ACTION_READ, subject: OVERTIME_REQUEST })
   getOvertimeRequests(
     @SessionUser() user: RequestUser,
-    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @Param('overtimeRequestId', ParseUUIDPipe) overtimeRequestId: string,
   ) {
     return this.overtimeCasesService.getOvertimeRequest(
       user,
@@ -120,7 +120,7 @@ export class OvertimeCasesController {
   updateOvertimeRequest(
     @SessionUser() user: RequestUser,
     @Body() dto: UpdateOvertimeRequestDto,
-    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @Param('overtimeRequestId', ParseUUIDPipe) overtimeRequestId: string,
   ) {
     return this.overtimeCasesService.updateOvertimeRequest(
       user,
@@ -135,7 +135,7 @@ export class OvertimeCasesController {
   @ApiPatchResponse('Overtime Request submitted')
   @Can({ action: ACTION_SUBMIT, subject: OVERTIME_REQUEST })
   submitOvertimeRequest(
-    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @Param('overtimeRequestId', ParseUUIDPipe) overtimeRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.overtimeCasesService.submitOvertimeRequest(
@@ -149,7 +149,7 @@ export class OvertimeCasesController {
   @ApiPatchResponse('Overtime Request verified')
   @Can({ action: ACTION_VERIFY, subject: OVERTIME_REQUEST })
   verifyOvertimeRequest(
-    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @Param('overtimeRequestId', ParseUUIDPipe) overtimeRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.overtimeCasesService.verifyOvertimeRequest(
@@ -163,7 +163,7 @@ export class OvertimeCasesController {
   @ApiPatchResponse('Overtime Request approved')
   @Can({ action: ACTION_APPROVE, subject: OVERTIME_REQUEST })
   approveOvertimeRequest(
-    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @Param('overtimeRequestId', ParseUUIDPipe) overtimeRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.overtimeCasesService.approveOvertimeRequest(
@@ -177,7 +177,7 @@ export class OvertimeCasesController {
   @ApiPatchResponse('Overtime Request processed')
   @Can({ action: ACTION_APPROVE, subject: OVERTIME_REQUEST })
   processOvertimeRequest(
-    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @Param('overtimeRequestId', ParseUUIDPipe) overtimeRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.overtimeCasesService.processeOvertimeRequest(
@@ -191,7 +191,7 @@ export class OvertimeCasesController {
   @ApiPatchResponse('Overtime Request rejected')
   @Can({ action: ACTION_REJECT, subject: OVERTIME_REQUEST })
   rejectOvertimeRequest(
-    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @Param('overtimeRequestId', ParseUUIDPipe) overtimeRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.overtimeCasesService.rejectOvertimeRequest(
@@ -205,7 +205,7 @@ export class OvertimeCasesController {
   @ApiPatchResponse('Overtime Request cancelled')
   @Can({ action: ACTION_CANCEL, subject: OVERTIME_REQUEST })
   cancelOvertimeRequest(
-    @Param('overtimeRequestId', new ParseUUIDPipe()) overtimeRequestId: string,
+    @Param('overtimeRequestId', ParseUUIDPipe) overtimeRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.overtimeCasesService.cancelOvertimeRequest(

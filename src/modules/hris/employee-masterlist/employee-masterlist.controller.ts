@@ -67,7 +67,7 @@ export class EmployeeMasterlistController {
   @ApiGetResponse('Employees information')
   @Can({ action: ACTION_READ, subject: EMPLOYEE_MASTERLIST })
   getEmployee(
-    @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
+    @Param('employeeId', ParseUUIDPipe) employeeId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.employeeMasterlistService.getEmployee(employeeId, user);
@@ -98,7 +98,7 @@ export class EmployeeMasterlistController {
   @ApiPatchResponse('Employee information updated successfully')
   @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
   updateEmployee(
-    @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
+    @Param('employeeId', ParseUUIDPipe) employeeId: string,
     @Body() updateEmployeeWithDetailsDto: UpdateEmployeeWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -114,7 +114,7 @@ export class EmployeeMasterlistController {
   @Can({ action: ACTION_UPDATE, subject: EMPLOYEE_MASTERLIST })
   deleteEmployee(
     @SessionUser() user: RequestUser,
-    @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
+    @Param('employeeId', ParseUUIDPipe) employeeId: string,
   ) {
     return this.employeeMasterlistService.deleteEmployee(user, employeeId);
   }

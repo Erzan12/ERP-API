@@ -97,7 +97,7 @@ export class UserManagementController {
   @SecurityClearance(SEC_LVL_5)
   getUser(
     @SessionUser() user: RequestUser,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
   ) {
     return this.userManagementService.getUser(user, userId);
   }
@@ -141,7 +141,7 @@ export class UserManagementController {
     @Body() dto: UserDetailsDto,
     @SessionUser() user: RequestUser,
     @Req() req: Request,
-    // @Param('userId', new ParseUUIDPipe()) userId: string,
+    // @Param('userId', ParseUUIDPipe) userId: string,
     @UploadedFile() file: Express.Multer.File | undefined,
   ) {
     return this.userManagementService.createUserAccount(

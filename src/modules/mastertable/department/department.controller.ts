@@ -59,7 +59,7 @@ export class DepartmentController {
   @ApiGetResponse('Here is the department')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDepartment(
-    @Param('departmentId', new ParseUUIDPipe()) departmentId: string,
+    @Param('departmentId', ParseUUIDPipe) departmentId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.departmentService.getDepartment(departmentId, user);
@@ -89,7 +89,7 @@ export class DepartmentController {
   @ApiPatchResponse('Department updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES }) // ---> action is permission; subject is submodule; role is check in jwt strategy
   updateDepartment(
-    @Param('departmentId', new ParseUUIDPipe()) departmentId: string,
+    @Param('departmentId', ParseUUIDPipe) departmentId: string,
     @Body() updateDeptDto: UpdateDepartmentDto,
     @SessionUser() user: RequestUser,
   ) {
