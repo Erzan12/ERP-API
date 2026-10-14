@@ -326,4 +326,11 @@ export class UpdateCaseDto {
       'Describe what happened, who was involved, where it happened and supporting circumstances',
   })
   incident_narrative?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    example: 'The closing remarks for this case',
+  })
+  closing_remarks?: string;
 }

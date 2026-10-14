@@ -47,7 +47,7 @@ export class SubModuleActionController {
   @ApiGetResponse('Here is the Submodule action/permission')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getSubModulepermission(
-    @Param('subModulePermissionId', new ParseUUIDPipe())
+    @Param('subModulePermissionId', ParseUUIDPipe)
     subModulePermissionId: string,
     @SessionUser() user: RequestUser,
   ) {
@@ -92,7 +92,7 @@ export class SubModuleActionController {
   updateSubmoduleAction(
     @Body() dto: UpdateSubmoduleActionDto,
     @SessionUser() user: RequestUser,
-    @Param('subModuleActionId', new ParseUUIDPipe()) subModuleActionId: string,
+    @Param('subModuleActionId', ParseUUIDPipe) subModuleActionId: string,
   ) {
     return this.submoduleActionService.updateSubmoduleAction(
       dto,
@@ -106,7 +106,7 @@ export class SubModuleActionController {
   @Can({ action: 'update', subject: 'System Management' })
   deleteSubmoduleAction(
     @SessionUser() user: RequestUser,
-    @Param('submoduleActionId', new ParseUUIDPipe()) submoduleActionId: string,
+    @Param('submoduleActionId', ParseUUIDPipe) submoduleActionId: string,
   ) {
     return this.submoduleActionService.deleteSubmoduleAction(
       submoduleActionId,

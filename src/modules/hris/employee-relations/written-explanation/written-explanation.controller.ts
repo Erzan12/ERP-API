@@ -24,7 +24,7 @@ export class WrittenExplainationController {
     summary: 'Get a Written Explanation',
   })
   getWrittenExplanation(
-    @Param('explanationId', new ParseUUIDPipe()) explanationId: string,
+    @Param('explanationId', ParseUUIDPipe) explanationId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.writtenExplanationService.getWrittenExplanation(

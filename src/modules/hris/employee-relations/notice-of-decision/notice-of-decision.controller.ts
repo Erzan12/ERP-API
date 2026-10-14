@@ -25,7 +25,7 @@ export class NoticeOfDecisionController {
     summary: 'Get a Notice of Decision',
   })
   getDecision(
-    @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
+    @Param('decisionId', ParseUUIDPipe) decisionId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.noticeOfDecisionService.getNoticeOfDecision(decisionId, user);
@@ -47,7 +47,7 @@ export class NoticeOfDecisionController {
     summary: 'Update an existing Notice of Decision.',
   })
   updateDecision(
-    @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
+    @Param('decisionId', ParseUUIDPipe) decisionId: string,
     @Body() dto: UpdateDecisionDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -63,7 +63,7 @@ export class NoticeOfDecisionController {
     summary: 'Record and serve a the Notice of Decision for a respondent.',
   })
   submitDecision(
-    @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
+    @Param('decisionId', ParseUUIDPipe) decisionId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.noticeOfDecisionService.submitNoticeOfDecision(

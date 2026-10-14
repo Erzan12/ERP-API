@@ -53,9 +53,9 @@ export class AdministrativeHearingController {
     summary: "Reschedule a respondent's administrative hearing.",
   })
   rescheduleHearing(
-    @Param('hearingId', new ParseUUIDPipe())
+    @Param('hearingId', ParseUUIDPipe)
     hearingId: string,
-    @Param('partyId', new ParseUUIDPipe()) partyId: string,
+    @Param('partyId', ParseUUIDPipe) partyId: string,
     @Body() dto: RescheduleHearingDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -74,9 +74,9 @@ export class AdministrativeHearingController {
     summary: "Mark a respondent's administrative hearing as conducted.",
   })
   conductHearing(
-    @Param('hearingId', new ParseUUIDPipe())
+    @Param('hearingId', ParseUUIDPipe)
     hearingId: string,
-    @Param('partyId', new ParseUUIDPipe()) partyId: string,
+    @Param('partyId', ParseUUIDPipe) partyId: string,
     @Body() dto: ConductHearingDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -116,7 +116,7 @@ export class AdministrativeHearingController {
   //   summary: "Record the minutes details during the hearing",
   // })
   // hearingMinutes(
-  //   @Param('hearingId', new ParseUUIDPipe()) hearingId: string,
+  //   @Param('hearingId', ParseUUIDPipe) hearingId: string,
   //   @Body() dto: MinutesHearingDto,
   //   @SessionUser() user: RequestUser,
   // ) {

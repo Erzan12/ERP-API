@@ -45,7 +45,7 @@ export class IncidentReportController {
   @ApiOperation({ summary: 'Get Incident Reports' })
   @ApiGetResponse('Here is the list of Incident Reports')
   getIncidentReport(
-    @Param('incidentReportId', new ParseUUIDPipe()) incidentReportId: string,
+    @Param('incidentReportId', ParseUUIDPipe) incidentReportId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.incidentReportService.getIncidentReport(incidentReportId, user);
@@ -65,7 +65,7 @@ export class IncidentReportController {
   @Put('incident-reports/:incidentReportId')
   @ApiOperation({ summary: 'Update an existing Incident Report' })
   updateIncidentReport(
-    @Param('incidentReportId', new ParseUUIDPipe()) incidentReportId: string,
+    @Param('incidentReportId', ParseUUIDPipe) incidentReportId: string,
     @Body() dto: UpdateIncidentReportDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -79,7 +79,7 @@ export class IncidentReportController {
   @Put('incident-reports/:incidentReportId/submit')
   @ApiOperation({ summary: 'Submit Incident Report' })
   submitIncidentReport(
-    @Param('incidentReportId', new ParseUUIDPipe()) incidentReportId: string,
+    @Param('incidentReportId', ParseUUIDPipe) incidentReportId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.incidentReportService.submitIncidentReport(
@@ -91,7 +91,7 @@ export class IncidentReportController {
   @Put('incident-reports/:incidentReportId/cancel')
   @ApiOperation({ summary: 'Cancel Incident Report' })
   cancelIncidentReport(
-    @Param('incidentReportId', new ParseUUIDPipe()) incidentReportId: string,
+    @Param('incidentReportId', ParseUUIDPipe) incidentReportId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.incidentReportService.cancelIncidentReport(

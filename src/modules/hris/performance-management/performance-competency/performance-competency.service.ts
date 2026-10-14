@@ -143,8 +143,8 @@ export class PerformanceCompetencyService {
     const competency = await this.prisma.hrPerformanceCompetency.create({
       data: {
         department_group: department_group,
-        sea_category: sea_category && undefined,
-        land_category: land_category && undefined,
+        sea_category: sea_category ?? undefined,
+        land_category: land_category ?? undefined,
         title: title,
         description: description,
         highest_score_limit: highest_score_limit,

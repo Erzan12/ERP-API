@@ -65,7 +65,7 @@ export class PerformanceCompetencyController {
   @ApiPatchResponse('Performance Competency updated successfully')
   @Can({ action: ACTION_UPDATE, subject: PERFORMANCE_COMPETENCIES })
   updateCompetency(
-    @Param('competencyId', new ParseUUIDPipe()) competencyId: string,
+    @Param('competencyId', ParseUUIDPipe) competencyId: string,
     @SessionUser() user: RequestUser,
     @Body() dto: UpdatePerformanceCompetencyDto,
   ) {
@@ -82,7 +82,7 @@ export class PerformanceCompetencyController {
   @Can({ action: ACTION_READ, subject: PERFORMANCE_COMPETENCIES })
   getCompetency(
     @SessionUser() user: RequestUser,
-    @Param('competencyId', new ParseUUIDPipe()) competencyId: string,
+    @Param('competencyId', ParseUUIDPipe) competencyId: string,
   ) {
     return this.performanceCompetencyService.getCompetency(user, competencyId);
   }

@@ -53,7 +53,7 @@ export class RoleManagementController {
   @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
   getRole(
     @SessionUser() user: RequestUser,
-    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+    @Param('roleId', ParseUUIDPipe) roleId: string,
   ) {
     return this.roleManagementService.getRole(roleId, user);
   }
@@ -88,7 +88,7 @@ export class RoleManagementController {
   @Can({ action: ACTION_CREATE, subject: ROLE_MANAGEMENT })
   addUserRole(
     @SessionUser() user: RequestUser,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
     @Body() dto: AddRoleToUserDto,
   ) {
     return this.roleManagementService.addRoleUser(user, userId, dto);
@@ -102,8 +102,8 @@ export class RoleManagementController {
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
   unassignUserRole(
     @SessionUser() user: RequestUser,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('roleId', ParseUUIDPipe) roleId: string,
   ) {
     return this.roleManagementService.unassignRoleUser(user, userId, roleId);
   }
@@ -114,8 +114,8 @@ export class RoleManagementController {
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
   syncRolePermissions(
     @SessionUser() user: RequestUser,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
-    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Param('roleId', ParseUUIDPipe) roleId: string,
   ) {
     return this.roleManagementService.syncRolePermissions(user, userId, roleId);
   }
@@ -128,7 +128,7 @@ export class RoleManagementController {
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
   directUserPermissions(
     @SessionUser() user: RequestUser,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
     @Body() dto: AssignDirectPermissionDto,
   ) {
     return this.roleManagementService.directUserPermissions(user, userId, dto);
@@ -142,7 +142,7 @@ export class RoleManagementController {
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT })
   roleUserPermissions(
     @SessionUser() user: RequestUser,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
     @Body() dto: AssignCustomRolePermissiontDto,
   ) {
     return this.roleManagementService.roleUserPermisisons(user, userId, dto);

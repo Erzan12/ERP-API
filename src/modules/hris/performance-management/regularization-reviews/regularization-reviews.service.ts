@@ -2,13 +2,11 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
 import { computeEvaluationStatus } from 'src/utils/helpers/calculate-date.helper';
 import { RequestUser } from 'src/utils/types/request-user.interface';
 import { CreateEvaluationDto } from './dto/evaluation.dto';
-import { PREVIOUS_STAGE_MAP } from 'src/utils/constants/evaluation.constants';
 import { EvaluationStage, EvaluationStatus, Prisma } from '@prisma/client';
 import { RegularizationReviewDto } from 'src/utils/dtos/regularization-pagination.dto';
 import { computeOverallStatus } from 'src/utils/helpers/compute-overall-status.helper';
@@ -187,13 +185,14 @@ export class RegularizationReviewsService {
                     },
                   },
                   stage: true,
-                  // probation_date: true,
-                  // regularization_date: true,
                   evaluation_period_start: true,
                   evaluation_period_end: true,
+                  status: true,
+                  is_active: true,
                   completed_at: true,
                 },
               },
+              evaluation_monitoring: true,
               evaluations_given: true,
               employment_history: {
                 where: { is_active: true },
@@ -212,7 +211,7 @@ export class RegularizationReviewsService {
 
     return {
       status: 'success',
-      message: 'List of Employees for Regularization',
+      message: 'List of Employees under probation',
       count: total,
       page,
       perPage,
@@ -221,7 +220,7 @@ export class RegularizationReviewsService {
     };
   }
 
-  async createEvaluation(dto: CreateEvaluationDto, user: RequestUser) {
+  async monitorEvaluation(dto: CreateEvaluationDto, user: RequestUser) {
     // Authorization Check
     const requestUser = await this.prisma.user.findUnique({
       where: { id: user.id },
@@ -246,6 +245,7 @@ export class RegularizationReviewsService {
       );
     }
 
+    // Check if employee exists
     const employee = await this.prisma.employee.findUnique({
       where: { id: dto.employee_id },
     });
@@ -254,90 +254,112 @@ export class RegularizationReviewsService {
       throw new BadRequestException('Employee not found');
     }
 
-    // Enforce stage order
-    const requiredPreviousStage = PREVIOUS_STAGE_MAP[dto.stage];
-
-    if (requiredPreviousStage) {
-      const previous = await this.prisma.hrEmployeeEvaluation.findFirst({
+    // Allow only one record per employee per stage
+    const existingEvaluation =
+      await this.prisma.hrEvaluationMonitoring.findFirst({
         where: {
           employee_id: dto.employee_id,
-          stage: requiredPreviousStage,
+          stage: dto.stage,
         },
       });
 
-      if (!previous) {
-        throw new BadRequestException(
-          `You must complete ${requiredPreviousStage} first`,
-        );
-      }
-
-      if (!previous.completed_at) {
-        throw new BadRequestException(
-          `${requiredPreviousStage} must be completed before proceeding`,
-        );
-      }
+    if (existingEvaluation) {
+      throw new BadRequestException(
+        `Employee already has a ${dto.stage} evaluation monitoring record.`,
+      );
     }
 
-    // Block missing earlier evaluations
-    // for (const [stage, months] of Object.entries(STAGE_RULES)) {
-    //     // const due = addMonths(hireDate, months);
+    // Validate dates BEFORE creating the record
+    if (
+      dto.date_evaluated &&
+      new Date(dto.date_evaluated) > new Date(dto.scheduled_evaluation_date)
+    ) {
+      throw new BadRequestException(
+        'Date Evaluated cannot be later than Scheduled Evaluation Date.',
+      );
+    }
 
-    //     if (isAfter(now)) {
-    //     const existingEval = await this.prisma.employeeEvaluation.findFirst({
-    //         where: {
-    //         employee_id: dto.employee_id,
-    //         stage: stage as any,
-    //         },
-    //     });
+    // const existingEvaluation = await this.prisma.hrEmployeeEvaluation.findFirst(
+    //   {
+    //     where: { employee_id: dto.employee_id , is_active: true },
+    //   },
+    // );
 
-    //     if (!existingEval) {
-    //         throw new BadRequestException(
-    //         `Missing ${stage}. It is already overdue.`
-    //         );
-    //     }
-    //     }
+    // if (!existingEvaluation) {
+    //   throw new NotFoundException('Evaluation not found or does not exist');
+    // }
+
+    // Enforce stage order
+    // const requiredPreviousStage = PREVIOUS_STAGE_MAP[dto.stage];
+
+    // if (requiredPreviousStage) {
+    //   const previous = await this.prisma.hrEmployeeEvaluation.findFirst({
+    //     where: {
+    //       employee_id: dto.employee_id,
+    //       stage: requiredPreviousStage,
+    //     },
+    //   });
+
+    //   if (!previous) {
+    //     throw new BadRequestException(
+    //       `You must complete ${requiredPreviousStage} first`,
+    //     );
+    //   }
+
+    //   if (previous.completed_at) {
+    //     throw new BadRequestException(
+    //       `${requiredPreviousStage} must be completed before proceeding`,
+    //     );
+    //   }
     // }
 
     // Create evaluation (NO status saved)
-    const evaluation = await this.prisma.hrEmployeeEvaluation.create({
+    const evaluation = await this.prisma.hrEvaluationMonitoring.create({
       data: {
-        employee_id: dto.employee_id,
-        evaluator_id: dto.evaluator_id,
+        employee_id: employee.id,
         stage: dto.stage,
-        type_of_evaluation: dto.type_of_evaluation,
-        evaluation_period_start: new Date(dto.probation_date),
-        evaluation_period_end: new Date(dto.regularization_date),
+        is_reviewed: dto.is_reviewed,
+        recommendation: dto.recommendation ?? undefined,
+        date_evaluated: dto.date_evaluated
+          ? new Date(dto.date_evaluated)
+          : undefined,
+        scheduled_evaluation_date: new Date(dto.scheduled_evaluation_date),
         created_by: user.id,
       },
     });
 
-    const fullEvaluation = await this.prisma.hrEmployeeEvaluation.findUnique({
-      where: { id: evaluation.id },
-      include: {
-        employee: {
-          include: {
-            person: true,
-            company: true,
-            department: true,
-            position: true,
-          },
-        },
-        evaluator: {
-          include: {
-            person: true,
-          },
-        },
-      },
-    });
+    // const fullEvaluation = await this.prisma.hrEmployeeEvaluation.findUnique({
+    //   where: { id: evaluation.id },
+    //   include: {
+    //     employee: {
+    //       include: {
+    //         person: true,
+    //         company: true,
+    //         department: true,
+    //         position: true,
+    //       },
+    //     },
+    //     evaluator: {
+    //       include: {
+    //         person: true,
+    //       },
+    //     },
+    //   },
+    // });
 
-    if (!fullEvaluation) {
-      throw new BadRequestException('Evaluation not found after creation');
-    }
+    // if (!fullEvaluation) {
+    //   throw new BadRequestException('Evaluation not found after creation');
+    // }
 
     // Return with computed status
     return {
-      ...evaluation,
-      status: computeEvaluationStatus(fullEvaluation),
+      status: 'success',
+      message: 'Evaluation monitoring created successfully',
+      // evaluation: {
+      //   ...evaluation,
+      //   status: computeEvaluationStatus(fullEvaluation),
+      // }
+      evaluation,
     };
   }
 
@@ -386,9 +408,9 @@ export class RegularizationReviewsService {
       orderBy: { created_at: 'asc' },
     });
 
-    if (evaluations.length === 0) {
-      throw new NotFoundException('No employee evaluation yet.');
-    }
+    // if (evaluations.length === 0) {
+    //   throw new NotFoundException('No employee evaluation yet.');
+    // }
 
     return evaluations.map((evaluation) => ({
       ...evaluation,

@@ -49,7 +49,7 @@ export class SubModuleController {
   @ApiGetResponse('Get a Submodule')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getSubmodule(
-    @Param('subModuleId', new ParseUUIDPipe()) subModuleId: string,
+    @Param('subModuleId', ParseUUIDPipe) subModuleId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.subModuleService.getSubmodule(subModuleId, user);
@@ -101,7 +101,7 @@ export class SubModuleController {
   updateSubmodule(
     @Body() dto: UpdateSubmoduleDto,
     @SessionUser() user: RequestUser,
-    @Param('subModuleId', new ParseUUIDPipe()) subModuleId: string,
+    @Param('subModuleId', ParseUUIDPipe) subModuleId: string,
   ) {
     return this.subModuleService.updateSubmodule(subModuleId, dto, user);
   }
@@ -110,7 +110,7 @@ export class SubModuleController {
   @ApiOperation({ summary: 'Delete a submodule ' })
   @Can({ action: 'update', subject: 'System Management' })
   deleteSubmodule(
-    @Param('subModuleId', new ParseUUIDPipe()) subModuleId: string,
+    @Param('subModuleId', ParseUUIDPipe) subModuleId: string,
   ) {
     return this.subModuleService.deleteSubmodule(subModuleId);
   }

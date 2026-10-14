@@ -8952,6 +8952,48 @@
         ]
       }
     },
+    "/v2/hris/employee-relations/administrative-hearing/{hearingId}/parties/{partyId}/no-show": {
+      "put": {
+        "operationId": "AdministrativeHearingController_noShowHearing_v2",
+        "parameters": [
+          {
+            "name": "hearingId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "partyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoShowHearingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Mark a respondent administrative hearing as no show if schedule already pass",
+        "tags": [
+          "Human Resources - Employee Relations(Administrative Hearing)"
+        ]
+      }
+    },
     "/v2/hris/employee-relations/notice-of-decision/{decisionId}": {
       "get": {
         "operationId": "NoticeOfDecisionController_getDecision_v2",
@@ -12391,11 +12433,6 @@
             "example": "PK UUID of employee",
             "description": "UUID of the employee"
           },
-          "evaluator_id": {
-            "type": "string",
-            "example": "PK UUID of evaluator employee",
-            "description": "UUID of the evaluator employee"
-          },
           "stage": {
             "type": "string",
             "enum": [
@@ -12405,34 +12442,30 @@
             "example": "third_month_evaluation",
             "description": "The evaluation stage of this employee"
           },
-          "type_of_evaluation": {
-            "type": "string",
-            "enum": [
-              "for_regularization",
-              "for_appraisal",
-              "for_promotion"
-            ],
-            "example": "for_regularization",
-            "description": "The type of evaluation of this employee"
+          "is_reviewed": {
+            "type": "boolean",
+            "example": true
           },
-          "probation_date": {
+          "recommendation": {
+            "type": "string",
+            "example": "pass"
+          },
+          "date_evaluated": {
             "type": "string",
             "example": "2026-01-10",
-            "description": "Start date of probation period"
+            "description": "Evaluation date for this employee"
           },
-          "regularization_date": {
+          "scheduled_evaluation_date": {
             "type": "string",
             "example": "2026-01-10",
-            "description": "End of probation period and start of regularization period"
+            "description": "The scheduled evaluation date for this employee"
           }
         },
         "required": [
           "employee_id",
-          "evaluator_id",
           "stage",
-          "type_of_evaluation",
-          "probation_date",
-          "regularization_date"
+          "is_reviewed",
+          "scheduled_evaluation_date"
         ]
       },
       "CreatePerformanceCompetencyDto": {
@@ -13510,6 +13543,10 @@
           "incident_narrative": {
             "type": "string",
             "example": "Describe what happened, who was involved, where it happened and supporting circumstances"
+          },
+          "closing_remarks": {
+            "type": "string",
+            "example": "The closing remarks for this case"
           }
         }
       },
@@ -13855,6 +13892,40 @@
           "channel"
         ]
       },
+      "NoShowHearingDto": {
+        "type": "object",
+        "properties": {
+          "remarks": {
+            "type": "string",
+            "example": "Party is no show or did not attend the hearing schedule"
+          }
+        }
+      },
+      "PayrollAdjustmentDto": {
+        "type": "object",
+        "properties": {
+          "deduction_start": {
+            "type": "string",
+            "example": "2026-09-01T09:00:00.000Z"
+          },
+          "deduction_end": {
+            "type": "string",
+            "example": "2026-09-05T09:00:00.000Z"
+          },
+          "total_deduction": {
+            "type": "number",
+            "example": "2200"
+          },
+          "semi_monthly_deduction": {
+            "type": "number",
+            "example": "1100"
+          },
+          "decision_remarks": {
+            "type": "string",
+            "example": "This is be paid for two months."
+          }
+        }
+      },
       "CreateDecisionDto": {
         "type": "object",
         "properties": {
@@ -13893,6 +13964,9 @@
           },
           "remarks": {
             "type": "string"
+          },
+          "deduct_payroll": {
+            "$ref": "#/components/schemas/PayrollAdjustmentDto"
           }
         },
         "required": [
@@ -13938,7 +14012,11 @@
             "description": "Required for suspension/rehabilitation decisions"
           },
           "remarks": {
-            "type": "string"
+            "type": "string",
+            "example": "String"
+          },
+          "deduct_payroll": {
+            "$ref": "#/components/schemas/PayrollAdjustmentDto"
           }
         }
       },
@@ -14144,6 +14222,45 @@
       "SubmitEvaluationDto": {
         "type": "object",
         "properties": {
+          "employee_id": {
+            "type": "string",
+            "example": "PK UUID of employee",
+            "description": "UUID of the employee"
+          },
+          "evaluator_id": {
+            "type": "string",
+            "example": "PK UUID of evaluator employee",
+            "description": "UUID of the evaluator employee"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "third_month_evaluation",
+              "fifth_month_evaluation"
+            ],
+            "example": "third_month_evaluation",
+            "description": "The evaluation stage of this employee"
+          },
+          "type_of_evaluation": {
+            "type": "string",
+            "enum": [
+              "for_regularization",
+              "for_appraisal",
+              "for_promotion"
+            ],
+            "example": "for_regularization",
+            "description": "The type of evaluation of this employee"
+          },
+          "evaluation_period_start": {
+            "type": "string",
+            "example": "2026-01-10",
+            "description": "Start date of the employee/hire date"
+          },
+          "evaluation_period_end": {
+            "type": "string",
+            "example": "2026-01-10",
+            "description": "End date of the employee for this evaluation; 3rd month eval or 5th month eval"
+          },
           "details": {
             "description": "List of competency evaluations",
             "example": [
@@ -14182,6 +14299,12 @@
           }
         },
         "required": [
+          "employee_id",
+          "evaluator_id",
+          "stage",
+          "type_of_evaluation",
+          "evaluation_period_start",
+          "evaluation_period_end",
           "details",
           "decision",
           "comments"

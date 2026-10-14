@@ -42,7 +42,7 @@ export class ErCaseViolationsController {
   @ApiGetResponse('Here is the ER Case Violation')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getViolation(
-    @Param('erCaseViolationId', new ParseUUIDPipe()) erCaseViolationId: string,
+    @Param('erCaseViolationId', ParseUUIDPipe) erCaseViolationId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.erCaseViolationService.getViolation(erCaseViolationId, user);
@@ -83,7 +83,7 @@ export class ErCaseViolationsController {
   @ApiPatchResponse('ER Case Violation updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateErCaseViolation(
-    @Param('erCaseViolationId', new ParseUUIDPipe()) erCaseViolationId: string,
+    @Param('erCaseViolationId', ParseUUIDPipe) erCaseViolationId: string,
     @Body() dto: UpdateErCaseViolationDto,
     @SessionUser() user: RequestUser,
   ) {

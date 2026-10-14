@@ -87,7 +87,11 @@ export class NoticeOfDecisionService {
     const decision = await this.prisma.hrErCaseDecision.findUnique({
       where: { id: decisionId },
       include: {
-        deduct_payroll: true,
+        deduct_payroll: {
+          include: {
+            attachment: true,
+          },
+        },
         attachment: true,
       },
     });

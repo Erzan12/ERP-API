@@ -50,7 +50,7 @@ export class CaseIntakeController {
   @Put('employee-relations/case-intake/:intakeId/ignore')
   @ApiOperation({ summary: 'Ignore a Case Intake or Report' })
   ignoreIntake(
-    @Param('intakeId', new ParseUUIDPipe()) intakeId: string,
+    @Param('intakeId', ParseUUIDPipe) intakeId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.caseIntakeService.ignoreIntake(intakeId, user);

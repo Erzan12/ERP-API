@@ -392,7 +392,7 @@ export class AdministrativeHearingService {
         // Record activity
         await tx.hrErCaseActivityLog.create({
           data: {
-            case_id: hearing.party.case_id, 
+            case_id: hearing.party.case_id,
             party_id: hearing.party.id,
             actor_id: user.id,
             stage: HrErCaseStage.administrative_hearing,

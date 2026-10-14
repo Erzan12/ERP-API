@@ -45,7 +45,7 @@ export class EmployeeReportController {
   @ApiOperation({ summary: 'Get Employee Reports' })
   @ApiGetResponse('Here is the list of Employee Reports')
   getEmployeeReport(
-    @Param('employeeReportId', new ParseUUIDPipe()) employeeReportId: string,
+    @Param('employeeReportId', ParseUUIDPipe) employeeReportId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.employeeReportService.getEmployeeReport(employeeReportId, user);
@@ -65,7 +65,7 @@ export class EmployeeReportController {
   @Put('employee-reports/:employeeReportId')
   @ApiOperation({ summary: 'Update an existing Employee Report' })
   updateEmployeeReport(
-    @Param('employeeReportId', new ParseUUIDPipe()) employeeReportId: string,
+    @Param('employeeReportId', ParseUUIDPipe) employeeReportId: string,
     @Body() dto: UpdateEmployeeReportDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -79,7 +79,7 @@ export class EmployeeReportController {
   @Put('employee-reports/:employeeReportId/submit')
   @ApiOperation({ summary: 'Submit Employee Report' })
   submitEmployeeReport(
-    @Param('employeeReportId', new ParseUUIDPipe()) employeeReportId: string,
+    @Param('employeeReportId', ParseUUIDPipe) employeeReportId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.employeeReportService.submitEmployeeReport(
@@ -91,7 +91,7 @@ export class EmployeeReportController {
   @Put('employee-reports/:employeeReportId/cancel')
   @ApiOperation({ summary: 'Cancel Employee Report' })
   cancelEmployeeReport(
-    @Param('employeeReportId', new ParseUUIDPipe()) employeeReportId: string,
+    @Param('employeeReportId', ParseUUIDPipe) employeeReportId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.employeeReportService.cancelEmployeeReport(

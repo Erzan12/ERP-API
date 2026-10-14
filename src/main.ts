@@ -72,6 +72,18 @@ async function bootstrap() {
   app.setBaseViewsDir(join(process.cwd(), 'views'));
   app.setViewEngine('hbs');
 
+  app.use((req: Request, _res: Response, next: NextFunction) => {
+    console.log(
+      '[REQ]',
+      new Date().toISOString(),
+      req.method,
+      req.originalUrl,
+      'content-length=',
+      req.headers['content-length'],
+    );
+    next();
+  });
+
   await app.listen(3000, () => {
     console.log('Server is running at http://localhost:3000');
     console.log('Swagger API is running at http://localhost:3000/docs');

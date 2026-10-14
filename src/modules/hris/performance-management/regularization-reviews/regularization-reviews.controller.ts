@@ -60,7 +60,7 @@ export class RegularizationReviewsController {
     @SessionUser() user: RequestUser,
     @Body() dto: CreateEvaluationDto,
   ) {
-    return this.regularizationService.createEvaluation(dto, user);
+    return this.regularizationService.monitorEvaluation(dto, user);
   }
 
   @Get(':employeeId')
@@ -68,13 +68,13 @@ export class RegularizationReviewsController {
   @ApiGetResponse('Employee with evaluation')
   @Can({ action: ACTION_READ, subject: REGULARIZATION_REVIEW })
   getEvaluations(
-    @Param('employeeId', new ParseUUIDPipe()) employeeId: string,
+    @Param('employeeId', ParseUUIDPipe) employeeId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.regularizationService.getEmployeeEvaluations(employeeId, user);
   }
 
-  @Get('')
+  @Get()
   @ApiOperation({ summary: 'List of evaluated employees' })
   @ApiGetResponse('List of evalauted employees')
   @Can({ action: ACTION_READ, subject: REGULARIZATION_REVIEW })

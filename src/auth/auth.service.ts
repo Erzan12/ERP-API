@@ -378,20 +378,6 @@ export class AuthService {
         user_roles: {
           where: { is_active: true },
           include: {
-            // role: {
-            //   include: {
-            //     role_permissions: {
-            //       where: { is_active: true },
-            //       include: {
-            //         sub_module_permission: {
-            //           include: {
-            //             sub_module: true,
-            //           }
-            //         }
-            //       },
-            //     },
-            //   },
-            // },
             user_permissions: {
               include: {
                 role_permission: {

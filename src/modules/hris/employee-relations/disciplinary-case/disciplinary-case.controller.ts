@@ -42,7 +42,7 @@ export class DisciplinaryCaseController {
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDisciplinaryCase(
     @SessionUser() user: RequestUser,
-    @Param('disciplinaryCaseId', new ParseUUIDPipe())
+    @Param('disciplinaryCaseId', ParseUUIDPipe)
     disciplinaryCaseId: string,
   ) {
     return this.disciplinaryCaseService.getDisciplinaryCase(
@@ -56,7 +56,7 @@ export class DisciplinaryCaseController {
   @ApiGetResponse('Here is the Disciplinary Case Status')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getDisciplinaryCaseStatus(
-    @Param('disciplinaryCaseId', new ParseUUIDPipe())
+    @Param('disciplinaryCaseId', ParseUUIDPipe)
     disciplinaryCaseId: string,
     @SessionUser() user: RequestUser,
   ) {
@@ -95,7 +95,7 @@ export class DisciplinaryCaseController {
   })
   @ApiPatchResponse('Disciplinary Case updated successfully')
   updateDisciplinaryCase(
-    @Param('disciplinaryCaseId', new ParseUUIDPipe())
+    @Param('disciplinaryCaseId', ParseUUIDPipe)
     disciplinaryCaseId: string,
     @Body() dto: UpdateCaseDto,
     @SessionUser() user: RequestUser,
@@ -113,7 +113,7 @@ export class DisciplinaryCaseController {
   })
   @ApiPatchResponse('Party Details updated successfully')
   updateCasePartyDetails(
-    @Param('partyId', new ParseUUIDPipe()) partyId: string,
+    @Param('partyId', ParseUUIDPipe) partyId: string,
     @SessionUser() user: RequestUser,
     @Body() dto: UpdateCasePartyDto,
   ) {
@@ -131,7 +131,7 @@ export class DisciplinaryCaseController {
   })
   @ApiOkResponse({ type: AdvanceStageResponseDto })
   advanceStage(
-    @Param('caseId', new ParseUUIDPipe()) caseId: string,
+    @Param('caseId', ParseUUIDPipe) caseId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.disciplinaryCaseService.advanceAllEligible(caseId, user);
@@ -142,7 +142,7 @@ export class DisciplinaryCaseController {
   @ApiPatchResponse('Party or Employee involved mark as no show')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateMarkNoResponse(
-    @Param('partyId', new ParseUUIDPipe()) partyId: string,
+    @Param('partyId', ParseUUIDPipe) partyId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.disciplinaryCaseService.markNoResponse(partyId, user);

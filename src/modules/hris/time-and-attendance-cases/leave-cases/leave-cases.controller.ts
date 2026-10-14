@@ -66,7 +66,7 @@ export class LeaveCasesController {
   @Can({ action: ACTION_READ, subject: LEAVE_REQUEST })
   getLeaveRequests(
     @SessionUser() user: RequestUser,
-    @Param('leaveRequestId', new ParseUUIDPipe()) leaveRequestId: string,
+    @Param('leaveRequestId', ParseUUIDPipe) leaveRequestId: string,
   ) {
     return this.leaveCasesService.getLeaveCase(leaveRequestId, user);
   }
@@ -95,7 +95,7 @@ export class LeaveCasesController {
   @ApiPatchResponse('Leave Request updated successfully')
   @Can({ action: ACTION_UPDATE, subject: LEAVE_REQUEST })
   updateLeaveRequest(
-    @Param('leaveCaseId', new ParseUUIDPipe()) leaveCaseId: string,
+    @Param('leaveCaseId', ParseUUIDPipe) leaveCaseId: string,
     @Body() dto: UpdateLeaveRequestWithDetailsDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -108,7 +108,7 @@ export class LeaveCasesController {
   @ApiPatchResponse('Leave Request submitted')
   @Can({ action: ACTION_SUBMIT, subject: LEAVE_REQUEST })
   submitLeave(
-    @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
+    @Param('hrLeaveRequestId', ParseUUIDPipe) hrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.leaveCasesService.submitLeave(hrLeaveRequestId, user);
@@ -119,7 +119,7 @@ export class LeaveCasesController {
   @ApiPatchResponse('Leave Request verified')
   @Can({ action: ACTION_VERIFY, subject: LEAVE_REQUEST })
   verifyLeave(
-    @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
+    @Param('hrLeaveRequestId', ParseUUIDPipe) hrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.leaveCasesService.verifyLeave(hrLeaveRequestId, user);
@@ -130,7 +130,7 @@ export class LeaveCasesController {
   @ApiPatchResponse('Leave Request approved')
   @Can({ action: ACTION_APPROVE, subject: LEAVE_REQUEST })
   approveLeave(
-    @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
+    @Param('hrLeaveRequestId', ParseUUIDPipe) hrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.leaveCasesService.approveLeave(hrLeaveRequestId, user);
@@ -141,7 +141,7 @@ export class LeaveCasesController {
   @ApiPatchResponse('Leave Request processed')
   @Can({ action: ACTION_PROCESS, subject: LEAVE_REQUEST })
   processLeave(
-    @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
+    @Param('hrLeaveRequestId', ParseUUIDPipe) hrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.leaveCasesService.processLeave(hrLeaveRequestId, user);
@@ -152,7 +152,7 @@ export class LeaveCasesController {
   @ApiPatchResponse('Leave Request rejected')
   @Can({ action: ACTION_REJECT, subject: LEAVE_REQUEST })
   rejectLeave(
-    @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
+    @Param('hrLeaveRequestId', ParseUUIDPipe) hrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.leaveCasesService.rejectLeave(hrLeaveRequestId, user);
@@ -163,7 +163,7 @@ export class LeaveCasesController {
   @ApiPatchResponse('Leave Request cancelled')
   @Can({ action: ACTION_CANCEL, subject: LEAVE_REQUEST })
   cancelLeave(
-    @Param('hrLeaveRequestId', new ParseUUIDPipe()) hrLeaveRequestId: string,
+    @Param('hrLeaveRequestId', ParseUUIDPipe) hrLeaveRequestId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.leaveCasesService.cancelLeave(hrLeaveRequestId, user);

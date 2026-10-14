@@ -42,7 +42,7 @@ export class ErCaseTypesOfOffenseController {
   @ApiGetResponse(' Here is the ER Case Violation')
   @Can({ action: ACTION_READ, subject: MASTERTABLES })
   getErTypeOfOffense(
-    @Param('erCaseTypeOfOffenseId', new ParseUUIDPipe())
+    @Param('erCaseTypeOfOffenseId', ParseUUIDPipe)
     erCaseTypeOfOffenseId: string,
     @SessionUser() user: RequestUser,
   ) {
@@ -87,7 +87,7 @@ export class ErCaseTypesOfOffenseController {
   @ApiPatchResponse('ER Case Type of Offense updated successfully')
   @Can({ action: ACTION_UPDATE, subject: MASTERTABLES })
   updateErCaseTypeOfOffense(
-    @Param('erCaseTypeOfOffenseId', new ParseUUIDPipe())
+    @Param('erCaseTypeOfOffenseId', ParseUUIDPipe)
     erCaseTypeOfOffenseId: string,
     @Body() dto: UpdateErCaseTypesOfOffenseDto,
     @SessionUser() user: RequestUser,

@@ -75,7 +75,7 @@ export class CareerPostingController {
   @ApiGetResponse('Get a job/career posting')
   @Can({ action: ACTION_READ, subject: CAREER_POSTING })
   getCareerPosting(
-    @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
+    @Param('recruitmentId', ParseUUIDPipe) recruitmentId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.careerPostingService.getCareerPosting(recruitmentId, user);
@@ -105,7 +105,7 @@ export class CareerPostingController {
   @ApiPatchResponse('Career Posting updated successfully')
   @Can({ action: ACTION_UPDATE, subject: CAREER_POSTING })
   updateCareerPosting(
-    @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
+    @Param('recruitmentId', ParseUUIDPipe) recruitmentId: string,
     @Body() dto: UpdateCareerPostingDto,
     @SessionUser() user: RequestUser,
   ) {
@@ -122,7 +122,7 @@ export class CareerPostingController {
   @ApiPatchResponse('Career/Job Posting submitted')
   @Can({ action: ACTION_SUBMIT, subject: CAREER_POSTING })
   submitCareerPosting(
-    @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
+    @Param('recruitmentId', ParseUUIDPipe) recruitmentId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.careerPostingService.submit(recruitmentId, user);
@@ -133,7 +133,7 @@ export class CareerPostingController {
   @ApiPatchResponse('Career/Job Posting verified')
   @Can({ action: ACTION_VERIFY, subject: CAREER_POSTING })
   verifyCareerPosting(
-    @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
+    @Param('recruitmentId', ParseUUIDPipe) recruitmentId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.careerPostingService.verify(recruitmentId, user);
@@ -144,7 +144,7 @@ export class CareerPostingController {
   @ApiPatchResponse('Career/Job Posting approved')
   @Can({ action: ACTION_APPROVE, subject: CAREER_POSTING })
   approveCareerPosting(
-    @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
+    @Param('recruitmentId', ParseUUIDPipe) recruitmentId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.careerPostingService.approve(recruitmentId, user);
@@ -155,7 +155,7 @@ export class CareerPostingController {
   @ApiPatchResponse('Career/Job Posting rejected')
   @Can({ action: ACTION_REJECT, subject: CAREER_POSTING })
   rejectCareerPosting(
-    @Param('recruitmentId', new ParseUUIDPipe()) recruitmentId: string,
+    @Param('recruitmentId', ParseUUIDPipe) recruitmentId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.careerPostingService.reject(recruitmentId, user);

@@ -66,7 +66,7 @@ export class RoleController {
   @ApiGetResponse('Here is the Role')
   @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
   getRole(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.roleService.getRole(id, user);
@@ -102,7 +102,7 @@ export class RoleController {
   @Can({ action: ACTION_UPDATE, subject: ROLE_MANAGEMENT }) // sub_module is the subject and action is the permission, action is read,update,delete,create and submodule is Mastertables, Dashboard etc
   updateRole(
     @Body() dto: UpdateRoleDto,
-    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+    @Param('roleId', ParseUUIDPipe) roleId: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.roleService.updateRole(dto, user, roleId);
@@ -120,7 +120,7 @@ export class RolePermissionController {
   @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
   getRoleWithPermissions(
     @SessionUser() user: RequestUser,
-    @Param('roleId', new ParseUUIDPipe()) roleId: string,
+    @Param('roleId', ParseUUIDPipe) roleId: string,
   ) {
     return this.rolePermissionService.getSingleRoleWithPermissions(
       user,
@@ -134,7 +134,7 @@ export class RolePermissionController {
   @Can({ action: ACTION_READ, subject: ROLE_MANAGEMENT })
   getUserWithPermissions(
     @SessionUser() user: RequestUser,
-    @Param('userId', new ParseUUIDPipe()) userId: string,
+    @Param('userId', ParseUUIDPipe) userId: string,
   ) {
     return this.rolePermissionService.getUserWithRolePermission(user, userId);
   }

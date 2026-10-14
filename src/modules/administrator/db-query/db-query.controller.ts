@@ -55,7 +55,7 @@ export class DbQueryController {
   @ApiGetResponse('Get a specific manual db query log')
   @Can({ action: ACTION_READ, subject: SYSTEM_MANAGEMENT })
   getLog(
-    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @SessionUser() user: RequestUser,
   ) {
     return this.dbQueryService.getLogById(id, user);

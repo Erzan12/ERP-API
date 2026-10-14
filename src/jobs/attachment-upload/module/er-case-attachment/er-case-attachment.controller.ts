@@ -45,7 +45,7 @@ export class ErCaseAttachmentController {
   @ApiOperation({ summary: 'Upload Attachments for ER Case.' })
   @ApiPostResponse('Attachment uploaded successfully')
   uploadErCaseAttachment(
-    @Param('disciplinaryCaseId', new ParseUUIDPipe())
+    @Param('disciplinaryCaseId', ParseUUIDPipe)
     disciplinaryCaseId: string,
     @SessionUser() user: RequestUser,
     @UploadedFiles() files: Express.Multer.File[],
@@ -97,7 +97,7 @@ export class ErCaseAttachmentController {
   })
   @ApiPostResponse('Attachment uploaded successfully')
   uploadIrErAttachment(
-    @Param('reportId', new ParseUUIDPipe()) reportId: string,
+    @Param('reportId', ParseUUIDPipe) reportId: string,
     @SessionUser() user: RequestUser,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
@@ -171,7 +171,7 @@ export class ErCaseAttachmentController {
   })
   @ApiPostResponse('Attachment uploaded successfully')
   uploadExplainationDoc(
-    @Param('explanationId', new ParseUUIDPipe()) explanationId: string,
+    @Param('explanationId', ParseUUIDPipe) explanationId: string,
     @SessionUser() user: RequestUser,
     @UploadedFile() file: Express.Multer.File,
   ) {
@@ -206,7 +206,7 @@ export class ErCaseAttachmentController {
   })
   @ApiPostResponse('Attachment uploaded successfully')
   uploadHearingDocs(
-    @Param('hearingId', new ParseUUIDPipe()) hearingId: string,
+    @Param('hearingId', ParseUUIDPipe) hearingId: string,
     @SessionUser() user: RequestUser,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
@@ -241,7 +241,7 @@ export class ErCaseAttachmentController {
   })
   @ApiPostResponse('Attachment uploaded successfully')
   uploadDecisionDoc(
-    @Param('decisionId', new ParseUUIDPipe()) decisionId: string,
+    @Param('decisionId', ParseUUIDPipe) decisionId: string,
     @SessionUser() user: RequestUser,
     @UploadedFile() file: Express.Multer.File,
   ) {
@@ -276,7 +276,7 @@ export class ErCaseAttachmentController {
   })
   @ApiPostResponse('Attachment uploaded successfully')
   authorityToDeductDoc(
-    @Param('deductPayrollId', new ParseUUIDPipe()) deductPayrollId: string,
+    @Param('deductPayrollId', ParseUUIDPipe) deductPayrollId: string,
     @SessionUser() user: RequestUser,
     @UploadedFile() file: Express.Multer.File,
   ) {
