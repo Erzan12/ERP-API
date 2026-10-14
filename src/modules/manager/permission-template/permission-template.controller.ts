@@ -7,7 +7,11 @@ import {
   Put,
   ParseUUIDPipe,
 } from '@nestjs/common';
+<<<<<<<< HEAD:src/modules/manager/permission-template/permission-template.controller.ts
 import { PermissionTemplateService } from './permission-template.service';
+========
+import { PermissionTemplateService } from './permission_template.service';
+>>>>>>>> 4c013eacfb0c8d760e3271e80f0b2e31d08fab78:src/modules/manager/permission-template/permission_template.controller.ts
 import { Can } from 'src/utils/decorators/can.decorator';
 import { SessionUser } from 'src/utils/decorators/session-user.decorator';
 import { RequestUser } from 'src/utils/types/request-user.interface';
@@ -23,7 +27,11 @@ import {
   ACTION_READ,
   ACTION_UPDATE,
   PERMISSION_TEMPLATE,
+<<<<<<<< HEAD:src/modules/manager/permission-template/permission-template.controller.ts
 } from 'src/utils/constants/ability.constants';
+========
+} from 'src/utils/constants/ability.constant';
+>>>>>>>> 4c013eacfb0c8d760e3271e80f0b2e31d08fab78:src/modules/manager/permission-template/permission_template.controller.ts
 import { AssignTemplateDto } from './dto/assign-template.dto';
 import { UpdatePermissionTemplateDto } from './dto/update-permission-template.dto';
 
@@ -47,7 +55,11 @@ export class PermissionTemplateController {
   @ApiGetResponse('Here is the permission template')
   @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
   getPermissionTemplate(
+<<<<<<<< HEAD:src/modules/manager/permission-template/permission-template.controller.ts
     @Param('id', ParseUUIDPipe) id: string,
+========
+    @Param('id', new ParseUUIDPipe()) id: string,
+>>>>>>>> 4c013eacfb0c8d760e3271e80f0b2e31d08fab78:src/modules/manager/permission-template/permission_template.controller.ts
     @SessionUser() user: RequestUser,
   ) {
     return this.permissionTemplateService.getPermissionTemplate(id, user);
@@ -59,7 +71,11 @@ export class PermissionTemplateController {
   // @ApiGetResponse('Here are the list of permission templates available')
   // @Can({ action: ACTION_READ, subject: PERMISSION_TEMPLATE })
   // getUserPermissionTemplate(
+<<<<<<<< HEAD:src/modules/manager/permission-template/permission-template.controller.ts
   //   @Param('userPermissionTemplateId', ParseUUIDPipe)
+========
+  //   @Param('userPermissionTemplateId', new ParseUUIDPipe())
+>>>>>>>> 4c013eacfb0c8d760e3271e80f0b2e31d08fab78:src/modules/manager/permission-template/permission_template.controller.ts
   //   userPermissionTemplateId: string,
   //   @SessionUser() user: RequestUser,
   // ) {
@@ -112,7 +128,11 @@ export class PermissionTemplateController {
   @Can({ action: ACTION_UPDATE, subject: PERMISSION_TEMPLATE })
   updatePermissionTemplate(
     @Body() dto: UpdatePermissionTemplateDto,
+<<<<<<<< HEAD:src/modules/manager/permission-template/permission-template.controller.ts
     @Param('id', ParseUUIDPipe) id: string,
+========
+    @Param('id', new ParseUUIDPipe()) id: string,
+>>>>>>>> 4c013eacfb0c8d760e3271e80f0b2e31d08fab78:src/modules/manager/permission-template/permission_template.controller.ts
     @SessionUser() user: RequestUser,
   ) {
     return this.permissionTemplateService.updatePermissionTemplate(
